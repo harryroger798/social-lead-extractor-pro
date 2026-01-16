@@ -225,12 +225,9 @@ export default function YogaCalculatorPage() {
               </form>
 
               <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
-                <h3 className="font-semibold text-yellow-900 mb-2">What are Yogas?</h3>
+                <h3 className="font-semibold text-yellow-900 mb-2">{t('calculator.yoga.whatAre', 'What are Yogas?')}</h3>
                 <p className="text-sm text-yellow-800">
-                  Yogas are special planetary combinations that indicate exceptional 
-                  qualities or life events. They can signify wealth (Dhana Yoga), 
-                  power (Raj Yoga), wisdom (Hamsa Yoga), and more. The presence of 
-                  strong Yogas can significantly enhance life outcomes.
+                  {t('calculator.yoga.whatAreDesc', 'Yogas are special planetary combinations that indicate exceptional qualities or life events. They can signify wealth (Dhana Yoga), power (Raj Yoga), wisdom (Hamsa Yoga), and more. The presence of strong Yogas can significantly enhance life outcomes.')}
                 </p>
               </div>
             </CardContent>
@@ -242,17 +239,17 @@ export default function YogaCalculatorPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-yellow-600" />
-                    Yoga Summary
+                    {t('calculator.yoga.summary', 'Yoga Summary')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Ascendant</div>
+                      <div className="text-sm text-gray-500">{t('calculator.ascendant', 'Ascendant')}</div>
                       <div className="font-semibold text-gray-900">{yogaResult.ascendant}</div>
                     </div>
                     <div className="p-3 bg-yellow-100 rounded-lg">
-                      <div className="text-sm text-yellow-600">Yogas Found</div>
+                      <div className="text-sm text-yellow-600">{t('calculator.yoga.yogasFound', 'Yogas Found')}</div>
                       <div className="font-semibold text-yellow-900">{yogaResult.yoga_count}</div>
                     </div>
                   </div>
@@ -276,9 +273,9 @@ export default function YogaCalculatorPage() {
               {yogaResult.yogas.length > 0 ? (
                 <Card className="border-yellow-200">
                   <CardHeader>
-                    <CardTitle>Detected Yogas</CardTitle>
+                    <CardTitle>{t('calculator.yoga.detectedYogas', 'Detected Yogas')}</CardTitle>
                     <CardDescription>
-                      Planetary combinations found in your birth chart
+                      {t('calculator.yoga.detectedYogasDesc', 'Planetary combinations found in your birth chart')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -342,11 +339,10 @@ export default function YogaCalculatorPage() {
               <CardContent className="text-center py-12">
                 <Star className="w-16 h-16 text-yellow-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  Enter Your Birth Details
+                  {t('calculator.enterBirthDetails', 'Enter Your Birth Details')}
                 </h3>
                 <p className="text-gray-500 max-w-sm">
-                  Fill in the form to discover powerful Yogas (planetary combinations) 
-                  in your birth chart.
+                  {t('calculator.yoga.resultPlaceholderDesc', 'Fill in the form to discover powerful Yogas (planetary combinations) in your birth chart.')}
                 </p>
               </CardContent>
             </Card>

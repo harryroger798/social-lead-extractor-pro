@@ -304,12 +304,10 @@ export default function AscendantCalculatorPage() {
               <div className="mt-6 pt-6 border-t bg-amber-50 rounded-lg p-4">
                 <h3 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
                   <Star className="w-4 h-4" />
-                  Why Birth Time Matters
+                  {t('calculator.ascendantCalc.whyBirthTimeMatters', 'Why Birth Time Matters')}
                 </h3>
                 <p className="text-sm text-amber-700">
-                  The Ascendant (Lagna) is the zodiac sign rising on the eastern horizon at 
-                  your exact moment of birth. It changes approximately every 2 hours, making 
-                  precise birth time essential for accurate calculation.
+                  {t('calculator.ascendantCalc.birthTimeExplanation', 'The Ascendant (Lagna) is the zodiac sign rising on the eastern horizon at your exact moment of birth. It changes approximately every 2 hours, making precise birth time essential for accurate calculation.')}
                 </p>
               </div>
             </CardContent>
@@ -321,7 +319,7 @@ export default function AscendantCalculatorPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <span className="text-4xl">{signData.symbol}</span>
-                    Your Ascendant
+                    {t('calculator.ascendantCalc.yourAscendant', 'Your Ascendant')}
                   </CardTitle>
                   <Badge className="bg-indigo-500">{signData.element}</Badge>
                 </div>
@@ -330,22 +328,22 @@ export default function AscendantCalculatorPage() {
                 <div className="text-center mb-6">
                   <h2 className="text-3xl font-bold text-indigo-700">{ascendant} Rising</h2>
                   <p className="text-xl text-gray-600">{signData.hindi}</p>
-                  <p className="text-sm text-gray-500">Ruled by {signData.ruler}</p>
+                  <p className="text-sm text-gray-500">{t('calculator.ruledBy', 'Ruled by')} {signData.ruler}</p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">First Impressions</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.ascendantCalc.firstImpressions', 'First Impressions')}</h3>
                     <p className="text-gray-700">{signData.personality}</p>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Physical Appearance</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.ascendantCalc.physicalAppearance', 'Physical Appearance')}</h3>
                     <p className="text-gray-700">{signData.appearance}</p>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Key Traits</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.keyTraits', 'Key Traits')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.traits.map((trait) => (
                         <Badge key={trait} variant="secondary" className="bg-indigo-100 text-indigo-700">
@@ -357,17 +355,17 @@ export default function AscendantCalculatorPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 rounded-lg p-3">
-                      <h4 className="font-semibold text-blue-800 mb-2">Health Focus</h4>
+                      <h4 className="font-semibold text-blue-800 mb-2">{t('calculator.ascendantCalc.healthFocus', 'Health Focus')}</h4>
                       <p className="text-sm text-blue-700">{signData.health}</p>
                     </div>
                     <div className="bg-green-50 rounded-lg p-3">
-                      <h4 className="font-semibold text-green-800 mb-2">Career Strengths</h4>
+                      <h4 className="font-semibold text-green-800 mb-2">{t('calculator.ascendantCalc.careerStrengths', 'Career Strengths')}</h4>
                       <p className="text-sm text-green-700">{signData.career}</p>
                     </div>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Compatible Ascendants</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.ascendantCalc.compatibleAscendants', 'Compatible Ascendants')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.compatibility.map((sign) => (
                         <Badge key={sign} className="bg-green-100 text-green-700">
@@ -386,11 +384,10 @@ export default function AscendantCalculatorPage() {
                   <Sunrise className="w-12 h-12 text-indigo-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Ascendant Will Appear Here
+                  {t('calculator.ascendantCalc.resultPlaceholder', 'Your Ascendant Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details including exact time and click &quot;Find My Ascendant&quot; 
-                  to discover your Rising Sign.
+                  {t('calculator.ascendantCalc.resultPlaceholderDesc', 'Enter your birth details including exact time and click "Find My Ascendant" to discover your Rising Sign.')}
                 </p>
               </CardContent>
             </Card>
@@ -400,13 +397,13 @@ export default function AscendantCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Moon Sign Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.moonSignCalc.title', 'Moon Sign Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Find your Moon Sign for emotional insights.
+                {t('calculator.moonSignCalc.shortDesc', 'Find your Moon Sign for emotional insights.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/moon-sign-calculator">
-                  Calculate <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.calculate', 'Calculate')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -414,13 +411,13 @@ export default function AscendantCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Sun Sign Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sunSignCalc.title', 'Sun Sign Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Discover your Sun Sign personality.
+                {t('calculator.sunSignCalc.shortDesc', 'Discover your Sun Sign personality.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/sun-sign-calculator">
-                  Calculate <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.calculate', 'Calculate')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -428,9 +425,9 @@ export default function AscendantCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Full Kundli</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.kundli.title', 'Full Kundli')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Generate complete birth chart.
+                {t('calculator.kundli.shortDesc', 'Generate complete birth chart.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/kundli-calculator">
@@ -444,7 +441,7 @@ export default function AscendantCalculatorPage() {
         <Card className="border-indigo-200 bg-indigo-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Your Ascendant (Lagna) in Vedic Astrology
+              {t('calculator.ascendantCalc.understandingTitle', 'Understanding Your Ascendant (Lagna) in Vedic Astrology')}
             </h2>
             <div className="prose prose-indigo max-w-none">
               <p className="text-gray-700 mb-4">

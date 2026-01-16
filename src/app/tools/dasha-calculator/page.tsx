@@ -255,12 +255,9 @@ export default function DashaCalculatorPage() {
               </form>
 
               <div className="mt-6 p-4 bg-purple-50 rounded-lg">
-                <h3 className="font-semibold text-purple-900 mb-2">What is Vimshottari Dasha?</h3>
+                <h3 className="font-semibold text-purple-900 mb-2">{t('calculator.dasha.whatIs', 'What is Vimshottari Dasha?')}</h3>
                 <p className="text-sm text-purple-800">
-                  Vimshottari Dasha is a 120-year planetary period system in Vedic astrology. 
-                  It divides life into major periods (Mahadasha) ruled by different planets, 
-                  each with sub-periods (Antardasha). The starting Dasha is determined by 
-                  the Moon&apos;s nakshatra at birth.
+                  {t('calculator.dasha.whatIsDesc', "Vimshottari Dasha is a 120-year planetary period system in Vedic astrology. It divides life into major periods (Mahadasha) ruled by different planets, each with sub-periods (Antardasha). The starting Dasha is determined by the Moon's nakshatra at birth.")}
                 </p>
               </div>
             </CardContent>
@@ -272,25 +269,25 @@ export default function DashaCalculatorPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-purple-600" />
-                    Dasha Summary
+                    {t('calculator.dasha.summary', 'Dasha Summary')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Moon Sign</div>
+                      <div className="text-sm text-gray-500">{t('calculator.moonSign', 'Moon Sign')}</div>
                       <div className="font-semibold text-gray-900">{dashaResult.moon_sign}</div>
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Birth Nakshatra</div>
+                      <div className="text-sm text-gray-500">{t('calculator.birthNakshatra', 'Birth Nakshatra')}</div>
                       <div className="font-semibold text-gray-900">{dashaResult.nakshatra}</div>
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Starting Dasha Lord</div>
+                      <div className="text-sm text-gray-500">{t('calculator.dasha.startingLord', 'Starting Dasha Lord')}</div>
                       <div className="font-semibold text-gray-900">{dashaResult.dasha.birth_nakshatra_lord}</div>
                     </div>
                     <div className="p-3 bg-purple-100 rounded-lg">
-                      <div className="text-sm text-purple-600">Current Mahadasha</div>
+                      <div className="text-sm text-purple-600">{t('calculator.dasha.currentMahadasha', 'Current Mahadasha')}</div>
                       <div className="font-semibold text-purple-900">
                         {dashaResult.dasha.current_mahadasha?.planet || "N/A"}
                       </div>
@@ -301,8 +298,8 @@ export default function DashaCalculatorPage() {
 
               <Card className="border-purple-200">
                 <CardHeader>
-                  <CardTitle>Mahadasha Periods</CardTitle>
-                  <CardDescription>Click on a period to see Antardasha sub-periods</CardDescription>
+                  <CardTitle>{t('calculator.dasha.mahadashaPeriods', 'Mahadasha Periods')}</CardTitle>
+                  <CardDescription>{t('calculator.dasha.clickToSee', 'Click on a period to see Antardasha sub-periods')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {dashaResult.dasha.mahadashas.map((dasha) => (
@@ -393,11 +390,10 @@ export default function DashaCalculatorPage() {
               <CardContent className="text-center py-12">
                 <Sparkles className="w-16 h-16 text-purple-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  Enter Your Birth Details
+                  {t('calculator.enterBirthDetails', 'Enter Your Birth Details')}
                 </h3>
                 <p className="text-gray-500 max-w-sm">
-                  Fill in the form to calculate your complete Vimshottari Dasha timeline 
-                  with all Mahadasha and Antardasha periods.
+                  {t('calculator.dasha.resultPlaceholderDesc', 'Fill in the form to calculate your complete Vimshottari Dasha timeline with all Mahadasha and Antardasha periods.')}
                 </p>
               </CardContent>
             </Card>
@@ -407,34 +403,31 @@ export default function DashaCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Mahadasha</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.dasha.mahadasha', 'Mahadasha')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Major planetary periods lasting 6-20 years. Each Mahadasha brings the 
-                qualities and significations of its ruling planet into prominence.
+                {t('calculator.dasha.mahadashaDesc', 'Major planetary periods lasting 6-20 years. Each Mahadasha brings the qualities and significations of its ruling planet into prominence.')}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Antardasha</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.dasha.antardasha', 'Antardasha')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Sub-periods within each Mahadasha. The Antardasha lord modifies the 
-                effects of the Mahadasha, creating specific life events and experiences.
+                {t('calculator.dasha.antardashaDesc', 'Sub-periods within each Mahadasha. The Antardasha lord modifies the effects of the Mahadasha, creating specific life events and experiences.')}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Pratyantardasha</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.dasha.pratyantardasha', 'Pratyantardasha')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Even finer sub-sub-periods for precise timing. Used by advanced 
-                astrologers to pinpoint exact timing of events within months.
+                {t('calculator.dasha.pratyantardashaDesc', 'Even finer sub-sub-periods for precise timing. Used by advanced astrologers to pinpoint exact timing of events within months.')}
               </p>
             </CardContent>
           </Card>

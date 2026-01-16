@@ -203,7 +203,7 @@ export default function SadeSatiPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
-              What is Sade Sati?
+              {t('dosha.sadeSati.whatIs', 'What is Sade Sati?')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -229,7 +229,7 @@ export default function SadeSatiPage() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">The Three Phases of Sade Sati</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.sadeSati.threePhases', 'The Three Phases of Sade Sati')}</h2>
         
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {phases.map((phase, index) => (
@@ -269,9 +269,9 @@ export default function SadeSatiPage() {
 
         <Card className="border-indigo-200 mb-8">
           <CardHeader>
-            <CardTitle>Current Sade Sati Status by Moon Sign (2026)</CardTitle>
+            <CardTitle>{t('dosha.sadeSati.currentStatus', 'Current Sade Sati Status by Moon Sign (2026)')}</CardTitle>
             <CardDescription>
-              Check your Moon sign to see your current Sade Sati status
+              {t('dosha.sadeSati.currentStatusDesc', 'Check your Moon sign to see your current Sade Sati status')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -299,12 +299,12 @@ export default function SadeSatiPage() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Remedies for Sade Sati</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.sadeSati.remedies', 'Remedies for Sade Sati')}</h2>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card className="border-amber-200">
             <CardHeader className="bg-amber-50">
-              <CardTitle className="text-amber-800">Daily Practices</CardTitle>
+              <CardTitle className="text-amber-800">{t('dosha.dailyPractices', 'Daily Practices')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -320,7 +320,7 @@ export default function SadeSatiPage() {
 
           <Card className="border-blue-200">
             <CardHeader className="bg-blue-50">
-              <CardTitle className="text-blue-800">Weekly Practices</CardTitle>
+              <CardTitle className="text-blue-800">{t('dosha.weeklyPractices', 'Weekly Practices')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -336,7 +336,7 @@ export default function SadeSatiPage() {
 
           <Card className="border-purple-200">
             <CardHeader className="bg-purple-50">
-              <CardTitle className="text-purple-800">Special Remedies</CardTitle>
+              <CardTitle className="text-purple-800">{t('dosha.specialRemedies', 'Special Remedies')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -352,7 +352,7 @@ export default function SadeSatiPage() {
 
           <Card className="border-green-200">
             <CardHeader className="bg-green-50">
-              <CardTitle className="text-green-800">Lifestyle Changes</CardTitle>
+              <CardTitle className="text-green-800">{t('dosha.lifestyleChanges', 'Lifestyle Changes')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -369,7 +369,7 @@ export default function SadeSatiPage() {
 
         <Card className="border-gray-200 mb-8">
           <CardHeader>
-            <CardTitle>Frequently Asked Questions</CardTitle>
+            <CardTitle>{t('dosha.faq', 'Frequently Asked Questions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -386,13 +386,13 @@ export default function SadeSatiPage() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Sade Sati Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sadeSati.title', 'Sade Sati Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Check your current Sade Sati status.
+                {t('calculator.sadeSati.checkStatus', 'Check your current Sade Sati status.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/sade-sati-calculator">
-                  Check Now <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.checkNow', 'Check Now')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -400,13 +400,13 @@ export default function SadeSatiPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Saturn Transit 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transit.saturnTransit2026', 'Saturn Transit 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Detailed Saturn transit predictions.
+                {t('transit.saturnTransitDesc', 'Detailed Saturn transit predictions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/transits/saturn-transit-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -414,9 +414,9 @@ export default function SadeSatiPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Consult an Astrologer</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('consultation.consultAstrologer', 'Consult an Astrologer')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get personalized Sade Sati guidance.
+                {t('dosha.sadeSati.consultDesc', 'Get personalized Sade Sati guidance.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/consultation">

@@ -138,7 +138,7 @@ export default function MangalDoshPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-600" />
-              What is Mangal Dosh?
+              {t('dosha.mangalDosh.whatIs', 'What is Mangal Dosh?')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -159,7 +159,7 @@ export default function MangalDoshPage() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Effects by House Placement</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.mangalDosh.effectsByHouse', 'Effects by House Placement')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {mangalDoshHouses.map((item) => (
@@ -194,10 +194,10 @@ export default function MangalDoshPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-800">
               <Shield className="w-5 h-5" />
-              Cancellation Conditions (Dosha Bhanga)
+              {t('dosha.mangalDosh.cancellationConditions', 'Cancellation Conditions (Dosha Bhanga)')}
             </CardTitle>
             <CardDescription>
-              These conditions can reduce or completely cancel Mangal Dosha effects
+              {t('dosha.mangalDosh.cancellationDesc', 'These conditions can reduce or completely cancel Mangal Dosha effects')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -212,12 +212,12 @@ export default function MangalDoshPage() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Remedies for Mangal Dosh</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.mangalDosh.remedies', 'Remedies for Mangal Dosh')}</h2>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card className="border-amber-200">
             <CardHeader className="bg-amber-50">
-              <CardTitle className="text-amber-800">Puja & Rituals</CardTitle>
+              <CardTitle className="text-amber-800">{t('dosha.pujaRituals', 'Puja & Rituals')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -233,7 +233,7 @@ export default function MangalDoshPage() {
 
           <Card className="border-purple-200">
             <CardHeader className="bg-purple-50">
-              <CardTitle className="text-purple-800">Mantras & Chanting</CardTitle>
+              <CardTitle className="text-purple-800">{t('dosha.mantrasChanting', 'Mantras & Chanting')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -249,7 +249,7 @@ export default function MangalDoshPage() {
 
           <Card className="border-blue-200">
             <CardHeader className="bg-blue-50">
-              <CardTitle className="text-blue-800">Donations & Charity</CardTitle>
+              <CardTitle className="text-blue-800">{t('dosha.donationsCharity', 'Donations & Charity')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -265,7 +265,7 @@ export default function MangalDoshPage() {
 
           <Card className="border-green-200">
             <CardHeader className="bg-green-50">
-              <CardTitle className="text-green-800">Lifestyle Changes</CardTitle>
+              <CardTitle className="text-green-800">{t('dosha.lifestyleChanges', 'Lifestyle Changes')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -282,7 +282,7 @@ export default function MangalDoshPage() {
 
         <Card className="border-indigo-200 mb-8">
           <CardHeader>
-            <CardTitle>Frequently Asked Questions</CardTitle>
+            <CardTitle>{t('dosha.faq', 'Frequently Asked Questions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -299,13 +299,13 @@ export default function MangalDoshPage() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Mangal Dosh Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('dosha.mangalDosh.calculator', 'Mangal Dosh Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Check if you have Mangal Dosha in your chart.
+                {t('dosha.mangalDosh.calculatorDesc', 'Check if you have Mangal Dosha in your chart.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/mangal-dosh-calculator">
-                  Check Now <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.checkNow', 'Check Now')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -315,14 +315,14 @@ export default function MangalDoshPage() {
             <CardContent className="pt-6">
               <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                 <Heart className="w-5 h-5 text-pink-500" />
-                Horoscope Matching
+                {t('calculator.horoscopeMatching.title', 'Horoscope Matching')}
               </h3>
               <p className="text-gray-600 text-sm mb-4">
-                Check marriage compatibility with Kundli matching.
+                {t('dosha.horoscopeMatchingDesc', 'Check marriage compatibility with Kundli matching.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/horoscope-matching">
-                  Match Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.horoscopeMatching.matchKundli', 'Match Kundli')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -330,13 +330,13 @@ export default function MangalDoshPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Consult an Astrologer</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('consultation.consultAstrologer', 'Consult an Astrologer')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get personalized guidance from experts.
+                {t('consultation.personalizedGuidance', 'Get personalized guidance from experts.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/consultation">
-                  Book Consultation <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('consultation.bookConsultation', 'Book Consultation')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -346,7 +346,7 @@ export default function MangalDoshPage() {
         <Card className="border-red-200 bg-red-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Important Note About Mangal Dosh
+              {t('dosha.mangalDosh.importantNote', 'Important Note About Mangal Dosh')}
             </h2>
             <div className="prose prose-red max-w-none">
               <p className="text-gray-700 mb-4">

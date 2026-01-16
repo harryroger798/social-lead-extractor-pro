@@ -305,7 +305,7 @@ export default function MoonSignCalculatorPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <span className="text-4xl">{signData.symbol}</span>
-                    Your Moon Sign
+                    {t('calculator.moonSignCalc.yourMoonSign', 'Your Moon Sign')}
                   </CardTitle>
                   <Badge className="bg-purple-500 text-lg px-3 py-1">
                     {signData.element}
@@ -316,17 +316,17 @@ export default function MoonSignCalculatorPage() {
                 <div className="text-center mb-6">
                   <h2 className="text-3xl font-bold text-purple-700">{moonSign}</h2>
                   <p className="text-xl text-gray-600">{signData.hindi}</p>
-                  <p className="text-sm text-gray-500">Ruled by {signData.ruler}</p>
+                  <p className="text-sm text-gray-500">{t('calculator.ruledBy', 'Ruled by')} {signData.ruler}</p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Emotional Nature</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.moonSignCalc.emotionalNature', 'Emotional Nature')}</h3>
                     <p className="text-gray-700">{signData.description}</p>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Key Traits</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.keyTraits', 'Key Traits')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.traits.map((trait) => (
                         <Badge key={trait} variant="secondary" className="bg-purple-100 text-purple-700">
@@ -338,21 +338,21 @@ export default function MoonSignCalculatorPage() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="bg-white rounded-lg p-3 text-center">
-                      <p className="text-sm text-gray-600">Lucky Day</p>
+                      <p className="text-sm text-gray-600">{t('calculator.luckyDay', 'Lucky Day')}</p>
                       <p className="font-semibold text-purple-700">{signData.luckyDay}</p>
                     </div>
                     <div className="bg-white rounded-lg p-3 text-center">
-                      <p className="text-sm text-gray-600">Lucky Color</p>
+                      <p className="text-sm text-gray-600">{t('calculator.luckyColor', 'Lucky Color')}</p>
                       <p className="font-semibold text-purple-700">{signData.luckyColor}</p>
                     </div>
                     <div className="bg-white rounded-lg p-3 text-center">
-                      <p className="text-sm text-gray-600">Lucky Number</p>
+                      <p className="text-sm text-gray-600">{t('calculator.luckyNumber', 'Lucky Number')}</p>
                       <p className="font-semibold text-purple-700">{signData.luckyNumber}</p>
                     </div>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Compatible Moon Signs</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.moonSignCalc.compatibleSigns', 'Compatible Moon Signs')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.compatibility.map((sign) => (
                         <Badge key={sign} className="bg-green-100 text-green-700">
@@ -371,11 +371,10 @@ export default function MoonSignCalculatorPage() {
                   <Moon className="w-12 h-12 text-purple-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Moon Sign Will Appear Here
+                  {t('calculator.moonSignCalc.resultPlaceholder', 'Your Moon Sign Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details and click &quot;Find My Moon Sign&quot; to discover 
-                  your Chandra Rashi and emotional nature.
+                  {t('calculator.moonSignCalc.resultPlaceholderDesc', 'Enter your birth details and click "Find My Moon Sign" to discover your Chandra Rashi and emotional nature.')}
                 </p>
               </CardContent>
             </Card>
@@ -385,9 +384,9 @@ export default function MoonSignCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Sun Sign Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sunSignCalc.title', 'Sun Sign Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Find your Sun Sign (Surya Rashi) for personality insights.
+                {t('calculator.sunSignCalc.shortDesc', 'Find your Sun Sign (Surya Rashi) for personality insights.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/sun-sign-calculator">
@@ -399,9 +398,9 @@ export default function MoonSignCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Ascendant Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.ascendantCalc.title', 'Ascendant Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Discover your Rising Sign (Lagna) for outer personality.
+                {t('calculator.ascendantCalc.shortDesc', 'Discover your Rising Sign (Lagna) for outer personality.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/ascendant-calculator">

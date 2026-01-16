@@ -251,11 +251,9 @@ export default function TransitCalculatorPage() {
               </form>
 
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-blue-900 mb-2">What is Gochar?</h3>
+                <h3 className="font-semibold text-blue-900 mb-2">{t('calculator.transit.whatIs', 'What is Gochar?')}</h3>
                 <p className="text-sm text-blue-800">
-                  Gochar (transit) analysis shows how current planetary positions affect 
-                  your birth chart. Transits are analyzed from your Moon sign to determine 
-                  favorable and challenging periods for different life areas.
+                  {t('calculator.transit.whatIsDesc', 'Gochar (transit) analysis shows how current planetary positions affect your birth chart. Transits are analyzed from your Moon sign to determine favorable and challenging periods for different life areas.')}
                 </p>
               </div>
             </CardContent>
@@ -267,7 +265,7 @@ export default function TransitCalculatorPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-blue-600" />
-                    Transit Summary
+                    {t('calculator.transit.summary', 'Transit Summary')}
                   </CardTitle>
                   <CardDescription>
                     As of {new Date(transitResult.transits.transit_date).toLocaleDateString("en-IN")}
@@ -276,13 +274,13 @@ export default function TransitCalculatorPage() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Your Moon Sign</div>
+                      <div className="text-sm text-gray-500">{t('calculator.transit.yourMoonSign', 'Your Moon Sign')}</div>
                       <div className="font-semibold text-gray-900">
                         {transitResult.birth_chart_summary.moon_sign}
                       </div>
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-gray-500">Your Nakshatra</div>
+                      <div className="text-sm text-gray-500">{t('calculator.transit.yourNakshatra', 'Your Nakshatra')}</div>
                       <div className="font-semibold text-gray-900">
                         {transitResult.birth_chart_summary.nakshatra}
                       </div>
@@ -294,19 +292,19 @@ export default function TransitCalculatorPage() {
                       <div className="text-2xl font-bold text-green-600">
                         {transitResult.transits.summary.favorable_transits}
                       </div>
-                      <div className="text-xs text-green-700">Favorable</div>
+                      <div className="text-xs text-green-700">{t('calculator.transit.favorable', 'Favorable')}</div>
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg text-center">
                       <div className="text-2xl font-bold text-gray-600">
                         {transitResult.transits.summary.neutral_transits}
                       </div>
-                      <div className="text-xs text-gray-700">Neutral</div>
+                      <div className="text-xs text-gray-700">{t('calculator.transit.neutral', 'Neutral')}</div>
                     </div>
                     <div className="p-3 bg-red-50 rounded-lg text-center">
                       <div className="text-2xl font-bold text-red-600">
                         {transitResult.transits.summary.challenging_transits}
                       </div>
-                      <div className="text-xs text-red-700">Challenging</div>
+                      <div className="text-xs text-red-700">{t('calculator.transit.challenging', 'Challenging')}</div>
                     </div>
                   </div>
 
@@ -339,8 +337,8 @@ export default function TransitCalculatorPage() {
 
               <Card className="border-blue-200">
                 <CardHeader>
-                  <CardTitle>Current Planetary Positions</CardTitle>
-                  <CardDescription>Real-time transit positions</CardDescription>
+                  <CardTitle>{t('calculator.transit.currentPositions', 'Current Planetary Positions')}</CardTitle>
+                  <CardDescription>{t('calculator.transit.realTimePositions', 'Real-time transit positions')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -373,8 +371,8 @@ export default function TransitCalculatorPage() {
 
               <Card className="border-blue-200">
                 <CardHeader>
-                  <CardTitle>Transit Effects on Your Chart</CardTitle>
-                  <CardDescription>How transits affect you based on Moon sign</CardDescription>
+                  <CardTitle>{t('calculator.transit.transitEffects', 'Transit Effects on Your Chart')}</CardTitle>
+                  <CardDescription>{t('calculator.transit.transitEffectsDesc', 'How transits affect you based on Moon sign')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -404,11 +402,10 @@ export default function TransitCalculatorPage() {
               <CardContent className="text-center py-12">
                 <TrendingUp className="w-16 h-16 text-blue-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  Enter Your Birth Details
+                  {t('calculator.enterBirthDetails', 'Enter Your Birth Details')}
                 </h3>
                 <p className="text-gray-500 max-w-sm">
-                  Fill in the form to analyze how current planetary transits 
-                  are affecting your birth chart.
+                  {t('calculator.transit.resultPlaceholderDesc', 'Fill in the form to analyze how current planetary transits are affecting your birth chart.')}
                 </p>
               </CardContent>
             </Card>
@@ -418,34 +415,31 @@ export default function TransitCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Saturn Transit</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.transit.saturnTransit', 'Saturn Transit')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Saturn&apos;s transit through 12th, 1st, and 2nd from Moon is called 
-                Sade Sati - a 7.5 year period of challenges and transformation.
+                {t('calculator.transit.saturnTransitDesc', "Saturn's transit through 12th, 1st, and 2nd from Moon is called Sade Sati - a 7.5 year period of challenges and transformation.")}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Jupiter Transit</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.transit.jupiterTransit', 'Jupiter Transit')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Jupiter&apos;s transit through favorable houses (2, 5, 7, 9, 11) brings 
-                growth, opportunities, and blessings in those life areas.
+                {t('calculator.transit.jupiterTransitDesc', "Jupiter's transit through favorable houses (2, 5, 7, 9, 11) brings growth, opportunities, and blessings in those life areas.")}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Rahu-Ketu Transit</CardTitle>
+              <CardTitle className="text-lg">{t('calculator.transit.rahuKetuTransit', 'Rahu-Ketu Transit')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                The nodes transit each sign for 18 months, bringing karmic lessons 
-                and sudden changes in the houses they occupy.
+                {t('calculator.transit.rahuKetuTransitDesc', 'The nodes transit each sign for 18 months, bringing karmic lessons and sudden changes in the houses they occupy.')}
               </p>
             </CardContent>
           </Card>

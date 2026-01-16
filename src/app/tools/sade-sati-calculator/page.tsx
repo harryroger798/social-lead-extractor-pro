@@ -288,10 +288,9 @@ export default function SadeSatiCalculatorPage() {
               </Button>
 
               <div className="mt-6 pt-6 border-t bg-blue-50 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-800 mb-2">Current Saturn Position</h3>
+                <h3 className="font-semibold text-blue-800 mb-2">{t('calculator.sadeSati.currentPosition', 'Current Saturn Position')}</h3>
                 <p className="text-sm text-blue-700">
-                  Saturn is currently transiting <strong>Pisces</strong> (March 2025 - June 2028).
-                  Moon Signs Aquarius, Pisces, and Aries are under Sade Sati influence.
+                  {t('calculator.sadeSati.currentPositionDesc', 'Saturn is currently transiting Pisces (March 2025 - June 2028). Moon Signs Aquarius, Pisces, and Aries are under Sade Sati influence.')}
                 </p>
               </div>
             </CardContent>
@@ -304,12 +303,12 @@ export default function SadeSatiCalculatorPage() {
                   {result.isInSadeSati ? (
                     <>
                       <AlertCircle className="w-6 h-6 text-blue-600" />
-                      Sade Sati Active
+                      {t('calculator.sadeSati.active', 'Sade Sati Active')}
                     </>
                   ) : (
                     <>
                       <CheckCircle className="w-6 h-6 text-green-600" />
-                      Sade Sati Not Active
+                      {t('calculator.sadeSati.notActive', 'Sade Sati Not Active')}
                     </>
                   )}
                 </CardTitle>
@@ -318,11 +317,11 @@ export default function SadeSatiCalculatorPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600">Your Moon Sign</p>
+                      <p className="text-sm text-gray-600">{t('calculator.sadeSati.yourMoonSign', 'Your Moon Sign')}</p>
                       <p className="text-xl font-bold text-blue-700">{result.moonSign}</p>
                     </div>
                     <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600">Saturn in</p>
+                      <p className="text-sm text-gray-600">{t('calculator.sadeSati.saturnIn', 'Saturn in')}</p>
                       <p className="text-xl font-bold text-blue-700">{result.currentSaturnSign}</p>
                     </div>
                   </div>
@@ -331,7 +330,7 @@ export default function SadeSatiCalculatorPage() {
                     <>
                       <div className="bg-white rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-gray-900">Current Phase</h3>
+                          <h3 className="font-semibold text-gray-900">{t('calculator.sadeSati.currentPhase', 'Current Phase')}</h3>
                           <Badge className={
                             result.phase === "Peak (2nd Phase)" ? "bg-red-500" :
                             result.phase === "Rising (1st Phase)" ? "bg-orange-500" :
@@ -354,7 +353,7 @@ export default function SadeSatiCalculatorPage() {
                       </div>
 
                       <div className="bg-white rounded-lg p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2">Effects During This Phase</h3>
+                        <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.sadeSati.effects', 'Effects During This Phase')}</h3>
                         <ul className="text-sm text-gray-700 space-y-2">
                           {result.effects.map((effect, i) => (
                             <li key={i} className="flex items-start gap-2">
@@ -366,7 +365,7 @@ export default function SadeSatiCalculatorPage() {
                       </div>
 
                       <div className="bg-amber-50 rounded-lg p-4">
-                        <h3 className="font-semibold text-amber-800 mb-2">Recommended Remedies</h3>
+                        <h3 className="font-semibold text-amber-800 mb-2">{t('calculator.sadeSati.recommendedRemedies', 'Recommended Remedies')}</h3>
                         <ul className="text-sm text-amber-700 space-y-2">
                           {result.remedies.map((remedy, i) => (
                             <li key={i} className="flex items-start gap-2">
@@ -380,7 +379,7 @@ export default function SadeSatiCalculatorPage() {
                   )}
 
                   <div className="bg-indigo-50 rounded-lg p-4">
-                    <h3 className="font-semibold text-indigo-800 mb-2">Guidance</h3>
+                    <h3 className="font-semibold text-indigo-800 mb-2">{t('calculator.sadeSati.guidance', 'Guidance')}</h3>
                     <p className="text-sm text-indigo-700">{result.advice}</p>
                   </div>
                 </div>
@@ -393,11 +392,10 @@ export default function SadeSatiCalculatorPage() {
                   <Moon className="w-12 h-12 text-blue-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Sade Sati Status Will Appear Here
+                  {t('calculator.sadeSati.resultPlaceholder', 'Your Sade Sati Status Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details and click &quot;Check Sade Sati Status&quot; to 
-                  analyze Saturn&apos;s influence on your Moon Sign.
+                  {t('calculator.sadeSati.resultPlaceholderDesc', 'Enter your birth details and click "Check Sade Sati Status" to analyze Saturn\'s influence on your Moon Sign.')}
                 </p>
               </CardContent>
             </Card>
@@ -406,9 +404,9 @@ export default function SadeSatiCalculatorPage() {
 
         <Card className="border-blue-200 mt-8">
           <CardHeader>
-            <CardTitle>Sade Sati Timeline by Moon Sign</CardTitle>
+            <CardTitle>{t('calculator.sadeSati.timelineTitle', 'Sade Sati Timeline by Moon Sign')}</CardTitle>
             <CardDescription>
-              When each Moon Sign will experience Sade Sati based on Saturn&apos;s transit
+              {t('calculator.sadeSati.timelineDesc', "When each Moon Sign will experience Sade Sati based on Saturn's transit")}
             </CardDescription>
           </CardHeader>
           <CardContent>

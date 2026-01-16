@@ -297,11 +297,11 @@ export default function HoroscopeMatchingPage() {
                       <div className="w-16 h-16 mx-auto rounded-full bg-pink-100 flex items-center justify-center mb-2">
                         <Heart className="w-8 h-8 text-pink-500" />
                       </div>
-                      <h2 className="text-xl font-semibold text-gray-900">Bride Details</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">{t('calculator.matching.brideDetails', 'Bride Details')}</h2>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="brideNakshatra">Birth Nakshatra (Janma Nakshatra)</Label>
+                      <Label htmlFor="brideNakshatra">{t('calculator.matching.birthNakshatra', 'Birth Nakshatra (Janma Nakshatra)')}</Label>
                       <select
                         id="brideNakshatra"
                         value={brideNakshatra}
@@ -309,7 +309,7 @@ export default function HoroscopeMatchingPage() {
                         className="w-full rounded-md border border-gray-300 p-2 focus:border-pink-500 focus:ring-pink-500"
                         required
                       >
-                        <option value="">Select Nakshatra</option>
+                        <option value="">{t('calculator.matching.selectNakshatra', 'Select Nakshatra')}</option>
                         {nakshatras.map((n) => (
                           <option key={n} value={n}>{n}</option>
                         ))}
@@ -317,7 +317,7 @@ export default function HoroscopeMatchingPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="brideRashi">Moon Sign (Rashi)</Label>
+                      <Label htmlFor="brideRashi">{t('calculator.matching.moonSign', 'Moon Sign (Rashi)')}</Label>
                       <select
                         id="brideRashi"
                         value={brideRashi}
@@ -325,7 +325,7 @@ export default function HoroscopeMatchingPage() {
                         className="w-full rounded-md border border-gray-300 p-2 focus:border-pink-500 focus:ring-pink-500"
                         required
                       >
-                        <option value="">Select Rashi</option>
+                        <option value="">{t('calculator.matching.selectRashi', 'Select Rashi')}</option>
                         {rashis.map((r) => (
                           <option key={r} value={r}>{r}</option>
                         ))}
@@ -338,11 +338,11 @@ export default function HoroscopeMatchingPage() {
                       <div className="w-16 h-16 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-2">
                         <Users className="w-8 h-8 text-blue-500" />
                       </div>
-                      <h2 className="text-xl font-semibold text-gray-900">Groom Details</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">{t('calculator.matching.groomDetails', 'Groom Details')}</h2>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="groomNakshatra">Birth Nakshatra (Janma Nakshatra)</Label>
+                      <Label htmlFor="groomNakshatra">{t('calculator.matching.birthNakshatra', 'Birth Nakshatra (Janma Nakshatra)')}</Label>
                       <select
                         id="groomNakshatra"
                         value={groomNakshatra}
@@ -350,7 +350,7 @@ export default function HoroscopeMatchingPage() {
                         className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
                         required
                       >
-                        <option value="">Select Nakshatra</option>
+                        <option value="">{t('calculator.matching.selectNakshatra', 'Select Nakshatra')}</option>
                         {nakshatras.map((n) => (
                           <option key={n} value={n}>{n}</option>
                         ))}
@@ -358,7 +358,7 @@ export default function HoroscopeMatchingPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="groomRashi">Moon Sign (Rashi)</Label>
+                      <Label htmlFor="groomRashi">{t('calculator.matching.moonSign', 'Moon Sign (Rashi)')}</Label>
                       <select
                         id="groomRashi"
                         value={groomRashi}
@@ -366,7 +366,7 @@ export default function HoroscopeMatchingPage() {
                         className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
                         required
                       >
-                        <option value="">Select Rashi</option>
+                        <option value="">{t('calculator.matching.selectRashi', 'Select Rashi')}</option>
                         {rashis.map((r) => (
                           <option key={r} value={r}>{r}</option>
                         ))}
@@ -378,7 +378,7 @@ export default function HoroscopeMatchingPage() {
                 <div className="mt-8 text-center">
                   <Button type="submit" size="lg" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8">
                     <Heart className="w-5 h-5 mr-2" />
-                    Check Compatibility
+                    {t('calculator.matching.checkCompatibility', 'Check Compatibility')}
                   </Button>
                 </div>
               </form>
@@ -424,7 +424,7 @@ export default function HoroscopeMatchingPage() {
               <CardContent className="pt-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-600" />
-                  Ashtakoot Guna Analysis (8 Gunas)
+                  {t('calculator.matching.gunaAnalysis', 'Ashtakoot Guna Analysis (8 Gunas)')}
                 </h3>
                 <div className="space-y-3">
                   {result.gunas.map((guna) => (
@@ -455,7 +455,7 @@ export default function HoroscopeMatchingPage() {
               <CardContent className="pt-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-red-600" />
-                  Dosha Analysis
+                  {t('calculator.matching.doshaAnalysis', 'Dosha Analysis')}
                 </h3>
                 <div className="space-y-3">
                   {result.doshas.map((dosha) => (
@@ -485,11 +485,11 @@ export default function HoroscopeMatchingPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button onClick={resetForm} variant="outline" className="border-gray-300">
-                Check Another Match
+                {t('calculator.matching.checkAnother', 'Check Another Match')}
               </Button>
               <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
                 <Link href="/consultation">
-                  Consult an Expert
+                  {t('consultation.consultExpert', 'Consult an Expert')}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
               </Button>
@@ -513,7 +513,7 @@ export default function HoroscopeMatchingPage() {
         <section className="mt-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Understanding Kundli Milan
+              {t('calculator.matching.understandingTitle', 'Understanding Kundli Milan')}
             </h2>
           </div>
 
@@ -523,7 +523,7 @@ export default function HoroscopeMatchingPage() {
                 <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-3">
                   <span className="text-xl font-bold text-amber-600">36</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Maximum Points</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.maxPoints', 'Maximum Points')}</h3>
                 <p className="text-sm text-gray-600">
                   The Ashtakoot system has a maximum of 36 points across 8 Gunas.
                 </p>
@@ -535,7 +535,7 @@ export default function HoroscopeMatchingPage() {
                 <div className="w-12 h-12 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-3">
                   <span className="text-xl font-bold text-green-600">18+</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Minimum Required</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.minRequired', 'Minimum Required')}</h3>
                 <p className="text-sm text-gray-600">
                   At least 18 points (50%) is traditionally considered acceptable for marriage.
                 </p>
@@ -547,7 +547,7 @@ export default function HoroscopeMatchingPage() {
                 <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-3">
                   <span className="text-xl font-bold text-blue-600">8</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Gunas Analyzed</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.gunasAnalyzed', 'Gunas Analyzed')}</h3>
                 <p className="text-sm text-gray-600">
                   Eight aspects of compatibility are analyzed: Varna, Vashya, Tara, Yoni, Graha, Gana, Bhakoot, Nadi.
                 </p>
@@ -559,7 +559,7 @@ export default function HoroscopeMatchingPage() {
                 <div className="w-12 h-12 mx-auto rounded-full bg-pink-100 flex items-center justify-center mb-3">
                   <Heart className="w-6 h-6 text-pink-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Nadi is Crucial</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.nadiCrucial', 'Nadi is Crucial')}</h3>
                 <p className="text-sm text-gray-600">
                   Nadi Dosha (0 points in Nadi) is considered serious and requires remedies.
                 </p>

@@ -249,11 +249,9 @@ export default function MangalDoshCalculatorPage() {
               </Button>
 
               <div className="mt-6 pt-6 border-t">
-                <h3 className="font-semibold text-gray-900 mb-3">What is Mangal Dosha?</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{t('calculator.mangalDosh.whatIs', 'What is Mangal Dosha?')}</h3>
                 <p className="text-sm text-gray-600">
-                  Mangal Dosha occurs when Mars (Mangal) is placed in the 1st, 2nd, 4th, 7th, 
-                  8th, or 12th house from Lagna, Moon, or Venus. It is believed to affect 
-                  marriage and relationships.
+                  {t('calculator.mangalDosh.whatIsDesc', 'Mangal Dosha occurs when Mars (Mangal) is placed in the 1st, 2nd, 4th, 7th, 8th, or 12th house from Lagna, Moon, or Venus. It is believed to affect marriage and relationships.')}
                 </p>
               </div>
             </CardContent>
@@ -266,12 +264,12 @@ export default function MangalDoshCalculatorPage() {
                   {result.hasMangalDosh ? (
                     <>
                       <XCircle className="w-6 h-6 text-red-600" />
-                      Mangal Dosha Detected
+                      {t('calculator.mangalDosh.detected', 'Mangal Dosha Detected')}
                     </>
                   ) : (
                     <>
                       <CheckCircle className="w-6 h-6 text-green-600" />
-                      No Mangal Dosha
+                      {t('calculator.mangalDosh.notDetected', 'No Mangal Dosha')}
                     </>
                   )}
                 </CardTitle>
@@ -280,11 +278,11 @@ export default function MangalDoshCalculatorPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600">Mars House</p>
+                      <p className="text-sm text-gray-600">{t('calculator.mangalDosh.marsHouse', 'Mars House')}</p>
                       <p className="text-2xl font-bold text-red-700">{result.marsHouse}</p>
                     </div>
                     <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600">Mars Sign</p>
+                      <p className="text-sm text-gray-600">{t('calculator.mangalDosh.marsSign', 'Mars Sign')}</p>
                       <p className="text-2xl font-bold text-red-700">{result.marsSign}</p>
                     </div>
                   </div>
@@ -293,7 +291,7 @@ export default function MangalDoshCalculatorPage() {
                     <>
                       <div className="bg-white rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-gray-900">Severity Level</h3>
+                          <h3 className="font-semibold text-gray-900">{t('calculator.mangalDosh.severityLevel', 'Severity Level')}</h3>
                           <Badge className={
                             result.severity === "Severe" ? "bg-red-500" :
                             result.severity === "Moderate" ? "bg-orange-500" :
@@ -312,7 +310,7 @@ export default function MangalDoshCalculatorPage() {
                       </div>
 
                       <div className="bg-white rounded-lg p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2">Affected Life Areas</h3>
+                        <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.mangalDosh.affectedAreas', 'Affected Life Areas')}</h3>
                         <div className="flex flex-wrap gap-2">
                           {result.affectedAreas.map((area) => (
                             <Badge key={area} variant="secondary" className="bg-red-100 text-red-700">
@@ -326,7 +324,7 @@ export default function MangalDoshCalculatorPage() {
                         <div className="bg-green-100 rounded-lg p-4">
                           <h3 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
                             <Shield className="w-4 h-4" />
-                            Cancellation Factors Found
+                            {t('calculator.mangalDosh.cancellationFactors', 'Cancellation Factors Found')}
                           </h3>
                           <ul className="text-sm text-green-700 space-y-1">
                             {result.cancellations.map((c, i) => (
@@ -337,7 +335,7 @@ export default function MangalDoshCalculatorPage() {
                       )}
 
                       <div className="bg-amber-50 rounded-lg p-4">
-                        <h3 className="font-semibold text-amber-800 mb-2">Recommended Remedies</h3>
+                        <h3 className="font-semibold text-amber-800 mb-2">{t('calculator.mangalDosh.recommendedRemedies', 'Recommended Remedies')}</h3>
                         <ul className="text-sm text-amber-700 space-y-2">
                           {result.remedies.map((remedy, i) => (
                             <li key={i} className="flex items-start gap-2">
@@ -351,7 +349,7 @@ export default function MangalDoshCalculatorPage() {
                   )}
 
                   <div className="bg-blue-50 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-800 mb-2">Marriage Advice</h3>
+                    <h3 className="font-semibold text-blue-800 mb-2">{t('calculator.mangalDosh.marriageAdvice', 'Marriage Advice')}</h3>
                     <p className="text-sm text-blue-700">{result.marriageAdvice}</p>
                   </div>
                 </div>
@@ -364,11 +362,10 @@ export default function MangalDoshCalculatorPage() {
                   <AlertTriangle className="w-12 h-12 text-red-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Mangal Dosh Result Will Appear Here
+                  {t('calculator.mangalDosh.resultPlaceholder', 'Your Mangal Dosh Result Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details and click &quot;Check Mangal Dosh&quot; to analyze 
-                  Mars placement in your chart.
+                  {t('calculator.mangalDosh.resultPlaceholderDesc', 'Enter your birth details and click "Check Mangal Dosh" to analyze Mars placement in your chart.')}
                 </p>
               </CardContent>
             </Card>
@@ -377,9 +374,9 @@ export default function MangalDoshCalculatorPage() {
 
         <Card className="border-amber-200 mt-8">
           <CardHeader>
-            <CardTitle>Mangal Dosha Cancellation Conditions</CardTitle>
+            <CardTitle>{t('calculator.mangalDosh.cancellationTitle', 'Mangal Dosha Cancellation Conditions')}</CardTitle>
             <CardDescription>
-              These factors can reduce or cancel the effects of Mangal Dosha
+              {t('calculator.mangalDosh.cancellationDesc', 'These factors can reduce or cancel the effects of Mangal Dosha')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -397,13 +394,13 @@ export default function MangalDoshCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Horoscope Matching</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.horoscopeMatching.title', 'Horoscope Matching')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Complete Kundli matching with Guna Milan.
+                {t('calculator.horoscopeMatching.shortDesc', 'Complete Kundli matching with Guna Milan.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/horoscope-matching">
-                  Match Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.horoscopeMatching.matchKundli', 'Match Kundli')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>

@@ -161,7 +161,7 @@ export default function KaalSarpDoshPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-purple-600" />
-              What is Kaal Sarp Dosh?
+              {t('dosha.kaalSarp.whatIs', 'What is Kaal Sarp Dosh?')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -188,7 +188,7 @@ export default function KaalSarpDoshPage() {
 
         <Card className="border-red-200 mb-8">
           <CardHeader>
-            <CardTitle className="text-red-800">General Effects of Kaal Sarp Dosh</CardTitle>
+            <CardTitle className="text-red-800">{t('dosha.kaalSarp.generalEffects', 'General Effects of Kaal Sarp Dosh')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-3">
@@ -202,7 +202,7 @@ export default function KaalSarpDoshPage() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">12 Types of Kaal Sarp Dosh</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.kaalSarp.types', '12 Types of Kaal Sarp Dosh')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {kaalSarpTypes.map((type) => (
@@ -230,12 +230,12 @@ export default function KaalSarpDoshPage() {
           ))}
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Remedies for Kaal Sarp Dosh</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.kaalSarp.remedies', 'Remedies for Kaal Sarp Dosh')}</h2>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card className="border-amber-200">
             <CardHeader className="bg-amber-50">
-              <CardTitle className="text-amber-800">Puja & Rituals</CardTitle>
+              <CardTitle className="text-amber-800">{t('dosha.pujaRituals', 'Puja & Rituals')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -251,7 +251,7 @@ export default function KaalSarpDoshPage() {
 
           <Card className="border-purple-200">
             <CardHeader className="bg-purple-50">
-              <CardTitle className="text-purple-800">Mantras & Chanting</CardTitle>
+              <CardTitle className="text-purple-800">{t('dosha.mantrasChanting', 'Mantras & Chanting')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -267,7 +267,7 @@ export default function KaalSarpDoshPage() {
 
           <Card className="border-blue-200">
             <CardHeader className="bg-blue-50">
-              <CardTitle className="text-blue-800">Donations & Charity</CardTitle>
+              <CardTitle className="text-blue-800">{t('dosha.donationsCharity', 'Donations & Charity')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -283,7 +283,7 @@ export default function KaalSarpDoshPage() {
 
           <Card className="border-green-200">
             <CardHeader className="bg-green-50">
-              <CardTitle className="text-green-800">Gemstones & Lifestyle</CardTitle>
+              <CardTitle className="text-green-800">{t('dosha.gemstonesLifestyle', 'Gemstones & Lifestyle')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2">
@@ -300,9 +300,9 @@ export default function KaalSarpDoshPage() {
 
         <Card className="border-indigo-200 mb-8">
           <CardHeader>
-            <CardTitle>Important Temples for Kaal Sarp Dosh</CardTitle>
+            <CardTitle>{t('dosha.kaalSarp.importantTemples', 'Important Temples for Kaal Sarp Dosh')}</CardTitle>
             <CardDescription>
-              Visit these temples for Kaal Sarp Dosh Nivaran Puja
+              {t('dosha.kaalSarp.templesDesc', 'Visit these temples for Kaal Sarp Dosh Nivaran Puja')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -338,13 +338,13 @@ export default function KaalSarpDoshPage() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Full Kundli Analysis</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.fullKundliAnalysis', 'Full Kundli Analysis')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Generate your birth chart to check for Kaal Sarp Dosh.
+                {t('dosha.kaalSarp.kundliDesc', 'Generate your birth chart to check for Kaal Sarp Dosh.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/kundli-calculator">
-                  Generate Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.generateKundli', 'Generate Kundli')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -352,13 +352,13 @@ export default function KaalSarpDoshPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Other Doshas</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('dosha.otherDoshas', 'Other Doshas')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Learn about Mangal Dosh and Sade Sati.
+                {t('dosha.otherDoshasDesc', 'Learn about Mangal Dosh and Sade Sati.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/doshas/mangal-dosh">
-                  View Doshas <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('dosha.viewDoshas', 'View Doshas')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -366,13 +366,13 @@ export default function KaalSarpDoshPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Consult an Astrologer</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('consultation.consultAstrologer', 'Consult an Astrologer')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get personalized guidance from experts.
+                {t('consultation.personalizedGuidance', 'Get personalized guidance from experts.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/consultation">
-                  Book Consultation <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('consultation.bookConsultation', 'Book Consultation')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>

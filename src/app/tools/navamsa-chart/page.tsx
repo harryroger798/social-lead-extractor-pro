@@ -278,12 +278,9 @@ export default function NavamsaChartPage() {
               </form>
 
               <div className="mt-6 p-4 bg-amber-50 rounded-lg">
-                <h3 className="font-semibold text-amber-900 mb-2">Why Navamsa is Important</h3>
+                <h3 className="font-semibold text-amber-900 mb-2">{t('calculator.navamsa.whyImportant', 'Why Navamsa is Important')}</h3>
                 <p className="text-sm text-amber-800">
-                  The Navamsa chart (D-9) is considered the second most important chart after 
-                  the birth chart. It reveals the true strength of planets and is essential 
-                  for marriage predictions, understanding spouse characteristics, and 
-                  assessing spiritual development.
+                  {t('calculator.navamsa.whyImportantDesc', 'The Navamsa chart (D-9) is considered the second most important chart after the birth chart. It reveals the true strength of planets and is essential for marriage predictions, understanding spouse characteristics, and assessing spiritual development.')}
                 </p>
               </div>
             </CardContent>
@@ -334,11 +331,10 @@ export default function NavamsaChartPage() {
               <CardContent className="text-center py-12">
                 <Grid3X3 className="w-16 h-16 text-amber-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  Enter Your Birth Details
+                  {t('calculator.enterBirthDetails', 'Enter Your Birth Details')}
                 </h3>
                 <p className="text-gray-500 max-w-sm">
-                  Fill in the form to calculate your Navamsa and other divisional charts 
-                  for deeper astrological insights.
+                  {t('calculator.navamsa.resultPlaceholderDesc', 'Fill in the form to calculate your Navamsa and other divisional charts for deeper astrological insights.')}
                 </p>
               </CardContent>
             </Card>

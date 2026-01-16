@@ -691,17 +691,17 @@ export default function NakshatraFinderPage() {
                   className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
                   disabled={isCalculating}
                 >
-                  {isCalculating ? (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                      Finding...
-                    </>
-                  ) : (
-                    <>
-                      <Moon className="w-4 h-4 mr-2" />
-                      Find My Nakshatra
-                    </>
-                  )}
+                    {isCalculating ? (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                        {t('calculator.calculating', 'Finding...')}
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="w-4 h-4 mr-2" />
+                        {t('calculator.nakshatra.find', 'Find My Nakshatra')}
+                      </>
+                    )}
                 </Button>
               </form>
             </CardContent>
@@ -712,7 +712,7 @@ export default function NakshatraFinderPage() {
               <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Badge className="mb-2 bg-amber-100 text-amber-800">Your Nakshatra</Badge>
+                    <Badge className="mb-2 bg-amber-100 text-amber-800">{t('calculator.nakshatra.yourNakshatra', 'Your Nakshatra')}</Badge>
                     <CardTitle className="text-2xl flex items-center gap-2">
                       <Star className="w-6 h-6 text-amber-600" />
                       {nakshatra.name}
@@ -727,25 +727,25 @@ export default function NakshatraFinderPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Deity</div>
+                      <div className="text-sm text-gray-600">{t('calculator.nakshatra.deity', 'Deity')}</div>
                       <div className="font-medium">{nakshatra.deity}</div>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Symbol</div>
+                      <div className="text-sm text-gray-600">{t('calculator.nakshatra.symbol', 'Symbol')}</div>
                       <div className="font-medium">{nakshatra.symbol}</div>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Gana (Nature)</div>
+                      <div className="text-sm text-gray-600">{t('calculator.nakshatra.gana', 'Gana (Nature)')}</div>
                       <div className="font-medium">{nakshatra.gana}</div>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Element</div>
+                      <div className="text-sm text-gray-600">{t('calculator.nakshatra.element', 'Element')}</div>
                       <div className="font-medium">{nakshatra.element}</div>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Key Characteristics</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">{t('calculator.nakshatra.characteristics', 'Key Characteristics')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {nakshatra.characteristics.map((char) => (
                         <Badge key={char} variant="outline" className="bg-amber-50">
@@ -764,10 +764,10 @@ export default function NakshatraFinderPage() {
                   <Moon className="w-12 h-12 text-amber-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Nakshatra Will Appear Here
+                  {t('calculator.nakshatra.resultPlaceholder', 'Your Nakshatra Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details to discover your Nakshatra and its influence on your life.
+                  {t('calculator.nakshatra.resultPlaceholderDesc', 'Enter your birth details to discover your Nakshatra and its influence on your life.')}
                 </p>
               </CardContent>
             </Card>
@@ -780,7 +780,7 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Star className="w-5 h-5 text-green-600" />
-                  Strengths
+                  {t('calculator.nakshatra.strengths', 'Strengths')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -799,7 +799,7 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-amber-600" />
-                  Challenges
+                  {t('calculator.nakshatra.challenges', 'Challenges')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -818,7 +818,7 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Heart className="w-5 h-5 text-pink-600" />
-                  Compatible Nakshatras
+                  {t('calculator.nakshatra.compatibility', 'Compatible Nakshatras')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -836,21 +836,21 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Gem className="w-5 h-5 text-purple-600" />
-                  Lucky Elements
+                  {t('calculator.nakshatra.luckyElements', 'Lucky Elements')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Gemstone</span>
+                    <span className="text-gray-600">{t('calculator.nakshatra.gemstone', 'Gemstone')}</span>
                     <span className="font-medium">{nakshatra.gemstone}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Lucky Number</span>
+                    <span className="text-gray-600">{t('calculator.nakshatra.luckyNumber', 'Lucky Number')}</span>
                     <span className="font-medium">{nakshatra.luckyNumber}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Lucky Day</span>
+                    <span className="text-gray-600">{t('calculator.nakshatra.luckyDay', 'Lucky Day')}</span>
                     <span className="font-medium">{nakshatra.luckyDay}</span>
                   </div>
                 </div>
@@ -861,7 +861,7 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Palette className="w-5 h-5 text-blue-600" />
-                  Lucky Color
+                  {t('calculator.nakshatra.luckyColor', 'Lucky Color')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -879,13 +879,13 @@ export default function NakshatraFinderPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Star className="w-5 h-5 text-orange-600" />
-                  Sacred Mantra
+                  {t('calculator.nakshatra.sacredMantra', 'Sacred Mantra')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-amber-700 font-medium italic">{nakshatra.mantra}</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  Chant 108 times daily for best results
+                  {t('calculator.nakshatra.mantraNote', 'Chant 108 times daily for best results')}
                 </p>
               </CardContent>
             </Card>
@@ -894,7 +894,7 @@ export default function NakshatraFinderPage() {
 
         <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Understanding Nakshatras
+            {t('calculator.nakshatra.understandingTitle', 'Understanding Nakshatras')}
           </h2>
           <div className="prose prose-amber max-w-none">
             <p className="text-gray-700 mb-4">

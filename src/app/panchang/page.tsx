@@ -309,15 +309,15 @@ export default function PanchangPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Paksha</span>
+                      <span className="text-gray-600">{t('panchang.paksha', 'Paksha')}</span>
                       <span className="font-medium">{panchang.paksha}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Lucky Color</span>
+                      <span className="text-gray-600">{t('panchang.luckyColor', 'Lucky Color')}</span>
                       <span className="font-medium">{weekdayInfo?.color}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Ruling Deity</span>
+                      <span className="text-gray-600">{t('panchang.rulingDeity', 'Ruling Deity')}</span>
                       <span className="font-medium">{weekdayInfo?.deity}</span>
                     </div>
                   </div>
@@ -607,7 +607,7 @@ export default function PanchangPage() {
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Panchang - The Hindu Almanac
+              {t('panchang.understandingTitle', 'Understanding Panchang - The Hindu Almanac')}
             </h2>
             <div className="prose prose-amber max-w-none">
               <p className="text-gray-700 mb-4">

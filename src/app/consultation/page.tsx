@@ -179,7 +179,7 @@ export default function ConsultationPage() {
             >
               {type.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-amber-500 text-white">Most Popular</Badge>
+                  <Badge className="bg-amber-500 text-white">{t('consultation.mostPopular', 'Most Popular')}</Badge>
                 </div>
               )}
               <CardHeader>
@@ -220,7 +220,7 @@ export default function ConsultationPage() {
                   className={`w-full ${type.popular ? "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700" : ""}`}
                   variant={type.popular ? "default" : "outline"}
                 >
-                  Book Now
+                  {t('consultation.bookNow', 'Book Now')}
                 </Button>
               </CardContent>
             </Card>
@@ -230,10 +230,10 @@ export default function ConsultationPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Our Expert Astrologers
+              {t('consultation.ourExperts', 'Our Expert Astrologers')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              All our astrologers are verified experts with extensive experience in Vedic astrology.
+              {t('consultation.ourExpertsDesc', 'All our astrologers are verified experts with extensive experience in Vedic astrology.')}
             </p>
           </div>
           
@@ -263,11 +263,11 @@ export default function ConsultationPage() {
                         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                         <span className="font-semibold">{astrologer.rating}</span>
                       </div>
-                      <p className="text-xs text-gray-500">Rating</p>
+                      <p className="text-xs text-gray-500">{t('consultation.rating', 'Rating')}</p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-2 text-center">
                       <div className="font-semibold">{astrologer.experience}</div>
-                      <p className="text-xs text-gray-500">Experience</p>
+                      <p className="text-xs text-gray-500">{t('consultation.experience', 'Experience')}</p>
                     </div>
                   </div>
                   
@@ -288,7 +288,7 @@ export default function ConsultationPage() {
                   
                   <Button className="w-full" variant="outline">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Book Consultation
+                    {t('consultation.bookConsultation', 'Book Consultation')}
                   </Button>
                 </CardContent>
               </Card>
@@ -299,10 +299,10 @@ export default function ConsultationPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Consultation Topics
+              {t('consultation.topics', 'Consultation Topics')}
             </h2>
             <p className="text-gray-600">
-              Get expert guidance on any aspect of your life
+              {t('consultation.topicsDesc', 'Get expert guidance on any aspect of your life')}
             </p>
           </div>
           
@@ -322,7 +322,7 @@ export default function ConsultationPage() {
         <section className="mb-16 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Why Choose VedicStarAstro?
+              {t('consultation.whyChoose', 'Why Choose VedicStarAstro?')}
             </h2>
           </div>
           
@@ -347,7 +347,7 @@ export default function ConsultationPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Client Testimonials
+              {t('consultation.testimonials', 'Client Testimonials')}
             </h2>
           </div>
           
@@ -380,7 +380,7 @@ export default function ConsultationPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Frequently Asked Questions
+              {t('consultation.faq', 'Frequently Asked Questions')}
             </h2>
           </div>
           
@@ -398,16 +398,16 @@ export default function ConsultationPage() {
 
         <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Ready to Get Started?</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('consultation.readyToStart', 'Ready to Get Started?')}</h2>
             <p className="mb-4 text-amber-100">
-              Book your consultation now and get clarity on your life&apos;s important questions.
+              {t('consultation.readyToStartDesc', "Book your consultation now and get clarity on your life's important questions.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50">
-                Book Consultation Now
+                {t('consultation.bookNowBtn', 'Book Consultation Now')}
               </Button>
                             <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/tools/kundli-calculator">Try Free Kundli First</Link>
+                              <Link href="/tools/kundli-calculator">{t('consultation.tryFreeKundli', 'Try Free Kundli First')}</Link>
                             </Button>
             </div>
           </CardContent>

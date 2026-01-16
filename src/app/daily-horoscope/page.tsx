@@ -181,12 +181,12 @@ export default function DailyHoroscopePage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Daily Horoscope</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('horoscope.dailyHoroscope', 'Daily Horoscope')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Today&apos;s Horoscope
+            {t('horoscope.todaysHoroscope', "Today's Horoscope")}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-2">
-            Discover what the stars have in store for you today. Select your zodiac sign below.
+            {t('horoscope.selectZodiacDesc', 'Discover what the stars have in store for you today. Select your zodiac sign below.')}
           </p>
           <p className="text-amber-600 font-medium flex items-center justify-center gap-2">
             <Calendar className="w-5 h-5" />
@@ -245,7 +245,7 @@ export default function DailyHoroscopePage() {
                         />
                       ))}
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">Today&apos;s Rating</p>
+                    <p className="text-sm text-gray-600 mt-1">{t('horoscope.todaysRating', "Today's Rating")}</p>
                   </div>
                 </div>
 
@@ -263,7 +263,7 @@ export default function DailyHoroscopePage() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Sun className="w-5 h-5 text-amber-600" />
-                    <h3 className="font-semibold text-gray-900">Overall</h3>
+                    <h3 className="font-semibold text-gray-900">{t('horoscope.overall', 'Overall')}</h3>
                   </div>
                   <p className="text-gray-700">{horoscope.overall}</p>
                 </div>
@@ -275,7 +275,7 @@ export default function DailyHoroscopePage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 mb-3">
                     <Heart className="w-5 h-5 text-pink-500" />
-                    <h3 className="font-semibold text-gray-900">Love & Relationships</h3>
+                    <h3 className="font-semibold text-gray-900">{t('horoscope.loveRelationships', 'Love & Relationships')}</h3>
                   </div>
                   <p className="text-gray-700">{horoscope.love}</p>
                 </CardContent>
@@ -285,7 +285,7 @@ export default function DailyHoroscopePage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 mb-3">
                     <Briefcase className="w-5 h-5 text-blue-500" />
-                    <h3 className="font-semibold text-gray-900">Career & Work</h3>
+                    <h3 className="font-semibold text-gray-900">{t('horoscope.careerWork', 'Career & Work')}</h3>
                   </div>
                   <p className="text-gray-700">{horoscope.career}</p>
                 </CardContent>
@@ -295,7 +295,7 @@ export default function DailyHoroscopePage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 mb-3">
                     <DollarSign className="w-5 h-5 text-green-500" />
-                    <h3 className="font-semibold text-gray-900">Finance & Money</h3>
+                    <h3 className="font-semibold text-gray-900">{t('horoscope.financeMoney', 'Finance & Money')}</h3>
                   </div>
                   <p className="text-gray-700">{horoscope.finance}</p>
                 </CardContent>
@@ -305,7 +305,7 @@ export default function DailyHoroscopePage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 mb-3">
                     <Activity className="w-5 h-5 text-red-500" />
-                    <h3 className="font-semibold text-gray-900">Health & Wellness</h3>
+                    <h3 className="font-semibold text-gray-900">{t('horoscope.healthWellness', 'Health & Wellness')}</h3>
                   </div>
                   <p className="text-gray-700">{horoscope.health}</p>
                 </CardContent>

@@ -269,7 +269,7 @@ export default function LoveCalculatorPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-center justify-center">
                   <Heart className="w-6 h-6 text-pink-600" />
-                  Love Compatibility Result
+                  {t('calculator.love.result', 'Love Compatibility Result')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -302,32 +302,32 @@ export default function LoveCalculatorPage() {
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3">Compatibility Aspects</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('calculator.love.compatibilityAspects', 'Compatibility Aspects')}</h3>
                     <div className="space-y-3">
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Emotional Connection</span>
+                          <span>{t('calculator.love.emotionalConnection', 'Emotional Connection')}</span>
                           <span>{result.aspects.emotional}%</span>
                         </div>
                         <Progress value={result.aspects.emotional} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Intellectual Bond</span>
+                          <span>{t('calculator.love.intellectualBond', 'Intellectual Bond')}</span>
                           <span>{result.aspects.intellectual}%</span>
                         </div>
                         <Progress value={result.aspects.intellectual} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Physical Chemistry</span>
+                          <span>{t('calculator.love.physicalChemistry', 'Physical Chemistry')}</span>
                           <span>{result.aspects.physical}%</span>
                         </div>
                         <Progress value={result.aspects.physical} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Spiritual Harmony</span>
+                          <span>{t('calculator.love.spiritualHarmony', 'Spiritual Harmony')}</span>
                           <span>{result.aspects.spiritual}%</span>
                         </div>
                         <Progress value={result.aspects.spiritual} className="h-2" />
@@ -338,7 +338,7 @@ export default function LoveCalculatorPage() {
                   <div className="bg-amber-50 rounded-lg p-4">
                     <h3 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
                       <Star className="w-4 h-4" />
-                      Relationship Advice
+                      {t('calculator.love.relationshipAdvice', 'Relationship Advice')}
                     </h3>
                     <p className="text-amber-700">{message.advice}</p>
                   </div>
@@ -352,11 +352,10 @@ export default function LoveCalculatorPage() {
                   <Heart className="w-12 h-12 text-pink-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Love Match Will Appear Here
+                  {t('calculator.love.resultPlaceholder', 'Your Love Match Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter both birth dates and click &quot;Check Compatibility&quot; to discover 
-                  your romantic compatibility score.
+                  {t('calculator.love.resultPlaceholderDesc', 'Enter both birth dates and click "Check Compatibility" to discover your romantic compatibility score.')}
                 </p>
               </CardContent>
             </Card>
@@ -366,13 +365,13 @@ export default function LoveCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Horoscope Matching</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.horoscopeMatching.title', 'Horoscope Matching')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Detailed Kundli matching for marriage compatibility.
+                {t('calculator.horoscopeMatching.shortDesc', 'Detailed Kundli matching for marriage compatibility.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/horoscope-matching">
-                  Match Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.horoscopeMatching.matchKundli', 'Match Kundli')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -380,13 +379,13 @@ export default function LoveCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Mangal Dosh Check</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.mangalDosh.title', 'Mangal Dosh Check')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Check for Manglik Dosha affecting marriage.
+                {t('calculator.mangalDosh.shortDesc', 'Check for Manglik Dosha affecting marriage.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/mangal-dosh-calculator">
-                  Check Dosha <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.mangalDosh.checkDosha', 'Check Dosha')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -394,9 +393,9 @@ export default function LoveCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Love Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.daily.loveTitle', 'Daily Love Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Read today&apos;s love predictions for your sign.
+                {t('horoscope.daily.loveDesc', "Read today's love predictions for your sign.")}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
@@ -410,7 +409,7 @@ export default function LoveCalculatorPage() {
         <Card className="border-pink-200 bg-pink-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Zodiac Love Compatibility
+              {t('calculator.love.understandingTitle', 'Understanding Zodiac Love Compatibility')}
             </h2>
             <div className="prose prose-pink max-w-none">
               <p className="text-gray-700 mb-4">

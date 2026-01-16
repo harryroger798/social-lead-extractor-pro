@@ -190,23 +190,21 @@ export default function MuhurtaCalculatorPage() {
                   {isCalculating ? (
                     <>
                       <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                      Calculating...
+                      {t('calculator.calculating', 'Calculating...')}
                     </>
                   ) : (
                     <>
                       <Calendar className="w-4 h-4 mr-2" />
-                      Check Muhurta
+                      {t('calculator.muhurta.checkMuhurtaBtn', 'Check Muhurta')}
                     </>
                   )}
                 </Button>
               </form>
 
               <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                <h3 className="font-semibold text-green-900 mb-2">What is Muhurta?</h3>
+                <h3 className="font-semibold text-green-900 mb-2">{t('calculator.muhurta.whatIs', 'What is Muhurta?')}</h3>
                 <p className="text-sm text-green-800">
-                  Muhurta is the Vedic science of electional astrology - finding the most 
-                  auspicious time to begin important activities. It considers Tithi (lunar day), 
-                  Nakshatra (lunar mansion), Yoga, and Karana to determine favorable timing.
+                  {t('calculator.muhurta.whatIsDesc', 'Muhurta is the Vedic science of electional astrology - finding the most auspicious time to begin important activities. It considers Tithi (lunar day), Nakshatra (lunar mansion), Yoga, and Karana to determine favorable timing.')}
                 </p>
               </div>
             </CardContent>
@@ -219,7 +217,7 @@ export default function MuhurtaCalculatorPage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5 text-green-600" />
-                      Muhurta Result
+                      {t('calculator.muhurta.result', 'Muhurta Result')}
                     </CardTitle>
                     <Badge className={AUSPICIOUSNESS_COLORS[muhurtaResult.overall_auspiciousness]}>
                       {muhurtaResult.overall_auspiciousness}
@@ -239,7 +237,7 @@ export default function MuhurtaCalculatorPage() {
                     <p className="text-gray-700">{muhurtaResult.recommendation}</p>
                   </div>
 
-                  <h4 className="font-semibold text-gray-900 mb-3">Panchang Details</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">{t('calculator.muhurta.panchangDetails', 'Panchang Details')}</h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 bg-white border rounded-lg">
                       <div>
@@ -280,7 +278,7 @@ export default function MuhurtaCalculatorPage() {
 
               <Card className="border-green-200">
                 <CardHeader>
-                  <CardTitle className="text-lg">Factors Considered</CardTitle>
+                  <CardTitle className="text-lg">{t('calculator.muhurta.factorsConsidered', 'Factors Considered')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm">
@@ -313,11 +311,10 @@ export default function MuhurtaCalculatorPage() {
               <CardContent className="text-center py-12">
                 <Calendar className="w-16 h-16 text-green-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  Select a Date
+                  {t('calculator.muhurta.selectDateTitle', 'Select a Date')}
                 </h3>
                 <p className="text-gray-500 max-w-sm">
-                  Choose a date and event type to check if it&apos;s auspicious 
-                  according to Vedic Muhurta principles.
+                  {t('calculator.muhurta.resultPlaceholderDesc', "Choose a date and event type to check if it's auspicious according to Vedic Muhurta principles.")}
                 </p>
               </CardContent>
             </Card>
@@ -327,45 +324,41 @@ export default function MuhurtaCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Tithi</CardTitle>
+              <CardTitle className="text-lg">{t('panchang.tithi', 'Tithi')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Lunar day based on Moon-Sun angle. Certain tithis are favorable 
-                for specific activities.
+                {t('calculator.muhurta.tithiDesc', 'Lunar day based on Moon-Sun angle. Certain tithis are favorable for specific activities.')}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Nakshatra</CardTitle>
+              <CardTitle className="text-lg">{t('panchang.nakshatra', 'Nakshatra')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Lunar mansion where Moon is placed. Each nakshatra has specific 
-                qualities and suitable activities.
+                {t('calculator.muhurta.nakshatraDesc', 'Lunar mansion where Moon is placed. Each nakshatra has specific qualities and suitable activities.')}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Yoga</CardTitle>
+              <CardTitle className="text-lg">{t('panchang.yoga', 'Yoga')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Combination of Sun and Moon longitudes. 27 yogas indicate 
-                different qualities of time.
+                {t('calculator.muhurta.yogaDesc', 'Combination of Sun and Moon longitudes. 27 yogas indicate different qualities of time.')}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Karana</CardTitle>
+              <CardTitle className="text-lg">{t('panchang.karana', 'Karana')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Half of a tithi. Vishti (Bhadra) karana should be avoided 
-                for auspicious activities.
+                {t('calculator.muhurta.karanaDesc', 'Half of a tithi. Vishti (Bhadra) karana should be avoided for auspicious activities.')}
               </p>
             </CardContent>
           </Card>

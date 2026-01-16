@@ -322,7 +322,7 @@ export default function SunSignCalculatorPage() {
               </Button>
 
               <div className="mt-6 pt-6 border-t">
-                <h3 className="font-semibold text-gray-900 mb-3">Quick Reference</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{t('calculator.sunSignCalc.quickReference', 'Quick Reference')}</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {zodiacDates.map((zodiac) => (
                     <div key={zodiac.sign} className="flex items-center gap-2 text-gray-600">
@@ -341,7 +341,7 @@ export default function SunSignCalculatorPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <span className="text-4xl">{signData.symbol}</span>
-                    Your Sun Sign
+                    {t('calculator.sunSignCalc.yourSunSign', 'Your Sun Sign')}
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <ElementIcon element={signData.element} />
@@ -354,17 +354,17 @@ export default function SunSignCalculatorPage() {
                   <h2 className="text-3xl font-bold text-orange-700">{sunSign}</h2>
                   <p className="text-xl text-gray-600">{signData.hindi}</p>
                   <p className="text-sm text-gray-500">{signData.dates}</p>
-                  <p className="text-sm text-gray-500">Ruled by {signData.ruler} | {signData.quality}</p>
+                  <p className="text-sm text-gray-500">{t('calculator.ruledBy', 'Ruled by')} {signData.ruler} | {signData.quality}</p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">About {sunSign}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.sunSignCalc.about', 'About')} {sunSign}</h3>
                     <p className="text-gray-700">{signData.description}</p>
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Key Traits</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.keyTraits', 'Key Traits')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.traits.map((trait) => (
                         <Badge key={trait} variant="secondary" className="bg-orange-100 text-orange-700">
@@ -376,7 +376,7 @@ export default function SunSignCalculatorPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-green-50 rounded-lg p-3">
-                      <h4 className="font-semibold text-green-800 mb-2">Strengths</h4>
+                      <h4 className="font-semibold text-green-800 mb-2">{t('calculator.strengths', 'Strengths')}</h4>
                       <ul className="text-sm text-green-700 space-y-1">
                         {signData.strengths.slice(0, 4).map((s) => (
                           <li key={s}>• {s}</li>
@@ -384,7 +384,7 @@ export default function SunSignCalculatorPage() {
                       </ul>
                     </div>
                     <div className="bg-red-50 rounded-lg p-3">
-                      <h4 className="font-semibold text-red-800 mb-2">Weaknesses</h4>
+                      <h4 className="font-semibold text-red-800 mb-2">{t('calculator.weaknesses', 'Weaknesses')}</h4>
                       <ul className="text-sm text-red-700 space-y-1">
                         {signData.weaknesses.slice(0, 4).map((w) => (
                           <li key={w}>• {w}</li>
@@ -394,7 +394,7 @@ export default function SunSignCalculatorPage() {
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Best Career Paths</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.sunSignCalc.bestCareerPaths', 'Best Career Paths')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.career.map((c) => (
                         <Badge key={c} variant="outline" className="border-orange-300">
@@ -405,7 +405,7 @@ export default function SunSignCalculatorPage() {
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Compatible Signs</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.compatibleSigns', 'Compatible Signs')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {signData.compatibility.map((sign) => (
                         <Badge key={sign} className="bg-green-100 text-green-700">
@@ -424,11 +424,10 @@ export default function SunSignCalculatorPage() {
                   <Sun className="w-12 h-12 text-orange-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Sun Sign Will Appear Here
+                  {t('calculator.sunSignCalc.resultPlaceholder', 'Your Sun Sign Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth date and click &quot;Find My Sun Sign&quot; to discover 
-                  your zodiac sign and personality traits.
+                  {t('calculator.sunSignCalc.resultPlaceholderDesc', 'Enter your birth date and click "Find My Sun Sign" to discover your zodiac sign and personality traits.')}
                 </p>
               </CardContent>
             </Card>
@@ -438,9 +437,9 @@ export default function SunSignCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Moon Sign Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.moonSignCalc.title', 'Moon Sign Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Find your Moon Sign for emotional insights.
+                {t('calculator.moonSignCalc.shortDesc', 'Find your Moon Sign for emotional insights.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/moon-sign-calculator">
@@ -452,13 +451,13 @@ export default function SunSignCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Ascendant Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.ascendantCalc.title', 'Ascendant Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Discover your Rising Sign (Lagna).
+                {t('calculator.ascendantCalc.shortDesc', 'Discover your Rising Sign (Lagna).')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/ascendant-calculator">
-                  Calculate <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.calculate', 'Calculate')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -466,9 +465,9 @@ export default function SunSignCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.daily.title', 'Daily Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Read today&apos;s predictions for your sign.
+                {t('horoscope.daily.shortDesc', "Read today's predictions for your sign.")}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
@@ -482,7 +481,7 @@ export default function SunSignCalculatorPage() {
         <Card className="border-orange-200 bg-orange-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Your Sun Sign
+              {t('calculator.sunSignCalc.understandingTitle', 'Understanding Your Sun Sign')}
             </h2>
             <div className="prose prose-orange max-w-none">
               <p className="text-gray-700 mb-4">

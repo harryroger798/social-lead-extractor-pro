@@ -236,14 +236,14 @@ export default function WeeklyHoroscopePage() {
                 <div className="flex items-center gap-4">
                   <span className="text-5xl">{signData.symbol}</span>
                   <div>
-                    <CardTitle className="text-2xl">{signData.name} Weekly Horoscope</CardTitle>
+                    <CardTitle className="text-2xl">{signData.name} {t('horoscope.weeklyHoroscope', 'Weekly Horoscope')}</CardTitle>
                     <CardDescription>{signData.dates} | {signData.hindi}</CardDescription>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">Lucky Day</p>
+                  <p className="text-sm text-gray-600">{t('horoscope.luckyDay', 'Lucky Day')}</p>
                   <p className="font-bold text-purple-700">{prediction.luckyDay}</p>
-                  <p className="text-sm text-gray-600 mt-1">Lucky Number</p>
+                  <p className="text-sm text-gray-600 mt-1">{t('horoscope.luckyNumber', 'Lucky Number')}</p>
                   <p className="font-bold text-purple-700">{prediction.luckyNumber}</p>
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function WeeklyHoroscopePage() {
                   <div className="bg-pink-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-pink-800 flex items-center gap-2">
-                        <Heart className="w-4 h-4" /> Love & Relationships
+                        <Heart className="w-4 h-4" /> {t('horoscope.loveRelationships', 'Love & Relationships')}
                       </h3>
                       <RatingStars rating={prediction.ratings.love} />
                     </div>
@@ -269,7 +269,7 @@ export default function WeeklyHoroscopePage() {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-blue-800 flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" /> Career & Work
+                        <Briefcase className="w-4 h-4" /> {t('horoscope.careerWork', 'Career & Work')}
                       </h3>
                       <RatingStars rating={prediction.ratings.career} />
                     </div>
@@ -279,7 +279,7 @@ export default function WeeklyHoroscopePage() {
                   <div className="bg-green-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-green-800 flex items-center gap-2">
-                        <Wallet className="w-4 h-4" /> Finance & Money
+                        <Wallet className="w-4 h-4" /> {t('horoscope.financeMoney', 'Finance & Money')}
                       </h3>
                       <RatingStars rating={prediction.ratings.finance} />
                     </div>
