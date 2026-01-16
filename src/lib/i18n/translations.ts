@@ -15,7 +15,74 @@ export const translations = {
       consultation: "Consultation",
       about: "About",
       freeKundli: "Free Kundli",
+      freeKundliDesc: "Generate your birth chart instantly",
       bookConsultation: "Book Consultation",
+      
+      // Tools dropdown items
+      aiAstrologer: "AI Astrologer",
+      aiAstrologerDesc: "Chat with our AI for instant guidance",
+      nakshatraFinder: "Nakshatra Finder",
+      nakshatraFinderDesc: "Discover your lunar constellation",
+      horoscopeMatching: "Horoscope Matching",
+      horoscopeMatchingDesc: "Check marriage compatibility",
+      moonSignCalculator: "Moon Sign Calculator",
+      moonSignCalculatorDesc: "Find your Vedic Moon sign",
+      sunSignCalculator: "Sun Sign Calculator",
+      sunSignCalculatorDesc: "Discover your Sun sign",
+      ascendantCalculator: "Ascendant Calculator",
+      ascendantCalculatorDesc: "Calculate your rising sign",
+      loveCompatibility: "Love Compatibility",
+      loveCompatibilityDesc: "Check zodiac compatibility",
+      
+      // Advanced dropdown items
+      dashaCalculator: "Dasha Calculator",
+      dashaCalculatorDesc: "Vimshottari Dasha planetary periods",
+      navamsaChart: "Navamsa Chart",
+      navamsaChartDesc: "D-9 & divisional charts",
+      yogaCalculator: "Yoga Calculator",
+      yogaCalculatorDesc: "Detect Raj Yoga, Dhana Yoga & more",
+      muhurtaCalculator: "Muhurta Calculator",
+      muhurtaCalculatorDesc: "Find auspicious timing",
+      transitAnalysis: "Transit Analysis",
+      transitAnalysisDesc: "Current planetary effects (Gochar)",
+      
+      // Panchang dropdown items
+      dailyPanchang: "Daily Panchang",
+      dailyPanchangDesc: "Today's tithi, nakshatra & muhurat",
+      festivalCalendar2026: "Festival Calendar 2026",
+      festivalCalendar2026Desc: "Hindu festivals & important dates",
+      
+      // Horoscope dropdown items
+      dailyHoroscope: "Daily Horoscope",
+      dailyHoroscopeDesc: "Today's predictions",
+      weeklyHoroscope: "Weekly Horoscope",
+      weeklyHoroscopeDesc: "This week's forecast",
+      monthlyHoroscope: "Monthly Horoscope",
+      monthlyHoroscopeDesc: "Monthly predictions",
+      horoscope2026: "2026 Horoscope",
+      horoscope2026Desc: "Yearly predictions for 2026",
+      saturnTransit2026: "Saturn Transit 2026",
+      saturnTransit2026Desc: "Shani Gochar effects",
+      jupiterTransit2026: "Jupiter Transit 2026",
+      jupiterTransit2026Desc: "Guru Gochar predictions",
+      mercuryRetrograde: "Mercury Retrograde",
+      mercuryRetrogradeDesc: "Retrograde dates & survival guide",
+      eclipses2026: "Eclipses 2026",
+      eclipses2026Desc: "Solar & lunar eclipse guide",
+      
+      // Doshas dropdown items
+      mangalDosh: "Mangal Dosh",
+      mangalDoshDesc: "Manglik dosha guide & remedies",
+      kaalSarpDosh: "Kaal Sarp Dosh",
+      kaalSarpDoshDesc: "12 types & remedies",
+      sadeSati: "Sade Sati",
+      sadeSatiDesc: "Saturn's 7.5 year transit",
+      pitraDosh: "Pitra Dosh",
+      pitraDoshDesc: "Ancestral karma & remedies",
+      mangalDoshCalculator: "Mangal Dosh Calculator",
+      mangalDoshCalculatorDesc: "Check Manglik status",
+      sadeSatiCalculator: "Sade Sati Calculator",
+      sadeSatiCalculatorDesc: "Check Sade Sati phase",
     },
     
     // Homepage
@@ -273,7 +340,74 @@ export const translations = {
       consultation: "परामर्श",
       about: "हमारे बारे में",
       freeKundli: "मुफ्त कुंडली",
+      freeKundliDesc: "अपनी जन्म कुंडली तुरंत बनाएं",
       bookConsultation: "परामर्श बुक करें",
+      
+      // Tools dropdown items
+      aiAstrologer: "AI ज्योतिषी",
+      aiAstrologerDesc: "तत्काल मार्गदर्शन के लिए हमारे AI से चैट करें",
+      nakshatraFinder: "नक्षत्र खोजक",
+      nakshatraFinderDesc: "अपनी चंद्र नक्षत्र खोजें",
+      horoscopeMatching: "कुंडली मिलान",
+      horoscopeMatchingDesc: "विवाह अनुकूलता जांचें",
+      moonSignCalculator: "चंद्र राशि कैलकुलेटर",
+      moonSignCalculatorDesc: "अपनी वैदिक चंद्र राशि खोजें",
+      sunSignCalculator: "सूर्य राशि कैलकुलेटर",
+      sunSignCalculatorDesc: "अपनी सूर्य राशि खोजें",
+      ascendantCalculator: "लग्न कैलकुलेटर",
+      ascendantCalculatorDesc: "अपनी उदय राशि की गणना करें",
+      loveCompatibility: "प्रेम अनुकूलता",
+      loveCompatibilityDesc: "राशि अनुकूलता जांचें",
+      
+      // Advanced dropdown items
+      dashaCalculator: "दशा कैलकुलेटर",
+      dashaCalculatorDesc: "विमशोत्तरी दशा ग्रह काल",
+      navamsaChart: "नवांश चार्ट",
+      navamsaChartDesc: "D-9 और विभागीय चार्ट",
+      yogaCalculator: "योग कैलकुलेटर",
+      yogaCalculatorDesc: "राज योग, धन योग आदि का पता लगाएं",
+      muhurtaCalculator: "मुहूर्त कैलकुलेटर",
+      muhurtaCalculatorDesc: "शुभ समय खोजें",
+      transitAnalysis: "गोचर विश्लेषण",
+      transitAnalysisDesc: "वर्तमान ग्रह प्रभाव (गोचर)",
+      
+      // Panchang dropdown items
+      dailyPanchang: "दैनिक पंचांग",
+      dailyPanchangDesc: "आज की तिथि, नक्षत्र और मुहूर्त",
+      festivalCalendar2026: "त्योहार कैलेंडर 2026",
+      festivalCalendar2026Desc: "हिंदू त्योहार और महत्वपूर्ण तिथियां",
+      
+      // Horoscope dropdown items
+      dailyHoroscope: "दैनिक राशिफल",
+      dailyHoroscopeDesc: "आज की भविष्यवाणियां",
+      weeklyHoroscope: "साप्ताहिक राशिफल",
+      weeklyHoroscopeDesc: "इस सप्ताह का पूर्वानुमान",
+      monthlyHoroscope: "मासिक राशिफल",
+      monthlyHoroscopeDesc: "मासिक भविष्यवाणियां",
+      horoscope2026: "2026 राशिफल",
+      horoscope2026Desc: "2026 के लिए वार्षिक भविष्यवाणियां",
+      saturnTransit2026: "शनि गोचर 2026",
+      saturnTransit2026Desc: "शनि गोचर के प्रभाव",
+      jupiterTransit2026: "गुरु गोचर 2026",
+      jupiterTransit2026Desc: "गुरु गोचर की भविष्यवाणियां",
+      mercuryRetrograde: "बुध वक्री",
+      mercuryRetrogradeDesc: "वक्री तिथियां और सर्वाइवल गाइड",
+      eclipses2026: "ग्रहण 2026",
+      eclipses2026Desc: "सूर्य और चंद्र ग्रहण गाइड",
+      
+      // Doshas dropdown items
+      mangalDosh: "मंगल दोष",
+      mangalDoshDesc: "मांगलिक दोष गाइड और उपाय",
+      kaalSarpDosh: "काल सर्प दोष",
+      kaalSarpDoshDesc: "12 प्रकार और उपाय",
+      sadeSati: "साढ़े साती",
+      sadeSatiDesc: "शनि का 7.5 वर्ष का गोचर",
+      pitraDosh: "पितृ दोष",
+      pitraDoshDesc: "पूर्वजों का कर्म और उपाय",
+      mangalDoshCalculator: "मंगल दोष कैलकुलेटर",
+      mangalDoshCalculatorDesc: "मांगलिक स्थिति जांचें",
+      sadeSatiCalculator: "साढ़े साती कैलकुलेटर",
+      sadeSatiCalculatorDesc: "साढ़े साती चरण जांचें",
     },
     
     home: {
@@ -515,7 +649,74 @@ export const translations = {
       consultation: "ஆலோசனை",
       about: "எங்களை பற்றி",
       freeKundli: "இலவச குண்டலி",
+      freeKundliDesc: "உங்கள் ஜாதகத்தை உடனடியாக உருவாக்குங்கள்",
       bookConsultation: "ஆலோசனை முன்பதிவு",
+      
+      // Tools dropdown items
+      aiAstrologer: "AI ஜோதிடர்",
+      aiAstrologerDesc: "உடனடி வழிகாட்டுதலுக்கு எங்கள் AI உடன் அரட்டையடிக்கவும்",
+      nakshatraFinder: "நட்சத்திர கண்டுபிடிப்பான்",
+      nakshatraFinderDesc: "உங்கள் சந்திர நட்சத்திரத்தைக் கண்டறியுங்கள்",
+      horoscopeMatching: "ஜாதக பொருத்தம்",
+      horoscopeMatchingDesc: "திருமண பொருத்தத்தை சரிபார்க்கவும்",
+      moonSignCalculator: "சந்திர ராசி கால்குலேட்டர்",
+      moonSignCalculatorDesc: "உங்கள் வேத சந்திர ராசியைக் கண்டறியுங்கள்",
+      sunSignCalculator: "சூரிய ராசி கால்குலேட்டர்",
+      sunSignCalculatorDesc: "உங்கள் சூரிய ராசியைக் கண்டறியுங்கள்",
+      ascendantCalculator: "லக்னம் கால்குலேட்டர்",
+      ascendantCalculatorDesc: "உங்கள் உதய ராசியைக் கணக்கிடுங்கள்",
+      loveCompatibility: "காதல் பொருத்தம்",
+      loveCompatibilityDesc: "ராசி பொருத்தத்தை சரிபார்க்கவும்",
+      
+      // Advanced dropdown items
+      dashaCalculator: "தசா கால்குலேட்டர்",
+      dashaCalculatorDesc: "விம்சோத்தரி தசா கிரக காலங்கள்",
+      navamsaChart: "நவாம்ச சார்ட்",
+      navamsaChartDesc: "D-9 மற்றும் பிரிவு சார்ட்கள்",
+      yogaCalculator: "யோக கால்குலேட்டர்",
+      yogaCalculatorDesc: "ராஜ யோகம், தன யோகம் மற்றும் பலவற்றைக் கண்டறியுங்கள்",
+      muhurtaCalculator: "முகூர்த்த கால்குலேட்டர்",
+      muhurtaCalculatorDesc: "சுப நேரத்தைக் கண்டறியுங்கள்",
+      transitAnalysis: "கோசார பகுப்பாய்வு",
+      transitAnalysisDesc: "தற்போதைய கிரக விளைவுகள் (கோசாரம்)",
+      
+      // Panchang dropdown items
+      dailyPanchang: "தினசரி பஞ்சாங்கம்",
+      dailyPanchangDesc: "இன்றைய திதி, நட்சத்திரம் மற்றும் முகூர்த்தம்",
+      festivalCalendar2026: "திருவிழா நாட்காட்டி 2026",
+      festivalCalendar2026Desc: "இந்து திருவிழாக்கள் மற்றும் முக்கிய தேதிகள்",
+      
+      // Horoscope dropdown items
+      dailyHoroscope: "தினசரி ஜாதகம்",
+      dailyHoroscopeDesc: "இன்றைய கணிப்புகள்",
+      weeklyHoroscope: "வாராந்திர ஜாதகம்",
+      weeklyHoroscopeDesc: "இந்த வாரத்தின் முன்னறிவிப்பு",
+      monthlyHoroscope: "மாதாந்திர ஜாதகம்",
+      monthlyHoroscopeDesc: "மாதாந்திர கணிப்புகள்",
+      horoscope2026: "2026 ஜாதகம்",
+      horoscope2026Desc: "2026 க்கான வருடாந்திர கணிப்புகள்",
+      saturnTransit2026: "சனி கோசாரம் 2026",
+      saturnTransit2026Desc: "சனி கோசார விளைவுகள்",
+      jupiterTransit2026: "குரு கோசாரம் 2026",
+      jupiterTransit2026Desc: "குரு கோசார கணிப்புகள்",
+      mercuryRetrograde: "புதன் வக்ரம்",
+      mercuryRetrogradeDesc: "வக்ர தேதிகள் மற்றும் வழிகாட்டி",
+      eclipses2026: "கிரகணங்கள் 2026",
+      eclipses2026Desc: "சூரிய மற்றும் சந்திர கிரகண வழிகாட்டி",
+      
+      // Doshas dropdown items
+      mangalDosh: "மங்கள் தோஷம்",
+      mangalDoshDesc: "மாங்கலிக தோஷ வழிகாட்டி மற்றும் பரிகாரங்கள்",
+      kaalSarpDosh: "கால சர்ப்ப தோஷம்",
+      kaalSarpDoshDesc: "12 வகைகள் மற்றும் பரிகாரங்கள்",
+      sadeSati: "சாடே சாதி",
+      sadeSatiDesc: "சனியின் 7.5 வருட கோசாரம்",
+      pitraDosh: "பித்ரு தோஷம்",
+      pitraDoshDesc: "முன்னோர் கர்மா மற்றும் பரிகாரங்கள்",
+      mangalDoshCalculator: "மங்கள் தோஷ கால்குலேட்டர்",
+      mangalDoshCalculatorDesc: "மாங்கலிக நிலையை சரிபார்க்கவும்",
+      sadeSatiCalculator: "சாடே சாதி கால்குலேட்டர்",
+      sadeSatiCalculatorDesc: "சாடே சாதி கட்டத்தை சரிபார்க்கவும்",
     },
     home: {
       trustedBadge: "50,000+ பயனர்களால் நம்பப்படுகிறது",
@@ -724,7 +925,42 @@ export const translations = {
   
   // Telugu Translations
   te: {
-    nav: { tools: "సాధనాలు", advanced: "అధునాతన", panchang: "పంచాంగం", horoscope: "జాతకం", doshas: "దోషాలు", consultation: "సంప్రదింపు", about: "మా గురించి", freeKundli: "ఉచిత కుండలి", bookConsultation: "సంప్రదింపు బుక్ చేయండి" },
+    nav: { 
+      tools: "సాధనాలు", advanced: "అధునాతన", panchang: "పంచాంగం", horoscope: "జాతకం", doshas: "దోషాలు", consultation: "సంప్రదింపు", about: "మా గురించి", freeKundli: "ఉచిత కుండలి", freeKundliDesc: "మీ జాతకాన్ని తక్షణమే రూపొందించండి", bookConsultation: "సంప్రదింపు బుక్ చేయండి",
+      // Tools dropdown
+      aiAstrologer: "AI జ్యోతిష్కుడు", aiAstrologerDesc: "తక్షణ మార్గదర్శకత్వం కోసం మా AI తో చాట్ చేయండి",
+      nakshatraFinder: "నక్షత్ర ఫైండర్", nakshatraFinderDesc: "మీ చంద్ర నక్షత్రాన్ని కనుగొనండి",
+      horoscopeMatching: "జాతక పొందిక", horoscopeMatchingDesc: "వివాహ అనుకూలతను తనిఖీ చేయండి",
+      moonSignCalculator: "చంద్ర రాశి కాలిక్యులేటర్", moonSignCalculatorDesc: "మీ వేద చంద్ర రాశిని కనుగొనండి",
+      sunSignCalculator: "సూర్య రాశి కాలిక్యులేటర్", sunSignCalculatorDesc: "మీ సూర్య రాశిని కనుగొనండి",
+      ascendantCalculator: "లగ్నం కాలిక్యులేటర్", ascendantCalculatorDesc: "మీ ఉదయ రాశిని లెక్కించండి",
+      loveCompatibility: "ప్రేమ అనుకూలత", loveCompatibilityDesc: "రాశి అనుకూలతను తనిఖీ చేయండి",
+      // Advanced dropdown
+      dashaCalculator: "దశా కాలిక్యులేటర్", dashaCalculatorDesc: "విమ్శోత్తరి దశా గ్రహ కాలాలు",
+      navamsaChart: "నవాంశ చార్ట్", navamsaChartDesc: "D-9 మరియు విభాగ చార్ట్‌లు",
+      yogaCalculator: "యోగ కాలిక్యులేటర్", yogaCalculatorDesc: "రాజ యోగ, ధన యోగ మరియు మరిన్నింటిని కనుగొనండి",
+      muhurtaCalculator: "ముహూర్త కాలిక్యులేటర్", muhurtaCalculatorDesc: "శుభ సమయాన్ని కనుగొనండి",
+      transitAnalysis: "గోచార విశ్లేషణ", transitAnalysisDesc: "ప్రస్తుత గ్రహ ప్రభావాలు (గోచారం)",
+      // Panchang dropdown
+      dailyPanchang: "రోజువారీ పంచాంగం", dailyPanchangDesc: "నేటి తిథి, నక్షత్రం మరియు ముహూర్తం",
+      festivalCalendar2026: "పండుగ క్యాలెండర్ 2026", festivalCalendar2026Desc: "హిందూ పండుగలు మరియు ముఖ్యమైన తేదీలు",
+      // Horoscope dropdown
+      dailyHoroscope: "రోజువారీ జాతకం", dailyHoroscopeDesc: "నేటి అంచనాలు",
+      weeklyHoroscope: "వారపు జాతకం", weeklyHoroscopeDesc: "ఈ వారం అంచనా",
+      monthlyHoroscope: "నెలవారీ జాతకం", monthlyHoroscopeDesc: "నెలవారీ అంచనాలు",
+      horoscope2026: "2026 జాతకం", horoscope2026Desc: "2026 కోసం వార్షిక అంచనాలు",
+      saturnTransit2026: "శని గోచారం 2026", saturnTransit2026Desc: "శని గోచార ప్రభావాలు",
+      jupiterTransit2026: "గురు గోచారం 2026", jupiterTransit2026Desc: "గురు గోచార అంచనాలు",
+      mercuryRetrograde: "బుధ వక్రం", mercuryRetrogradeDesc: "వక్ర తేదీలు మరియు గైడ్",
+      eclipses2026: "గ్రహణాలు 2026", eclipses2026Desc: "సూర్య మరియు చంద్ర గ్రహణ గైడ్",
+      // Doshas dropdown
+      mangalDosh: "మంగళ దోషం", mangalDoshDesc: "మాంగళిక దోష గైడ్ మరియు పరిహారాలు",
+      kaalSarpDosh: "కాల సర్ప దోషం", kaalSarpDoshDesc: "12 రకాలు మరియు పరిహారాలు",
+      sadeSati: "సాడే సాతి", sadeSatiDesc: "శని 7.5 సంవత్సరాల గోచారం",
+      pitraDosh: "పితృ దోషం", pitraDoshDesc: "పూర్వీకుల కర్మ మరియు పరిహారాలు",
+      mangalDoshCalculator: "మంగళ దోష కాలిక్యులేటర్", mangalDoshCalculatorDesc: "మాంగళిక స్థితిని తనిఖీ చేయండి",
+      sadeSatiCalculator: "సాడే సాతి కాలిక్యులేటర్", sadeSatiCalculatorDesc: "సాడే సాతి దశను తనిఖీ చేయండి"
+    },
     home: { trustedBadge: "50,000+ వినియోగదారులచే విశ్వసనీయం", heroTitle: "మీ విధిని కనుగొనండి", heroTitleHighlight: "ప్రామాణిక వేద జ్యోతిషంతో", heroSubtitle: "జ్యోతిష శాస్త్రంలో 20+ సంవత్సరాల అనుభవం ఉన్న నిపుణుల నుండి ఖచ్చితమైన కుండలి విశ్లేషణ, నక్షత్ర అంతర్దృష్టులు మరియు వ్యక్తిగత అంచనాలు పొందండి.", getFreeKundli: "ఉచిత కుండలి పొందండి", talkToAstrologer: "జ్యోతిష్కుడితో మాట్లాడండి", chartsGenerated: "చార్ట్‌లు సృష్టించబడ్డాయి", happyClients: "సంతోషకరమైన క్లయింట్లు", expertAstrologers: "నిపుణ జ్యోతిష్కులు", userRating: "వినియోగదారు రేటింగ్", featuresTitle: "ఉచిత జ్యోతిష సాధనాలు & సేవలు", featuresDesc: "శక్తివంతమైన వేద జ్యోతిష సాధనాలను యాక్సెస్ చేయండి మరియు వ్యక్తిగత మార్గదర్శకత్వం కోసం నిపుణ జ్యోతిష్కులతో కనెక్ట్ అవ్వండి.", freeKundliTitle: "ఉచిత కుండలి కాలిక్యులేటర్", freeKundliDesc: "గ్రహ స్థానాలు, భావాలు మరియు దోషాలతో మీ పూర్తి జన్మ చార్ట్‌ను తక్షణమే రూపొందించండి.", moonSignTitle: "చంద్ర రాశి కాలిక్యులేటర్", moonSignDesc: "మీ వేద చంద్ర రాశిని (చంద్ర రాశి) కనుగొని మీ భావోద్వేగ స్వభావాన్ని అర్థం చేసుకోండి.", dailyPanchangTitle: "రోజువారీ పంచాంగం", dailyPanchangDesc: "ఈ రోజు తిథి, నక్షత్రం, యోగం, కరణం, రాహు కాలం మరియు శుభ సమయాలు పొందండి.", expertConsultationTitle: "నిపుణ సంప్రదింపు", expertConsultationDesc: "వ్యక్తిగత మార్గదర్శకత్వం మరియు అంచనాల కోసం ధృవీకరించబడిన వేద జ్యోతిష్కులతో కనెక్ట్ అవ్వండి.", free: "ఉచితం", premium: "ప్రీమియం", tryNow: "ఇప్పుడు ప్రయత్నించండి", moreToolsBadge: "మరిన్ని ఉచిత సాధనాలు", moreToolsTitle: "మా జ్యోతిష కాలిక్యులేటర్లను అన్వేషించండి", moreToolsDesc: "మీ జ్యోతిష ప్రొఫైల్‌ను అర్థం చేసుకోవడానికి మరిన్ని ఉచిత సాధనాలను కనుగొనండి.", sunSignTitle: "సూర్య రాశి కాలిక్యులేటర్", sunSignDesc: "మీ జన్మ తేదీ ఆధారంగా మీ పాశ్చాత్య రాశిని కనుగొనండి.", ascendantTitle: "లగ్నం కాలిక్యులేటర్", ascendantDesc: "ఖచ్చితమైన అంచనాల కోసం మీ ఉదయ రాశి (లగ్నం) లెక్కించండి.", loveCompatibilityTitle: "ప్రేమ అనుకూలత", loveCompatibilityDesc: "మీ భాగస్వామితో రాశి అనుకూలతను తనిఖీ చేయండి.", horoscopeMatchingTitle: "జాతక మ్యాచింగ్", horoscopeMatchingDesc: "వివాహ అనుకూలత కోసం వివరమైన గుణ మిలన్.", mangalDoshTitle: "మంగళ దోష కాలిక్యులేటర్", mangalDoshDesc: "మీ చార్ట్‌లో మాంగళిక దోషం ఉందా అని తనిఖీ చేయండి.", sadeSatiTitle: "సాడే సాతి కాలిక్యులేటర్", sadeSatiDesc: "మీ ప్రస్తుత సాడే సాతి స్థితి మరియు దశను తనిఖీ చేయండి.", predictions2026Badge: "2026 అంచనాలు", predictions2026Title: "2026 మీ కోసం ఏమి కలిగి ఉంది?", predictions2026Desc: "2026 కోసం వివరమైన అంచనాలు, గ్రహ గోచారాలు మరియు విశ్వ సంఘటనలను అన్వేషించండి.", horoscope2026Title: "2026 జాతకం", horoscope2026Desc: "అన్ని 12 రాశులకు వార్షిక అంచనాలు", saturnTransitTitle: "శని గోచారం 2026", saturnTransitDesc: "మీ రాశిపై శని గోచార ప్రభావాలు", jupiterTransitTitle: "గురు గోచారం 2026", jupiterTransitDesc: "గురు గోచార ఆశీర్వాదాలు మరియు అవకాశాలు", mercuryRetrogradeTitle: "బుధ వక్రం 2026", mercuryRetrogradeDesc: "తేదీలు, ప్రభావాలు మరియు మనుగడ గైడ్", eclipsesTitle: "గ్రహణాలు 2026", eclipsesDesc: "సూర్య & చంద్ర గ్రహణ తేదీలు మరియు ప్రభావాలు", festivalCalendarTitle: "పండుగ క్యాలెండర్ 2026", festivalCalendarDesc: "హిందూ పండుగలు మరియు ముఖ్యమైన తేదీలు", whyChooseUsBadge: "మమ్మల్ని ఎందుకు ఎంచుకోవాలి", whyChooseUsTitle: "ప్రామాణిక వేద జ్ఞానం, ఆధునిక అనుభవం", whyChooseUsDesc: "ఖచ్చితమైన, వ్యక్తిగత జ్యోతిష మార్గదర్శకత్వాన్ని అందించడానికి మేము పురాతన జ్యోతిష శాస్త్ర జ్ఞానాన్ని ఆధునిక సాంకేతికతతో కలుపుతాము.", verifiedExperts: "10+ సంవత్సరాల అనుభవంతో ధృవీకరించబడిన నిపుణ జ్యోతిష్కులు", availability247: "సంప్రదింపుల కోసం 24/7 అందుబాటులో", satisfactionGuarantee: "100% సంతృప్తి హామీ", accurateCalculations: "స్విస్ ఎఫెమెరిస్ ఆధారంగా ఖచ్చితమైన గణనలు", learnMoreAboutUs: "మా గురించి మరింత తెలుసుకోండి", testimonialsBadge: "సాక్ష్యాలు", testimonialsTitle: "మా క్లయింట్లు ఏమి చెప్తారు", testimonialsDesc: "మా సేవల ద్వారా మార్గదర్శకత్వం పొందిన వేలాది సంతృప్తి చెందిన క్లయింట్లతో చేరండి.", ctaTitle: "మీ విశ్వ మార్గాన్ని కనుగొనడానికి సిద్ధంగా ఉన్నారా?", ctaDesc: "ఇప్పుడు మీ ఉచిత కుండలి విశ్లేషణ పొందండి మరియు మీ జీవితం, కెరీర్, సంబంధాలు మరియు భవిష్యత్తు గురించి అంతర్దృష్టులను అన్‌లాక్ చేయండి.", generateFreeKundli: "ఉచిత కుండలి రూపొందించండి", bookConsultation: "సంప్రదింపు బుక్ చేయండి" },
     common: { calculate: "లెక్కించు", submit: "సమర్పించు", download: "డౌన్‌లోడ్", share: "షేర్", copy: "కాపీ", copied: "కాపీ చేయబడింది!", loading: "లోడ్ అవుతోంది...", error: "లోపం", success: "విజయం", viewMore: "మరింత చూడండి", readMore: "మరింత చదవండి", contactUs: "మమ్మల్ని సంప్రదించండి", services: "సేవలు", learn: "నేర్చుకోండి", company: "కంపెనీ", legal: "చట్టపరమైన", name: "పేరు", birthDate: "జన్మ తేదీ", birthTime: "జన్మ సమయం", birthPlace: "జన్మ స్థలం", male: "పురుషుడు", female: "స్త్రీ", other: "ఇతర", gender: "లింగం", results: "ఫలితాలు", back: "వెనుకకు", next: "తదుపరి", close: "మూసివేయి", save: "సేవ్" },
     footer: { tagline: "నిపుణ జ్యోతిష్కులతో ప్రామాణిక వేద జ్యోతిష సేవలు. ఖచ్చితమైన కుండలి విశ్లేషణ, నక్షత్ర అంతర్దృష్టులు మరియు వ్యక్తిగత సంప్రదింపులు పొందండి.", location: "బెంగళూరు, కర్ణాటక, భారతదేశం", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "సేవలు", freeKundli: "ఉచిత కుండలి", nakshatraFinder: "నక్షత్ర ఫైండర్", horoscopeMatching: "జాతక మ్యాచింగ్", consultation: "సంప్రదింపు", dailyHoroscope: "రోజువారీ జాతకం", learnTitle: "నేర్చుకోండి", vedicAstrologyGuide: "వేద జ్యోతిష గైడ్", kundliAnalysis: "కుండలి విశ్లేషణ", nakshatras27: "27 నక్షత్రాలు", remediesDoshas: "పరిహారాలు & దోషాలు", blog: "బ్లాగ్", companyTitle: "కంపెనీ", aboutUs: "మా గురించి", ourAstrologers: "మా జ్యోతిష్కులు", contact: "సంప్రదించండి", careers: "కెరీర్లు", press: "ప్రెస్", legalTitle: "చట్టపరమైన", privacyPolicy: "గోప్యతా విధానం", termsOfService: "సేవా నిబంధనలు", refundPolicy: "రీఫండ్ విధానం", disclaimer: "నిరాకరణ", disclaimerText: "జ్యోతిష అంచనాలు మరియు సంప్రదింపులు వినోదం మరియు మార్గదర్శకత్వ ప్రయోజనాల కోసం మాత్రమే. వాటిని వృత్తిపరమైన వైద్య, చట్టపరమైన, ఆర్థిక లేదా మానసిక సలహాకు ప్రత్యామ్నాయాలుగా పరిగణించకూడదు.", allRightsReserved: "అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి.", disclaimerLabel: "నిరాకరణ:" },
@@ -735,7 +971,42 @@ export const translations = {
   
   // Bengali Translations
   bn: {
-    nav: { tools: "সরঞ্জাম", advanced: "উন্নত", panchang: "পঞ্জিকা", horoscope: "রাশিফল", doshas: "দোষ", consultation: "পরামর্শ", about: "আমাদের সম্পর্কে", freeKundli: "বিনামূল্যে কুণ্ডলী", bookConsultation: "পরামর্শ বুক করুন" },
+    nav: { 
+      tools: "সরঞ্জাম", advanced: "উন্নত", panchang: "পঞ্জিকা", horoscope: "রাশিফল", doshas: "দোষ", consultation: "পরামর্শ", about: "আমাদের সম্পর্কে", freeKundli: "বিনামূল্যে কুণ্ডলী", freeKundliDesc: "আপনার জন্মকুণ্ডলী তাৎক্ষণিকভাবে তৈরি করুন", bookConsultation: "পরামর্শ বুক করুন",
+      // Tools dropdown
+      aiAstrologer: "AI জ্যোতিষী",aiAstrologerDesc: "তাৎক্ষণিক নির্দেশনার জন্য আমাদের AI এর সাথে চ্যাট করুন",
+      nakshatraFinder: "নক্ষত্র খোঁজক", nakshatraFinderDesc: "আপনার চন্দ্র নক্ষত্র খুঁজুন",
+      horoscopeMatching: "কুণ্ডলী মিলান", horoscopeMatchingDesc: "বিবাহ সামঞ্জস্য পরীক্ষা করুন",
+      moonSignCalculator: "চন্দ্র রাশি ক্যালকুলেটর", moonSignCalculatorDesc: "আপনার বৈদিক চন্দ্র রাশি খুঁজুন",
+      sunSignCalculator: "সূর্য রাশি ক্যালকুলেটর", sunSignCalculatorDesc: "আপনার সূর্য রাশি খুঁজুন",
+      ascendantCalculator: "লগ্ন ক্যালকুলেটর", ascendantCalculatorDesc: "আপনার উদয় রাশি গণনা করুন",
+      loveCompatibility: "প্রেম সামঞ্জস্য", loveCompatibilityDesc: "রাশি সামঞ্জস্য পরীক্ষা করুন",
+      // Advanced dropdown
+      dashaCalculator: "দশা ক্যালকুলেটর", dashaCalculatorDesc: "বিমশোত্তরী দশা গ্রহ কাল",
+      navamsaChart: "নবাংশ চার্ট", navamsaChartDesc: "D-9 এবং বিভাগীয় চার্ট",
+      yogaCalculator: "যোগ ক্যালকুলেটর", yogaCalculatorDesc: "রাজ যোগ, ধন যোগ এবং আরও খুঁজুন",
+      muhurtaCalculator: "মুহূর্ত ক্যালকুলেটর", muhurtaCalculatorDesc: "শুভ সময় খুঁজুন",
+      transitAnalysis: "গোচর বিশ্লেষণ", transitAnalysisDesc: "বর্তমান গ্রহ প্রভাব (গোচর)",
+      // Panchang dropdown
+      dailyPanchang: "দৈনিক পঞ্জিকা", dailyPanchangDesc: "আজকের তিথি, নক্ষত্র এবং মুহূর্ত",
+      festivalCalendar2026: "উৎসব ক্যালেন্ডার 2026", festivalCalendar2026Desc: "হিন্দু উৎসব এবং গুরুত্বপূর্ণ তারিখ",
+      // Horoscope dropdown
+      dailyHoroscope: "দৈনিক রাশিফল", dailyHoroscopeDesc: "আজকের ভবিষ্যদ্বাণী",
+      weeklyHoroscope: "সাপ্তাহিক রাশিফল", weeklyHoroscopeDesc: "এই সপ্তাহের পূর্বাভাস",
+      monthlyHoroscope: "মাসিক রাশিফল", monthlyHoroscopeDesc: "মাসিক ভবিষ্যদ্বাণী",
+      horoscope2026: "2026 রাশিফল", horoscope2026Desc: "2026 এর জন্য বার্ষিক ভবিষ্যদ্বাণী",
+      saturnTransit2026: "শনি গোচর 2026", saturnTransit2026Desc: "শনি গোচর প্রভাব",
+      jupiterTransit2026: "গুরু গোচর 2026", jupiterTransit2026Desc: "গুরু গোচর ভবিষ্যদ্বাণী",
+      mercuryRetrograde: "বুধ বক্র", mercuryRetrogradeDesc: "বক্র তারিখ এবং গাইড",
+      eclipses2026: "গ্রহণ 2026", eclipses2026Desc: "সূর্য এবং চন্দ্র গ্রহণ গাইড",
+      // Doshas dropdown
+      mangalDosh: "মঙ্গল দোষ", mangalDoshDesc: "মাঙ্গলিক দোষ গাইড এবং প্রতিকার",
+      kaalSarpDosh: "কাল সর্প দোষ", kaalSarpDoshDesc: "12 প্রকার এবং প্রতিকার",
+      sadeSati: "সাড়ে সাতি", sadeSatiDesc: "শনির 7.5 বছরের গোচর",
+      pitraDosh: "পিতৃ দোষ", pitraDoshDesc: "পূর্বপুরুষের কর্ম এবং প্রতিকার",
+      mangalDoshCalculator: "মঙ্গল দোষ ক্যালকুলেটর", mangalDoshCalculatorDesc: "মাঙ্গলিক অবস্থা পরীক্ষা করুন",
+      sadeSatiCalculator: "সাড়ে সাতি ক্যালকুলেটর", sadeSatiCalculatorDesc: "সাড়ে সাতি পর্যায় পরীক্ষা করুন"
+    },
     home: { trustedBadge: "50,000+ ব্যবহারকারীদের দ্বারা বিশ্বস্ত", heroTitle: "আপনার ভাগ্য আবিষ্কার করুন", heroTitleHighlight: "প্রামাণিক বৈদিক জ্যোতিষের সাথে", heroSubtitle: "জ্যোতিষ শাস্ত্রে 20+ বছরের অভিজ্ঞতা সম্পন্ন বিশেষজ্ঞ জ্যোতিষীদের কাছ থেকে সঠিক কুণ্ডলী বিশ্লেষণ, নক্ষত্র অন্তর্দৃষ্টি এবং ব্যক্তিগত ভবিষ্যদ্বাণী পান।", getFreeKundli: "বিনামূল্যে কুণ্ডলী পান", talkToAstrologer: "জ্যোতিষীর সাথে কথা বলুন", chartsGenerated: "চার্ট তৈরি হয়েছে", happyClients: "সন্তুষ্ট গ্রাহক", expertAstrologers: "বিশেষজ্ঞ জ্যোতিষী", userRating: "ব্যবহারকারী রেটিং", featuresTitle: "বিনামূল্যে জ্যোতিষ সরঞ্জাম ও সেবা", featuresDesc: "শক্তিশালী বৈদিক জ্যোতিষ সরঞ্জামগুলি অ্যাক্সেস করুন এবং ব্যক্তিগত নির্দেশনার জন্য বিশেষজ্ঞ জ্যোতিষীদের সাথে সংযোগ করুন।", freeKundliTitle: "বিনামূল্যে কুণ্ডলী ক্যালকুলেটর", freeKundliDesc: "গ্রহের অবস্থান, ভাব এবং দোষ সহ আপনার সম্পূর্ণ জন্ম চার্ট তাৎক্ষণিকভাবে তৈরি করুন।", moonSignTitle: "চন্দ্র রাশি ক্যালকুলেটর", moonSignDesc: "আপনার বৈদিক চন্দ্র রাশি (চন্দ্র রাশি) আবিষ্কার করুন এবং আপনার আবেগপূর্ণ প্রকৃতি বুঝুন।", dailyPanchangTitle: "দৈনিক পঞ্জিকা", dailyPanchangDesc: "আজকের তিথি, নক্ষত্র, যোগ, করণ, রাহু কাল এবং শুভ সময় পান।", expertConsultationTitle: "বিশেষজ্ঞ পরামর্শ", expertConsultationDesc: "ব্যক্তিগত নির্দেশনা এবং ভবিষ্যদ্বাণীর জন্য যাচাইকৃত বৈদিক জ্যোতিষীদের সাথে সংযোগ করুন।", free: "বিনামূল্যে", premium: "প্রিমিয়াম", tryNow: "এখনই চেষ্টা করুন", moreToolsBadge: "আরও বিনামূল্যে সরঞ্জাম", moreToolsTitle: "আমাদের জ্যোতিষ ক্যালকুলেটর অন্বেষণ করুন", moreToolsDesc: "আপনার জ্যোতিষ প্রোফাইল বুঝতে আরও বিনামূল্যে সরঞ্জাম আবিষ্কার করুন।", sunSignTitle: "সূর্য রাশি ক্যালকুলেটর", sunSignDesc: "আপনার জন্ম তারিখের উপর ভিত্তি করে আপনার পশ্চিমা রাশি খুঁজুন।", ascendantTitle: "লগ্ন ক্যালকুলেটর", ascendantDesc: "সঠিক ভবিষ্যদ্বাণীর জন্য আপনার উদয় রাশি (লগ্ন) গণনা করুন।", loveCompatibilityTitle: "প্রেম সামঞ্জস্য", loveCompatibilityDesc: "আপনার সঙ্গীর সাথে রাশি সামঞ্জস্য পরীক্ষা করুন।", horoscopeMatchingTitle: "কুণ্ডলী মিলান", horoscopeMatchingDesc: "বিবাহ সামঞ্জস্যের জন্য বিস্তারিত গুণ মিলান।", mangalDoshTitle: "মঙ্গল দোষ ক্যালকুলেটর", mangalDoshDesc: "আপনার চার্টে মাঙ্গলিক দোষ আছে কিনা পরীক্ষা করুন।", sadeSatiTitle: "সাড়ে সাতি ক্যালকুলেটর", sadeSatiDesc: "আপনার বর্তমান সাড়ে সাতি অবস্থা এবং পর্যায় পরীক্ষা করুন।", predictions2026Badge: "2026 ভবিষ্যদ্বাণী", predictions2026Title: "2026 আপনার জন্য কী রেখেছে?", predictions2026Desc: "2026 এর জন্য বিস্তারিত ভবিষ্যদ্বাণী, গ্রহ গোচর এবং মহাজাগতিক ঘটনা অন্বেষণ করুন।", horoscope2026Title: "2026 রাশিফল", horoscope2026Desc: "সমস্ত 12 রাশির জন্য বার্ষিক ভবিষ্যদ্বাণী", saturnTransitTitle: "শনি গোচর 2026", saturnTransitDesc: "আপনার রাশিতে শনি গোচরের প্রভাব", jupiterTransitTitle: "বৃহস্পতি গোচর 2026", jupiterTransitDesc: "গুরু গোচরের আশীর্বাদ এবং সুযোগ", mercuryRetrogradeTitle: "বুধ বক্র 2026", mercuryRetrogradeDesc: "তারিখ, প্রভাব এবং বেঁচে থাকার গাইড", eclipsesTitle: "গ্রহণ 2026", eclipsesDesc: "সূর্য ও চন্দ্র গ্রহণের তারিখ এবং প্রভাব", festivalCalendarTitle: "উৎসব ক্যালেন্ডার 2026", festivalCalendarDesc: "হিন্দু উৎসব এবং গুরুত্বপূর্ণ তারিখ", whyChooseUsBadge: "আমাদের কেন বেছে নেবেন", whyChooseUsTitle: "প্রামাণিক বৈদিক জ্ঞান, আধুনিক অভিজ্ঞতা", whyChooseUsDesc: "সঠিক, ব্যক্তিগত জ্যোতিষ নির্দেশনা প্রদানের জন্য আমরা প্রাচীন জ্যোতিষ শাস্ত্র জ্ঞানকে আধুনিক প্রযুক্তির সাথে একত্রিত করি।", verifiedExperts: "10+ বছরের অভিজ্ঞতা সম্পন্ন যাচাইকৃত বিশেষজ্ঞ জ্যোতিষী", availability247: "পরামর্শের জন্য 24/7 উপলব্ধ", satisfactionGuarantee: "100% সন্তুষ্টি গ্যারান্টি", accurateCalculations: "সুইস এফেমেরিস ভিত্তিক সঠিক গণনা", learnMoreAboutUs: "আমাদের সম্পর্কে আরও জানুন", testimonialsBadge: "প্রশংসাপত্র", testimonialsTitle: "আমাদের গ্রাহকরা কী বলেন", testimonialsDesc: "আমাদের সেবার মাধ্যমে নির্দেশনা পেয়েছেন এমন হাজার হাজার সন্তুষ্ট গ্রাহকদের সাথে যোগ দিন।", ctaTitle: "আপনার মহাজাগতিক পথ আবিষ্কার করতে প্রস্তুত?", ctaDesc: "এখনই আপনার বিনামূল্যে কুণ্ডলী বিশ্লেষণ পান এবং আপনার জীবন, কর্মজীবন, সম্পর্ক এবং ভবিষ্যত সম্পর্কে অন্তর্দৃষ্টি আনলক করুন।", generateFreeKundli: "বিনামূল্যে কুণ্ডলী তৈরি করুন", bookConsultation: "পরামর্শ বুক করুন" },
     common: { calculate: "গণনা করুন", submit: "জমা দিন", download: "ডাউনলোড", share: "শেয়ার", copy: "কপি", copied: "কপি হয়েছে!", loading: "লোড হচ্ছে...", error: "ত্রুটি", success: "সফল", viewMore: "আরও দেখুন", readMore: "আরও পড়ুন", contactUs: "যোগাযোগ করুন", services: "সেবা", learn: "শিখুন", company: "কোম্পানি", legal: "আইনি", name: "নাম", birthDate: "জন্ম তারিখ", birthTime: "জন্ম সময়", birthPlace: "জন্মস্থান", male: "পুরুষ", female: "মহিলা", other: "অন্যান্য", gender: "লিঙ্গ", results: "ফলাফল", back: "পিছনে", next: "পরবর্তী", close: "বন্ধ", save: "সংরক্ষণ" },
     footer: { tagline: "বিশেষজ্ঞ জ্যোতিষীদের সাথে প্রামাণিক বৈদিক জ্যোতিষ সেবা। সঠিক কুণ্ডলী বিশ্লেষণ, নক্ষত্র অন্তর্দৃষ্টি এবং ব্যক্তিগত পরামর্শ পান।", location: "বেঙ্গালুরু, কর্ণাটক, ভারত", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "সেবা", freeKundli: "বিনামূল্যে কুণ্ডলী", nakshatraFinder: "নক্ষত্র খোঁজক", horoscopeMatching: "কুণ্ডলী মিলান", consultation: "পরামর্শ", dailyHoroscope: "দৈনিক রাশিফল", learnTitle: "শিখুন", vedicAstrologyGuide: "বৈদিক জ্যোতিষ গাইড", kundliAnalysis: "কুণ্ডলী বিশ্লেষণ", nakshatras27: "27 নক্ষত্র", remediesDoshas: "প্রতিকার ও দোষ", blog: "ব্লগ", companyTitle: "কোম্পানি", aboutUs: "আমাদের সম্পর্কে", ourAstrologers: "আমাদের জ্যোতিষী", contact: "যোগাযোগ", careers: "কর্মজীবন", press: "প্রেস", legalTitle: "আইনি", privacyPolicy: "গোপনীয়তা নীতি", termsOfService: "সেবার শর্তাবলী", refundPolicy: "ফেরত নীতি", disclaimer: "দাবিত্যাগ", disclaimerText: "জ্যোতিষ ভবিষ্যদ্বাণী এবং পরামর্শ শুধুমাত্র বিনোদন এবং নির্দেশনার উদ্দেশ্যে। এগুলি পেশাদার চিকিৎসা, আইনি, আর্থিক বা মনোবৈজ্ঞানিক পরামর্শের বিকল্প হিসাবে বিবেচনা করা উচিত নয়।", allRightsReserved: "সর্বস্বত্ব সংরক্ষিত।", disclaimerLabel: "দাবিত্যাগ:" },
@@ -746,7 +1017,42 @@ export const translations = {
   
   // Marathi Translations
   mr: {
-    nav: { tools: "साधने", advanced: "प्रगत", panchang: "पंचांग", horoscope: "राशिभविष्य", doshas: "दोष", consultation: "सल्लामसलत", about: "आमच्याबद्दल", freeKundli: "मोफत कुंडली", bookConsultation: "सल्लामसलत बुक करा" },
+    nav: { 
+      tools: "साधने", advanced: "प्रगत", panchang: "पंचांग", horoscope: "राशिभविष्य", doshas: "दोष", consultation: "सल्लामसलत", about: "आमच्याबद्दल", freeKundli: "मोफत कुंडली", freeKundliDesc: "तुमची जन्मकुंडली त्वरित तयार करा", bookConsultation: "सल्लामसलत बुक करा",
+      // Tools dropdown
+      aiAstrologer: "AI ज्योतिषी", aiAstrologerDesc: "त्वरित मार्गदर्शनासाठी आमच्या AI शी चॅट करा",
+      nakshatraFinder: "नक्षत्र शोधक", nakshatraFinderDesc: "तुमचे चंद्र नक्षत्र शोधा",
+      horoscopeMatching: "कुंडली जुळवणी", horoscopeMatchingDesc: "विवाह अनुकूलता तपासा",
+      moonSignCalculator: "चंद्र राशी कॅल्क्युलेटर", moonSignCalculatorDesc: "तुमची वैदिक चंद्र राशी शोधा",
+      sunSignCalculator: "सूर्य राशी कॅल्क्युलेटर", sunSignCalculatorDesc: "तुमची सूर्य राशी शोधा",
+      ascendantCalculator: "लग्न कॅल्क्युलेटर", ascendantCalculatorDesc: "तुमची उदय राशी मोजा",
+      loveCompatibility: "प्रेम अनुकूलता", loveCompatibilityDesc: "राशी अनुकूलता तपासा",
+      // Advanced dropdown
+      dashaCalculator: "दशा कॅल्क्युलेटर", dashaCalculatorDesc: "विमशोत्तरी दशा ग्रह काळ",
+      navamsaChart: "नवांश चार्ट", navamsaChartDesc: "D-9 आणि विभागीय चार्ट",
+      yogaCalculator: "योग कॅल्क्युलेटर", yogaCalculatorDesc: "राज योग, धन योग आणि अधिक शोधा",
+      muhurtaCalculator: "मुहूर्त कॅल्क्युलेटर", muhurtaCalculatorDesc: "शुभ वेळ शोधा",
+      transitAnalysis: "गोचर विश्लेषण", transitAnalysisDesc: "सध्याचे ग्रह प्रभाव (गोचर)",
+      // Panchang dropdown
+      dailyPanchang: "दैनिक पंचांग", dailyPanchangDesc: "आजची तिथी, नक्षत्र आणि मुहूर्त",
+      festivalCalendar2026: "सण कॅलेंडर 2026", festivalCalendar2026Desc: "हिंदू सण आणि महत्त्वाच्या तारखा",
+      // Horoscope dropdown
+      dailyHoroscope: "दैनिक राशिभविष्य", dailyHoroscopeDesc: "आजचे भविष्य",
+      weeklyHoroscope: "साप्ताहिक राशिभविष्य", weeklyHoroscopeDesc: "या आठवड्याचे भविष्य",
+      monthlyHoroscope: "मासिक राशिभविष्य", monthlyHoroscopeDesc: "मासिक भविष्य",
+      horoscope2026: "2026 राशिभविष्य", horoscope2026Desc: "2026 साठी वार्षिक भविष्य",
+      saturnTransit2026: "शनी गोचर 2026", saturnTransit2026Desc: "शनी गोचर प्रभाव",
+      jupiterTransit2026: "गुरु गोचर 2026", jupiterTransit2026Desc: "गुरु गोचर भविष्य",
+      mercuryRetrograde: "बुध वक्री", mercuryRetrogradeDesc: "वक्री तारखा आणि मार्गदर्शक",
+      eclipses2026: "ग्रहण 2026", eclipses2026Desc: "सूर्य आणि चंद्र ग्रहण मार्गदर्शक",
+      // Doshas dropdown
+      mangalDosh: "मंगळ दोष", mangalDoshDesc: "मांगलिक दोष मार्गदर्शक आणि उपाय",
+      kaalSarpDosh: "काल सर्प दोष", kaalSarpDoshDesc: "12 प्रकार आणि उपाय",
+      sadeSati: "साडेसाती", sadeSatiDesc: "शनीचे 7.5 वर्षांचे गोचर",
+      pitraDosh: "पितृ दोष", pitraDoshDesc: "पूर्वजांचे कर्म आणि उपाय",
+      mangalDoshCalculator: "मंगळ दोष कॅल्क्युलेटर", mangalDoshCalculatorDesc: "मांगलिक स्थिती तपासा",
+      sadeSatiCalculator: "साडेसाती कॅल्क्युलेटर", sadeSatiCalculatorDesc: "साडेसाती टप्पा तपासा"
+    },
     home: { trustedBadge: "50,000+ वापरकर्त्यांनी विश्वासू", heroTitle: "आपले नशीब शोधा", heroTitleHighlight: "प्रामाणिक वैदिक ज्योतिषासह", heroSubtitle: "ज्योतिष शास्त्रात 20+ वर्षांचा अनुभव असलेल्या तज्ञ ज्योतिषींकडून अचूक कुंडली विश्लेषण, नक्षत्र अंतर्दृष्टी आणि वैयक्तिक भविष्यवाणी मिळवा.", getFreeKundli: "मोफत कुंडली मिळवा", talkToAstrologer: "ज्योतिषाशी बोला", chartsGenerated: "चार्ट तयार केले", happyClients: "आनंदी ग्राहक", expertAstrologers: "तज्ञ ज्योतिषी", userRating: "वापरकर्ता रेटिंग", featuresTitle: "मोफत ज्योतिष साधने आणि सेवा", featuresDesc: "शक्तिशाली वैदिक ज्योतिष साधनांमध्ये प्रवेश करा आणि वैयक्तिक मार्गदर्शनासाठी तज्ञ ज्योतिषींशी जोडा.", freeKundliTitle: "मोफत कुंडली कॅल्क्युलेटर", freeKundliDesc: "ग्रहांची स्थिती, भाव आणि दोषांसह आपली संपूर्ण जन्म कुंडली त्वरित तयार करा.", moonSignTitle: "चंद्र राशी कॅल्क्युलेटर", moonSignDesc: "आपली वैदिक चंद्र राशी (चंद्र राशी) शोधा आणि आपला भावनिक स्वभाव समजून घ्या.", dailyPanchangTitle: "दैनिक पंचांग", dailyPanchangDesc: "आजची तिथी, नक्षत्र, योग, करण, राहू काळ आणि शुभ वेळा मिळवा.", expertConsultationTitle: "तज्ञ सल्लामसलत", expertConsultationDesc: "वैयक्तिक मार्गदर्शन आणि भविष्यवाणीसाठी सत्यापित वैदिक ज्योतिषींशी जोडा.", free: "मोफत", premium: "प्रीमियम", tryNow: "आता प्रयत्न करा", moreToolsBadge: "अधिक मोफत साधने", moreToolsTitle: "आमचे ज्योतिष कॅल्क्युलेटर एक्सप्लोर करा", moreToolsDesc: "आपली ज्योतिष प्रोफाइल समजून घेण्यासाठी अधिक मोफत साधने शोधा.", sunSignTitle: "सूर्य राशी कॅल्क्युलेटर", sunSignDesc: "आपल्या जन्मतारखेवर आधारित आपली पाश्चात्य राशी शोधा.", ascendantTitle: "लग्न कॅल्क्युलेटर", ascendantDesc: "अचूक भविष्यवाणीसाठी आपली उदय राशी (लग्न) मोजा.", loveCompatibilityTitle: "प्रेम सुसंगतता", loveCompatibilityDesc: "आपल्या जोडीदारासह राशी सुसंगतता तपासा.", horoscopeMatchingTitle: "कुंडली जुळवणी", horoscopeMatchingDesc: "विवाह सुसंगततेसाठी तपशीलवार गुण मिलान.", mangalDoshTitle: "मंगळ दोष कॅल्क्युलेटर", mangalDoshDesc: "आपल्या कुंडलीत मांगलिक दोष आहे का ते तपासा.", sadeSatiTitle: "साडेसाती कॅल्क्युलेटर", sadeSatiDesc: "आपली सध्याची साडेसाती स्थिती आणि टप्पा तपासा.", predictions2026Badge: "2026 भविष्यवाणी", predictions2026Title: "2026 तुमच्यासाठी काय घेऊन येत आहे?", predictions2026Desc: "2026 साठी तपशीलवार भविष्यवाणी, ग्रह गोचर आणि वैश्विक घटना एक्सप्लोर करा.", horoscope2026Title: "2026 राशिभविष्य", horoscope2026Desc: "सर्व 12 राशींसाठी वार्षिक भविष्यवाणी", saturnTransitTitle: "शनी गोचर 2026", saturnTransitDesc: "तुमच्या राशीवर शनी गोचराचे परिणाम", jupiterTransitTitle: "गुरू गोचर 2026", jupiterTransitDesc: "गुरू गोचराचे आशीर्वाद आणि संधी", mercuryRetrogradeTitle: "बुध वक्री 2026", mercuryRetrogradeDesc: "तारखा, परिणाम आणि जगण्याचे मार्गदर्शक", eclipsesTitle: "ग्रहण 2026", eclipsesDesc: "सूर्य आणि चंद्र ग्रहणाच्या तारखा आणि परिणाम", festivalCalendarTitle: "सण कॅलेंडर 2026", festivalCalendarDesc: "हिंदू सण आणि महत्त्वाच्या तारखा", whyChooseUsBadge: "आम्हाला का निवडावे", whyChooseUsTitle: "प्रामाणिक वैदिक ज्ञान, आधुनिक अनुभव", whyChooseUsDesc: "अचूक, वैयक्तिक ज्योतिष मार्गदर्शन प्रदान करण्यासाठी आम्ही प्राचीन ज्योतिष शास्त्र ज्ञान आधुनिक तंत्रज्ञानासह एकत्र करतो.", verifiedExperts: "10+ वर्षांच्या अनुभवासह सत्यापित तज्ञ ज्योतिषी", availability247: "सल्लामसलतीसाठी 24/7 उपलब्ध", satisfactionGuarantee: "100% समाधान हमी", accurateCalculations: "स्विस एफेमेरिसवर आधारित अचूक गणना", learnMoreAboutUs: "आमच्याबद्दल अधिक जाणून घ्या", testimonialsBadge: "प्रशंसापत्रे", testimonialsTitle: "आमचे ग्राहक काय म्हणतात", testimonialsDesc: "आमच्या सेवांद्वारे मार्गदर्शन मिळालेल्या हजारो समाधानी ग्राहकांमध्ये सामील व्हा.", ctaTitle: "तुमचा वैश्विक मार्ग शोधण्यास तयार आहात?", ctaDesc: "आता तुमचे मोफत कुंडली विश्लेषण मिळवा आणि तुमचे जीवन, करिअर, नातेसंबंध आणि भविष्याबद्दल अंतर्दृष्टी अनलॉक करा.", generateFreeKundli: "मोफत कुंडली तयार करा", bookConsultation: "सल्लामसलत बुक करा" },
     common: { calculate: "गणना करा", submit: "सबमिट करा", download: "डाउनलोड", share: "शेअर", copy: "कॉपी", copied: "कॉपी केले!", loading: "लोड होत आहे...", error: "त्रुटी", success: "यशस्वी", viewMore: "अधिक पहा", readMore: "अधिक वाचा", contactUs: "आमच्याशी संपर्क साधा", services: "सेवा", learn: "शिका", company: "कंपनी", legal: "कायदेशीर", name: "नाव", birthDate: "जन्मतारीख", birthTime: "जन्मवेळ", birthPlace: "जन्मस्थान", male: "पुरुष", female: "स्त्री", other: "इतर", gender: "लिंग", results: "परिणाम", back: "मागे", next: "पुढे", close: "बंद", save: "जतन करा" },
     footer: { tagline: "तज्ञ ज्योतिषींसह प्रामाणिक वैदिक ज्योतिष सेवा. अचूक कुंडली विश्लेषण, नक्षत्र अंतर्दृष्टी आणि वैयक्तिक सल्लामसलत मिळवा.", location: "बेंगळुरू, कर्नाटक, भारत", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "सेवा", freeKundli: "मोफत कुंडली", nakshatraFinder: "नक्षत्र शोधक", horoscopeMatching: "कुंडली जुळवणी", consultation: "सल्लामसलत", dailyHoroscope: "दैनिक राशिभविष्य", learnTitle: "शिका", vedicAstrologyGuide: "वैदिक ज्योतिष मार्गदर्शक", kundliAnalysis: "कुंडली विश्लेषण", nakshatras27: "27 नक्षत्रे", remediesDoshas: "उपाय आणि दोष", blog: "ब्लॉग", companyTitle: "कंपनी", aboutUs: "आमच्याबद्दल", ourAstrologers: "आमचे ज्योतिषी", contact: "संपर्क", careers: "करिअर", press: "प्रेस", legalTitle: "कायदेशीर", privacyPolicy: "गोपनीयता धोरण", termsOfService: "सेवा अटी", refundPolicy: "परतावा धोरण", disclaimer: "अस्वीकरण", disclaimerText: "ज्योतिष भविष्यवाणी आणि सल्लामसलत केवळ मनोरंजन आणि मार्गदर्शन हेतूंसाठी आहेत. त्यांना व्यावसायिक वैद्यकीय, कायदेशीर, आर्थिक किंवा मानसशास्त्रीय सल्ल्याचा पर्याय मानू नये.", allRightsReserved: "सर्व हक्क राखीव.", disclaimerLabel: "अस्वीकरण:" },
@@ -757,7 +1063,42 @@ export const translations = {
   
   // Gujarati Translations
   gu: {
-    nav: { tools: "સાધનો", advanced: "અદ્યતન", panchang: "પંચાંગ", horoscope: "રાશિફળ", doshas: "દોષ", consultation: "પરામર્શ", about: "અમારા વિશે", freeKundli: "મફત કુંડળી", bookConsultation: "પરામર્શ બુક કરો" },
+    nav: { 
+      tools: "સાધનો", advanced: "અદ્યતન", panchang: "પંચાંગ", horoscope: "રાશિફળ", doshas: "દોષ", consultation: "પરામર્શ", about: "અમારા વિશે", freeKundli: "મફત કુંડળી", freeKundliDesc: "તમારી જન્મકુંડળી તરત જ બનાવો", bookConsultation: "પરામર્શ બુક કરો",
+      // Tools dropdown
+      aiAstrologer: "AI જ્યોતિષી", aiAstrologerDesc: "તાત્કાલિક માર્ગદર્શન માટે અમારા AI સાથે ચેટ કરો",
+      nakshatraFinder: "નક્ષત્ર શોધક", nakshatraFinderDesc: "તમારું ચંદ્ર નક્ષત્ર શોધો",
+      horoscopeMatching: "કુંડળી મેળાપ", horoscopeMatchingDesc: "લગ્ન સુસંગતતા તપાસો",
+      moonSignCalculator: "ચંદ્ર રાશિ કેલ્ક્યુલેટર", moonSignCalculatorDesc: "તમારી વૈદિક ચંદ્ર રાશિ શોધો",
+      sunSignCalculator: "સૂર્ય રાશિ કેલ્ક્યુલેટર", sunSignCalculatorDesc: "તમારી સૂર્ય રાશિ શોધો",
+      ascendantCalculator: "લગ્ન કેલ્ક્યુલેટર", ascendantCalculatorDesc: "તમારી ઉદય રાશિ ગણો",
+      loveCompatibility: "પ્રેમ સુસંગતતા", loveCompatibilityDesc: "રાશિ સુસંગતતા તપાસો",
+      // Advanced dropdown
+      dashaCalculator: "દશા કેલ્ક્યુલેટર", dashaCalculatorDesc: "વિમશોત્તરી દશા ગ્રહ કાળ",
+      navamsaChart: "નવાંશ ચાર્ટ", navamsaChartDesc: "D-9 અને વિભાગીય ચાર્ટ",
+      yogaCalculator: "યોગ કેલ્ક્યુલેટર", yogaCalculatorDesc: "રાજ યોગ, ધન યોગ અને વધુ શોધો",
+      muhurtaCalculator: "મુહૂર્ત કેલ્ક્યુલેટર", muhurtaCalculatorDesc: "શુભ સમય શોધો",
+      transitAnalysis: "ગોચર વિશ્લેષણ", transitAnalysisDesc: "વર્તમાન ગ્રહ પ્રભાવો (ગોચર)",
+      // Panchang dropdown
+      dailyPanchang: "દૈનિક પંચાંગ", dailyPanchangDesc: "આજની તિથિ, નક્ષત્ર અને મુહૂર્ત",
+      festivalCalendar2026: "તહેવાર કેલેન્ડર 2026", festivalCalendar2026Desc: "હિંદુ તહેવારો અને મહત્વની તારીખો",
+      // Horoscope dropdown
+      dailyHoroscope: "દૈનિક રાશિફળ", dailyHoroscopeDesc: "આજની આગાહીઓ",
+      weeklyHoroscope: "સાપ્તાહિક રાશિફળ", weeklyHoroscopeDesc: "આ અઠવાડિયાની આગાહી",
+      monthlyHoroscope: "માસિક રાશિફળ", monthlyHoroscopeDesc: "માસિક આગાહીઓ",
+      horoscope2026: "2026 રાશિફળ", horoscope2026Desc: "2026 માટે વાર્ષિક આગાહીઓ",
+      saturnTransit2026: "શનિ ગોચર 2026", saturnTransit2026Desc: "શનિ ગોચર પ્રભાવો",
+      jupiterTransit2026: "ગુરુ ગોચર 2026", jupiterTransit2026Desc: "ગુરુ ગોચર આગાહીઓ",
+      mercuryRetrograde: "બુધ વક્રી", mercuryRetrogradeDesc: "વક્રી તારીખો અને માર્ગદર્શિકા",
+      eclipses2026: "ગ્રહણ 2026", eclipses2026Desc: "સૂર્ય અને ચંદ્ર ગ્રહણ માર્ગદર્શિકા",
+      // Doshas dropdown
+      mangalDosh: "મંગળ દોષ", mangalDoshDesc: "માંગલિક દોષ માર્ગદર્શિકા અને ઉપાયો",
+      kaalSarpDosh: "કાળ સર્પ દોષ", kaalSarpDoshDesc: "12 પ્રકારો અને ઉપાયો",
+      sadeSati: "સાડા સાતી", sadeSatiDesc: "શનિનું 7.5 વર્ષનું ગોચર",
+      pitraDosh: "પિતૃ દોષ", pitraDoshDesc: "પૂર્વજોનું કર્મ અને ઉપાયો",
+      mangalDoshCalculator: "મંગળ દોષ કેલ્ક્યુલેટર", mangalDoshCalculatorDesc: "માંગલિક સ્થિતિ તપાસો",
+      sadeSatiCalculator: "સાડા સાતી કેલ્ક્યુલેટર", sadeSatiCalculatorDesc: "સાડા સાતી તબક્કો તપાસો"
+    },
     home: { trustedBadge: "50,000+ વપરાશકર્તાઓ દ્વારા વિશ્વસનીય", heroTitle: "તમારું ભાગ્ય શોધો", heroTitleHighlight: "પ્રામાણિક વૈદિક જ્યોતિષ સાથે", heroSubtitle: "જ્યોતિષ શાસ્ત્રમાં 20+ વર્ષનો અનુભવ ધરાવતા નિષ્ણાત જ્યોતિષીઓ પાસેથી સચોટ કુંડળી વિશ્લેષણ, નક્ષત્ર આંતરદૃષ્ટિ અને વ્યક્તિગત આગાહીઓ મેળવો.", getFreeKundli: "મફત કુંડળી મેળવો", talkToAstrologer: "જ્યોતિષી સાથે વાત કરો", chartsGenerated: "ચાર્ટ બનાવ્યા", happyClients: "ખુશ ગ્રાહકો", expertAstrologers: "નિષ્ણાત જ્યોતિષીઓ", userRating: "વપરાશકર્તા રેટિંગ", featuresTitle: "મફત જ્યોતિષ સાધનો અને સેવાઓ", featuresDesc: "શક્તિશાળી વૈદિક જ્યોતિષ સાધનો ઍક્સેસ કરો અને વ્યક્તિગત માર્ગદર્શન માટે નિષ્ણાત જ્યોતિષીઓ સાથે જોડાઓ.", freeKundliTitle: "મફત કુંડળી કેલ્ક્યુલેટર", freeKundliDesc: "ગ્રહોની સ્થિતિ, ભાવ અને દોષો સાથે તમારી સંપૂર્ણ જન્મ કુંડળી તરત જ બનાવો.", moonSignTitle: "ચંદ્ર રાશિ કેલ્ક્યુલેટર", moonSignDesc: "તમારી વૈદિક ચંદ્ર રાશિ (ચંદ્ર રાશિ) શોધો અને તમારા ભાવનાત્મક સ્વભાવને સમજો.", dailyPanchangTitle: "દૈનિક પંચાંગ", dailyPanchangDesc: "આજની તિથિ, નક્ષત્ર, યોગ, કરણ, રાહુ કાળ અને શુભ સમય મેળવો.", expertConsultationTitle: "નિષ્ણાત પરામર્શ", expertConsultationDesc: "વ્યક્તિગત માર્ગદર્શન અને આગાહીઓ માટે ચકાસાયેલ વૈદિક જ્યોતિષીઓ સાથે જોડાઓ.", free: "મફત", premium: "પ્રીમિયમ", tryNow: "હવે અજમાવો", moreToolsBadge: "વધુ મફત સાધનો", moreToolsTitle: "અમારા જ્યોતિષ કેલ્ક્યુલેટર્સ અન્વેષણ કરો", moreToolsDesc: "તમારી જ્યોતિષ પ્રોફાઇલ સમજવા માટે વધુ મફત સાધનો શોધો.", sunSignTitle: "સૂર્ય રાશિ કેલ્ક્યુલેટર", sunSignDesc: "તમારી જન્મ તારીખના આધારે તમારી પશ્ચિમી રાશિ શોધો.", ascendantTitle: "લગ્ન કેલ્ક્યુલેટર", ascendantDesc: "સચોટ આગાહીઓ માટે તમારી ઉદય રાશિ (લગ્ન) ગણતરી કરો.", loveCompatibilityTitle: "પ્રેમ સુસંગતતા", loveCompatibilityDesc: "તમારા સાથી સાથે રાશિ સુસંગતતા તપાસો.", horoscopeMatchingTitle: "કુંડળી મેળાપ", horoscopeMatchingDesc: "લગ્ન સુસંગતતા માટે વિગતવાર ગુણ મિલાન.", mangalDoshTitle: "મંગળ દોષ કેલ્ક્યુલેટર", mangalDoshDesc: "તમારી કુંડળીમાં માંગલિક દોષ છે કે નહીં તે તપાસો.", sadeSatiTitle: "સાડા સાતી કેલ્ક્યુલેટર", sadeSatiDesc: "તમારી વર્તમાન સાડા સાતી સ્થિતિ અને તબક્કો તપાસો.", predictions2026Badge: "2026 આગાહીઓ", predictions2026Title: "2026 તમારા માટે શું લાવે છે?", predictions2026Desc: "2026 માટે વિગતવાર આગાહીઓ, ગ્રહ ગોચર અને બ્રહ્માંડિક ઘટનાઓ અન્વેષણ કરો.", horoscope2026Title: "2026 રાશિફળ", horoscope2026Desc: "બધી 12 રાશિઓ માટે વાર્ષિક આગાહીઓ", saturnTransitTitle: "શનિ ગોચર 2026", saturnTransitDesc: "તમારી રાશિ પર શનિ ગોચરની અસરો", jupiterTransitTitle: "ગુરુ ગોચર 2026", jupiterTransitDesc: "ગુરુ ગોચરના આશીર્વાદ અને તકો", mercuryRetrogradeTitle: "બુધ વક્રી 2026", mercuryRetrogradeDesc: "તારીખો, અસરો અને ટકી રહેવાની માર્ગદર્શિકા", eclipsesTitle: "ગ્રહણ 2026", eclipsesDesc: "સૂર્ય અને ચંદ્ર ગ્રહણની તારીખો અને અસરો", festivalCalendarTitle: "તહેવાર કેલેન્ડર 2026", festivalCalendarDesc: "હિંદુ તહેવારો અને મહત્વની તારીખો", whyChooseUsBadge: "અમને કેમ પસંદ કરો", whyChooseUsTitle: "પ્રામાણિક વૈદિક જ્ઞાન, આધુનિક અનુભવ", whyChooseUsDesc: "સચોટ, વ્યક્તિગત જ્યોતિષ માર્ગદર્શન પ્રદાન કરવા માટે અમે પ્રાચીન જ્યોતિષ શાસ્ત્ર જ્ઞાનને આધુનિક ટેકનોલોજી સાથે જોડીએ છીએ.", verifiedExperts: "10+ વર્ષના અનુભવ સાથે ચકાસાયેલ નિષ્ણાત જ્યોતિષીઓ", availability247: "પરામર્શ માટે 24/7 ઉપલબ્ધ", satisfactionGuarantee: "100% સંતોષ ગેરંટી", accurateCalculations: "સ્વિસ એફેમેરિસ આધારિત સચોટ ગણતરીઓ", learnMoreAboutUs: "અમારા વિશે વધુ જાણો", testimonialsBadge: "પ્રશંસાપત્રો", testimonialsTitle: "અમારા ગ્રાહકો શું કહે છે", testimonialsDesc: "અમારી સેવાઓ દ્વારા માર્ગદર્શન મેળવનાર હજારો સંતુષ્ટ ગ્રાહકો સાથે જોડાઓ.", ctaTitle: "તમારો બ્રહ્માંડિક માર્ગ શોધવા તૈયાર છો?", ctaDesc: "હવે તમારું મફત કુંડળી વિશ્લેષણ મેળવો અને તમારા જીવન, કારકિર્દી, સંબંધો અને ભવિષ્ય વિશે આંતરદૃષ્ટિ અનલૉક કરો.", generateFreeKundli: "મફત કુંડળી બનાવો", bookConsultation: "પરામર્શ બુક કરો" },
     common: { calculate: "ગણતરી કરો", submit: "સબમિટ કરો", download: "ડાઉનલોડ", share: "શેર", copy: "કૉપિ", copied: "કૉપિ થયું!", loading: "લોડ થઈ રહ્યું છે...", error: "ભૂલ", success: "સફળ", viewMore: "વધુ જુઓ", readMore: "વધુ વાંચો", contactUs: "અમારો સંપર્ક કરો", services: "સેવાઓ", learn: "શીખો", company: "કંપની", legal: "કાનૂની", name: "નામ", birthDate: "જન્મ તારીખ", birthTime: "જન્મ સમય", birthPlace: "જન્મ સ્થળ", male: "પુરુષ", female: "સ્ત્રી", other: "અન્ય", gender: "લિંગ", results: "પરિણામો", back: "પાછળ", next: "આગળ", close: "બંધ", save: "સાચવો" },
     footer: { tagline: "નિષ્ણાત જ્યોતિષીઓ સાથે પ્રામાણિક વૈદિક જ્યોતિષ સેવાઓ. સચોટ કુંડળી વિશ્લેષણ, નક્ષત્ર આંતરદૃષ્ટિ અને વ્યક્તિગત પરામર્શ મેળવો.", location: "બેંગલુરુ, કર્ણાટક, ભારત", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "સેવાઓ", freeKundli: "મફત કુંડળી", nakshatraFinder: "નક્ષત્ર શોધક", horoscopeMatching: "કુંડળી મેળાપ", consultation: "પરામર્શ", dailyHoroscope: "દૈનિક રાશિફળ", learnTitle: "શીખો", vedicAstrologyGuide: "વૈદિક જ્યોતિષ માર્ગદર્શિકા", kundliAnalysis: "કુંડળી વિશ્લેષણ", nakshatras27: "27 નક્ષત્રો", remediesDoshas: "ઉપાયો અને દોષો", blog: "બ્લોગ", companyTitle: "કંપની", aboutUs: "અમારા વિશે", ourAstrologers: "અમારા જ્યોતિષીઓ", contact: "સંપર્ક", careers: "કારકિર્દી", press: "પ્રેસ", legalTitle: "કાનૂની", privacyPolicy: "ગોપનીયતા નીતિ", termsOfService: "સેવાની શરતો", refundPolicy: "રિફંડ નીતિ", disclaimer: "અસ્વીકરણ", disclaimerText: "જ્યોતિષ આગાહીઓ અને પરામર્શ માત્ર મનોરંજન અને માર્ગદર્શન હેતુઓ માટે છે. તેમને વ્યાવસાયિક તબીબી, કાનૂની, નાણાકીય અથવા મનોવૈજ્ઞાનિક સલાહના વિકલ્પ તરીકે ગણવા જોઈએ નહીં.", allRightsReserved: "સર્વ હક્કો અનામત.", disclaimerLabel: "અસ્વીકરણ:" },
@@ -768,7 +1109,42 @@ export const translations = {
   
   // Kannada Translations
   kn: {
-    nav: { tools: "ಉಪಕರಣಗಳು", advanced: "ಸುಧಾರಿತ", panchang: "ಪಂಚಾಂಗ", horoscope: "ರಾಶಿಫಲ", doshas: "ದೋಷಗಳು", consultation: "ಸಮಾಲೋಚನೆ", about: "ನಮ್ಮ ಬಗ್ಗೆ", freeKundli: "ಉಚಿತ ಕುಂಡಲಿ", bookConsultation: "ಸಮಾಲೋಚನೆ ಬುಕ್ ಮಾಡಿ" },
+    nav: { 
+      tools: "ಉಪಕರಣಗಳು", advanced: "ಸುಧಾರಿತ", panchang: "ಪಂಚಾಂಗ", horoscope: "ರಾಶಿಫಲ", doshas: "ದೋಷಗಳು", consultation: "ಸಮಾಲೋಚನೆ", about: "ನಮ್ಮ ಬಗ್ಗೆ", freeKundli: "ಉಚಿತ ಕುಂಡಲಿ", freeKundliDesc: "ನಿಮ್ಮ ಜನ್ಮ ಕುಂಡಲಿಯನ್ನು ತಕ್ಷಣ ರಚಿಸಿ", bookConsultation: "ಸಮಾಲೋಚನೆ ಬುಕ್ ಮಾಡಿ",
+      // Tools dropdown
+      aiAstrologer: "AI ಜ್ಯೋತಿಷಿ", aiAstrologerDesc: "ತಕ್ಷಣದ ಮಾರ್ಗದರ್ಶನಕ್ಕಾಗಿ ನಮ್ಮ AI ಜೊತೆ ಚಾಟ್ ಮಾಡಿ",
+      nakshatraFinder: "ನಕ್ಷತ್ರ ಹುಡುಕಾಟ", nakshatraFinderDesc: "ನಿಮ್ಮ ಚಂದ್ರ ನಕ್ಷತ್ರವನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ",
+      horoscopeMatching: "ಕುಂಡಲಿ ಹೊಂದಾಣಿಕೆ", horoscopeMatchingDesc: "ವಿವಾಹ ಹೊಂದಾಣಿಕೆ ಪರಿಶೀಲಿಸಿ",
+      moonSignCalculator: "ಚಂದ್ರ ರಾಶಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", moonSignCalculatorDesc: "ನಿಮ್ಮ ವೈದಿಕ ಚಂದ್ರ ರಾಶಿ ಕಂಡುಹಿಡಿಯಿರಿ",
+      sunSignCalculator: "ಸೂರ್ಯ ರಾಶಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", sunSignCalculatorDesc: "ನಿಮ್ಮ ಸೂರ್ಯ ರಾಶಿ ಕಂಡುಹಿಡಿಯಿರಿ",
+      ascendantCalculator: "ಲಗ್ನ ಕ್ಯಾಲ್ಕುಲೇಟರ್", ascendantCalculatorDesc: "ನಿಮ್ಮ ಉದಯ ರಾಶಿ ಲೆಕ್ಕಹಾಕಿ",
+      loveCompatibility: "ಪ್ರೇಮ ಹೊಂದಾಣಿಕೆ", loveCompatibilityDesc: "ರಾಶಿ ಹೊಂದಾಣಿಕೆ ಪರಿಶೀಲಿಸಿ",
+      // Advanced dropdown
+      dashaCalculator: "ದಶಾ ಕ್ಯಾಲ್ಕುಲೇಟರ್", dashaCalculatorDesc: "ವಿಮ್ಶೋತ್ತರಿ ದಶಾ ಗ್ರಹ ಅವಧಿಗಳು",
+      navamsaChart: "ನವಾಂಶ ಚಾರ್ಟ್", navamsaChartDesc: "D-9 ಮತ್ತು ವಿಭಾಗೀಯ ಚಾರ್ಟ್‌ಗಳು",
+      yogaCalculator: "ಯೋಗ ಕ್ಯಾಲ್ಕುಲೇಟರ್", yogaCalculatorDesc: "ರಾಜ ಯೋಗ, ಧನ ಯೋಗ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ",
+      muhurtaCalculator: "ಮುಹೂರ್ತ ಕ್ಯಾಲ್ಕುಲೇಟರ್", muhurtaCalculatorDesc: "ಶುಭ ಸಮಯ ಕಂಡುಹಿಡಿಯಿರಿ",
+      transitAnalysis: "ಗೋಚರ ವಿಶ್ಲೇಷಣೆ", transitAnalysisDesc: "ಪ್ರಸ್ತುತ ಗ್ರಹ ಪ್ರಭಾವಗಳು (ಗೋಚರ)",
+      // Panchang dropdown
+      dailyPanchang: "ದೈನಿಕ ಪಂಚಾಂಗ", dailyPanchangDesc: "ಇಂದಿನ ತಿಥಿ, ನಕ್ಷತ್ರ ಮತ್ತು ಮುಹೂರ್ತ",
+      festivalCalendar2026: "ಹಬ್ಬ ಕ್ಯಾಲೆಂಡರ್ 2026", festivalCalendar2026Desc: "ಹಿಂದೂ ಹಬ್ಬಗಳು ಮತ್ತು ಮುಖ್ಯ ದಿನಾಂಕಗಳು",
+      // Horoscope dropdown
+      dailyHoroscope: "ದೈನಿಕ ರಾಶಿಫಲ", dailyHoroscopeDesc: "ಇಂದಿನ ಭವಿಷ್ಯವಾಣಿಗಳು",
+      weeklyHoroscope: "ಸಾಪ್ತಾಹಿಕ ರಾಶಿಫಲ", weeklyHoroscopeDesc: "ಈ ವಾರದ ಮುನ್ಸೂಚನೆ",
+      monthlyHoroscope: "ಮಾಸಿಕ ರಾಶಿಫಲ", monthlyHoroscopeDesc: "ಮಾಸಿಕ ಭವಿಷ್ಯವಾಣಿಗಳು",
+      horoscope2026: "2026 ರಾಶಿಫಲ", horoscope2026Desc: "2026 ಕ್ಕೆ ವಾರ್ಷಿಕ ಭವಿಷ್ಯವಾಣಿಗಳು",
+      saturnTransit2026: "ಶನಿ ಗೋಚರ 2026", saturnTransit2026Desc: "ಶನಿ ಗೋಚರ ಪ್ರಭಾವಗಳು",
+      jupiterTransit2026: "ಗುರು ಗೋಚರ 2026", jupiterTransit2026Desc: "ಗುರು ಗೋಚರ ಭವಿಷ್ಯವಾಣಿಗಳು",
+      mercuryRetrograde: "ಬುಧ ವಕ್ರ", mercuryRetrogradeDesc: "ವಕ್ರ ದಿನಾಂಕಗಳು ಮತ್ತು ಮಾರ್ಗದರ್ಶಿ",
+      eclipses2026: "ಗ್ರಹಣ 2026", eclipses2026Desc: "ಸೂರ್ಯ ಮತ್ತು ಚಂದ್ರ ಗ್ರಹಣ ಮಾರ್ಗದರ್ಶಿ",
+      // Doshas dropdown
+      mangalDosh: "ಮಂಗಳ ದೋಷ", mangalDoshDesc: "ಮಾಂಗಲಿಕ ದೋಷ ಮಾರ್ಗದರ್ಶಿ ಮತ್ತು ಪರಿಹಾರಗಳು",
+      kaalSarpDosh: "ಕಾಲ ಸರ್ಪ ದೋಷ", kaalSarpDoshDesc: "12 ಪ್ರಕಾರಗಳು ಮತ್ತು ಪರಿಹಾರಗಳು",
+      sadeSati: "ಸಾಡೆ ಸಾತಿ", sadeSatiDesc: "ಶನಿಯ 7.5 ವರ್ಷಗಳ ಗೋಚರ",
+      pitraDosh: "ಪಿತೃ ದೋಷ", pitraDoshDesc: "ಪೂರ್ವಜರ ಕರ್ಮ ಮತ್ತು ಪರಿಹಾರಗಳು",
+      mangalDoshCalculator: "ಮಂಗಳ ದೋಷ ಕ್ಯಾಲ್ಕುಲೇಟರ್", mangalDoshCalculatorDesc: "ಮಾಂಗಲಿಕ ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಿ",
+      sadeSatiCalculator: "ಸಾಡೆ ಸಾತಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", sadeSatiCalculatorDesc: "ಸಾಡೆ ಸಾತಿ ಹಂತ ಪರಿಶೀಲಿಸಿ"
+    },
     home: { trustedBadge: "50,000+ ಬಳಕೆದಾರರಿಂದ ವಿಶ್ವಾಸಾರ್ಹ", heroTitle: "ನಿಮ್ಮ ಭವಿಷ್ಯವನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ", heroTitleHighlight: "ಪ್ರಾಮಾಣಿಕ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯದೊಂದಿಗೆ", heroSubtitle: "ಜ್ಯೋತಿಷ್ಯ ಶಾಸ್ತ್ರದಲ್ಲಿ 20+ ವರ್ಷಗಳ ಅನುಭವ ಹೊಂದಿರುವ ತಜ್ಞ ಜ್ಯೋತಿಷಿಗಳಿಂದ ನಿಖರವಾದ ಕುಂಡಲಿ ವಿಶ್ಲೇಷಣೆ, ನಕ್ಷತ್ರ ಒಳನೋಟಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕ ಭವಿಷ್ಯವಾಣಿಗಳನ್ನು ಪಡೆಯಿರಿ.", getFreeKundli: "ಉಚಿತ ಕುಂಡಲಿ ಪಡೆಯಿರಿ", talkToAstrologer: "ಜ್ಯೋತಿಷಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ", chartsGenerated: "ಚಾರ್ಟ್‌ಗಳು ರಚಿಸಲಾಗಿದೆ", happyClients: "ಸಂತೋಷದ ಗ್ರಾಹಕರು", expertAstrologers: "ತಜ್ಞ ಜ್ಯೋತಿಷಿಗಳು", userRating: "ಬಳಕೆದಾರ ರೇಟಿಂಗ್", featuresTitle: "ಉಚಿತ ಜ್ಯೋತಿಷ್ಯ ಉಪಕರಣಗಳು ಮತ್ತು ಸೇವೆಗಳು", featuresDesc: "ಶಕ್ತಿಶಾಲಿ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಉಪಕರಣಗಳನ್ನು ಪ್ರವೇಶಿಸಿ ಮತ್ತು ವೈಯಕ್ತಿಕ ಮಾರ್ಗದರ್ಶನಕ್ಕಾಗಿ ತಜ್ಞ ಜ್ಯೋತಿಷಿಗಳೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ.", freeKundliTitle: "ಉಚಿತ ಕುಂಡಲಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", freeKundliDesc: "ಗ್ರಹಗಳ ಸ್ಥಾನಗಳು, ಭಾವಗಳು ಮತ್ತು ದೋಷಗಳೊಂದಿಗೆ ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಜನ್ಮ ಕುಂಡಲಿಯನ್ನು ತಕ್ಷಣವೇ ರಚಿಸಿ.", moonSignTitle: "ಚಂದ್ರ ರಾಶಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", moonSignDesc: "ನಿಮ್ಮ ವೈದಿಕ ಚಂದ್ರ ರಾಶಿಯನ್ನು (ಚಂದ್ರ ರಾಶಿ) ಕಂಡುಹಿಡಿಯಿರಿ ಮತ್ತು ನಿಮ್ಮ ಭಾವನಾತ್ಮಕ ಸ್ವಭಾವವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.", dailyPanchangTitle: "ದೈನಿಕ ಪಂಚಾಂಗ", dailyPanchangDesc: "ಇಂದಿನ ತಿಥಿ, ನಕ್ಷತ್ರ, ಯೋಗ, ಕರಣ, ರಾಹು ಕಾಲ ಮತ್ತು ಶುಭ ಸಮಯಗಳನ್ನು ಪಡೆಯಿರಿ.", expertConsultationTitle: "ತಜ್ಞ ಸಮಾಲೋಚನೆ", expertConsultationDesc: "ವೈಯಕ್ತಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಭವಿಷ್ಯವಾಣಿಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಿದ ವೈದಿಕ ಜ್ಯೋತಿಷಿಗಳೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ.", free: "ಉಚಿತ", premium: "ಪ್ರೀಮಿಯಂ", tryNow: "ಈಗ ಪ್ರಯತ್ನಿಸಿ", moreToolsBadge: "ಹೆಚ್ಚಿನ ಉಚಿತ ಉಪಕರಣಗಳು", moreToolsTitle: "ನಮ್ಮ ಜ್ಯೋತಿಷ್ಯ ಕ್ಯಾಲ್ಕುಲೇಟರ್‌ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ", moreToolsDesc: "ನಿಮ್ಮ ಜ್ಯೋತಿಷ್ಯ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಹೆಚ್ಚಿನ ಉಚಿತ ಉಪಕರಣಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ.", sunSignTitle: "ಸೂರ್ಯ ರಾಶಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", sunSignDesc: "ನಿಮ್ಮ ಜನ್ಮ ದಿನಾಂಕದ ಆಧಾರದ ಮೇಲೆ ನಿಮ್ಮ ಪಾಶ್ಚಾತ್ಯ ರಾಶಿಯನ್ನು ಹುಡುಕಿ.", ascendantTitle: "ಲಗ್ನ ಕ್ಯಾಲ್ಕುಲೇಟರ್", ascendantDesc: "ನಿಖರವಾದ ಭವಿಷ್ಯವಾಣಿಗಳಿಗಾಗಿ ನಿಮ್ಮ ಉದಯ ರಾಶಿಯನ್ನು (ಲಗ್ನ) ಲೆಕ್ಕಹಾಕಿ.", loveCompatibilityTitle: "ಪ್ರೇಮ ಹೊಂದಾಣಿಕೆ", loveCompatibilityDesc: "ನಿಮ್ಮ ಸಂಗಾತಿಯೊಂದಿಗೆ ರಾಶಿ ಹೊಂದಾಣಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.", horoscopeMatchingTitle: "ಕುಂಡಲಿ ಹೊಂದಾಣಿಕೆ", horoscopeMatchingDesc: "ವಿವಾಹ ಹೊಂದಾಣಿಕೆಗಾಗಿ ವಿವರವಾದ ಗುಣ ಮಿಲನ.", mangalDoshTitle: "ಮಂಗಳ ದೋಷ ಕ್ಯಾಲ್ಕುಲೇಟರ್", mangalDoshDesc: "ನಿಮ್ಮ ಕುಂಡಲಿಯಲ್ಲಿ ಮಾಂಗಲಿಕ ದೋಷ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.", sadeSatiTitle: "ಸಾಡೆ ಸಾತಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್", sadeSatiDesc: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸಾಡೆ ಸಾತಿ ಸ್ಥಿತಿ ಮತ್ತು ಹಂತವನ್ನು ಪರಿಶೀಲಿಸಿ.", predictions2026Badge: "2026 ಭವಿಷ್ಯವಾಣಿಗಳು", predictions2026Title: "2026 ನಿಮಗೆ ಏನು ತರುತ್ತದೆ?", predictions2026Desc: "2026 ಕ್ಕಾಗಿ ವಿವರವಾದ ಭವಿಷ್ಯವಾಣಿಗಳು, ಗ್ರಹ ಗೋಚಾರಗಳು ಮತ್ತು ಬ್ರಹ್ಮಾಂಡ ಘಟನೆಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.", horoscope2026Title: "2026 ರಾಶಿಫಲ", horoscope2026Desc: "ಎಲ್ಲಾ 12 ರಾಶಿಗಳಿಗೆ ವಾರ್ಷಿಕ ಭವಿಷ್ಯವಾಣಿಗಳು", saturnTransitTitle: "ಶನಿ ಗೋಚಾರ 2026", saturnTransitDesc: "ನಿಮ್ಮ ರಾಶಿಯ ಮೇಲೆ ಶನಿ ಗೋಚಾರದ ಪರಿಣಾಮಗಳು", jupiterTransitTitle: "ಗುರು ಗೋಚಾರ 2026", jupiterTransitDesc: "ಗುರು ಗೋಚಾರದ ಆಶೀರ್ವಾದಗಳು ಮತ್ತು ಅವಕಾಶಗಳು", mercuryRetrogradeTitle: "ಬುಧ ವಕ್ರ 2026", mercuryRetrogradeDesc: "ದಿನಾಂಕಗಳು, ಪರಿಣಾಮಗಳು ಮತ್ತು ಬದುಕುಳಿಯುವ ಮಾರ್ಗದರ್ಶಿ", eclipsesTitle: "ಗ್ರಹಣಗಳು 2026", eclipsesDesc: "ಸೂರ್ಯ ಮತ್ತು ಚಂದ್ರ ಗ್ರಹಣದ ದಿನಾಂಕಗಳು ಮತ್ತು ಪರಿಣಾಮಗಳು", festivalCalendarTitle: "ಹಬ್ಬ ಕ್ಯಾಲೆಂಡರ್ 2026", festivalCalendarDesc: "ಹಿಂದೂ ಹಬ್ಬಗಳು ಮತ್ತು ಮುಖ್ಯ ದಿನಾಂಕಗಳು", whyChooseUsBadge: "ನಮ್ಮನ್ನು ಏಕೆ ಆಯ್ಕೆ ಮಾಡಬೇಕು", whyChooseUsTitle: "ಪ್ರಾಮಾಣಿಕ ವೈದಿಕ ಜ್ಞಾನ, ಆಧುನಿಕ ಅನುಭವ", whyChooseUsDesc: "ನಿಖರವಾದ, ವೈಯಕ್ತಿಕ ಜ್ಯೋತಿಷ್ಯ ಮಾರ್ಗದರ್ಶನವನ್ನು ಒದಗಿಸಲು ನಾವು ಪ್ರಾಚೀನ ಜ್ಯೋತಿಷ್ಯ ಶಾಸ್ತ್ರ ಜ್ಞಾನವನ್ನು ಆಧುನಿಕ ತಂತ್ರಜ್ಞಾನದೊಂದಿಗೆ ಸಂಯೋಜಿಸುತ್ತೇವೆ.", verifiedExperts: "10+ ವರ್ಷಗಳ ಅನುಭವದೊಂದಿಗೆ ಪರಿಶೀಲಿಸಿದ ತಜ್ಞ ಜ್ಯೋತಿಷಿಗಳು", availability247: "ಸಮಾಲೋಚನೆಗಳಿಗಾಗಿ 24/7 ಲಭ್ಯತೆ", satisfactionGuarantee: "100% ತೃಪ್ತಿ ಖಾತರಿ", accurateCalculations: "ಸ್ವಿಸ್ ಎಫೆಮೆರಿಸ್ ಆಧಾರಿತ ನಿಖರ ಲೆಕ್ಕಾಚಾರಗಳು", learnMoreAboutUs: "ನಮ್ಮ ಬಗ್ಗೆ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ", testimonialsBadge: "ಪ್ರಶಂಸಾಪತ್ರಗಳು", testimonialsTitle: "ನಮ್ಮ ಗ್ರಾಹಕರು ಏನು ಹೇಳುತ್ತಾರೆ", testimonialsDesc: "ನಮ್ಮ ಸೇವೆಗಳ ಮೂಲಕ ಮಾರ್ಗದರ್ಶನ ಪಡೆದ ಸಾವಿರಾರು ತೃಪ್ತ ಗ್ರಾಹಕರೊಂದಿಗೆ ಸೇರಿ.", ctaTitle: "ನಿಮ್ಮ ಬ್ರಹ್ಮಾಂಡ ಮಾರ್ಗವನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಿದ್ಧರಿದ್ದೀರಾ?", ctaDesc: "ಈಗ ನಿಮ್ಮ ಉಚಿತ ಕುಂಡಲಿ ವಿಶ್ಲೇಷಣೆ ಪಡೆಯಿರಿ ಮತ್ತು ನಿಮ್ಮ ಜೀವನ, ವೃತ್ತಿ, ಸಂಬಂಧಗಳು ಮತ್ತು ಭವಿಷ್ಯದ ಬಗ್ಗೆ ಒಳನೋಟಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.", generateFreeKundli: "ಉಚಿತ ಕುಂಡಲಿ ರಚಿಸಿ", bookConsultation: "ಸಮಾಲೋಚನೆ ಬುಕ್ ಮಾಡಿ" },
     common: { calculate: "ಲೆಕ್ಕಹಾಕಿ", submit: "ಸಲ್ಲಿಸಿ", download: "ಡೌನ್‌ಲೋಡ್", share: "ಹಂಚಿಕೊಳ್ಳಿ", copy: "ನಕಲಿಸಿ", copied: "ನಕಲಿಸಲಾಗಿದೆ!", loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ...", error: "ದೋಷ", success: "ಯಶಸ್ವಿ", viewMore: "ಇನ್ನಷ್ಟು ನೋಡಿ", readMore: "ಇನ್ನಷ್ಟು ಓದಿ", contactUs: "ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ", services: "ಸೇವೆಗಳು", learn: "ಕಲಿಯಿರಿ", company: "ಕಂಪನಿ", legal: "ಕಾನೂನು", name: "ಹೆಸರು", birthDate: "ಜನ್ಮ ದಿನಾಂಕ", birthTime: "ಜನ್ಮ ಸಮಯ", birthPlace: "ಜನ್ಮ ಸ್ಥಳ", male: "ಪುರುಷ", female: "ಮಹಿಳೆ", other: "ಇತರೆ", gender: "ಲಿಂಗ", results: "ಫಲಿತಾಂಶಗಳು", back: "ಹಿಂದೆ", next: "ಮುಂದೆ", close: "ಮುಚ್ಚಿ", save: "ಉಳಿಸಿ" },
     footer: { tagline: "ತಜ್ಞ ಜ್ಯೋತಿಷಿಗಳೊಂದಿಗೆ ಪ್ರಾಮಾಣಿಕ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಸೇವೆಗಳು. ನಿಖರವಾದ ಕುಂಡಲಿ ವಿಶ್ಲೇಷಣೆ, ನಕ್ಷತ್ರ ಒಳನೋಟಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕ ಸಮಾಲೋಚನೆಗಳನ್ನು ಪಡೆಯಿರಿ.", location: "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ, ಭಾರತ", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "ಸೇವೆಗಳು", freeKundli: "ಉಚಿತ ಕುಂಡಲಿ", nakshatraFinder: "ನಕ್ಷತ್ರ ಹುಡುಕಾಟ", horoscopeMatching: "ಕುಂಡಲಿ ಹೊಂದಾಣಿಕೆ", consultation: "ಸಮಾಲೋಚನೆ", dailyHoroscope: "ದೈನಿಕ ರಾಶಿಫಲ", learnTitle: "ಕಲಿಯಿರಿ", vedicAstrologyGuide: "ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಮಾರ್ಗದರ್ಶಿ", kundliAnalysis: "ಕುಂಡಲಿ ವಿಶ್ಲೇಷಣೆ", nakshatras27: "27 ನಕ್ಷತ್ರಗಳು", remediesDoshas: "ಪರಿಹಾರಗಳು ಮತ್ತು ದೋಷಗಳು", blog: "ಬ್ಲಾಗ್", companyTitle: "ಕಂಪನಿ", aboutUs: "ನಮ್ಮ ಬಗ್ಗೆ", ourAstrologers: "ನಮ್ಮ ಜ್ಯೋತಿಷಿಗಳು", contact: "ಸಂಪರ್ಕ", careers: "ವೃತ್ತಿಜೀವನ", press: "ಪ್ರೆಸ್", legalTitle: "ಕಾನೂನು", privacyPolicy: "ಗೌಪ್ಯತಾ ನೀತಿ", termsOfService: "ಸೇವಾ ನಿಯಮಗಳು", refundPolicy: "ಮರುಪಾವತಿ ನೀತಿ", disclaimer: "ಹಕ್ಕುತ್ಯಾಗ", disclaimerText: "ಜ್ಯೋತಿಷ್ಯ ಭವಿಷ್ಯವಾಣಿಗಳು ಮತ್ತು ಸಮಾಲೋಚನೆಗಳು ಮನರಂಜನೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶನ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ. ಅವುಗಳನ್ನು ವೃತ್ತಿಪರ ವೈದ್ಯಕೀಯ, ಕಾನೂನು, ಹಣಕಾಸು ಅಥವಾ ಮಾನಸಿಕ ಸಲಹೆಯ ಬದಲಿಯಾಗಿ ಪರಿಗಣಿಸಬಾರದು.", allRightsReserved: "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", disclaimerLabel: "ಹಕ್ಕುತ್ಯಾಗ:" },
@@ -777,9 +1153,44 @@ export const translations = {
     panchang: { title: "ದೈನಿಕ ಪಂಚಾಂಗ", subtitle: "ತಿಥಿ, ನಕ್ಷತ್ರ, ಯೋಗ, ಕರಣ ಮತ್ತು ಶುಭ ಸಮಯಗಳೊಂದಿಗೆ ಇಂದಿನ ವೈದಿಕ ಕ್ಯಾಲೆಂಡರ್", selectLocation: "ಸ್ಥಳ ಆಯ್ಕೆಮಾಡಿ", selectDate: "ದಿನಾಂಕ ಆಯ್ಕೆಮಾಡಿ", today: "ಇಂದು", tithi: "ತಿಥಿ", nakshatra: "ನಕ್ಷತ್ರ", yoga: "ಯೋಗ", karana: "ಕರಣ", sunrise: "ಸೂರ್ಯೋದಯ", sunset: "ಸೂರ್ಯಾಸ್ತ", moonrise: "ಚಂದ್ರೋದಯ", moonset: "ಚಂದ್ರಾಸ್ತ", rahuKaal: "ರಾಹು ಕಾಲ", gulikaKaal: "ಗುಲಿಕ ಕಾಲ", yamagandaKaal: "ಯಮಗಂಡ", abhijitMuhurta: "ಅಭಿಜಿತ್ ಮುಹೂರ್ತ", auspiciousTiming: "ಶುಭ ಸಮಯ", inauspiciousTiming: "ಅಶುಭ ಸಮಯ" },
   },
   
-  // Malayalam Translations
-  ml: {
-    nav: { tools: "ഉപകരണങ്ങൾ", advanced: "വിപുലമായ", panchang: "പഞ്ചാംഗം", horoscope: "രാശിഫലം", doshas: "ദോഷങ്ങൾ", consultation: "കൺസൾട്ടേഷൻ", about: "ഞങ്ങളെക്കുറിച്ച്", freeKundli: "സൗജന്യ കുണ്ഡലി", bookConsultation: "കൺസൾട്ടേഷൻ ബുക്ക് ചെയ്യുക" },
+    // Malayalam Translations
+    ml: {
+      nav: { 
+        tools: "ഉപകരണങ്ങൾ", advanced: "വിപുലമായ", panchang: "പഞ്ചാംഗം", horoscope: "രാശിഫലം", doshas: "ദോഷങ്ങൾ", consultation: "കൺസൾട്ടേഷൻ", about: "ഞങ്ങളെക്കുറിച്ച്", freeKundli: "സൗജന്യ കുണ്ഡലി", freeKundliDesc: "നിങ്ങളുടെ ജാതകം തൽക്ഷണം സൃഷ്ടിക്കുക", bookConsultation: "കൺസൾട്ടേഷൻ ബുക്ക് ചെയ്യുക",
+        // Tools dropdown
+        aiAstrologer: "AI ജ്യോതിഷി", aiAstrologerDesc: "തൽക്ഷണ മാർഗ്ഗനിർദ്ദേശത്തിനായി ഞങ്ങളുടെ AI-യുമായി ചാറ്റ് ചെയ്യുക",
+        nakshatraFinder: "നക്ഷത്ര കണ്ടെത്തൽ", nakshatraFinderDesc: "നിങ്ങളുടെ ചന്ദ്ര നക്ഷത്രം കണ്ടെത്തുക",
+        horoscopeMatching: "ജാതക പൊരുത്തം", horoscopeMatchingDesc: "വിവാഹ പൊരുത്തം പരിശോധിക്കുക",
+        moonSignCalculator: "ചന്ദ്ര രാശി കാൽക്കുലേറ്റർ", moonSignCalculatorDesc: "നിങ്ങളുടെ വേദ ചന്ദ്ര രാശി കണ്ടെത്തുക",
+        sunSignCalculator: "സൂര്യ രാശി കാൽക്കുലേറ്റർ", sunSignCalculatorDesc: "നിങ്ങളുടെ സൂര്യ രാശി കണ്ടെത്തുക",
+        ascendantCalculator: "ലഗ്നം കാൽക്കുലേറ്റർ", ascendantCalculatorDesc: "നിങ്ങളുടെ ഉദയ രാശി കണക്കാക്കുക",
+        loveCompatibility: "പ്രേമ പൊരുത്തം", loveCompatibilityDesc: "രാശി പൊരുത്തം പരിശോധിക്കുക",
+        // Advanced dropdown
+        dashaCalculator: "ദശ കാൽക്കുലേറ്റർ", dashaCalculatorDesc: "വിംശോത്തരി ദശ ഗ്രഹ കാലഘട്ടങ്ങൾ",
+        navamsaChart: "നവാംശ ചാർട്ട്", navamsaChartDesc: "D-9 ഉം വിഭാഗീയ ചാർട്ടുകളും",
+        yogaCalculator: "യോഗ കാൽക്കുലേറ്റർ", yogaCalculatorDesc: "രാജ യോഗം, ധന യോഗം എന്നിവ കണ്ടെത്തുക",
+        muhurtaCalculator: "മുഹൂർത്ത കാൽക്കുലേറ്റർ", muhurtaCalculatorDesc: "ശുഭ സമയം കണ്ടെത്തുക",
+        transitAnalysis: "ഗോചര വിശകലനം", transitAnalysisDesc: "നിലവിലെ ഗ്രഹ സ്വാധീനങ്ങൾ (ഗോചരം)",
+        // Panchang dropdown
+        dailyPanchang: "ദൈനംദിന പഞ്ചാംഗം", dailyPanchangDesc: "ഇന്നത്തെ തിഥി, നക്ഷത്രം, മുഹൂർത്തം",
+        festivalCalendar2026: "ഉത്സവ കലണ്ടർ 2026", festivalCalendar2026Desc: "ഹിന്ദു ഉത്സവങ്ങളും പ്രധാന തീയതികളും",
+        // Horoscope dropdown
+        dailyHoroscope: "ദൈനംദിന രാശിഫലം", dailyHoroscopeDesc: "ഇന്നത്തെ പ്രവചനങ്ങൾ",
+        weeklyHoroscope: "വാരഫലം", weeklyHoroscopeDesc: "ഈ ആഴ്ചയുടെ പ്രവചനം",
+        monthlyHoroscope: "മാസഫലം", monthlyHoroscopeDesc: "മാസ പ്രവചനങ്ങൾ",
+        horoscope2026: "2026 രാശിഫലം", horoscope2026Desc: "2026-ലേക്കുള്ള വാർഷിക പ്രവചനങ്ങൾ",
+        saturnTransit2026: "ശനി ഗോചരം 2026", saturnTransit2026Desc: "ശനി ഗോചര ഫലങ്ങൾ",
+        jupiterTransit2026: "ഗുരു ഗോചരം 2026", jupiterTransit2026Desc: "ഗുരു ഗോചര പ്രവചനങ്ങൾ",
+        mercuryRetrograde: "ബുധ വക്രം", mercuryRetrogradeDesc: "വക്ര തീയതികളും ഗൈഡും",
+        eclipses2026: "ഗ്രഹണം 2026", eclipses2026Desc: "സൂര്യ ചന്ദ്ര ഗ്രഹണ ഗൈഡ്",
+        // Doshas dropdown
+        mangalDosh: "മംഗൾ ദോഷം", mangalDoshDesc: "മാംഗലിക ദോഷ ഗൈഡും പരിഹാരങ്ങളും",
+        kaalSarpDosh: "കാൽ സർപ്പ ദോഷം", kaalSarpDoshDesc: "12 തരങ്ങളും പരിഹാരങ്ങളും",
+        sadeSati: "സാഡേ സാതി", sadeSatiDesc: "ശനിയുടെ 7.5 വർഷത്തെ ഗോചരം",
+        pitraDosh: "പിതൃ ദോഷം", pitraDoshDesc: "പൂർവ്വിക കർമ്മവും പരിഹാരങ്ങളും",
+        mangalDoshCalculator: "മംഗൾ ദോഷ കാൽക്കുലേറ്റർ", mangalDoshCalculatorDesc: "മാംഗലിക സ്ഥിതി പരിശോധിക്കുക",
+        sadeSatiCalculator: "സാഡേ സാതി കാൽക്കുലേറ്റർ", sadeSatiCalculatorDesc: "സാഡേ സാതി ഘട്ടം പരിശോധിക്കുക"
+      },
     home: { trustedBadge: "50,000+ ഉപയോക്താക്കൾ വിശ്വസിക്കുന്നു", heroTitle: "നിങ്ങളുടെ വിധി കണ്ടെത്തുക", heroTitleHighlight: "ആധികാരിക വേദ ജ്യോതിഷത്തോടെ", heroSubtitle: "ജ്യോതിഷ ശാസ്ത്രത്തിൽ 20+ വർഷത്തെ അനുഭവമുള്ള വിദഗ്ധ ജ്യോതിഷികളിൽ നിന്ന് കൃത്യമായ കുണ്ഡലി വിശകലനം, നക്ഷത്ര ഉൾക്കാഴ്ചകൾ, വ്യക്തിഗത പ്രവചനങ്ങൾ എന്നിവ നേടുക.", getFreeKundli: "സൗജന്യ കുണ്ഡലി നേടുക", talkToAstrologer: "ജ്യോതിഷിയോട് സംസാരിക്കുക", chartsGenerated: "ചാർട്ടുകൾ സൃഷ്ടിച്ചു", happyClients: "സന്തുഷ്ട ഉപഭോക്താക്കൾ", expertAstrologers: "വിദഗ്ധ ജ്യോതിഷികൾ", userRating: "ഉപയോക്തൃ റേറ്റിംഗ്", featuresTitle: "സൗജന്യ ജ്യോതിഷ ഉപകരണങ്ങളും സേവനങ്ങളും", featuresDesc: "ശക്തമായ വേദ ജ്യോതിഷ ഉപകരണങ്ങൾ ആക്സസ് ചെയ്യുകയും വ്യക്തിഗത മാർഗ്ഗനിർദ്ദേശത്തിനായി വിദഗ്ധ ജ്യോതിഷികളുമായി ബന്ധപ്പെടുകയും ചെയ്യുക.", freeKundliTitle: "സൗജന്യ കുണ്ഡലി കാൽക്കുലേറ്റർ", freeKundliDesc: "ഗ്രഹ സ്ഥാനങ്ങൾ, ഭാവങ്ങൾ, ദോഷങ്ങൾ എന്നിവയോടെ നിങ്ങളുടെ പൂർണ്ണ ജനന ചാർട്ട് തൽക്ഷണം സൃഷ്ടിക്കുക.", moonSignTitle: "ചന്ദ്ര രാശി കാൽക്കുലേറ്റർ", moonSignDesc: "നിങ്ങളുടെ വേദ ചന്ദ്ര രാശി (ചന്ദ്ര രാശി) കണ്ടെത്തുകയും നിങ്ങളുടെ വൈകാരിക സ്വഭാവം മനസ്സിലാക്കുകയും ചെയ്യുക.", dailyPanchangTitle: "ദൈനിക പഞ്ചാംഗം", dailyPanchangDesc: "ഇന്നത്തെ തിഥി, നക്ഷത്രം, യോഗം, കരണം, രാഹു കാലം, ശുഭ സമയങ്ങൾ എന്നിവ നേടുക.", expertConsultationTitle: "വിദഗ്ധ കൺസൾട്ടേഷൻ", expertConsultationDesc: "വ്യക്തിഗത മാർഗ്ഗനിർദ്ദേശത്തിനും പ്രവചനങ്ങൾക്കുമായി പരിശോധിച്ച വേദ ജ്യോതിഷികളുമായി ബന്ധപ്പെടുക.", free: "സൗജന്യം", premium: "പ്രീമിയം", tryNow: "ഇപ്പോൾ ശ്രമിക്കുക", moreToolsBadge: "കൂടുതൽ സൗജന്യ ഉപകരണങ്ങൾ", moreToolsTitle: "ഞങ്ങളുടെ ജ്യോതിഷ കാൽക്കുലേറ്ററുകൾ പര്യവേക്ഷണം ചെയ്യുക", moreToolsDesc: "നിങ്ങളുടെ ജ്യോതിഷ പ്രൊഫൈൽ മനസ്സിലാക്കാൻ കൂടുതൽ സൗജന്യ ഉപകരണങ്ങൾ കണ്ടെത്തുക.", sunSignTitle: "സൂര്യ രാശി കാൽക്കുലേറ്റർ", sunSignDesc: "നിങ്ങളുടെ ജനന തീയതിയെ അടിസ്ഥാനമാക്കി നിങ്ങളുടെ പാശ്ചാത്യ രാശി കണ്ടെത്തുക.", ascendantTitle: "ലഗ്ന കാൽക്കുലേറ്റർ", ascendantDesc: "കൃത്യമായ പ്രവചനങ്ങൾക്കായി നിങ്ങളുടെ ഉദയ രാശി (ലഗ്നം) കണക്കാക്കുക.", loveCompatibilityTitle: "പ്രേമ അനുയോജ്യത", loveCompatibilityDesc: "നിങ്ങളുടെ പങ്കാളിയുമായുള്ള രാശി അനുയോജ്യത പരിശോധിക്കുക.", horoscopeMatchingTitle: "ജാതക പൊരുത്തം", horoscopeMatchingDesc: "വിവാഹ അനുയോജ്യതയ്ക്കുള്ള വിശദമായ ഗുണ മിലൻ.", mangalDoshTitle: "മംഗൾ ദോഷ കാൽക്കുലേറ്റർ", mangalDoshDesc: "നിങ്ങളുടെ ചാർട്ടിൽ മാംഗലിക ദോഷം ഉണ്ടോ എന്ന് പരിശോധിക്കുക.", sadeSatiTitle: "സാഡെ സാതി കാൽക്കുലേറ്റർ", sadeSatiDesc: "നിങ്ങളുടെ നിലവിലെ സാഡെ സാതി നില, ഘട്ടം എന്നിവ പരിശോധിക്കുക.", predictions2026Badge: "2026 പ്രവചനങ്ങൾ", predictions2026Title: "2026 നിങ്ങൾക്ക് എന്താണ് കൊണ്ടുവരുന്നത്?", predictions2026Desc: "2026-ലേക്കുള്ള വിശദമായ പ്രവചനങ്ങൾ, ഗ്രഹ ഗോചരങ്ങൾ, പ്രപഞ്ച സംഭവങ്ങൾ എന്നിവ പര്യവേക്ഷണം ചെയ്യുക.", horoscope2026Title: "2026 രാശിഫലം", horoscope2026Desc: "എല്ലാ 12 രാശികൾക്കുമുള്ള വാർഷിക പ്രവചനങ്ങൾ", saturnTransitTitle: "ശനി ഗോചരം 2026", saturnTransitDesc: "നിങ്ങളുടെ രാശിയിലെ ശനി ഗോചര ഫലങ്ങൾ", jupiterTransitTitle: "ഗുരു ഗോചരം 2026", jupiterTransitDesc: "ഗുരു ഗോചര അനുഗ്രഹങ്ങളും അവസരങ്ങളും", mercuryRetrogradeTitle: "ബുധ വക്ര 2026", mercuryRetrogradeDesc: "തീയതികൾ, ഫലങ്ങൾ, അതിജീവന ഗൈഡ്", eclipsesTitle: "ഗ്രഹണങ്ങൾ 2026", eclipsesDesc: "സൂര്യ, ചന്ദ്ര ഗ്രഹണ തീയതികളും ഫലങ്ങളും", festivalCalendarTitle: "ഉത്സവ കലണ്ടർ 2026", festivalCalendarDesc: "ഹിന്ദു ഉത്സവങ്ങളും പ്രധാന തീയതികളും", whyChooseUsBadge: "ഞങ്ങളെ എന്തുകൊണ്ട് തിരഞ്ഞെടുക്കണം", whyChooseUsTitle: "ആധികാരിക വേദ ജ്ഞാനം, ആധുനിക അനുഭവം", whyChooseUsDesc: "കൃത്യമായ, വ്യക്തിഗത ജ്യോതിഷ മാർഗ്ഗനിർദ്ദേശം നൽകാൻ ഞങ്ങൾ പുരാതന ജ്യോതിഷ ശാസ്ത്ര ജ്ഞാനത്തെ ആധുനിക സാങ്കേതികവിദ്യയുമായി സംയോജിപ്പിക്കുന്നു.", verifiedExperts: "10+ വർഷത്തെ അനുഭവമുള്ള പരിശോധിച്ച വിദഗ്ധ ജ്യോതിഷികൾ", availability247: "കൺസൾട്ടേഷനുകൾക്ക് 24/7 ലഭ്യത", satisfactionGuarantee: "100% സംതൃപ്തി ഗ്യാരണ്ടി", accurateCalculations: "സ്വിസ് എഫെമെറിസ് അടിസ്ഥാനമാക്കിയുള്ള കൃത്യമായ കണക്കുകൂട്ടലുകൾ", learnMoreAboutUs: "ഞങ്ങളെക്കുറിച്ച് കൂടുതലറിയുക", testimonialsBadge: "സാക്ഷ്യപത്രങ്ങൾ", testimonialsTitle: "ഞങ്ങളുടെ ഉപഭോക്താക്കൾ എന്താണ് പറയുന്നത്", testimonialsDesc: "ഞങ്ങളുടെ സേവനങ്ങളിലൂടെ മാർഗ്ഗനിർദ്ദേശം കണ്ടെത്തിയ ആയിരക്കണക്കിന് സംതൃപ്ത ഉപഭോക്താക്കളോടൊപ്പം ചേരുക.", ctaTitle: "നിങ്ങളുടെ പ്രപഞ്ച പാത കണ്ടെത്താൻ തയ്യാറാണോ?", ctaDesc: "ഇപ്പോൾ നിങ്ങളുടെ സൗജന്യ കുണ്ഡലി വിശകലനം നേടുകയും നിങ്ങളുടെ ജീവിതം, കരിയർ, ബന്ധങ്ങൾ, ഭാവി എന്നിവയെക്കുറിച്ചുള്ള ഉൾക്കാഴ്ചകൾ അൺലോക്ക് ചെയ്യുകയും ചെയ്യുക.", generateFreeKundli: "സൗജന്യ കുണ്ഡലി സൃഷ്ടിക്കുക", bookConsultation: "കൺസൾട്ടേഷൻ ബുക്ക് ചെയ്യുക" },
     common: { calculate: "കണക്കാക്കുക", submit: "സമർപ്പിക്കുക", download: "ഡൗൺലോഡ്", share: "പങ്കിടുക", copy: "പകർത്തുക", copied: "പകർത്തി!", loading: "ലോഡ് ചെയ്യുന്നു...", error: "പിശക്", success: "വിജയം", viewMore: "കൂടുതൽ കാണുക", readMore: "കൂടുതൽ വായിക്കുക", contactUs: "ഞങ്ങളെ ബന്ധപ്പെടുക", services: "സേവനങ്ങൾ", learn: "പഠിക്കുക", company: "കമ്പനി", legal: "നിയമപരം", name: "പേര്", birthDate: "ജനന തീയതി", birthTime: "ജനന സമയം", birthPlace: "ജനന സ്ഥലം", male: "പുരുഷൻ", female: "സ്ത്രീ", other: "മറ്റുള്ളവ", gender: "ലിംഗം", results: "ഫലങ്ങൾ", back: "പിന്നിലേക്ക്", next: "അടുത്തത്", close: "അടയ്ക്കുക", save: "സേവ് ചെയ്യുക" },
     footer: { tagline: "വിദഗ്ധ ജ്യോതിഷികളോടൊപ്പം ആധികാരിക വേദ ജ്യോതിഷ സേവനങ്ങൾ. കൃത്യമായ കുണ്ഡലി വിശകലനം, നക്ഷത്ര ഉൾക്കാഴ്ചകൾ, വ്യക്തിഗത കൺസൾട്ടേഷനുകൾ എന്നിവ നേടുക.", location: "ബെംഗളൂരു, കർണാടക, ഇന്ത്യ", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "സേവനങ്ങൾ", freeKundli: "സൗജന്യ കുണ്ഡലി", nakshatraFinder: "നക്ഷത്ര കണ്ടെത്തൽ", horoscopeMatching: "ജാതക പൊരുത്തം", consultation: "കൺസൾട്ടേഷൻ", dailyHoroscope: "ദൈനിക രാശിഫലം", learnTitle: "പഠിക്കുക", vedicAstrologyGuide: "വേദ ജ്യോതിഷ ഗൈഡ്", kundliAnalysis: "കുണ്ഡലി വിശകലനം", nakshatras27: "27 നക്ഷത്രങ്ങൾ", remediesDoshas: "പരിഹാരങ്ങളും ദോഷങ്ങളും", blog: "ബ്ലോഗ്", companyTitle: "കമ്പനി", aboutUs: "ഞങ്ങളെക്കുറിച്ച്", ourAstrologers: "ഞങ്ങളുടെ ജ്യോതിഷികൾ", contact: "ബന്ധപ്പെടുക", careers: "കരിയർ", press: "പ്രസ്സ്", legalTitle: "നിയമപരം", privacyPolicy: "സ്വകാര്യതാ നയം", termsOfService: "സേവന നിബന്ധനകൾ", refundPolicy: "റീഫണ്ട് നയം", disclaimer: "നിരാകരണം", disclaimerText: "ജ്യോതിഷ പ്രവചനങ്ങളും കൺസൾട്ടേഷനുകളും വിനോദത്തിനും മാർഗ്ഗനിർദ്ദേശത്തിനും മാത്രമുള്ളതാണ്. അവ പ്രൊഫഷണൽ മെഡിക്കൽ, നിയമ, സാമ്പത്തിക, മാനസിക ഉപദേശത്തിന് പകരമായി പരിഗണിക്കരുത്.", allRightsReserved: "എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.", disclaimerLabel: "നിരാകരണം:" },
@@ -788,9 +1199,44 @@ export const translations = {
     panchang: { title: "ദൈനിക പഞ്ചാംഗം", subtitle: "തിഥി, നക്ഷത്രം, യോഗം, കരണം, ശുഭ സമയങ്ങൾ എന്നിവയോടെ ഇന്നത്തെ വേദ കലണ്ടർ", selectLocation: "സ്ഥലം തിരഞ്ഞെടുക്കുക", selectDate: "തീയതി തിരഞ്ഞെടുക്കുക", today: "ഇന്ന്", tithi: "തിഥി", nakshatra: "നക്ഷത്രം", yoga: "യോഗം", karana: "കരണം", sunrise: "സൂര്യോദയം", sunset: "സൂര്യാസ്തമയം", moonrise: "ചന്ദ്രോദയം", moonset: "ചന്ദ്രാസ്തമയം", rahuKaal: "രാഹു കാലം", gulikaKaal: "ഗുളിക കാലം", yamagandaKaal: "യമഗണ്ഡം", abhijitMuhurta: "അഭിജിത് മുഹൂർത്തം", auspiciousTiming: "ശുഭ സമയം", inauspiciousTiming: "അശുഭ സമയം" },
   },
   
-  // Punjabi Translations
-  pa: {
-    nav: { tools: "ਸਾਧਨ", advanced: "ਉੱਨਤ", panchang: "ਪੰਚਾਂਗ", horoscope: "ਰਾਸ਼ੀਫਲ", doshas: "ਦੋਸ਼", consultation: "ਸਲਾਹ", about: "ਸਾਡੇ ਬਾਰੇ", freeKundli: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ", bookConsultation: "ਸਲਾਹ ਬੁੱਕ ਕਰੋ" },
+    // Punjabi Translations
+    pa: {
+      nav: { 
+        tools: "ਸਾਧਨ", advanced: "ਉੱਨਤ", panchang: "ਪੰਚਾਂਗ", horoscope: "ਰਾਸ਼ੀਫਲ", doshas: "ਦੋਸ਼", consultation: "ਸਲਾਹ", about: "ਸਾਡੇ ਬਾਰੇ", freeKundli: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ", freeKundliDesc: "ਆਪਣੀ ਜਨਮ ਕੁੰਡਲੀ ਤੁਰੰਤ ਬਣਾਓ", bookConsultation: "ਸਲਾਹ ਬੁੱਕ ਕਰੋ",
+        // Tools dropdown
+        aiAstrologer: "AI ਜੋਤਿਸ਼ੀ", aiAstrologerDesc: "ਤੁਰੰਤ ਮਾਰਗਦਰਸ਼ਨ ਲਈ ਸਾਡੇ AI ਨਾਲ ਚੈਟ ਕਰੋ",
+        nakshatraFinder: "ਨਕਸ਼ਤਰ ਖੋਜੀ", nakshatraFinderDesc: "ਆਪਣਾ ਚੰਦਰ ਨਕਸ਼ਤਰ ਖੋਜੋ",
+        horoscopeMatching: "ਕੁੰਡਲੀ ਮਿਲਾਨ", horoscopeMatchingDesc: "ਵਿਆਹ ਅਨੁਕੂਲਤਾ ਜਾਂਚੋ",
+        moonSignCalculator: "ਚੰਦਰ ਰਾਸ਼ੀ ਕੈਲਕੁਲੇਟਰ", moonSignCalculatorDesc: "ਆਪਣੀ ਵੈਦਿਕ ਚੰਦਰ ਰਾਸ਼ੀ ਖੋਜੋ",
+        sunSignCalculator: "ਸੂਰਜ ਰਾਸ਼ੀ ਕੈਲਕੁਲੇਟਰ", sunSignCalculatorDesc: "ਆਪਣੀ ਸੂਰਜ ਰਾਸ਼ੀ ਖੋਜੋ",
+        ascendantCalculator: "ਲਗਨ ਕੈਲਕੁਲੇਟਰ", ascendantCalculatorDesc: "ਆਪਣੀ ਉਦੈ ਰਾਸ਼ੀ ਗਣਨਾ ਕਰੋ",
+        loveCompatibility: "ਪ੍ਰੇਮ ਅਨੁਕੂਲਤਾ", loveCompatibilityDesc: "ਰਾਸ਼ੀ ਅਨੁਕੂਲਤਾ ਜਾਂਚੋ",
+        // Advanced dropdown
+        dashaCalculator: "ਦਸ਼ਾ ਕੈਲਕੁਲੇਟਰ", dashaCalculatorDesc: "ਵਿਮਸ਼ੋਤਰੀ ਦਸ਼ਾ ਗ੍ਰਹਿ ਕਾਲ",
+        navamsaChart: "ਨਵਾਂਸ਼ ਚਾਰਟ", navamsaChartDesc: "D-9 ਅਤੇ ਵਿਭਾਗੀ ਚਾਰਟ",
+        yogaCalculator: "ਯੋਗ ਕੈਲਕੁਲੇਟਰ", yogaCalculatorDesc: "ਰਾਜ ਯੋਗ, ਧਨ ਯੋਗ ਅਤੇ ਹੋਰ ਖੋਜੋ",
+        muhurtaCalculator: "ਮੁਹੂਰਤ ਕੈਲਕੁਲੇਟਰ", muhurtaCalculatorDesc: "ਸ਼ੁਭ ਸਮਾਂ ਖੋਜੋ",
+        transitAnalysis: "ਗੋਚਰ ਵਿਸ਼ਲੇਸ਼ਣ", transitAnalysisDesc: "ਮੌਜੂਦਾ ਗ੍ਰਹਿ ਪ੍ਰਭਾਵ (ਗੋਚਰ)",
+        // Panchang dropdown
+        dailyPanchang: "ਰੋਜ਼ਾਨਾ ਪੰਚਾਂਗ", dailyPanchangDesc: "ਅੱਜ ਦੀ ਤਿਥੀ, ਨਕਸ਼ਤਰ ਅਤੇ ਮੁਹੂਰਤ",
+        festivalCalendar2026: "ਤਿਉਹਾਰ ਕੈਲੰਡਰ 2026", festivalCalendar2026Desc: "ਹਿੰਦੂ ਤਿਉਹਾਰ ਅਤੇ ਮਹੱਤਵਪੂਰਨ ਤਾਰੀਖਾਂ",
+        // Horoscope dropdown
+        dailyHoroscope: "ਰੋਜ਼ਾਨਾ ਰਾਸ਼ੀਫਲ", dailyHoroscopeDesc: "ਅੱਜ ਦੀਆਂ ਭਵਿੱਖਬਾਣੀਆਂ",
+        weeklyHoroscope: "ਹਫ਼ਤਾਵਾਰੀ ਰਾਸ਼ੀਫਲ", weeklyHoroscopeDesc: "ਇਸ ਹਫ਼ਤੇ ਦੀ ਭਵਿੱਖਬਾਣੀ",
+        monthlyHoroscope: "ਮਾਸਿਕ ਰਾਸ਼ੀਫਲ", monthlyHoroscopeDesc: "ਮਾਸਿਕ ਭਵਿੱਖਬਾਣੀਆਂ",
+        horoscope2026: "2026 ਰਾਸ਼ੀਫਲ", horoscope2026Desc: "2026 ਲਈ ਸਾਲਾਨਾ ਭਵਿੱਖਬਾਣੀਆਂ",
+        saturnTransit2026: "ਸ਼ਨੀ ਗੋਚਰ 2026", saturnTransit2026Desc: "ਸ਼ਨੀ ਗੋਚਰ ਪ੍ਰਭਾਵ",
+        jupiterTransit2026: "ਗੁਰੂ ਗੋਚਰ 2026", jupiterTransit2026Desc: "ਗੁਰੂ ਗੋਚਰ ਭਵਿੱਖਬਾਣੀਆਂ",
+        mercuryRetrograde: "ਬੁੱਧ ਵਕਰੀ", mercuryRetrogradeDesc: "ਵਕਰੀ ਤਾਰੀਖਾਂ ਅਤੇ ਗਾਈਡ",
+        eclipses2026: "ਗ੍ਰਹਿਣ 2026", eclipses2026Desc: "ਸੂਰਜ ਅਤੇ ਚੰਦਰ ਗ੍ਰਹਿਣ ਗਾਈਡ",
+        // Doshas dropdown
+        mangalDosh: "ਮੰਗਲ ਦੋਸ਼", mangalDoshDesc: "ਮਾਂਗਲਿਕ ਦੋਸ਼ ਗਾਈਡ ਅਤੇ ਉਪਾਅ",
+        kaalSarpDosh: "ਕਾਲ ਸਰਪ ਦੋਸ਼", kaalSarpDoshDesc: "12 ਕਿਸਮਾਂ ਅਤੇ ਉਪਾਅ",
+        sadeSati: "ਸਾਢੇ ਸਾਤੀ", sadeSatiDesc: "ਸ਼ਨੀ ਦਾ 7.5 ਸਾਲ ਦਾ ਗੋਚਰ",
+        pitraDosh: "ਪਿਤਰ ਦੋਸ਼", pitraDoshDesc: "ਪੂਰਵਜਾਂ ਦਾ ਕਰਮ ਅਤੇ ਉਪਾਅ",
+        mangalDoshCalculator: "ਮੰਗਲ ਦੋਸ਼ ਕੈਲਕੁਲੇਟਰ", mangalDoshCalculatorDesc: "ਮਾਂਗਲਿਕ ਸਥਿਤੀ ਜਾਂਚੋ",
+        sadeSatiCalculator: "ਸਾਢੇ ਸਾਤੀ ਕੈਲਕੁਲੇਟਰ", sadeSatiCalculatorDesc: "ਸਾਢੇ ਸਾਤੀ ਪੜਾਅ ਜਾਂਚੋ"
+      },
     home: { trustedBadge: "50,000+ ਉਪਭੋਗਤਾਵਾਂ ਦੁਆਰਾ ਭਰੋਸੇਯੋਗ", heroTitle: "ਆਪਣੀ ਕਿਸਮਤ ਖੋਜੋ", heroTitleHighlight: "ਪ੍ਰਮਾਣਿਕ ਵੈਦਿਕ ਜੋਤਿਸ਼ ਨਾਲ", heroSubtitle: "ਜੋਤਿਸ਼ ਸ਼ਾਸਤਰ ਵਿੱਚ 20+ ਸਾਲਾਂ ਦੇ ਤਜ਼ਰਬੇ ਵਾਲੇ ਮਾਹਰ ਜੋਤਿਸ਼ੀਆਂ ਤੋਂ ਸਹੀ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ, ਨਕਸ਼ਤਰ ਸੂਝ ਅਤੇ ਵਿਅਕਤੀਗਤ ਭਵਿੱਖਬਾਣੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ।", getFreeKundli: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ ਪ੍ਰਾਪਤ ਕਰੋ", talkToAstrologer: "ਜੋਤਿਸ਼ੀ ਨਾਲ ਗੱਲ ਕਰੋ", chartsGenerated: "ਚਾਰਟ ਬਣਾਏ ਗਏ", happyClients: "ਖੁਸ਼ ਗਾਹਕ", expertAstrologers: "ਮਾਹਰ ਜੋਤਿਸ਼ੀ", userRating: "ਉਪਭੋਗਤਾ ਰੇਟਿੰਗ", featuresTitle: "ਮੁਫ਼ਤ ਜੋਤਿਸ਼ ਸਾਧਨ ਅਤੇ ਸੇਵਾਵਾਂ", featuresDesc: "ਸ਼ਕਤੀਸ਼ਾਲੀ ਵੈਦਿਕ ਜੋਤਿਸ਼ ਸਾਧਨਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ ਅਤੇ ਵਿਅਕਤੀਗਤ ਮਾਰਗਦਰਸ਼ਨ ਲਈ ਮਾਹਰ ਜੋਤਿਸ਼ੀਆਂ ਨਾਲ ਜੁੜੋ।", freeKundliTitle: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ ਕੈਲਕੁਲੇਟਰ", freeKundliDesc: "ਗ੍ਰਹਿ ਸਥਿਤੀਆਂ, ਭਾਵਾਂ ਅਤੇ ਦੋਸ਼ਾਂ ਨਾਲ ਆਪਣੀ ਪੂਰੀ ਜਨਮ ਕੁੰਡਲੀ ਤੁਰੰਤ ਬਣਾਓ।", moonSignTitle: "ਚੰਦਰ ਰਾਸ਼ੀ ਕੈਲਕੁਲੇਟਰ", moonSignDesc: "ਆਪਣੀ ਵੈਦਿਕ ਚੰਦਰ ਰਾਸ਼ੀ (ਚੰਦਰ ਰਾਸ਼ੀ) ਖੋਜੋ ਅਤੇ ਆਪਣੇ ਭਾਵਨਾਤਮਕ ਸੁਭਾਅ ਨੂੰ ਸਮਝੋ।", dailyPanchangTitle: "ਰੋਜ਼ਾਨਾ ਪੰਚਾਂਗ", dailyPanchangDesc: "ਅੱਜ ਦੀ ਤਿਥੀ, ਨਕਸ਼ਤਰ, ਯੋਗ, ਕਰਣ, ਰਾਹੂ ਕਾਲ ਅਤੇ ਸ਼ੁਭ ਸਮੇਂ ਪ੍ਰਾਪਤ ਕਰੋ।", expertConsultationTitle: "ਮਾਹਰ ਸਲਾਹ", expertConsultationDesc: "ਵਿਅਕਤੀਗਤ ਮਾਰਗਦਰਸ਼ਨ ਅਤੇ ਭਵਿੱਖਬਾਣੀਆਂ ਲਈ ਪ੍ਰਮਾਣਿਤ ਵੈਦਿਕ ਜੋਤਿਸ਼ੀਆਂ ਨਾਲ ਜੁੜੋ।", free: "ਮੁਫ਼ਤ", premium: "ਪ੍ਰੀਮੀਅਮ", tryNow: "ਹੁਣੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ", moreToolsBadge: "ਹੋਰ ਮੁਫ਼ਤ ਸਾਧਨ", moreToolsTitle: "ਸਾਡੇ ਜੋਤਿਸ਼ ਕੈਲਕੁਲੇਟਰਾਂ ਦੀ ਖੋਜ ਕਰੋ", moreToolsDesc: "ਆਪਣੀ ਜੋਤਿਸ਼ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਮਝਣ ਲਈ ਹੋਰ ਮੁਫ਼ਤ ਸਾਧਨ ਖੋਜੋ।", sunSignTitle: "ਸੂਰਜ ਰਾਸ਼ੀ ਕੈਲਕੁਲੇਟਰ", sunSignDesc: "ਆਪਣੀ ਜਨਮ ਮਿਤੀ ਦੇ ਆਧਾਰ 'ਤੇ ਆਪਣੀ ਪੱਛਮੀ ਰਾਸ਼ੀ ਲੱਭੋ।", ascendantTitle: "ਲਗਨ ਕੈਲਕੁਲੇਟਰ", ascendantDesc: "ਸਹੀ ਭਵਿੱਖਬਾਣੀਆਂ ਲਈ ਆਪਣੀ ਉਦੈ ਰਾਸ਼ੀ (ਲਗਨ) ਦੀ ਗਣਨਾ ਕਰੋ।", loveCompatibilityTitle: "ਪ੍ਰੇਮ ਅਨੁਕੂਲਤਾ", loveCompatibilityDesc: "ਆਪਣੇ ਸਾਥੀ ਨਾਲ ਰਾਸ਼ੀ ਅਨੁਕੂਲਤਾ ਦੀ ਜਾਂਚ ਕਰੋ।", horoscopeMatchingTitle: "ਕੁੰਡਲੀ ਮਿਲਾਨ", horoscopeMatchingDesc: "ਵਿਆਹ ਅਨੁਕੂਲਤਾ ਲਈ ਵਿਸਤ੍ਰਿਤ ਗੁਣ ਮਿਲਾਨ।", mangalDoshTitle: "ਮੰਗਲ ਦੋਸ਼ ਕੈਲਕੁਲੇਟਰ", mangalDoshDesc: "ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਕੁੰਡਲੀ ਵਿੱਚ ਮਾਂਗਲਿਕ ਦੋਸ਼ ਹੈ ਜਾਂ ਨਹੀਂ।", sadeSatiTitle: "ਸਾਢੇ ਸਾਤੀ ਕੈਲਕੁਲੇਟਰ", sadeSatiDesc: "ਆਪਣੀ ਮੌਜੂਦਾ ਸਾਢੇ ਸਾਤੀ ਸਥਿਤੀ ਅਤੇ ਪੜਾਅ ਦੀ ਜਾਂਚ ਕਰੋ।", predictions2026Badge: "2026 ਭਵਿੱਖਬਾਣੀਆਂ", predictions2026Title: "2026 ਤੁਹਾਡੇ ਲਈ ਕੀ ਲੈ ਕੇ ਆਉਂਦਾ ਹੈ?", predictions2026Desc: "2026 ਲਈ ਵਿਸਤ੍ਰਿਤ ਭਵਿੱਖਬਾਣੀਆਂ, ਗ੍ਰਹਿ ਗੋਚਰ ਅਤੇ ਬ੍ਰਹਿਮੰਡੀ ਘਟਨਾਵਾਂ ਦੀ ਖੋਜ ਕਰੋ।", horoscope2026Title: "2026 ਰਾਸ਼ੀਫਲ", horoscope2026Desc: "ਸਾਰੀਆਂ 12 ਰਾਸ਼ੀਆਂ ਲਈ ਸਾਲਾਨਾ ਭਵਿੱਖਬਾਣੀਆਂ", saturnTransitTitle: "ਸ਼ਨੀ ਗੋਚਰ 2026", saturnTransitDesc: "ਤੁਹਾਡੀ ਰਾਸ਼ੀ 'ਤੇ ਸ਼ਨੀ ਗੋਚਰ ਦੇ ਪ੍ਰਭਾਵ", jupiterTransitTitle: "ਗੁਰੂ ਗੋਚਰ 2026", jupiterTransitDesc: "ਗੁਰੂ ਗੋਚਰ ਦੀਆਂ ਅਸੀਸਾਂ ਅਤੇ ਮੌਕੇ", mercuryRetrogradeTitle: "ਬੁੱਧ ਵਕਰੀ 2026", mercuryRetrogradeDesc: "ਤਾਰੀਖਾਂ, ਪ੍ਰਭਾਵ ਅਤੇ ਬਚਾਅ ਗਾਈਡ", eclipsesTitle: "ਗ੍ਰਹਿਣ 2026", eclipsesDesc: "ਸੂਰਜ ਅਤੇ ਚੰਦਰ ਗ੍ਰਹਿਣ ਦੀਆਂ ਤਾਰੀਖਾਂ ਅਤੇ ਪ੍ਰਭਾਵ", festivalCalendarTitle: "ਤਿਉਹਾਰ ਕੈਲੰਡਰ 2026", festivalCalendarDesc: "ਹਿੰਦੂ ਤਿਉਹਾਰ ਅਤੇ ਮਹੱਤਵਪੂਰਨ ਤਾਰੀਖਾਂ", whyChooseUsBadge: "ਸਾਨੂੰ ਕਿਉਂ ਚੁਣੋ", whyChooseUsTitle: "ਪ੍ਰਮਾਣਿਕ ਵੈਦਿਕ ਗਿਆਨ, ਆਧੁਨਿਕ ਅਨੁਭਵ", whyChooseUsDesc: "ਸਹੀ, ਵਿਅਕਤੀਗਤ ਜੋਤਿਸ਼ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਦਾਨ ਕਰਨ ਲਈ ਅਸੀਂ ਪ੍ਰਾਚੀਨ ਜੋਤਿਸ਼ ਸ਼ਾਸਤਰ ਗਿਆਨ ਨੂੰ ਆਧੁਨਿਕ ਤਕਨਾਲੋਜੀ ਨਾਲ ਜੋੜਦੇ ਹਾਂ।", verifiedExperts: "10+ ਸਾਲਾਂ ਦੇ ਤਜ਼ਰਬੇ ਵਾਲੇ ਪ੍ਰਮਾਣਿਤ ਮਾਹਰ ਜੋਤਿਸ਼ੀ", availability247: "ਸਲਾਹ ਲਈ 24/7 ਉਪਲਬਧਤਾ", satisfactionGuarantee: "100% ਸੰਤੁਸ਼ਟੀ ਗਾਰੰਟੀ", accurateCalculations: "ਸਵਿਸ ਐਫੇਮੇਰਿਸ ਅਧਾਰਤ ਸਹੀ ਗਣਨਾਵਾਂ", learnMoreAboutUs: "ਸਾਡੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ", testimonialsBadge: "ਪ੍ਰਸ਼ੰਸਾ ਪੱਤਰ", testimonialsTitle: "ਸਾਡੇ ਗਾਹਕ ਕੀ ਕਹਿੰਦੇ ਹਨ", testimonialsDesc: "ਸਾਡੀਆਂ ਸੇਵਾਵਾਂ ਰਾਹੀਂ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਲੇ ਹਜ਼ਾਰਾਂ ਸੰਤੁਸ਼ਟ ਗਾਹਕਾਂ ਨਾਲ ਜੁੜੋ।", ctaTitle: "ਆਪਣਾ ਬ੍ਰਹਿਮੰਡੀ ਮਾਰਗ ਖੋਜਣ ਲਈ ਤਿਆਰ ਹੋ?", ctaDesc: "ਹੁਣੇ ਆਪਣਾ ਮੁਫ਼ਤ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਆਪਣੀ ਜ਼ਿੰਦਗੀ, ਕਰੀਅਰ, ਰਿਸ਼ਤਿਆਂ ਅਤੇ ਭਵਿੱਖ ਬਾਰੇ ਸੂਝ ਅਨਲੌਕ ਕਰੋ।", generateFreeKundli: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ ਬਣਾਓ", bookConsultation: "ਸਲਾਹ ਬੁੱਕ ਕਰੋ" },
     common: { calculate: "ਗਣਨਾ ਕਰੋ", submit: "ਜਮ੍ਹਾਂ ਕਰੋ", download: "ਡਾਊਨਲੋਡ", share: "ਸਾਂਝਾ ਕਰੋ", copy: "ਕਾਪੀ", copied: "ਕਾਪੀ ਹੋ ਗਿਆ!", loading: "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...", error: "ਗਲਤੀ", success: "ਸਫਲ", viewMore: "ਹੋਰ ਦੇਖੋ", readMore: "ਹੋਰ ਪੜ੍ਹੋ", contactUs: "ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ", services: "ਸੇਵਾਵਾਂ", learn: "ਸਿੱਖੋ", company: "ਕੰਪਨੀ", legal: "ਕਾਨੂੰਨੀ", name: "ਨਾਮ", birthDate: "ਜਨਮ ਮਿਤੀ", birthTime: "ਜਨਮ ਸਮਾਂ", birthPlace: "ਜਨਮ ਸਥਾਨ", male: "ਮਰਦ", female: "ਔਰਤ", other: "ਹੋਰ", gender: "ਲਿੰਗ", results: "ਨਤੀਜੇ", back: "ਪਿੱਛੇ", next: "ਅੱਗੇ", close: "ਬੰਦ ਕਰੋ", save: "ਸੇਵ ਕਰੋ" },
     footer: { tagline: "ਮਾਹਰ ਜੋਤਿਸ਼ੀਆਂ ਨਾਲ ਪ੍ਰਮਾਣਿਕ ਵੈਦਿਕ ਜੋਤਿਸ਼ ਸੇਵਾਵਾਂ। ਸਹੀ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ, ਨਕਸ਼ਤਰ ਸੂਝ ਅਤੇ ਵਿਅਕਤੀਗਤ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ।", location: "ਬੈਂਗਲੁਰੂ, ਕਰਨਾਟਕ, ਭਾਰਤ", email: "contact@vedicstarastro.com", phone: "+91 98765 43210", servicesTitle: "ਸੇਵਾਵਾਂ", freeKundli: "ਮੁਫ਼ਤ ਕੁੰਡਲੀ", nakshatraFinder: "ਨਕਸ਼ਤਰ ਖੋਜ", horoscopeMatching: "ਕੁੰਡਲੀ ਮਿਲਾਨ", consultation: "ਸਲਾਹ", dailyHoroscope: "ਰੋਜ਼ਾਨਾ ਰਾਸ਼ੀਫਲ", learnTitle: "ਸਿੱਖੋ", vedicAstrologyGuide: "ਵੈਦਿਕ ਜੋਤਿਸ਼ ਗਾਈਡ", kundliAnalysis: "ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ", nakshatras27: "27 ਨਕਸ਼ਤਰ", remediesDoshas: "ਉਪਾਅ ਅਤੇ ਦੋਸ਼", blog: "ਬਲੌਗ", companyTitle: "ਕੰਪਨੀ", aboutUs: "ਸਾਡੇ ਬਾਰੇ", ourAstrologers: "ਸਾਡੇ ਜੋਤਿਸ਼ੀ", contact: "ਸੰਪਰਕ", careers: "ਕਰੀਅਰ", press: "ਪ੍ਰੈਸ", legalTitle: "ਕਾਨੂੰਨੀ", privacyPolicy: "ਗੋਪਨੀਯਤਾ ਨੀਤੀ", termsOfService: "ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ", refundPolicy: "ਰਿਫੰਡ ਨੀਤੀ", disclaimer: "ਬੇਦਾਅਵਾ", disclaimerText: "ਜੋਤਿਸ਼ ਭਵਿੱਖਬਾਣੀਆਂ ਅਤੇ ਸਲਾਹ ਸਿਰਫ਼ ਮਨੋਰੰਜਨ ਅਤੇ ਮਾਰਗਦਰਸ਼ਨ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਹਨ। ਇਨ੍ਹਾਂ ਨੂੰ ਪੇਸ਼ੇਵਰ ਡਾਕਟਰੀ, ਕਾਨੂੰਨੀ, ਵਿੱਤੀ ਜਾਂ ਮਨੋਵਿਗਿਆਨਕ ਸਲਾਹ ਦੇ ਬਦਲ ਵਜੋਂ ਨਹੀਂ ਮੰਨਿਆ ਜਾਣਾ ਚਾਹੀਦਾ।", allRightsReserved: "ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।", disclaimerLabel: "ਬੇਦਾਅਵਾ:" },
