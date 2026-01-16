@@ -27,6 +27,17 @@ export function Header() {
       ],
     },
     {
+      name: "Advanced",
+      href: "#",
+      children: [
+        { name: "Dasha Calculator", href: "/tools/dasha-calculator", description: "Vimshottari Dasha planetary periods" },
+        { name: "Navamsa Chart", href: "/tools/navamsa-chart", description: "D-9 & divisional charts" },
+        { name: "Yoga Calculator", href: "/tools/yoga-calculator", description: "Detect Raj Yoga, Dhana Yoga & more" },
+        { name: "Muhurta Calculator", href: "/tools/muhurta-calculator", description: "Find auspicious timing" },
+        { name: "Transit Analysis", href: "/tools/transit-calculator", description: "Current planetary effects (Gochar)" },
+      ],
+    },
+    {
       name: t.nav.panchang,
       href: "#",
       children: [
