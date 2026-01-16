@@ -370,14 +370,12 @@ export default function NakshatrasGuidePage() {
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Complete Guide</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('guides.badge', 'Complete Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            27 Nakshatras: Complete Guide to Vedic Lunar Mansions
+            {t('guides.nakshatras.title', '27 Nakshatras: Complete Guide to Vedic Lunar Mansions')}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Discover the profound wisdom of the 27 Nakshatras in Vedic astrology. Learn about 
-            each lunar constellation&apos;s characteristics, ruling deity, and influence on personality 
-            and destiny.
+            {t('guides.nakshatras.subtitle', "Discover the profound wisdom of the 27 Nakshatras in Vedic astrology. Learn about each lunar constellation's characteristics, ruling deity, and influence on personality and destiny.")}
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">

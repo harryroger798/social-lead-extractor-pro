@@ -105,14 +105,12 @@ export default function KundliAnalysisGuidePage() {
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Complete Guide</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('guides.badge', 'Complete Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Kundli Birth Chart Analysis: Complete Guide to Reading Your Horoscope
+            {t('guides.kundli.title', 'Kundli Birth Chart Analysis: Complete Guide to Reading Your Horoscope')}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Master the art of Kundli interpretation with this comprehensive guide. Learn how to 
-            analyze houses, planets, aspects, yogas, and dashas to unlock the secrets of your 
-            birth chart.
+            {t('guides.kundli.subtitle', 'Master the art of Kundli interpretation with this comprehensive guide. Learn how to analyze houses, planets, aspects, yogas, and dashas to unlock the secrets of your birth chart.')}
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">

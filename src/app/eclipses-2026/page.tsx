@@ -109,13 +109,12 @@ export default function Eclipses2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-indigo-100 text-indigo-800">Celestial Events</Badge>
+          <Badge className="mb-4 bg-indigo-100 text-indigo-800">{t('eclipses.badge', 'Celestial Events')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Solar & Lunar Eclipses 2026
+            {t('eclipses.title', 'Solar & Lunar Eclipses 2026')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to all eclipses in 2026. Learn dates, timings, visibility, 
-            astrological effects, and important dos and don&apos;ts during Grahan.
+            {t('eclipses.subtitle', "Complete guide to all eclipses in 2026. Learn dates, timings, visibility, astrological effects, and important dos and don'ts during Grahan.")}
           </p>
         </div>
 

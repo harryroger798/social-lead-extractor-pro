@@ -165,13 +165,12 @@ export default function MangalDoshCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-red-100 text-red-800">Free Calculator</Badge>
+          <Badge className="mb-4 bg-red-100 text-red-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Mangal Dosh Calculator (Manglik Check)
+            {t('calculator.mangalDosh.title', 'Mangal Dosh Calculator (Manglik Check)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Check if you have Mangal Dosha (Kuja Dosha) in your birth chart. Understand its 
-            effects on marriage and learn about effective remedies.
+            {t('calculator.mangalDosh.subtitle', 'Check if you have Mangal Dosha (Kuja Dosha) in your birth chart. Understand its effects on marriage and learn about effective remedies.')}
           </p>
         </div>
 
@@ -180,17 +179,17 @@ export default function MangalDoshCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-red-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Accurate birth time helps determine Mars placement precisely
+                {t('calculator.mangalDosh.birthTimeNote', 'Accurate birth time helps determine Mars placement precisely')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="date" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Date of Birth
+                  {t('calculator.dateOfBirth', 'Date of Birth')}
                 </Label>
                 <Input
                   id="date"
@@ -204,7 +203,7 @@ export default function MangalDoshCalculatorPage() {
               <div className="space-y-2">
                 <Label htmlFor="time" className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Time of Birth
+                  {t('calculator.timeOfBirth', 'Time of Birth')}
                 </Label>
                 <Input
                   id="time"
@@ -213,18 +212,18 @@ export default function MangalDoshCalculatorPage() {
                   onChange={(e) => setBirthTime(e.target.value)}
                 />
                 <p className="text-xs text-gray-500">
-                  Birth time affects house placement of Mars
+                  {t('calculator.mangalDosh.marsPlacementNote', 'Birth time affects house placement of Mars')}
                 </p>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="place" className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Place of Birth
+                  {t('calculator.placeOfBirth', 'Place of Birth')}
                 </Label>
                 <LocationInput
                   id="place"
-                  placeholder="Search city..."
+                  placeholder={t('calculator.searchCity', 'Search city...')}
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
                   onLocationSelect={(loc) => setBirthPlace(loc)}
@@ -239,12 +238,12 @@ export default function MangalDoshCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    Analyzing Mars Position...
+                    {t('calculator.mangalDosh.analyzing', 'Analyzing Mars Position...')}
                   </>
                 ) : (
                   <>
                     <AlertTriangle className="w-4 h-4 mr-2" />
-                    Check Mangal Dosh
+                    {t('calculator.mangalDosh.checkMangalDosh', 'Check Mangal Dosh')}
                   </>
                 )}
               </Button>

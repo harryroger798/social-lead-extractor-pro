@@ -13,11 +13,11 @@ export function Header() {
   
   const navigation = [
     {
-      name: t.nav.tools,
+      name: t('nav.tools', 'Tools'),
       href: "#",
       children: [
         { name: "AI Astrologer", href: "/ai-astrologer", description: "Chat with our AI for instant guidance" },
-        { name: t.nav.freeKundli, href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
+        { name: t('nav.freeKundli', 'Free Kundli'), href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
         { name: "Nakshatra Finder", href: "/tools/nakshatra-finder", description: "Discover your lunar constellation" },
         { name: "Horoscope Matching", href: "/tools/horoscope-matching", description: "Check marriage compatibility" },
         { name: "Moon Sign Calculator", href: "/tools/moon-sign-calculator", description: "Find your Vedic Moon sign" },
@@ -38,7 +38,7 @@ export function Header() {
       ],
     },
     {
-      name: t.nav.panchang,
+      name: t('nav.panchang', 'Panchang'),
       href: "#",
       children: [
         { name: "Daily Panchang", href: "/panchang", description: "Today's tithi, nakshatra & muhurat" },
@@ -46,7 +46,7 @@ export function Header() {
       ],
     },
     {
-      name: t.nav.horoscope,
+      name: t('nav.horoscope', 'Horoscope'),
       href: "#",
       children: [
         { name: "Daily Horoscope", href: "/daily-horoscope", description: "Today's predictions" },
@@ -60,7 +60,7 @@ export function Header() {
       ],
     },
     {
-      name: t.nav.doshas,
+      name: t('nav.doshas', 'Doshas'),
       href: "#",
       children: [
         { name: "Mangal Dosh", href: "/doshas/mangal-dosh", description: "Manglik dosha guide & remedies" },
@@ -71,8 +71,8 @@ export function Header() {
         { name: "Sade Sati Calculator", href: "/tools/sade-sati-calculator", description: "Check Sade Sati phase" },
       ],
     },
-    { name: t.nav.consultation, href: "/consultation" },
-    { name: t.nav.about, href: "/about" },
+    { name: t('nav.consultation', 'Consultation'), href: "/consultation" },
+    { name: t('nav.about', 'About'), href: "/about" },
   ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -142,10 +142,10 @@ export function Header() {
           <div className="hidden lg:flex lg:items-center lg:gap-x-4">
                         <LanguageSwitcher />
                         <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
-                          {t.nav.freeKundli}
+                          {t('nav.freeKundli', 'Free Kundli')}
                         </Button>
                         <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
-                          {t.nav.bookConsultation}
+                          {t('nav.bookConsultation', 'Book Consultation')}
                         </Button>
           </div>
 
@@ -200,10 +200,10 @@ export function Header() {
                                   <LanguageSwitcher />
                                 </div>
                                 <Button variant="outline" className="w-full border-amber-500 text-amber-600">
-                                  {t.nav.freeKundli}
+                                  {t('nav.freeKundli', 'Free Kundli')}
                                 </Button>
                                 <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
-                                  {t.nav.bookConsultation}
+                                  {t('nav.bookConsultation', 'Book Consultation')}
                                 </Button>
               </div>
             </div>

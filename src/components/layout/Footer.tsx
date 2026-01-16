@@ -17,31 +17,31 @@ export function Footer() {
 
   const footerLinks = {
     services: [
-      { name: t.footer.freeKundli, href: "/tools/kundli-calculator" },
-      { name: t.footer.nakshatraFinder, href: "/tools/nakshatra-finder" },
-      { name: t.footer.horoscopeMatching, href: "/tools/horoscope-matching" },
-      { name: t.footer.consultation, href: "/consultation" },
-      { name: t.footer.dailyHoroscope, href: "/daily-horoscope" },
+      { name: t('footer.freeKundli', 'Free Kundli'), href: "/tools/kundli-calculator" },
+      { name: t('footer.nakshatraFinder', 'Nakshatra Finder'), href: "/tools/nakshatra-finder" },
+      { name: t('footer.horoscopeMatching', 'Horoscope Matching'), href: "/tools/horoscope-matching" },
+      { name: t('footer.consultation', 'Consultation'), href: "/consultation" },
+      { name: t('footer.dailyHoroscope', 'Daily Horoscope'), href: "/daily-horoscope" },
     ],
     learn: [
-      { name: t.footer.vedicAstrologyGuide, href: "/vedic-astrology-guide-complete-2025" },
-      { name: t.footer.kundliAnalysis, href: "/kundli-birth-chart-analysis-guide" },
-      { name: t.footer.nakshatras27, href: "/27-nakshatras-complete-guide-vedic-astrology" },
-      { name: t.footer.remediesDoshas, href: "/vedic-astrology-remedies-doshas-guide" },
-      { name: t.footer.blog, href: "/blog" },
+      { name: t('footer.vedicAstrologyGuide', 'Vedic Astrology Guide'), href: "/vedic-astrology-guide-complete-2025" },
+      { name: t('footer.kundliAnalysis', 'Kundli Analysis'), href: "/kundli-birth-chart-analysis-guide" },
+      { name: t('footer.nakshatras27', '27 Nakshatras'), href: "/27-nakshatras-complete-guide-vedic-astrology" },
+      { name: t('footer.remediesDoshas', 'Remedies & Doshas'), href: "/vedic-astrology-remedies-doshas-guide" },
+      { name: t('footer.blog', 'Blog'), href: "/blog" },
     ],
     company: [
-      { name: t.footer.aboutUs, href: "/about" },
-      { name: t.footer.ourAstrologers, href: "/astrologers" },
-      { name: t.footer.contact, href: "/contact" },
-      { name: t.footer.careers, href: "/careers" },
-      { name: t.footer.press, href: "/press" },
+      { name: t('footer.aboutUs', 'About Us'), href: "/about" },
+      { name: t('footer.ourAstrologers', 'Our Astrologers'), href: "/astrologers" },
+      { name: t('footer.contact', 'Contact'), href: "/contact" },
+      { name: t('footer.careers', 'Careers'), href: "/careers" },
+      { name: t('footer.press', 'Press'), href: "/press" },
     ],
     legal: [
-      { name: t.footer.privacyPolicy, href: "/privacy-policy" },
-      { name: t.footer.termsOfService, href: "/terms-of-service" },
-      { name: t.footer.refundPolicy, href: "/refund-policy" },
-      { name: t.footer.disclaimer, href: "/disclaimer" },
+      { name: t('footer.privacyPolicy', 'Privacy Policy'), href: "/privacy-policy" },
+      { name: t('footer.termsOfService', 'Terms of Service'), href: "/terms-of-service" },
+      { name: t('footer.refundPolicy', 'Refund Policy'), href: "/refund-policy" },
+      { name: t('footer.disclaimer', 'Disclaimer'), href: "/disclaimer" },
     ],
   };
   return (
@@ -60,12 +60,12 @@ export function Footer() {
               <span className="text-xl font-bold text-white">VedicStarAstro</span>
             </Link>
             <p className="text-sm text-gray-400 mb-6 max-w-xs">
-              {t.footer.tagline}
+              {t('footer.tagline', 'Authentic Vedic Astrology services with expert astrologers. Get accurate Kundli analysis, Nakshatra insights, and personalized consultations.')}
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-amber-500" />
-                <span>{t.footer.location}</span>
+                <span>{t('footer.location', 'Bangalore, Karnataka, India')}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-amber-500" />
@@ -83,7 +83,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4">{t.footer.servicesTitle}</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">{t('footer.servicesTitle', 'Services')}</h3>
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
@@ -96,7 +96,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4">{t.footer.learnTitle}</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">{t('footer.learnTitle', 'Learn')}</h3>
             <ul className="space-y-3">
               {footerLinks.learn.map((link) => (
                 <li key={link.name}>
@@ -109,7 +109,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4">{t.footer.companyTitle}</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">{t('footer.companyTitle', 'Company')}</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -122,7 +122,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4">{t.footer.legalTitle}</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">{t('footer.legalTitle', 'Legal')}</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
@@ -152,14 +152,14 @@ export function Footer() {
               ))}
             </div>
             <p className="text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} VedicStarAstro. {t.footer.allRightsReserved}
+              &copy; {new Date().getFullYear()} VedicStarAstro. {t('footer.allRightsReserved', 'All rights reserved.')}
             </p>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-800">
           <p className="text-xs text-gray-500 text-center max-w-4xl mx-auto">
-            <strong>{t.footer.disclaimerLabel}</strong> {t.footer.disclaimerText}
+            <strong>{t('footer.disclaimerLabel', 'Disclaimer:')}</strong> {t('footer.disclaimerText', 'Astrological predictions and consultations are for entertainment and guidance purposes only. They should not be considered as substitutes for professional medical, legal, financial, or psychological advice. Individual results may vary. Past predictions do not guarantee future accuracy.')}
           </p>
         </div>
       </div>

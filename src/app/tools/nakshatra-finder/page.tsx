@@ -621,13 +621,12 @@ export default function NakshatraFinderPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-green-100 text-green-800">Free Tool</Badge>
+          <Badge className="mb-4 bg-green-100 text-green-800">{t('calculator.freeTool', 'Free Tool')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Nakshatra Finder
+            {t('calculator.nakshatra.title', 'Nakshatra Finder')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover your birth Nakshatra (lunar constellation) and understand its profound 
-            influence on your personality, destiny, and life path.
+            {t('calculator.nakshatra.subtitle', 'Discover your birth Nakshatra (lunar constellation) and understand its profound influence on your personality, destiny, and life path.')}
           </p>
         </div>
 
@@ -636,10 +635,10 @@ export default function NakshatraFinderPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Moon className="w-5 h-5 text-amber-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Your Nakshatra is determined by the Moon&apos;s position at birth
+                {t('calculator.nakshatra.moonPositionNote', "Your Nakshatra is determined by the Moon's position at birth")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -647,7 +646,7 @@ export default function NakshatraFinderPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date"
@@ -661,7 +660,7 @@ export default function NakshatraFinderPage() {
                 <div className="space-y-2">
                   <Label htmlFor="time" className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Time of Birth
+                    {t('calculator.timeOfBirth', 'Time of Birth')}
                   </Label>
                   <Input
                     id="time"
@@ -675,11 +674,11 @@ export default function NakshatraFinderPage() {
                 <div className="space-y-2">
                   <Label htmlFor="place" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Place of Birth
+                    {t('calculator.placeOfBirth', 'Place of Birth')}
                   </Label>
                   <LocationInput
                     id="place"
-                    placeholder="Search city..."
+                    placeholder={t('calculator.searchCity', 'Search city...')}
                     value={birthDetails.place}
                     onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
                     onLocationSelect={(loc) => setBirthDetails({ ...birthDetails, place: loc })}

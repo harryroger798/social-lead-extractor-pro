@@ -228,13 +228,12 @@ export default function PanchangPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Hindu Calendar</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('panchang.badge', 'Hindu Calendar')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Daily Panchang - Hindu Calendar
+            {t('panchang.title', 'Daily Panchang')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Get accurate daily Panchang with Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, 
-            and auspicious timings. Plan your day according to Vedic astrology.
+            {t('panchang.subtitle', 'Get accurate daily Panchang with Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, and auspicious timings. Plan your day according to Vedic astrology.')}
           </p>
         </div>
 
@@ -243,12 +242,12 @@ export default function PanchangPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-amber-600" />
-                Select Date
+                {t('panchang.selectDate', 'Select Date')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">{t('panchang.date', 'Date')}</Label>
                 <Input
                   id="date"
                   type="date"
@@ -259,14 +258,14 @@ export default function PanchangPage() {
               <div className="space-y-2">
                 <Label htmlFor="location" className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Location
+                  {t('panchang.selectLocation', 'Location')}
                 </Label>
                 <LocationInput
                   id="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   onLocationSelect={(loc) => setLocation(loc)}
-                  placeholder="Search city..."
+                  placeholder={t('panchang.searchCity', 'Search city...')}
                 />
               </div>
               <div className="flex gap-2">
@@ -275,21 +274,21 @@ export default function PanchangPage() {
                   size="sm"
                   onClick={() => setSelectedDate(new Date(selectedDate.getTime() - 86400000))}
                 >
-                  Previous Day
+                  {t('panchang.previousDay', 'Previous Day')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedDate(new Date())}
                 >
-                  Today
+                  {t('panchang.today', 'Today')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedDate(new Date(selectedDate.getTime() + 86400000))}
                 >
-                  Next Day
+                  {t('panchang.nextDay', 'Next Day')}
                 </Button>
               </div>
             </CardContent>
@@ -329,32 +328,32 @@ export default function PanchangPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sunrise className="w-5 h-5 text-orange-500" />
-                    Sun & Moon Timings
+                    {t('panchang.sunMoonTimings', 'Sun & Moon Timings')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600 flex items-center gap-2">
-                        <Sunrise className="w-4 h-4" /> Sunrise
+                        <Sunrise className="w-4 h-4" /> {t('panchang.sunrise', 'Sunrise')}
                       </span>
                       <span className="font-medium">{panchang.sunrise}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600 flex items-center gap-2">
-                        <Sunset className="w-4 h-4" /> Sunset
+                        <Sunset className="w-4 h-4" /> {t('panchang.sunset', 'Sunset')}
                       </span>
                       <span className="font-medium">{panchang.sunset}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600 flex items-center gap-2">
-                        <Moon className="w-4 h-4" /> Moonrise
+                        <Moon className="w-4 h-4" /> {t('panchang.moonrise', 'Moonrise')}
                       </span>
                       <span className="font-medium">{panchang.moonrise}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600 flex items-center gap-2">
-                        <Moon className="w-4 h-4" /> Moonset
+                        <Moon className="w-4 h-4" /> {t('panchang.moonset', 'Moonset')}
                       </span>
                       <span className="font-medium">{panchang.moonset}</span>
                     </div>
@@ -372,14 +371,14 @@ export default function PanchangPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Moon className="w-5 h-5 text-purple-600" />
-                    Tithi
+                    {t('panchang.tithi', 'Tithi')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-purple-700">{panchang.tithi}</p>
-                  <p className="text-sm text-gray-500">Until {panchang.tithiEndTime}</p>
+                  <p className="text-sm text-gray-500">{t('panchang.until', 'Until')} {panchang.tithiEndTime}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Tithi is the lunar day based on Moon&apos;s position relative to Sun
+                    {t('panchang.tithiDesc', "Tithi is the lunar day based on Moon's position relative to Sun")}
                   </p>
                 </CardContent>
               </Card>
@@ -388,14 +387,14 @@ export default function PanchangPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Star className="w-5 h-5 text-blue-600" />
-                    Nakshatra
+                    {t('panchang.nakshatra', 'Nakshatra')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-blue-700">{panchang.nakshatra}</p>
-                  <p className="text-sm text-gray-500">Until {panchang.nakshatraEndTime}</p>
+                  <p className="text-sm text-gray-500">{t('panchang.until', 'Until')} {panchang.nakshatraEndTime}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Nakshatra is the lunar mansion Moon is transiting
+                    {t('panchang.nakshatraDesc', 'Nakshatra is the lunar mansion Moon is transiting')}
                   </p>
                 </CardContent>
               </Card>
@@ -404,14 +403,14 @@ export default function PanchangPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Sun className="w-5 h-5 text-green-600" />
-                    Yoga
+                    {t('panchang.yoga', 'Yoga')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-green-700">{panchang.yoga}</p>
-                  <p className="text-sm text-gray-500">Until {panchang.yogaEndTime}</p>
+                  <p className="text-sm text-gray-500">{t('panchang.until', 'Until')} {panchang.yogaEndTime}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Yoga is calculated from Sun and Moon longitudes
+                    {t('panchang.yogaDesc', 'Yoga is calculated from Sun and Moon longitudes')}
                   </p>
                 </CardContent>
               </Card>
@@ -420,14 +419,14 @@ export default function PanchangPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Clock className="w-5 h-5 text-orange-600" />
-                    Karana
+                    {t('panchang.karana', 'Karana')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-orange-700">{panchang.karana}</p>
-                  <p className="text-sm text-gray-500">Until {panchang.karanaEndTime}</p>
+                  <p className="text-sm text-gray-500">{t('panchang.until', 'Until')} {panchang.karanaEndTime}</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Karana is half of a Tithi, important for muhurat
+                    {t('panchang.karanaDesc', 'Karana is half of a Tithi, important for muhurat')}
                   </p>
                 </CardContent>
               </Card>
@@ -438,10 +437,10 @@ export default function PanchangPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-red-700">
                     <AlertTriangle className="w-5 h-5" />
-                    Inauspicious Timings (Avoid)
+                    {t('panchang.inauspiciousTiming', 'Inauspicious Timings (Avoid)')}
                   </CardTitle>
                   <CardDescription>
-                    Avoid starting new ventures during these periods
+                    {t('panchang.inauspiciousDesc', 'Avoid starting new ventures during these periods')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -449,8 +448,8 @@ export default function PanchangPage() {
                     <div className="bg-red-50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-semibold text-red-800">Rahu Kaal</p>
-                          <p className="text-sm text-red-600">Most inauspicious period</p>
+                          <p className="font-semibold text-red-800">{t('panchang.rahuKaal', 'Rahu Kaal')}</p>
+                          <p className="text-sm text-red-600">{t('panchang.rahuKaalDesc', 'Most inauspicious period')}</p>
                         </div>
                         <Badge variant="destructive">{panchang.rahuKaal}</Badge>
                       </div>
@@ -458,8 +457,8 @@ export default function PanchangPage() {
                     <div className="bg-orange-50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-semibold text-orange-800">Yamaganda</p>
-                          <p className="text-sm text-orange-600">Avoid important decisions</p>
+                          <p className="font-semibold text-orange-800">{t('panchang.yamagandaKaal', 'Yamaganda')}</p>
+                          <p className="text-sm text-orange-600">{t('panchang.yamagandaDesc', 'Avoid important decisions')}</p>
                         </div>
                         <Badge className="bg-orange-500">{panchang.yamaganda}</Badge>
                       </div>
@@ -467,8 +466,8 @@ export default function PanchangPage() {
                     <div className="bg-yellow-50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-semibold text-yellow-800">Gulika Kaal</p>
-                          <p className="text-sm text-yellow-600">Avoid new beginnings</p>
+                          <p className="font-semibold text-yellow-800">{t('panchang.gulikaKaal', 'Gulika Kaal')}</p>
+                          <p className="text-sm text-yellow-600">{t('panchang.gulikaDesc', 'Avoid new beginnings')}</p>
                         </div>
                         <Badge className="bg-yellow-500 text-yellow-900">{panchang.gulikaKaal}</Badge>
                       </div>
@@ -481,10 +480,10 @@ export default function PanchangPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-green-700">
                     <CheckCircle className="w-5 h-5" />
-                    Auspicious Timings (Recommended)
+                    {t('panchang.auspiciousTiming', 'Auspicious Timings (Recommended)')}
                   </CardTitle>
                   <CardDescription>
-                    Best times for important activities
+                    {t('panchang.auspiciousDesc', 'Best times for important activities')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -492,8 +491,8 @@ export default function PanchangPage() {
                     <div className="bg-green-50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-semibold text-green-800">Abhijit Muhurat</p>
-                          <p className="text-sm text-green-600">Most auspicious time of day</p>
+                          <p className="font-semibold text-green-800">{t('panchang.abhijitMuhurta', 'Abhijit Muhurat')}</p>
+                          <p className="text-sm text-green-600">{t('panchang.abhijitDesc', 'Most auspicious time of day')}</p>
                         </div>
                         <Badge className="bg-green-500">{panchang.abhijitMuhurat}</Badge>
                       </div>
@@ -501,8 +500,8 @@ export default function PanchangPage() {
                     <div className="bg-emerald-50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-semibold text-emerald-800">Amrit Kaal</p>
-                          <p className="text-sm text-emerald-600">Excellent for all activities</p>
+                          <p className="font-semibold text-emerald-800">{t('panchang.amritKaal', 'Amrit Kaal')}</p>
+                          <p className="text-sm text-emerald-600">{t('panchang.amritDesc', 'Excellent for all activities')}</p>
                         </div>
                         <Badge className="bg-emerald-500">{panchang.amritKaal}</Badge>
                       </div>
@@ -516,10 +515,10 @@ export default function PanchangPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-amber-600" />
-                  Choghadiya - Hourly Auspicious Timings
+                  {t('panchang.choghadiya', 'Choghadiya - Hourly Auspicious Timings')}
                 </CardTitle>
                 <CardDescription>
-                  Choghadiya divides the day into auspicious and inauspicious periods
+                  {t('panchang.choghadiyaDesc', 'Choghadiya divides the day into auspicious and inauspicious periods')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -564,13 +563,13 @@ export default function PanchangPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Festival Calendar 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('panchang.festivalCalendar', 'Festival Calendar 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Complete list of Hindu festivals, fasts, and important dates for 2026.
+                {t('panchang.festivalCalendarDesc', 'Complete list of Hindu festivals, fasts, and important dates for 2026.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/festival-calendar-2026">
-                  View Festivals <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('panchang.viewFestivals', 'View Festivals')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -578,13 +577,13 @@ export default function PanchangPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Muhurat Finder</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('panchang.muhuratFinder', 'Muhurat Finder')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Find auspicious timings for marriage, griha pravesh, and other events.
+                {t('panchang.muhuratFinderDesc', 'Find auspicious timings for marriage, griha pravesh, and other events.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/kundli-calculator">
-                  Find Muhurat <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('panchang.findMuhurat', 'Find Muhurat')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -592,13 +591,13 @@ export default function PanchangPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('panchang.dailyHoroscope', 'Daily Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Read your personalized daily horoscope based on your zodiac sign.
+                {t('panchang.dailyHoroscopeDesc', 'Read your personalized daily horoscope based on your zodiac sign.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
-                  Read Horoscope <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('panchang.readHoroscope', 'Read Horoscope')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>

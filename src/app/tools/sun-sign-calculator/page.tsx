@@ -268,13 +268,12 @@ export default function SunSignCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-orange-100 text-orange-800">Free Calculator</Badge>
+          <Badge className="mb-4 bg-orange-100 text-orange-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Sun Sign Calculator (Surya Rashi)
+            {t('calculator.sunSign.title', 'Sun Sign Calculator (Surya Rashi)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover your Sun Sign based on your birth date. Your Sun Sign represents your 
-            core identity, ego, and the essence of who you are.
+            {t('calculator.sunSign.subtitle', 'Discover your Sun Sign based on your birth date. Your Sun Sign represents your core identity, ego, and the essence of who you are.')}
           </p>
         </div>
 
@@ -283,17 +282,17 @@ export default function SunSignCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sun className="w-5 h-5 text-orange-600" />
-                Enter Your Birth Date
+                {t('calculator.enterBirthDate', 'Enter Your Birth Date')}
               </CardTitle>
               <CardDescription>
-                Your Sun Sign is determined by the position of the Sun on your birth date
+                {t('calculator.sunSign.sunPositionNote', 'Your Sun Sign is determined by the position of the Sun on your birth date')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="date" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Date of Birth
+                  {t('calculator.dateOfBirth', 'Date of Birth')}
                 </Label>
                 <Input
                   id="date"
@@ -312,12 +311,12 @@ export default function SunSignCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    Calculating...
+                    {t('calculator.calculating', 'Calculating...')}
                   </>
                 ) : (
                   <>
                     <Sun className="w-4 h-4 mr-2" />
-                    Find My Sun Sign
+                    {t('calculator.sunSign.findSunSign', 'Find My Sun Sign')}
                   </>
                 )}
               </Button>

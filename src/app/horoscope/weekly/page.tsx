@@ -198,12 +198,12 @@ export default function WeeklyHoroscopePage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-purple-100 text-purple-800">Weekly Predictions</Badge>
+          <Badge className="mb-4 bg-purple-100 text-purple-800">{t('horoscope.weeklyPredictions', 'Weekly Predictions')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Weekly Horoscope
+            {t('horoscope.weekly.title', 'Weekly Horoscope')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-2">
-            Your weekly astrological forecast for love, career, finance, and health.
+            {t('horoscope.weekly.subtitle', 'Your weekly astrological forecast for love, career, finance, and health.')}
           </p>
           <p className="text-amber-600 font-medium flex items-center justify-center gap-2">
             <Calendar className="w-5 h-5" />

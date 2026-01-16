@@ -204,13 +204,12 @@ export default function SadeSatiCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-blue-100 text-blue-800">Free Calculator</Badge>
+          <Badge className="mb-4 bg-blue-100 text-blue-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Sade Sati Calculator (Shani Sade Sati)
+            {t('calculator.sadeSati.title', 'Sade Sati Calculator (Shani Sade Sati)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Check if you are under the influence of Saturn&apos;s 7.5 year transit (Sade Sati). 
-            Understand its phases, effects, and learn effective remedies.
+            {t('calculator.sadeSati.subtitle', "Check if you are under the influence of Saturn's 7.5 year transit (Sade Sati). Understand its phases, effects, and learn effective remedies.")}
           </p>
         </div>
 
@@ -219,17 +218,17 @@ export default function SadeSatiCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Moon className="w-5 h-5 text-blue-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Your Moon Sign determines Sade Sati timing
+                {t('calculator.sadeSati.moonSignNote', 'Your Moon Sign determines Sade Sati timing')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="date" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Date of Birth
+                  {t('calculator.dateOfBirth', 'Date of Birth')}
                 </Label>
                 <Input
                   id="date"
@@ -243,7 +242,7 @@ export default function SadeSatiCalculatorPage() {
               <div className="space-y-2">
                 <Label htmlFor="time" className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Time of Birth
+                  {t('calculator.timeOfBirth', 'Time of Birth')}
                 </Label>
                 <Input
                   id="time"
@@ -252,18 +251,18 @@ export default function SadeSatiCalculatorPage() {
                   onChange={(e) => setBirthTime(e.target.value)}
                 />
                 <p className="text-xs text-gray-500">
-                  Helps determine accurate Moon Sign
+                  {t('calculator.sadeSati.accurateMoonSign', 'Helps determine accurate Moon Sign')}
                 </p>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="place" className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Place of Birth
+                  {t('calculator.placeOfBirth', 'Place of Birth')}
                 </Label>
                 <LocationInput
                   id="place"
-                  placeholder="Search city..."
+                  placeholder={t('calculator.searchCity', 'Search city...')}
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
                   onLocationSelect={(loc) => setBirthPlace(loc)}
@@ -278,12 +277,12 @@ export default function SadeSatiCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    Analyzing Saturn Transit...
+                    {t('calculator.sadeSati.analyzing', 'Analyzing Saturn Transit...')}
                   </>
                 ) : (
                   <>
                     <Moon className="w-4 h-4 mr-2" />
-                    Check Sade Sati Status
+                    {t('calculator.sadeSati.checkStatus', 'Check Sade Sati Status')}
                   </>
                 )}
               </Button>

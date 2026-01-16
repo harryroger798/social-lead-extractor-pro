@@ -130,13 +130,12 @@ export default function CareersPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Careers</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('careers.badge', 'Careers')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Join Our Mission
+            {t('careers.title', 'Join Our Mission')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Help us bring authentic Vedic astrology to millions of people worldwide. 
-            We&apos;re building a platform that combines ancient wisdom with modern technology.
+            {t('careers.subtitle', "Help us bring authentic Vedic astrology to millions of people worldwide. We're building a platform that combines ancient wisdom with modern technology.")}
           </p>
         </div>
 

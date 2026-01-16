@@ -134,13 +134,12 @@ export default function FestivalCalendar2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">2026 Calendar</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('festivalCalendar.badge', '2026 Calendar')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Hindu Festival Calendar 2026
+            {t('festivalCalendar.title', 'Hindu Festival Calendar 2026')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete list of Hindu festivals, fasts, and important dates for 2026. 
-            Plan your celebrations with accurate dates and timings.
+            {t('festivalCalendar.subtitle', 'Complete list of Hindu festivals, fasts, and important dates for 2026. Plan your celebrations with accurate dates and timings.')}
           </p>
         </div>
 

@@ -148,13 +148,12 @@ export default function KaalSarpDoshPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-purple-100 text-purple-800">Dosha Guide</Badge>
+          <Badge className="mb-4 bg-purple-100 text-purple-800">{t('dosha.guide', 'Dosha Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Kaal Sarp Dosh (Kaal Sarp Yoga)
+            {t('dosha.kaalSarp.title', 'Kaal Sarp Dosh (Kaal Sarp Yoga)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to understanding Kaal Sarp Dosh, its 12 types, effects on 
-            different aspects of life, and powerful remedies to overcome this dosha.
+            {t('dosha.kaalSarp.subtitle', 'Complete guide to understanding Kaal Sarp Dosh, its 12 types, effects on different aspects of life, and powerful remedies to overcome this dosha.')}
           </p>
         </div>
 

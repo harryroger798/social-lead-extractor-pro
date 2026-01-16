@@ -123,13 +123,12 @@ export default function YogaCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-yellow-100 text-yellow-800">Advanced Feature</Badge>
+          <Badge className="mb-4 bg-yellow-100 text-yellow-800">{t('calculator.advancedFeature', 'Advanced Feature')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Yoga Calculator
+            {t('calculator.yoga.title', 'Yoga Calculator')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover powerful planetary combinations (Yogas) in your birth chart. 
-            Yogas indicate special talents, wealth potential, and life achievements.
+            {t('calculator.yoga.subtitle', 'Discover powerful planetary combinations (Yogas) in your birth chart. Yogas indicate special talents, wealth potential, and life achievements.')}
           </p>
         </div>
 
@@ -138,19 +137,19 @@ export default function YogaCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-yellow-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Provide accurate birth information to detect Yogas in your chart
+                {t('calculator.yoga.birthDetailsNote', 'Provide accurate birth information to detect Yogas in your chart')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t('calculator.fullName', 'Full Name')}</Label>
                   <Input
                     id="name"
-                    placeholder="Enter your name"
+                    placeholder={t('calculator.enterName', 'Enter your name')}
                     value={birthDetails.name}
                     onChange={(e) => setBirthDetails({ ...birthDetails, name: e.target.value })}
                     required
@@ -160,7 +159,7 @@ export default function YogaCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date"
@@ -174,7 +173,7 @@ export default function YogaCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="time" className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Time of Birth
+                    {t('calculator.timeOfBirth', 'Time of Birth')}
                   </Label>
                   <Input
                     id="time"
@@ -188,11 +187,11 @@ export default function YogaCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="place" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Place of Birth
+                    {t('calculator.placeOfBirth', 'Place of Birth')}
                   </Label>
                   <LocationInput
                     id="place"
-                    placeholder="Search city..."
+                    placeholder={t('calculator.searchCity', 'Search city...')}
                     value={birthDetails.place}
                     onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
                     onLocationSelect={(loc) => setBirthDetails({ ...birthDetails, place: loc })}
@@ -214,12 +213,12 @@ export default function YogaCalculatorPage() {
                   {isCalculating ? (
                     <>
                       <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing...
+                      {t('calculator.analyzing', 'Analyzing...')}
                     </>
                   ) : (
                     <>
                       <Star className="w-4 h-4 mr-2" />
-                      Detect Yogas
+                      {t('calculator.yoga.detectYogas', 'Detect Yogas')}
                     </>
                   )}
                 </Button>

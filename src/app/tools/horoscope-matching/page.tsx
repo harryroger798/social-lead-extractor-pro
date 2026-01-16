@@ -277,12 +277,12 @@ export default function HoroscopeMatchingPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-pink-100 text-pink-800">Free Tool</Badge>
+          <Badge className="mb-4 bg-pink-100 text-pink-800">{t('calculator.freeTool', 'Free Tool')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Horoscope Matching (Kundli Milan)
+            {t('calculator.horoscopeMatching.title', 'Horoscope Matching (Kundli Milan)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Check marriage compatibility using the traditional Ashtakoot Guna Milan system. 
+            {t('calculator.horoscopeMatching.subtitle', 'Check marriage compatibility using the traditional Ashtakoot Guna Milan system.')}
             Get detailed analysis of 8 Gunas and Dosha assessment.
           </p>
         </div>

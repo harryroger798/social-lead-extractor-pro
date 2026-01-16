@@ -104,13 +104,12 @@ export default function MuhurtaCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-green-100 text-green-800">Advanced Feature</Badge>
+          <Badge className="mb-4 bg-green-100 text-green-800">{t('calculator.advancedFeature', 'Advanced Feature')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Muhurta Calculator
+            {t('calculator.muhurta.title', 'Muhurta Calculator')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find auspicious timing (Muhurta) for important events. Check if a date is 
-            favorable for marriage, business, travel, or house warming ceremonies.
+            {t('calculator.muhurta.subtitle', 'Find auspicious timing (Muhurta) for important events. Check if a date is favorable for marriage, business, travel, or house warming ceremonies.')}
           </p>
         </div>
 
@@ -119,10 +118,10 @@ export default function MuhurtaCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-green-600" />
-                Check Muhurta
+                {t('calculator.muhurta.checkMuhurta', 'Check Muhurta')}
               </CardTitle>
               <CardDescription>
-                Select a date and event type to check auspiciousness
+                {t('calculator.muhurta.selectDateNote', 'Select a date and event type to check auspiciousness')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -130,7 +129,7 @@ export default function MuhurtaCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Select Date
+                    {t('calculator.muhurta.selectDate', 'Select Date')}
                   </Label>
                   <Input
                     id="date"
@@ -144,11 +143,11 @@ export default function MuhurtaCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="place" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Location
+                    {t('calculator.location', 'Location')}
                   </Label>
                   <LocationInput
                     id="place"
-                    placeholder="Search city..."
+                    placeholder={t('calculator.searchCity', 'Search city...')}
                     value={selectedPlace}
                     onChange={(e) => setSelectedPlace(e.target.value)}
                     onLocationSelect={(loc) => setSelectedPlace(loc)}
@@ -157,7 +156,7 @@ export default function MuhurtaCalculatorPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Event Type</Label>
+                  <Label>{t('calculator.muhurta.eventType', 'Event Type')}</Label>
                   <div className="grid grid-cols-1 gap-2">
                     {EVENT_TYPES.map((event) => (
                       <button

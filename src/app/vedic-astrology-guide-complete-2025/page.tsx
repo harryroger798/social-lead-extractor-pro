@@ -110,14 +110,12 @@ export default function VedicAstrologyGuidePage() {
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Complete Guide</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('guides.badge', 'Complete Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Complete Vedic Astrology Guide 2025: Master Jyotish Shastra
+            {t('guides.vedicAstrology.title', 'Complete Vedic Astrology Guide 2025: Master Jyotish Shastra')}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Your comprehensive resource for understanding Vedic astrology, from basic concepts 
-            to advanced techniques. Learn about Kundli interpretation, Nakshatras, planetary 
-            influences, and effective remedies.
+            {t('guides.vedicAstrology.subtitle', 'Your comprehensive resource for understanding Vedic astrology, from basic concepts to advanced techniques. Learn about Kundli interpretation, Nakshatras, planetary influences, and effective remedies.')}
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">

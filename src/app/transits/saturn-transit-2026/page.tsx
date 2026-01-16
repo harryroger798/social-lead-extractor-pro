@@ -150,13 +150,12 @@ export default function SaturnTransit2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-blue-100 text-blue-800">Planetary Transit</Badge>
+          <Badge className="mb-4 bg-blue-100 text-blue-800">{t('transits.badge', 'Planetary Transit')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Saturn Transit 2026 (Shani Gochar)
+            {t('transits.saturn.title', 'Saturn Transit 2026 (Shani Gochar)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to Saturn&apos;s transit through Pisces in 2026. Understand how 
-            Shani Gochar affects your zodiac sign and learn effective remedies.
+            {t('transits.saturn.subtitle', "Complete guide to Saturn's transit through Pisces in 2026. Understand how Shani Gochar affects your zodiac sign and learn effective remedies.")}
           </p>
         </div>
 

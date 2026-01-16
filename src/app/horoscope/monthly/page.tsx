@@ -280,12 +280,12 @@ export default function MonthlyHoroscopePage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-indigo-100 text-indigo-800">Monthly Predictions</Badge>
+          <Badge className="mb-4 bg-indigo-100 text-indigo-800">{t('horoscope.monthlyPredictions', 'Monthly Predictions')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Monthly Horoscope
+            {t('horoscope.monthly.title', 'Monthly Horoscope')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-2">
-            Your comprehensive monthly astrological forecast with detailed predictions.
+            {t('horoscope.monthly.subtitle', 'Your comprehensive monthly astrological forecast with detailed predictions.')}
           </p>
           <p className="text-indigo-600 font-medium flex items-center justify-center gap-2">
             <Calendar className="w-5 h-5" />

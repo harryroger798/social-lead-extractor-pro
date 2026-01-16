@@ -139,13 +139,12 @@ export default function JupiterTransit2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Planetary Transit</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('transits.badge', 'Planetary Transit')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Jupiter Transit 2026 (Guru Gochar)
+            {t('transits.jupiter.title', 'Jupiter Transit 2026 (Guru Gochar)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to Jupiter&apos;s transit in 2026. Discover how Guru Gochar brings 
-            blessings, expansion, and opportunities to your zodiac sign.
+            {t('transits.jupiter.subtitle', "Complete guide to Jupiter's transit in 2026. Discover how Guru Gochar brings blessings, expansion, and opportunities to your zodiac sign.")}
           </p>
         </div>
 

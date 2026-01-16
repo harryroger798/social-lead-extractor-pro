@@ -52,111 +52,111 @@ export default function Home() {
   const features = [
     {
       icon: Calculator,
-      title: t.home.freeKundliTitle,
-      description: t.home.freeKundliDesc,
+      title: t('home.freeKundliTitle', 'Free Kundli Calculator'),
+      description: t('home.freeKundliDesc', 'Generate your complete birth chart with planetary positions, houses, and doshas instantly.'),
       href: "/tools/kundli-calculator",
-      badge: t.home.free,
+      badge: t('home.free', 'Free'),
     },
     {
       icon: Moon,
-      title: t.home.moonSignTitle,
-      description: t.home.moonSignDesc,
+      title: t('home.moonSignTitle', 'Moon Sign Calculator'),
+      description: t('home.moonSignDesc', 'Discover your Vedic Moon sign (Chandra Rashi) and understand your emotional nature.'),
       href: "/tools/moon-sign-calculator",
-      badge: t.home.free,
+      badge: t('home.free', 'Free'),
     },
     {
       icon: Calendar,
-      title: t.home.dailyPanchangTitle,
-      description: t.home.dailyPanchangDesc,
+      title: t('home.dailyPanchangTitle', 'Daily Panchang'),
+      description: t('home.dailyPanchangDesc', "Get today's tithi, nakshatra, yoga, karana, Rahu Kaal, and auspicious timings."),
       href: "/panchang",
-      badge: t.home.free,
+      badge: t('home.free', 'Free'),
     },
     {
       icon: BookOpen,
-      title: t.home.expertConsultationTitle,
-      description: t.home.expertConsultationDesc,
+      title: t('home.expertConsultationTitle', 'Expert Consultation'),
+      description: t('home.expertConsultationDesc', 'Connect with verified Vedic astrologers for personalized guidance and predictions.'),
       href: "/consultation",
-      badge: t.home.premium,
+      badge: t('home.premium', 'Premium'),
     },
   ];
 
   const moreTools = [
     {
       icon: Sun,
-      title: t.home.sunSignTitle,
-      description: t.home.sunSignDesc,
+      title: t('home.sunSignTitle', 'Sun Sign Calculator'),
+      description: t('home.sunSignDesc', 'Find your Western zodiac sign based on your birth date.'),
       href: "/tools/sun-sign-calculator",
     },
     {
       icon: Star,
-      title: t.home.ascendantTitle,
-      description: t.home.ascendantDesc,
+      title: t('home.ascendantTitle', 'Ascendant Calculator'),
+      description: t('home.ascendantDesc', 'Calculate your rising sign (Lagna) for accurate predictions.'),
       href: "/tools/ascendant-calculator",
     },
     {
       icon: Heart,
-      title: t.home.loveCompatibilityTitle,
-      description: t.home.loveCompatibilityDesc,
+      title: t('home.loveCompatibilityTitle', 'Love Compatibility'),
+      description: t('home.loveCompatibilityDesc', 'Check zodiac compatibility with your partner.'),
       href: "/tools/love-calculator",
     },
     {
       icon: Users,
-      title: t.home.horoscopeMatchingTitle,
-      description: t.home.horoscopeMatchingDesc,
+      title: t('home.horoscopeMatchingTitle', 'Horoscope Matching'),
+      description: t('home.horoscopeMatchingDesc', 'Detailed Guna Milan for marriage compatibility.'),
       href: "/tools/horoscope-matching",
     },
     {
       icon: AlertTriangle,
-      title: t.home.mangalDoshTitle,
-      description: t.home.mangalDoshDesc,
+      title: t('home.mangalDoshTitle', 'Mangal Dosh Calculator'),
+      description: t('home.mangalDoshDesc', 'Check if you have Manglik Dosha in your chart.'),
       href: "/tools/mangal-dosh-calculator",
     },
     {
       icon: Clock,
-      title: t.home.sadeSatiTitle,
-      description: t.home.sadeSatiDesc,
+      title: t('home.sadeSatiTitle', 'Sade Sati Calculator'),
+      description: t('home.sadeSatiDesc', 'Check your current Sade Sati status and phase.'),
       href: "/tools/sade-sati-calculator",
     },
   ];
 
   const predictions2026 = [
     {
-      title: t.home.horoscope2026Title,
-      description: t.home.horoscope2026Desc,
+      title: t('home.horoscope2026Title', '2026 Horoscope'),
+      description: t('home.horoscope2026Desc', 'Yearly predictions for all 12 zodiac signs'),
       href: "/horoscope/2026",
     },
     {
-      title: t.home.saturnTransitTitle,
-      description: t.home.saturnTransitDesc,
+      title: t('home.saturnTransitTitle', 'Saturn Transit 2026'),
+      description: t('home.saturnTransitDesc', 'Shani Gochar effects on your sign'),
       href: "/transits/saturn-transit-2026",
     },
     {
-      title: t.home.jupiterTransitTitle,
-      description: t.home.jupiterTransitDesc,
+      title: t('home.jupiterTransitTitle', 'Jupiter Transit 2026'),
+      description: t('home.jupiterTransitDesc', 'Guru Gochar blessings and opportunities'),
       href: "/transits/jupiter-transit-2026",
     },
     {
-      title: t.home.mercuryRetrogradeTitle,
-      description: t.home.mercuryRetrogradeDesc,
+      title: t('home.mercuryRetrogradeTitle', 'Mercury Retrograde 2026'),
+      description: t('home.mercuryRetrogradeDesc', 'Dates, effects, and survival guide'),
       href: "/transits/mercury-retrograde-2026",
     },
     {
-      title: t.home.eclipsesTitle,
-      description: t.home.eclipsesDesc,
+      title: t('home.eclipsesTitle', 'Eclipses 2026'),
+      description: t('home.eclipsesDesc', 'Solar & lunar eclipse dates and effects'),
       href: "/eclipses-2026",
     },
     {
-      title: t.home.festivalCalendarTitle,
-      description: t.home.festivalCalendarDesc,
+      title: t('home.festivalCalendarTitle', 'Festival Calendar 2026'),
+      description: t('home.festivalCalendarDesc', 'Hindu festivals and important dates'),
       href: "/festival-calendar-2026",
     },
   ];
 
   const stats = [
-    { value: "50,000+", label: t.home.chartsGenerated },
-    { value: "10,000+", label: t.home.happyClients },
-    { value: "100+", label: t.home.expertAstrologers },
-    { value: "4.9/5", label: t.home.userRating },
+    { value: "50,000+", label: t('home.chartsGenerated', 'Charts Generated') },
+    { value: "10,000+", label: t('home.happyClients', 'Happy Clients') },
+    { value: "100+", label: t('home.expertAstrologers', 'Expert Astrologers') },
+    { value: "4.9/5", label: t('home.userRating', 'User Rating') },
   ];
   return (
     <>
@@ -167,18 +167,18 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-4 bg-amber-100 text-amber-800 hover:bg-amber-100">
               <Sparkles className="w-3 h-3 mr-1" />
-              {t.home.trustedBadge}
+              {t('home.trustedBadge', 'Trusted by 50,000+ Users')}
             </Badge>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              {t.home.heroTitle}{" "}
+              {t('home.heroTitle', 'Discover Your Destiny with')}{" "}
               <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                {t.home.heroTitleHighlight}
+                {t('home.heroTitleHighlight', 'Authentic Vedic Astrology')}
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              {t.home.heroSubtitle}
+              {t('home.heroSubtitle', 'Get accurate Kundli analysis, Nakshatra insights, and personalized predictions from expert astrologers with 20+ years of experience in Jyotish Shastra.')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -188,7 +188,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/tools/kundli-calculator">
-                  {t.home.getFreeKundli}
+                  {t('home.getFreeKundli', 'Get Free Kundli')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -199,7 +199,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/consultation">
-                  {t.home.talkToAstrologer}
+                  {t('home.talkToAstrologer', 'Talk to Astrologer')}
                 </Link>
               </Button>
             </div>
@@ -220,10 +220,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.home.featuresTitle}
+              {t('home.featuresTitle', 'Free Astrology Tools & Services')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t.home.featuresDesc}
+              {t('home.featuresDesc', 'Access powerful Vedic astrology tools and connect with expert astrologers for personalized guidance.')}
             </p>
           </div>
           
@@ -235,7 +235,7 @@ export default function Home() {
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center group-hover:from-amber-200 group-hover:to-orange-200 transition-colors">
                       <feature.icon className="w-6 h-6 text-amber-600" />
                     </div>
-                    <Badge variant={feature.badge === t.home.free ? "secondary" : "default"} className={feature.badge === t.home.free ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
+                    <Badge variant={feature.badge === t('home.free', 'Free') ? "secondary" : "default"} className={feature.badge === t('home.free', 'Free') ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
                       {feature.badge}
                     </Badge>
                   </div>
@@ -247,7 +247,7 @@ export default function Home() {
                     href={feature.href}
                     className="inline-flex items-center text-amber-600 font-medium hover:text-amber-700 transition-colors"
                   >
-                    {t.home.tryNow}
+                    {t('home.tryNow', 'Try Now')}
                     <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </CardContent>
@@ -260,12 +260,12 @@ export default function Home() {
       <section className="py-16 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-purple-100 text-purple-800">{t.home.moreToolsBadge}</Badge>
+            <Badge className="mb-4 bg-purple-100 text-purple-800">{t('home.moreToolsBadge', 'More Free Tools')}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.home.moreToolsTitle}
+              {t('home.moreToolsTitle', 'Explore Our Astrology Calculators')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t.home.moreToolsDesc}
+              {t('home.moreToolsDesc', 'Discover more free tools to understand your astrological profile.')}
             </p>
           </div>
           
@@ -292,12 +292,12 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-amber-400 text-amber-900">{t.home.predictions2026Badge}</Badge>
+            <Badge className="mb-4 bg-amber-400 text-amber-900">{t('home.predictions2026Badge', '2026 Predictions')}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {t.home.predictions2026Title}
+              {t('home.predictions2026Title', 'What Does 2026 Hold For You?')}
             </h2>
             <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              {t.home.predictions2026Desc}
+              {t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for 2026.')}
             </p>
           </div>
           
@@ -313,7 +313,7 @@ export default function Home() {
                 </h3>
                 <p className="text-indigo-200 text-sm">{item.description}</p>
                 <span className="inline-flex items-center text-amber-400 text-sm mt-3 group-hover:text-amber-300">
-                  {t.common.readMore} <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  {t('common.readMore', 'Read More')} <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
             ))}
@@ -325,20 +325,20 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="mb-4 bg-amber-100 text-amber-800">{t.home.whyChooseUsBadge}</Badge>
+              <Badge className="mb-4 bg-amber-100 text-amber-800">{t('home.whyChooseUsBadge', 'Why Choose Us')}</Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                {t.home.whyChooseUsTitle}
+                {t('home.whyChooseUsTitle', 'Authentic Vedic Wisdom, Modern Experience')}
               </h2>
               <p className="text-lg text-gray-600 mb-8">
-                {t.home.whyChooseUsDesc}
+                {t('home.whyChooseUsDesc', 'We combine ancient Jyotish Shastra knowledge with modern technology to provide accurate, personalized astrological guidance. Our expert astrologers follow traditional Parashari and Jaimini systems for precise predictions.')}
               </p>
               
               <div className="space-y-4">
                 {[
-                  { icon: Shield, text: t.home.verifiedExperts },
-                  { icon: Clock, text: t.home.availability247 },
-                  { icon: Award, text: t.home.satisfactionGuarantee },
-                  { icon: CheckCircle, text: t.home.accurateCalculations },
+                  { icon: Shield, text: t('home.verifiedExperts', 'Verified Expert Astrologers with 10+ Years Experience') },
+                  { icon: Clock, text: t('home.availability247', '24/7 Availability for Consultations') },
+                  { icon: Award, text: t('home.satisfactionGuarantee', '100% Satisfaction Guarantee') },
+                  { icon: CheckCircle, text: t('home.accurateCalculations', 'Accurate Calculations Based on Swiss Ephemeris') },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
@@ -355,7 +355,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/about">
-                  {t.home.learnMoreAboutUs}
+                  {t('home.learnMoreAboutUs', 'Learn More About Us')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -379,12 +379,12 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-amber-100 text-amber-800">{t.home.testimonialsBadge}</Badge>
+            <Badge className="mb-4 bg-amber-100 text-amber-800">{t('home.testimonialsBadge', 'Testimonials')}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.home.testimonialsTitle}
+              {t('home.testimonialsTitle', 'What Our Clients Say')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {t.home.testimonialsDesc}
+              {t('home.testimonialsDesc', 'Join thousands of satisfied clients who have found guidance through our services.')}
             </p>
           </div>
           
@@ -417,10 +417,10 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-r from-amber-500 to-orange-600">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            {t.home.ctaTitle}
+            {t('home.ctaTitle', 'Ready to Discover Your Cosmic Path?')}
           </h2>
           <p className="text-lg text-amber-100 mb-8 max-w-2xl mx-auto">
-            {t.home.ctaDesc}
+            {t('home.ctaDesc', 'Get your free Kundli analysis now and unlock insights about your life, career, relationships, and future.')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -429,7 +429,7 @@ export default function Home() {
               asChild
             >
               <Link href="/tools/kundli-calculator">
-                {t.home.generateFreeKundli}
+                {t('home.generateFreeKundli', 'Generate Free Kundli')}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -440,7 +440,7 @@ export default function Home() {
               asChild
             >
               <Link href="/consultation">
-                {t.home.bookConsultation}
+                {t('home.bookConsultation', 'Book Consultation')}
               </Link>
             </Button>
           </div>

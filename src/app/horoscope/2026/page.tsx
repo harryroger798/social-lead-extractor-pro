@@ -177,21 +177,20 @@ export default function Horoscope2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Yearly Predictions</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('horoscope.yearlyPredictions', 'Yearly Predictions')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            2026 Horoscope - Yearly Predictions
+            {t('horoscope.2026.title', '2026 Horoscope - Yearly Predictions')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover what 2026 has in store for you. Read comprehensive yearly horoscope 
-            predictions for all 12 zodiac signs covering love, career, finance, and health.
+            {t('horoscope.2026.subtitle', 'Discover what 2026 has in store for you. Read comprehensive yearly horoscope predictions for all 12 zodiac signs covering love, career, finance, and health.')}
           </p>
         </div>
 
         <Card className="border-amber-200 mb-8">
           <CardHeader>
-            <CardTitle>Major Planetary Transits in 2026</CardTitle>
+            <CardTitle>{t('horoscope.2026.majorTransits', 'Major Planetary Transits in 2026')}</CardTitle>
             <CardDescription>
-              Key astrological events shaping the year ahead
+              {t('horoscope.2026.keyEvents', 'Key astrological events shaping the year ahead')}
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -190,13 +190,12 @@ export default function SadeSatiPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-blue-100 text-blue-800">Saturn Transit</Badge>
+          <Badge className="mb-4 bg-blue-100 text-blue-800">{t('dosha.saturnTransit', 'Saturn Transit')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Shani Sade Sati
+            {t('dosha.sadeSati.title', 'Shani Sade Sati')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to Saturn&apos;s 7.5 year transit over your Moon sign. 
-            Understand the three phases, effects, and powerful remedies.
+            {t('dosha.sadeSati.subtitle', "Complete guide to Saturn's 7.5 year transit over your Moon sign. Understand the three phases, effects, and powerful remedies.")}
           </p>
         </div>
 

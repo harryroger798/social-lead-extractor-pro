@@ -71,13 +71,12 @@ export default function PressPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Press & Media</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('press.badge', 'Press & Media')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Press Room
+            {t('press.title', 'Press Room')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Welcome to VedicStarAstro&apos;s press room. Find our latest news, media resources, 
-            and brand assets here.
+            {t('press.subtitle', "Welcome to VedicStarAstro's press room. Find our latest news, media resources, and brand assets here.")}
           </p>
         </div>
 

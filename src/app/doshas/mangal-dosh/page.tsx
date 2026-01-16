@@ -125,13 +125,12 @@ export default function MangalDoshPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-red-100 text-red-800">Dosha Guide</Badge>
+          <Badge className="mb-4 bg-red-100 text-red-800">{t('dosha.guide', 'Dosha Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Mangal Dosh (Manglik Dosha)
+            {t('dosha.mangalDosh.title', 'Mangal Dosh (Manglik Dosha)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete guide to understanding Mangal Dosha, its effects on marriage and 
-            relationships, cancellation conditions, and effective remedies.
+            {t('dosha.mangalDosh.subtitle', 'Complete guide to understanding Mangal Dosha, its effects on marriage and relationships, cancellation conditions, and effective remedies.')}
           </p>
         </div>
 

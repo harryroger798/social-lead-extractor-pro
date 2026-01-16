@@ -332,13 +332,12 @@ How may I assist you on your spiritual journey today?`,
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <Badge className="mb-4 bg-purple-100 text-purple-800">AI-Powered</Badge>
+          <Badge className="mb-4 bg-purple-100 text-purple-800">{t('aiAstrologer.badge', 'AI-Powered')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            AI Astrologer
+            {t('aiAstrologer.title', 'AI Astrologer')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Get instant astrological guidance powered by ancient Vedic wisdom. 
-            Ask questions about your horoscope, planetary transits, doshas, and remedies.
+            {t('aiAstrologer.subtitle', 'Get instant astrological guidance powered by ancient Vedic wisdom. Ask questions about your horoscope, planetary transits, doshas, and remedies.')}
           </p>
         </div>
 

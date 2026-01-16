@@ -141,13 +141,12 @@ export default function RemediesGuidePage() {
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Complete Guide</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('guides.badge', 'Complete Guide')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Vedic Astrology Remedies & Doshas: Complete Guide
+            {t('guides.remedies.title', 'Vedic Astrology Remedies & Doshas: Complete Guide')}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Learn about common doshas in Vedic astrology and discover effective remedies 
-            including gemstones, mantras, charity, and rituals to overcome planetary challenges.
+            {t('guides.remedies.subtitle', 'Learn about common doshas in Vedic astrology and discover effective remedies including gemstones, mantras, charity, and rituals to overcome planetary challenges.')}
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">

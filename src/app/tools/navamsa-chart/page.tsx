@@ -173,14 +173,12 @@ export default function NavamsaChartPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Advanced Feature</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('calculator.advancedFeature', 'Advanced Feature')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Navamsa & Divisional Charts
+            {t('calculator.navamsa.title', 'Navamsa & Divisional Charts')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Calculate your Navamsa (D-9) and other divisional charts (Vargas). 
-            These charts reveal deeper insights into specific life areas like marriage, 
-            career, children, and education.
+            {t('calculator.navamsa.subtitle', 'Calculate your Navamsa (D-9) and other divisional charts (Vargas). These charts reveal deeper insights into specific life areas like marriage, career, children, and education.')}
           </p>
         </div>
 
@@ -189,19 +187,19 @@ export default function NavamsaChartPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-amber-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Accurate birth time is essential for divisional chart calculations
+                {t('calculator.navamsa.birthTimeNote', 'Accurate birth time is essential for divisional chart calculations')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t('calculator.fullName', 'Full Name')}</Label>
                   <Input
                     id="name"
-                    placeholder="Enter your name"
+                    placeholder={t('calculator.enterName', 'Enter your name')}
                     value={birthDetails.name}
                     onChange={(e) => setBirthDetails({ ...birthDetails, name: e.target.value })}
                     required
@@ -211,7 +209,7 @@ export default function NavamsaChartPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date"
@@ -225,7 +223,7 @@ export default function NavamsaChartPage() {
                 <div className="space-y-2">
                   <Label htmlFor="time" className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Time of Birth
+                    {t('calculator.timeOfBirth', 'Time of Birth')}
                   </Label>
                   <Input
                     id="time"
@@ -235,18 +233,18 @@ export default function NavamsaChartPage() {
                     required
                   />
                   <p className="text-xs text-amber-600">
-                    Even a few minutes difference can change divisional chart positions
+                    {t('calculator.navamsa.timeWarning', 'Even a few minutes difference can change divisional chart positions')}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="place" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Place of Birth
+                    {t('calculator.placeOfBirth', 'Place of Birth')}
                   </Label>
                   <LocationInput
                     id="place"
-                    placeholder="Search city..."
+                    placeholder={t('calculator.searchCity', 'Search city...')}
                     value={birthDetails.place}
                     onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
                     onLocationSelect={(loc) => setBirthDetails({ ...birthDetails, place: loc })}
@@ -268,12 +266,12 @@ export default function NavamsaChartPage() {
                   {isCalculating ? (
                     <>
                       <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                      Calculating...
+                      {t('calculator.calculating', 'Calculating...')}
                     </>
                   ) : (
                     <>
                       <Grid3X3 className="w-4 h-4 mr-2" />
-                      Calculate Charts
+                      {t('calculator.navamsa.calculateCharts', 'Calculate Charts')}
                     </>
                   )}
                 </Button>

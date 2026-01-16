@@ -214,13 +214,12 @@ export default function MoonSignCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-purple-100 text-purple-800">Free Calculator</Badge>
+          <Badge className="mb-4 bg-purple-100 text-purple-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Moon Sign Calculator (Rashi Calculator)
+            {t('calculator.moonSign.title', 'Moon Sign Calculator (Rashi Calculator)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover your Moon Sign (Chandra Rashi) based on your birth details. Your Moon Sign 
-            reveals your emotional nature, instincts, and inner self in Vedic astrology.
+            {t('calculator.moonSign.subtitle', 'Discover your Moon Sign (Chandra Rashi) based on your birth details. Your Moon Sign reveals your emotional nature, instincts, and inner self in Vedic astrology.')}
           </p>
         </div>
 
@@ -229,17 +228,17 @@ export default function MoonSignCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Moon className="w-5 h-5 text-purple-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Accurate birth time helps determine precise Moon position
+                {t('calculator.moonSign.birthTimeNote', 'Accurate birth time helps determine precise Moon position')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="date" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Date of Birth
+                  {t('calculator.dateOfBirth', 'Date of Birth')}
                 </Label>
                 <Input
                   id="date"
@@ -253,7 +252,7 @@ export default function MoonSignCalculatorPage() {
               <div className="space-y-2">
                 <Label htmlFor="time" className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Time of Birth
+                  {t('calculator.timeOfBirth', 'Time of Birth')}
                 </Label>
                 <Input
                   id="time"
@@ -262,18 +261,18 @@ export default function MoonSignCalculatorPage() {
                   onChange={(e) => setBirthTime(e.target.value)}
                 />
                 <p className="text-xs text-gray-500">
-                  Moon changes sign every 2.5 days, so accurate time improves precision
+                  {t('calculator.moonSign.moonChangeNote', 'Moon changes sign every 2.5 days, so accurate time improves precision')}
                 </p>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="place" className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Place of Birth
+                  {t('calculator.placeOfBirth', 'Place of Birth')}
                 </Label>
                 <LocationInput
                   id="place"
-                  placeholder="Search city..."
+                  placeholder={t('calculator.searchCity', 'Search city...')}
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
                   onLocationSelect={(loc) => setBirthPlace(loc)}
@@ -288,12 +287,12 @@ export default function MoonSignCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    Calculating...
+                    {t('calculator.calculating', 'Calculating...')}
                   </>
                 ) : (
                   <>
                     <Moon className="w-4 h-4 mr-2" />
-                    Find My Moon Sign
+                    {t('calculator.moonSign.findMoonSign', 'Find My Moon Sign')}
                   </>
                 )}
               </Button>

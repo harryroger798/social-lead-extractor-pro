@@ -97,13 +97,12 @@ export default function MercuryRetrograde2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-purple-100 text-purple-800">Planetary Retrograde</Badge>
+          <Badge className="mb-4 bg-purple-100 text-purple-800">{t('transits.mercuryRetrograde.badge', 'Planetary Retrograde')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Mercury Retrograde 2026
+            {t('transits.mercuryRetrograde.title', 'Mercury Retrograde 2026')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Complete survival guide for Mercury Retrograde in 2026. Learn the dates, 
-            understand the effects, and navigate these periods successfully.
+            {t('transits.mercuryRetrograde.subtitle', 'Complete survival guide for Mercury Retrograde in 2026. Learn the dates, understand the effects, and navigate these periods successfully.')}
           </p>
         </div>
 

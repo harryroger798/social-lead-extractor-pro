@@ -9,11 +9,11 @@ export default function TermsOfServicePage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Legal</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('legal.badge', 'Legal')}</Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Terms of Service
+            {t('legal.termsOfService.title', 'Terms of Service')}
           </h1>
-          <p className="text-gray-600">Last updated: January 2026</p>
+          <p className="text-gray-600">{t('legal.lastUpdated', 'Last updated: January 2026')}</p>
         </div>
 
         <div className="prose prose-gray max-w-none">

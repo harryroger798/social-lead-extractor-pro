@@ -1,12 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Language, translations, TranslationKeys } from "./translations";
+import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { Language, translations } from "./translations";
+
+type TranslateFunction = (key: string, fallback?: string) => string;
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: TranslationKeys;
+  t: TranslateFunction;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -24,6 +26,19 @@ function getInitialLanguage(): Language {
   return "en";
 }
 
+function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
+  const keys = path.split('.');
+  let current: unknown = obj;
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = (current as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
+  }
+  return typeof current === 'string' ? current : undefined;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
@@ -32,7 +47,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
-  const t = translations[language];
+  const t: TranslateFunction = useCallback((key: string, fallback?: string): string => {
+    const currentTranslations = translations[language];
+    const value = getNestedValue(currentTranslations as Record<string, unknown>, key);
+    if (value !== undefined) {
+      return value;
+    }
+    // Try English fallback
+    const englishValue = getNestedValue(translations.en as Record<string, unknown>, key);
+    if (englishValue !== undefined) {
+      return englishValue;
+    }
+    // Return provided fallback or key
+    return fallback || key;
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

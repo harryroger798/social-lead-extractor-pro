@@ -162,13 +162,12 @@ export default function ConsultationPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">Expert Guidance</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('consultation.badge', 'Expert Guidance')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Book Your Vedic Astrology Consultation
+            {t('consultation.title', 'Book Your Vedic Astrology Consultation')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Get personalized guidance from our verified expert astrologers with 15+ years 
-            of experience. Choose from phone, video, or chat consultations.
+            {t('consultation.subtitle', 'Get personalized guidance from our verified expert astrologers with 15+ years of experience. Choose from phone, video, or chat consultations.')}
           </p>
         </div>
 

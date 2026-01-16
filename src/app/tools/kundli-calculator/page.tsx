@@ -328,13 +328,12 @@ export default function KundliCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-green-100 text-green-800">Free Tool</Badge>
+          <Badge className="mb-4 bg-green-100 text-green-800">{t('calculator.freeTool', 'Free Tool')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Free Kundli Calculator
+            {t('calculator.kundli.title', 'Free Kundli Calculator')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Generate your complete Vedic birth chart (Janam Kundli) instantly. Get detailed 
-            planetary positions, house placements, Nakshatra information, and Dosha analysis.
+            {t('calculator.kundli.subtitle', 'Generate your complete Vedic birth chart (Janam Kundli) instantly. Get detailed planetary positions, house placements, Nakshatra information, and Dosha analysis.')}
           </p>
         </div>
 
@@ -343,19 +342,19 @@ export default function KundliCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-amber-600" />
-                Enter Birth Details
+                {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                Provide accurate birth information for precise calculations
+                {t('calculator.birthDetailsDesc', 'Provide accurate birth information for precise calculations')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t('calculator.fullName', 'Full Name')}</Label>
                   <Input
                     id="name"
-                    placeholder="Enter your name"
+                    placeholder={t('calculator.enterName', 'Enter your name')}
                     value={birthDetails.name}
                     onChange={(e) => setBirthDetails({ ...birthDetails, name: e.target.value })}
                     required
@@ -365,7 +364,7 @@ export default function KundliCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date"
@@ -379,7 +378,7 @@ export default function KundliCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="time" className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Time of Birth
+                    {t('calculator.timeOfBirth', 'Time of Birth')}
                   </Label>
                   <Input
                     id="time"
@@ -389,18 +388,18 @@ export default function KundliCalculatorPage() {
                     required
                   />
                   <p className="text-xs text-gray-500">
-                    Accurate birth time is crucial for precise Ascendant calculation
+                    {t('calculator.timeNote', 'Accurate birth time is crucial for precise Ascendant calculation')}
                   </p>
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="place" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Place of Birth
+                    {t('calculator.placeOfBirth', 'Place of Birth')}
                   </Label>
                   <LocationInput
                     id="place"
-                    placeholder="Search city..."
+                    placeholder={t('calculator.searchCity', 'Search city...')}
                     value={birthDetails.place}
                     onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
                     onLocationSelect={(loc) => setBirthDetails({ ...birthDetails, place: loc })}
@@ -416,12 +415,12 @@ export default function KundliCalculatorPage() {
                   {isCalculating ? (
                     <>
                       <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                      Calculating...
+                      {t('calculator.calculating', 'Calculating...')}
                     </>
                   ) : (
                     <>
                       <Calculator className="w-4 h-4 mr-2" />
-                      Generate Kundli
+                      {t('calculator.kundli.generate', 'Generate Kundli')}
                     </>
                   )}
                 </Button>

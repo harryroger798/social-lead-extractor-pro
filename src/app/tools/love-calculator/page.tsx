@@ -159,13 +159,12 @@ export default function LoveCalculatorPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-pink-100 text-pink-800">Free Calculator</Badge>
+          <Badge className="mb-4 bg-pink-100 text-pink-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Love Compatibility Calculator
+            {t('calculator.love.title', 'Love Compatibility Calculator')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover your romantic compatibility based on zodiac signs. Find out how well 
-            you match with your partner in love, emotions, and life.
+            {t('calculator.love.subtitle', 'Discover your romantic compatibility based on zodiac signs. Find out how well you match with your partner in love, emotions, and life.')}
           </p>
         </div>
 
@@ -174,23 +173,23 @@ export default function LoveCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Heart className="w-5 h-5 text-pink-600" />
-                Enter Your Details
+                {t('calculator.love.enterDetails', 'Enter Your Details')}
               </CardTitle>
               <CardDescription>
-                Enter birth dates to calculate zodiac compatibility
+                {t('calculator.love.enterBirthDates', 'Enter birth dates to calculate zodiac compatibility')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-pink-50 rounded-lg p-4 space-y-4">
                 <h3 className="font-semibold text-pink-800 flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  Person 1
+                  {t('calculator.love.person1', 'Person 1')}
                 </h3>
                 <div className="space-y-2">
-                  <Label htmlFor="name1">Name</Label>
+                  <Label htmlFor="name1">{t('calculator.name', 'Name')}</Label>
                   <Input
                     id="name1"
-                    placeholder="Enter name"
+                    placeholder={t('calculator.enterName', 'Enter name')}
                     value={person1Name}
                     onChange={(e) => setPerson1Name(e.target.value)}
                   />
@@ -198,7 +197,7 @@ export default function LoveCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date1" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date1"
@@ -219,13 +218,13 @@ export default function LoveCalculatorPage() {
               <div className="bg-red-50 rounded-lg p-4 space-y-4">
                 <h3 className="font-semibold text-red-800 flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  Person 2
+                  {t('calculator.love.person2', 'Person 2')}
                 </h3>
                 <div className="space-y-2">
-                  <Label htmlFor="name2">Name</Label>
+                  <Label htmlFor="name2">{t('calculator.name', 'Name')}</Label>
                   <Input
                     id="name2"
-                    placeholder="Enter name"
+                    placeholder={t('calculator.enterName', 'Enter name')}
                     value={person2Name}
                     onChange={(e) => setPerson2Name(e.target.value)}
                   />
@@ -233,7 +232,7 @@ export default function LoveCalculatorPage() {
                 <div className="space-y-2">
                   <Label htmlFor="date2" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date of Birth
+                    {t('calculator.dateOfBirth', 'Date of Birth')}
                   </Label>
                   <Input
                     id="date2"
@@ -253,12 +252,12 @@ export default function LoveCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    Calculating Love Match...
+                    {t('calculator.love.calculatingMatch', 'Calculating Love Match...')}
                   </>
                 ) : (
                   <>
                     <Heart className="w-4 h-4 mr-2" />
-                    Check Compatibility
+                    {t('calculator.love.checkCompatibility', 'Check Compatibility')}
                   </>
                 )}
               </Button>
