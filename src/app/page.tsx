@@ -296,7 +296,7 @@ export default function Home() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white text-white hover:bg-white/10 text-lg px-8 py-6"
+              className="border-white bg-white/10 text-white hover:bg-white hover:text-amber-600 text-lg px-8 py-6"
               asChild
             >
               <Link href="/consultation">
