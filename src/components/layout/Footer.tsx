@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Star, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Twitter } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 
 const footerLinks = {
   services: [
@@ -45,9 +46,13 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600">
-                <Star className="w-6 h-6 text-white" />
-              </div>
+              <Image
+                src="/images/logo.png"
+                alt="VedicStarAstro Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+              />
               <span className="text-xl font-bold text-white">VedicStarAstro</span>
             </Link>
             <p className="text-sm text-gray-400 mb-6 max-w-xs">

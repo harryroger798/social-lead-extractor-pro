@@ -1,12 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Phone,
-  Video,
-  MessageSquare,
   Clock,
   Star,
   Shield,
@@ -38,7 +36,7 @@ export const metadata: Metadata = {
 
 const consultationTypes = [
   {
-    icon: Phone,
+    image: "/images/phone-consultation.png",
     title: "Phone Consultation",
     duration: "30-60 minutes",
     price: "₹999",
@@ -54,7 +52,7 @@ const consultationTypes = [
     popular: false,
   },
   {
-    icon: Video,
+    image: "/images/video-consultation.png",
     title: "Video Consultation",
     duration: "45-60 minutes",
     price: "₹1,499",
@@ -71,7 +69,7 @@ const consultationTypes = [
     popular: true,
   },
   {
-    icon: MessageSquare,
+    image: "/images/chat-consultation.png",
     title: "Chat Consultation",
     duration: "Unlimited (24 hours)",
     price: "₹499",
@@ -96,7 +94,7 @@ const astrologers = [
     rating: 4.9,
     consultations: 15000,
     languages: ["Hindi", "English"],
-    image: "/astrologers/ramesh-sharma.jpg",
+    image: "/images/astrologer-profile.png",
   },
   {
     name: "Dr. Lakshmi Devi",
@@ -105,7 +103,7 @@ const astrologers = [
     rating: 4.8,
     consultations: 12000,
     languages: ["Hindi", "English", "Telugu"],
-    image: "/astrologers/lakshmi-devi.jpg",
+    image: "/images/astrologer-profile.png",
   },
   {
     name: "Acharya Suresh Kumar",
@@ -114,7 +112,7 @@ const astrologers = [
     rating: 4.9,
     consultations: 10000,
     languages: ["Hindi", "English", "Kannada"],
-    image: "/astrologers/suresh-kumar.jpg",
+    image: "/images/astrologer-profile.png",
   },
 ];
 
@@ -203,11 +201,17 @@ export default function ConsultationPage() {
                 </div>
               )}
               <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
-                  <type.icon className="w-6 h-6 text-amber-600" />
+                <div className="w-24 h-24 mx-auto mb-4">
+                  <Image
+                    src={type.image}
+                    alt={type.title}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                <CardTitle>{type.title}</CardTitle>
-                <CardDescription>{type.description}</CardDescription>
+                <CardTitle className="text-center">{type.title}</CardTitle>
+                <CardDescription className="text-center">{type.description}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
@@ -256,8 +260,14 @@ export default function ConsultationPage() {
               <Card key={astrologer.name} className="border-amber-100">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-2xl font-bold">
-                      {astrologer.name.charAt(0)}
+                    <div className="w-16 h-16 rounded-full overflow-hidden">
+                      <Image
+                        src={astrologer.image}
+                        alt={astrologer.name}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>

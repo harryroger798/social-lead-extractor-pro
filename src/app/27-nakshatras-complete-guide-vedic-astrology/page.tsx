@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -404,6 +405,17 @@ export default function NakshatrasGuidePage() {
             </span>
             <span>Updated: January 2025</span>
           </div>
+        </div>
+
+        <div className="mb-12 rounded-2xl overflow-hidden shadow-xl">
+          <Image
+            src="/images/nakshatra-art.png"
+            alt="27 Nakshatras Constellation Art - Vedic Astrology Lunar Mansions"
+            width={1200}
+            height={800}
+            className="w-full h-auto object-cover"
+            priority
+          />
         </div>
 
         <Card className="mb-8 bg-amber-50 border-amber-200">

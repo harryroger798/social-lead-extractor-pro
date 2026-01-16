@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,8 +79,9 @@ const testimonials = [
 export default function Home() {
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50 via-orange-50 to-white py-20 lg:py-28">
-        <div className="absolute inset-0 bg-[url('/stars-pattern.svg')] opacity-5"></div>
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-4 bg-amber-100 text-amber-800 hover:bg-amber-100">
@@ -87,14 +89,14 @@ export default function Home() {
               Trusted by 50,000+ Users
             </Badge>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Discover Your Destiny with{" "}
-              <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                 Authentic Vedic Astrology
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
               Get accurate Kundli analysis, Nakshatra insights, and personalized predictions 
               from expert astrologers with 20+ years of experience in Jyotish Shastra.
             </p>
@@ -126,8 +128,8 @@ export default function Home() {
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-amber-600">{stat.value}</div>
-                <div className="text-sm text-gray-600 mt-1">{stat.label}</div>
+                <div className="text-3xl md:text-4xl font-bold text-amber-400">{stat.value}</div>
+                <div className="text-sm text-gray-300 mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -219,14 +221,14 @@ export default function Home() {
             </div>
             
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                    <Star className="w-16 h-16 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">VedicStarAstro</h3>
-                  <p className="text-gray-600">Your Guide to Cosmic Wisdom</p>
-                </div>
+              <div className="rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/kundli-chart.png"
+                  alt="Vedic Birth Chart (Kundli) Illustration"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover"
+                />
               </div>
             </div>
           </div>
