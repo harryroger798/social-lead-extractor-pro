@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -16,26 +15,6 @@ import {
   Calendar,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Book Vedic Astrology Consultation - Expert Astrologers",
-  description:
-    "Book a personalized Vedic astrology consultation with our expert astrologers. Get guidance on career, marriage, health, and life decisions. Phone, video, and chat options available.",
-  keywords: [
-    "astrology consultation",
-    "vedic astrology consultation",
-    "talk to astrologer",
-    "online astrology consultation",
-    "kundli consultation",
-    "horoscope consultation",
-  ],
-  openGraph: {
-    title: "Book Vedic Astrology Consultation - Expert Astrologers",
-    description:
-      "Get personalized guidance from expert Vedic astrologers. Multiple consultation options available.",
-    type: "website",
-  },
-};
 
 const consultationTypes = [
   {

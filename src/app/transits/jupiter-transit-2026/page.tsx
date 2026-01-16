@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,18 +12,6 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Jupiter Transit 2026 - Guru Gochar Effects on All Zodiac Signs | VedicStarAstro",
-  description: "Complete guide to Jupiter Transit 2026 (Guru Gochar). Learn how Jupiter's movement affects your zodiac sign with predictions, benefits, and important dates.",
-  keywords: [
-    "jupiter transit 2026",
-    "guru gochar 2026",
-    "jupiter in gemini 2026",
-    "jupiter in cancer 2026",
-    "brihaspati transit",
-  ],
-};
 
 const jupiterEffects = [
   {

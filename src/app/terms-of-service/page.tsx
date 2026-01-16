@@ -1,15 +1,7 @@
 "use client";
 
-import { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Terms of Service - VedicStarAstro",
-  description:
-    "VedicStarAstro Terms of Service. Read our terms and conditions for using our Vedic astrology services and consultation platform.",
-  keywords: ["terms of service", "terms and conditions", "vedicstarastro terms"],
-};
 
 export default function TermsOfServicePage() {
   const { t } = useLanguage();

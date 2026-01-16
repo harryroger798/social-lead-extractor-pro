@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,31 +12,6 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, BookOpen, Star, Clock, CheckCircle, Sun, Moon } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Kundli Birth Chart Analysis Guide - Understanding Your Janam Kundli",
-  description:
-    "Learn how to read and interpret your Kundli (birth chart). Comprehensive guide covering houses, planets, aspects, yogas, and dashas for accurate horoscope analysis.",
-  keywords: [
-    "kundli analysis",
-    "birth chart reading",
-    "janam kundli",
-    "horoscope interpretation",
-    "kundli houses",
-    "planetary positions",
-    "vedic birth chart",
-    "kundli reading guide",
-  ],
-  openGraph: {
-    title: "Kundli Birth Chart Analysis Guide - Understanding Your Janam Kundli",
-    description:
-      "Learn how to read and interpret your Kundli (birth chart). Comprehensive guide covering houses, planets, aspects, yogas, and dashas.",
-    type: "article",
-    publishedTime: "2025-01-01T00:00:00Z",
-    modifiedTime: new Date().toISOString(),
-    authors: ["VedicStarAstro"],
-  },
-};
 
 const tableOfContents = [
   { id: "what-is-kundli", title: "What is a Kundli?" },

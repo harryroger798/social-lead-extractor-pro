@@ -1,17 +1,9 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Refund Policy - VedicStarAstro",
-  description:
-    "VedicStarAstro Refund Policy. Learn about our refund and cancellation policies for consultation services.",
-  keywords: ["refund policy", "cancellation policy", "vedicstarastro refund"],
-};
 
 export default function RefundPolicyPage() {
   const { t } = useLanguage();

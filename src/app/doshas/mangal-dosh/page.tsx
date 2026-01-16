@@ -13,19 +13,6 @@ import {
   Heart,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Mangal Dosh (Manglik Dosha) - Complete Guide, Effects & Remedies | VedicStarAstro",
-  description: "Complete guide to Mangal Dosh (Kuja Dosha). Learn about causes, effects on marriage, cancellation conditions, and powerful remedies for Manglik Dosha.",
-  keywords: [
-    "mangal dosh",
-    "manglik dosha",
-    "kuja dosha",
-    "mars dosha",
-    "mangal dosh remedies",
-    "manglik marriage",
-  ],
-};
-
 const mangalDoshHouses = [
   {
     house: "1st House (Lagna)",

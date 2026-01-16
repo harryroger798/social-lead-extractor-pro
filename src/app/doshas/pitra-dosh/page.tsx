@@ -12,19 +12,6 @@ import {
   Users,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Pitra Dosh - Ancestral Karma, Effects & Remedies | VedicStarAstro",
-  description: "Complete guide to Pitra Dosh (Pitru Dosha). Learn about ancestral karma, causes, effects on family and life, and powerful remedies to pacify ancestors.",
-  keywords: [
-    "pitra dosh",
-    "pitru dosha",
-    "ancestral karma",
-    "pitra dosh remedies",
-    "pitru paksha",
-    "ancestor worship",
-  ],
-};
-
 const causes = [
   "Ancestors who died unnatural or untimely deaths",
   "Unfulfilled wishes or desires of departed ancestors",

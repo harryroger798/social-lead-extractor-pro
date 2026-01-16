@@ -14,29 +14,6 @@ import {
   Wallet,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "2026 Horoscope - Yearly Predictions for All Zodiac Signs | VedicStarAstro",
-  description: "Read your complete 2026 horoscope predictions for all 12 zodiac signs. Get insights on love, career, finance, and health for the year ahead.",
-  keywords: [
-    "2026 horoscope",
-    "yearly horoscope 2026",
-    "zodiac predictions 2026",
-    "astrology 2026",
-    "aries 2026",
-    "taurus 2026",
-    "gemini 2026",
-    "cancer 2026",
-    "leo 2026",
-    "virgo 2026",
-    "libra 2026",
-    "scorpio 2026",
-    "sagittarius 2026",
-    "capricorn 2026",
-    "aquarius 2026",
-    "pisces 2026",
-  ],
-};
-
 const zodiacSigns = [
   {
     name: "Aries",

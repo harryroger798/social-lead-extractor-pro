@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,21 +12,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Hindu Festival Calendar 2026 - Complete List of Festivals & Holidays",
-  description: "Complete Hindu festival calendar for 2026 with dates, timings, and significance. Find Diwali, Holi, Navratri, Ganesh Chaturthi, and all major Hindu festivals.",
-  keywords: [
-    "hindu festival calendar 2026",
-    "indian festivals 2026",
-    "diwali 2026",
-    "holi 2026",
-    "navratri 2026",
-    "ganesh chaturthi 2026",
-    "hindu holidays 2026",
-    "panchang 2026",
-  ],
-};
 
 const festivals2026 = [
   {

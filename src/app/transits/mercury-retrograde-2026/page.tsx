@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,18 +13,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Mercury Retrograde 2026 - Dates, Effects & Survival Guide | VedicStarAstro",
-  description: "Complete guide to Mercury Retrograde 2026. Learn the dates, effects on communication and technology, and how to navigate these challenging periods.",
-  keywords: [
-    "mercury retrograde 2026",
-    "budh vakri 2026",
-    "mercury retrograde dates",
-    "mercury retrograde effects",
-    "mercury retrograde survival guide",
-  ],
-};
 
 const retrogradeperiods = [
   {

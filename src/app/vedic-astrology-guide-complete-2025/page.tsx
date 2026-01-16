@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,31 +12,6 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, BookOpen, Star, Clock, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Complete Vedic Astrology Guide 2025 - Learn Jyotish Shastra",
-  description:
-    "Master Vedic astrology with our comprehensive guide. Learn about Kundli, Nakshatras, planetary influences, doshas, and remedies. Free resources for beginners and advanced practitioners.",
-  keywords: [
-    "vedic astrology",
-    "jyotish shastra",
-    "vedic astrology guide",
-    "learn astrology",
-    "indian astrology",
-    "hindu astrology",
-    "birth chart interpretation",
-    "kundli reading",
-  ],
-  openGraph: {
-    title: "Complete Vedic Astrology Guide 2025 - Learn Jyotish Shastra",
-    description:
-      "Master Vedic astrology with our comprehensive guide. Learn about Kundli, Nakshatras, planetary influences, doshas, and remedies.",
-    type: "article",
-    publishedTime: "2025-01-01T00:00:00Z",
-    modifiedTime: new Date().toISOString(),
-    authors: ["VedicStarAstro"],
-  },
-};
 
 const tableOfContents = [
   { id: "introduction", title: "Introduction to Vedic Astrology" },

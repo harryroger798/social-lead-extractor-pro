@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,28 +12,6 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, Gem, Sparkles, Clock, Shield, Heart } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Vedic Astrology Remedies & Doshas Guide - Effective Solutions",
-  description:
-    "Complete guide to Vedic astrology remedies for doshas like Mangal Dosha, Kaal Sarp Dosha, and Sade Sati. Learn about gemstones, mantras, charity, and other effective remedial measures.",
-  keywords: [
-    "vedic astrology remedies",
-    "dosha remedies",
-    "mangal dosha remedy",
-    "kaal sarp dosha remedy",
-    "sade sati remedies",
-    "astrological gemstones",
-    "planetary mantras",
-    "astrology charity",
-  ],
-  openGraph: {
-    title: "Vedic Astrology Remedies & Doshas Guide - Effective Solutions",
-    description:
-      "Complete guide to Vedic astrology remedies for doshas. Learn about gemstones, mantras, and effective remedial measures.",
-    type: "article",
-  },
-};
 
 const doshas = [
   {

@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,26 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Calendar, Clock, User, ArrowRight, Search, Tag } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Vedic Astrology Blog - Articles, Guides & Insights",
-  description:
-    "Explore our collection of Vedic astrology articles, guides, and insights. Learn about Kundli interpretation, Nakshatras, planetary transits, and astrological remedies.",
-  keywords: [
-    "vedic astrology blog",
-    "astrology articles",
-    "kundli guide",
-    "nakshatra articles",
-    "astrology insights",
-    "jyotish blog",
-  ],
-  openGraph: {
-    title: "Vedic Astrology Blog - Articles, Guides & Insights",
-    description:
-      "Explore our collection of Vedic astrology articles, guides, and insights.",
-    type: "website",
-  },
-};
 
 const featuredPosts = [
   {

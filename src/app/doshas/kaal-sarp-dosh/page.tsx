@@ -11,18 +11,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Kaal Sarp Dosh - Types, Effects & Remedies | VedicStarAstro",
-  description: "Complete guide to Kaal Sarp Dosh. Learn about 12 types of Kaal Sarp Yoga, their effects on life, and powerful remedies to overcome this dosha.",
-  keywords: [
-    "kaal sarp dosh",
-    "kaal sarp yoga",
-    "rahu ketu dosha",
-    "kaal sarp dosh remedies",
-    "kaal sarp dosh types",
-  ],
-};
-
 const kaalSarpTypes = [
   {
     name: "Anant Kaal Sarp Dosh",

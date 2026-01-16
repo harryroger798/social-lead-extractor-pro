@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,24 +15,6 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "About VedicStarAstro - Our Story & Mission",
-  description:
-    "Learn about VedicStarAstro's mission to make authentic Vedic astrology accessible to everyone. Meet our team of expert astrologers with 20+ years of experience.",
-  keywords: [
-    "about vedicstarastro",
-    "vedic astrology experts",
-    "astrology team",
-    "jyotish experts",
-  ],
-  openGraph: {
-    title: "About VedicStarAstro - Our Story & Mission",
-    description:
-      "Learn about VedicStarAstro's mission to make authentic Vedic astrology accessible to everyone.",
-    type: "website",
-  },
-};
 
 const stats = [
   { value: "50,000+", label: "Charts Generated", icon: Star },

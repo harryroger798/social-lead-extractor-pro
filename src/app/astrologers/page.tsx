@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -17,25 +16,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Our Expert Astrologers - Verified Vedic Astrology Experts",
-  description:
-    "Meet our team of verified Vedic astrologers with 10-25+ years of experience. Expert Kundli analysis, career guidance, marriage compatibility, and personalized consultations.",
-  keywords: [
-    "vedic astrologers",
-    "expert astrologers",
-    "kundli experts",
-    "jyotish consultants",
-    "astrology consultation",
-  ],
-  openGraph: {
-    title: "Our Expert Astrologers - VedicStarAstro",
-    description:
-      "Meet our team of verified Vedic astrologers with decades of experience in Jyotish Shastra.",
-    type: "website",
-  },
-};
 
 const astrologers = [
   {

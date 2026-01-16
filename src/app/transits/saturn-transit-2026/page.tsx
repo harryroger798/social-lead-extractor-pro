@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,18 +12,6 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Saturn Transit 2026 - Shani Gochar Effects on All Zodiac Signs | VedicStarAstro",
-  description: "Complete guide to Saturn Transit 2026 (Shani Gochar). Learn how Saturn in Pisces affects your zodiac sign with predictions, remedies, and important dates.",
-  keywords: [
-    "saturn transit 2026",
-    "shani gochar 2026",
-    "saturn in pisces 2026",
-    "shani transit effects",
-    "saturn retrograde 2026",
-  ],
-};
 
 const saturnEffects = [
   {

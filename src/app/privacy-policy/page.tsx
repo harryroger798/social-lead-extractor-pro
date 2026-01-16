@@ -1,15 +1,7 @@
 "use client";
 
-import { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Privacy Policy - VedicStarAstro",
-  description:
-    "VedicStarAstro Privacy Policy. Learn how we collect, use, and protect your personal information when using our Vedic astrology services.",
-  keywords: ["privacy policy", "data protection", "vedicstarastro privacy"],
-};
 
 export default function PrivacyPolicyPage() {
   const { t } = useLanguage();

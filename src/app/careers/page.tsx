@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,24 +15,6 @@ import {
   Star,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Careers at VedicStarAstro - Join Our Team",
-  description:
-    "Join VedicStarAstro and be part of a team bringing ancient Vedic wisdom to the modern world. Explore career opportunities in astrology, technology, and more.",
-  keywords: [
-    "astrology careers",
-    "vedic astrology jobs",
-    "astrologer jobs",
-    "vedicstarastro careers",
-  ],
-  openGraph: {
-    title: "Careers at VedicStarAstro",
-    description:
-      "Join our team and help bring authentic Vedic astrology to millions.",
-    type: "website",
-  },
-};
 
 const openPositions = [
   {

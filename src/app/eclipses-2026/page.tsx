@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,19 +13,6 @@ import {
   MapPin,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Solar & Lunar Eclipses 2026 - Dates, Timings & Effects | VedicStarAstro",
-  description: "Complete guide to Solar and Lunar Eclipses in 2026. Learn eclipse dates, visibility, astrological effects on zodiac signs, and important dos and don'ts.",
-  keywords: [
-    "eclipse 2026",
-    "solar eclipse 2026",
-    "lunar eclipse 2026",
-    "surya grahan 2026",
-    "chandra grahan 2026",
-    "eclipse dates 2026",
-  ],
-};
 
 const eclipses2026 = [
   {

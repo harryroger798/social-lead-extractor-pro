@@ -1,18 +1,10 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Disclaimer - VedicStarAstro",
-  description:
-    "VedicStarAstro Disclaimer. Important information about the nature of astrological services and predictions.",
-  keywords: ["disclaimer", "astrology disclaimer", "vedicstarastro disclaimer"],
-};
 
 export default function DisclaimerPage() {
   const { t } = useLanguage();

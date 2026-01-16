@@ -12,19 +12,6 @@ import {
   Clock,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Sade Sati - Saturn's 7.5 Year Transit Guide & Remedies | VedicStarAstro",
-  description: "Complete guide to Shani Sade Sati. Learn about the three phases, effects on each zodiac sign, and powerful remedies to navigate Saturn's 7.5 year transit.",
-  keywords: [
-    "sade sati",
-    "shani sade sati",
-    "saturn transit",
-    "sade sati effects",
-    "sade sati remedies",
-    "saturn 7.5 years",
-  ],
-};
-
 const phases = [
   {
     name: "Rising Phase (First Phase)",

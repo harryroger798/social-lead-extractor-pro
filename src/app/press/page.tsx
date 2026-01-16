@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,24 +15,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Press & Media - VedicStarAstro",
-  description:
-    "VedicStarAstro press kit, media resources, and news. Download brand assets and get in touch with our media team.",
-  keywords: [
-    "vedicstarastro press",
-    "astrology news",
-    "media kit",
-    "press release",
-  ],
-  openGraph: {
-    title: "Press & Media - VedicStarAstro",
-    description:
-      "Press resources and media information for VedicStarAstro.",
-    type: "website",
-  },
-};
 
 const pressReleases = [
   {

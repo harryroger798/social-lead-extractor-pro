@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,22 +15,6 @@ import {
   Send,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "Contact VedicStarAstro - Get in Touch",
-  description:
-    "Contact VedicStarAstro for astrology consultations, inquiries, or support. Reach us via phone, email, or our contact form. We're here to help.",
-  keywords: [
-    "contact vedicstarastro",
-    "astrology consultation contact",
-    "vedic astrology support",
-  ],
-  openGraph: {
-    title: "Contact VedicStarAstro - Get in Touch",
-    description: "Contact VedicStarAstro for astrology consultations, inquiries, or support.",
-    type: "website",
-  },
-};
 
 const contactInfo = [
   {

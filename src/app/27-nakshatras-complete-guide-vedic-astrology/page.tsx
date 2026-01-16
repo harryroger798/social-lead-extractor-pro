@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,28 +13,6 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, Moon, Star, Clock } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-export const metadata: Metadata = {
-  title: "27 Nakshatras Complete Guide - Vedic Astrology Lunar Mansions",
-  description:
-    "Comprehensive guide to all 27 Nakshatras in Vedic astrology. Learn about each lunar mansion's characteristics, ruling deity, planetary lord, and influence on personality and destiny.",
-  keywords: [
-    "nakshatras",
-    "27 nakshatras",
-    "lunar mansions",
-    "vedic astrology nakshatras",
-    "nakshatra characteristics",
-    "birth nakshatra",
-    "janma nakshatra",
-    "nakshatra compatibility",
-  ],
-  openGraph: {
-    title: "27 Nakshatras Complete Guide - Vedic Astrology Lunar Mansions",
-    description:
-      "Comprehensive guide to all 27 Nakshatras in Vedic astrology. Learn about each lunar mansion's characteristics and influence.",
-    type: "article",
-  },
-};
 
 const nakshatras = [
   {
