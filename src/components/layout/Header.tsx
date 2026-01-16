@@ -11,6 +11,7 @@ const navigation = [
     name: "Tools",
     href: "#",
     children: [
+      { name: "AI Astrologer", href: "/ai-astrologer", description: "Chat with our AI for instant guidance" },
       { name: "Free Kundli", href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
       { name: "Nakshatra Finder", href: "/tools/nakshatra-finder", description: "Discover your lunar constellation" },
       { name: "Horoscope Matching", href: "/tools/horoscope-matching", description: "Check marriage compatibility" },
