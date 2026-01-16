@@ -247,23 +247,59 @@ How may I assist you on your spiritual journey today?`,
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1000));
+    try {
+      // Prepare conversation history for API (exclude welcome message)
+      const conversationHistory = messages
+        .filter((m) => m.id !== "welcome")
+        .map((m) => ({ role: m.role, content: m.content }));
 
-    const response = getAstrologyResponse(input);
-    
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: response,
-      timestamp: new Date(),
-    };
+      const response = await fetch("/api/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: currentInput,
+          conversationHistory,
+        }),
+      });
 
-    setMessages((prev) => [...prev, assistantMessage]);
-    setIsTyping(false);
+      const data = await response.json();
+
+      let responseContent: string;
+      if (data.success && data.message) {
+        responseContent = data.message;
+      } else {
+        // Fallback to keyword-based response if API fails
+        responseContent = getAstrologyResponse(currentInput);
+      }
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: responseContent,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      // Fallback to keyword-based response on network error
+      console.error("AI API error:", error);
+      const fallbackResponse = getAstrologyResponse(currentInput);
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: fallbackResponse,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleSuggestedQuestion = (question: string) => {
