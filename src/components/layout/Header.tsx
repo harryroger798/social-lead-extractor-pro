@@ -68,23 +68,23 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex h-20 items-center justify-between">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-3">
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/images/logo.png"
                 alt="VedicStarAstro Logo"
-                width={72}
-                height={72}
-                className="w-16 h-16 md:w-18 md:h-18 object-contain"
+                width={48}
+                height={48}
+                className="w-10 h-10 object-contain"
                 priority
               />
-              <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 VedicStarAstro
               </span>
             </Link>
           </div>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-x-5">
+          <div className="hidden lg:flex lg:items-center lg:gap-x-4 lg:ml-8">
             {navigation.map((item) => (
               <div key={item.name} className="relative">
                 {item.children ? (
