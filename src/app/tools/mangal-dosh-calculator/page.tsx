@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { LocationInput } from "@/components/ui/location-input";
 import {
   AlertTriangle,
   Calendar,
@@ -219,11 +220,12 @@ export default function MangalDoshCalculatorPage() {
                   <MapPin className="w-4 h-4" />
                   Place of Birth
                 </Label>
-                <Input
+                <LocationInput
                   id="place"
-                  placeholder="City, State, Country"
+                  placeholder="Search city..."
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
+                  onLocationSelect={(loc) => setBirthPlace(loc)}
                 />
               </div>
               

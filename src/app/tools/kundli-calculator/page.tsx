@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LocationInput } from "@/components/ui/location-input";
 import {
   Calculator,
   Calendar,
@@ -395,11 +396,12 @@ export default function KundliCalculatorPage() {
                     <MapPin className="w-4 h-4" />
                     Place of Birth
                   </Label>
-                  <Input
+                  <LocationInput
                     id="place"
-                    placeholder="City, State, Country"
+                    placeholder="Search city..."
                     value={birthDetails.place}
                     onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
+                    onLocationSelect={(loc) => setBirthDetails({ ...birthDetails, place: loc })}
                     required
                   />
                 </div>

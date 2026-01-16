@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { LocationInput } from "@/components/ui/location-input";
 import {
   Sunrise,
   Calendar,
@@ -269,11 +270,12 @@ export default function AscendantCalculatorPage() {
                   <MapPin className="w-4 h-4" />
                   Place of Birth
                 </Label>
-                <Input
+                <LocationInput
                   id="place"
-                  placeholder="City, State, Country"
+                  placeholder="Search city..."
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
+                  onLocationSelect={(loc) => setBirthPlace(loc)}
                 />
                 <p className="text-xs text-gray-500">
                   Location affects time zone and local sidereal time

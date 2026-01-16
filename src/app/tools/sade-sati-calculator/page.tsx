@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { LocationInput } from "@/components/ui/location-input";
 import {
   Calendar,
   Clock,
@@ -258,11 +259,12 @@ export default function SadeSatiCalculatorPage() {
                   <MapPin className="w-4 h-4" />
                   Place of Birth
                 </Label>
-                <Input
+                <LocationInput
                   id="place"
-                  placeholder="City, State, Country"
+                  placeholder="Search city..."
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
+                  onLocationSelect={(loc) => setBirthPlace(loc)}
                 />
               </div>
               

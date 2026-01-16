@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LocationInput } from "@/components/ui/location-input";
 import {
   Calendar,
   Sun,
@@ -127,6 +128,8 @@ async function fetchPanchang(date: Date, location: string): Promise<PanchangData
     
     const sunriseTime = formatTime12(data.sunrise);
     const sunsetTime = formatTime12(data.sunset);
+    const moonriseTime = formatTime12(data.moonrise);
+    const moonsetTime = formatTime12(data.moonset);
     const rahuStart = formatTime12(data.rahu_kaal?.start);
     const rahuEnd = formatTime12(data.rahu_kaal?.end);
     
@@ -149,8 +152,8 @@ async function fetchPanchang(date: Date, location: string): Promise<PanchangData
       paksha: data.tithi?.paksha === "Shukla" ? "Shukla Paksha (Waxing Moon)" : "Krishna Paksha (Waning Moon)",
       sunrise: sunriseTime,
       sunset: sunsetTime,
-      moonrise: "Varies daily",
-      moonset: "Varies daily",
+      moonrise: moonriseTime,
+      moonset: moonsetTime,
       rahuKaal: `${rahuStart} - ${rahuEnd}`,
       yamaganda: `${formatTimeFromHour(rahuKaalStart - 3)} - ${formatTimeFromHour(rahuKaalStart - 1.5)}`,
       gulikaKaal: `${formatTimeFromHour(rahuKaalStart + 3)} - ${formatTimeFromHour(rahuKaalStart + 4.5)}`,
@@ -255,11 +258,12 @@ export default function PanchangPage() {
                   <MapPin className="w-4 h-4" />
                   Location
                 </Label>
-                <Input
+                <LocationInput
                   id="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City, Country"
+                  onLocationSelect={(loc) => setLocation(loc)}
+                  placeholder="Search city..."
                 />
               </div>
               <div className="flex gap-2">
