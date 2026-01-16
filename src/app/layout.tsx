@@ -3,6 +3,7 @@ import { Poppins, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Providers } from "@/components/Providers";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -135,9 +136,11 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${notoSans.variable} font-sans antialiased bg-white text-gray-900`}
       >
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

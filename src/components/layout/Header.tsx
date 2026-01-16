@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 const navigation = [
   {
@@ -126,6 +127,7 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex lg:items-center lg:gap-x-4">
+            <LanguageSwitcher />
             <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
               Free Kundli
             </Button>
@@ -181,6 +183,9 @@ export function Header() {
                 </div>
               ))}
               <div className="pt-4 px-3 space-y-2">
+                <div className="flex justify-center pb-2">
+                  <LanguageSwitcher />
+                </div>
                 <Button variant="outline" className="w-full border-amber-500 text-amber-600">
                   Free Kundli
                 </Button>
