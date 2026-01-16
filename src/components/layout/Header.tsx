@@ -7,7 +7,6 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: "Home", href: "/" },
   {
     name: "Tools",
     href: "#",
@@ -37,15 +36,9 @@ const navigation = [
       { name: "Weekly Horoscope", href: "/horoscope/weekly", description: "This week's forecast" },
       { name: "Monthly Horoscope", href: "/horoscope/monthly", description: "Monthly predictions" },
       { name: "2026 Horoscope", href: "/horoscope/2026", description: "Yearly predictions for 2026" },
-    ],
-  },
-  {
-    name: "2026 Transits",
-    href: "#",
-    children: [
       { name: "Saturn Transit 2026", href: "/transits/saturn-transit-2026", description: "Shani Gochar effects" },
       { name: "Jupiter Transit 2026", href: "/transits/jupiter-transit-2026", description: "Guru Gochar predictions" },
-      { name: "Mercury Retrograde 2026", href: "/transits/mercury-retrograde-2026", description: "Retrograde dates & survival guide" },
+      { name: "Mercury Retrograde", href: "/transits/mercury-retrograde-2026", description: "Retrograde dates & survival guide" },
       { name: "Eclipses 2026", href: "/eclipses-2026", description: "Solar & lunar eclipse guide" },
     ],
   },
@@ -89,7 +82,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-x-8">
+          <div className="hidden lg:flex lg:items-center lg:gap-x-5">
             {navigation.map((item) => (
               <div key={item.name} className="relative">
                 {item.children ? (
