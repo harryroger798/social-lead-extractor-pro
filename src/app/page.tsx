@@ -14,7 +14,11 @@ import {
   Sparkles,
   Clock,
   Shield,
-  Award
+  Award,
+  Calendar,
+  Sun,
+  Heart,
+  AlertTriangle,
 } from "lucide-react";
 
 const features = [
@@ -27,16 +31,16 @@ const features = [
   },
   {
     icon: Moon,
-    title: "Nakshatra Finder",
-    description: "Discover your lunar constellation and understand its influence on your personality and destiny.",
-    href: "/tools/nakshatra-finder",
+    title: "Moon Sign Calculator",
+    description: "Discover your Vedic Moon sign (Chandra Rashi) and understand your emotional nature.",
+    href: "/tools/moon-sign-calculator",
     badge: "Free",
   },
   {
-    icon: Users,
-    title: "Horoscope Matching",
-    description: "Check marriage compatibility with detailed Guna Milan and Dosha analysis.",
-    href: "/tools/horoscope-matching",
+    icon: Calendar,
+    title: "Daily Panchang",
+    description: "Get today's tithi, nakshatra, yoga, karana, Rahu Kaal, and auspicious timings.",
+    href: "/panchang",
     badge: "Free",
   },
   {
@@ -45,6 +49,78 @@ const features = [
     description: "Connect with verified Vedic astrologers for personalized guidance and predictions.",
     href: "/consultation",
     badge: "Premium",
+  },
+];
+
+const moreTools = [
+  {
+    icon: Sun,
+    title: "Sun Sign Calculator",
+    description: "Find your Western zodiac sign based on your birth date.",
+    href: "/tools/sun-sign-calculator",
+  },
+  {
+    icon: Star,
+    title: "Ascendant Calculator",
+    description: "Calculate your rising sign (Lagna) for accurate predictions.",
+    href: "/tools/ascendant-calculator",
+  },
+  {
+    icon: Heart,
+    title: "Love Compatibility",
+    description: "Check zodiac compatibility with your partner.",
+    href: "/tools/love-calculator",
+  },
+  {
+    icon: Users,
+    title: "Horoscope Matching",
+    description: "Detailed Guna Milan for marriage compatibility.",
+    href: "/tools/horoscope-matching",
+  },
+  {
+    icon: AlertTriangle,
+    title: "Mangal Dosh Calculator",
+    description: "Check if you have Manglik Dosha in your chart.",
+    href: "/tools/mangal-dosh-calculator",
+  },
+  {
+    icon: Clock,
+    title: "Sade Sati Calculator",
+    description: "Check your current Sade Sati status and phase.",
+    href: "/tools/sade-sati-calculator",
+  },
+];
+
+const predictions2026 = [
+  {
+    title: "2026 Horoscope",
+    description: "Yearly predictions for all 12 zodiac signs",
+    href: "/horoscope/2026",
+  },
+  {
+    title: "Saturn Transit 2026",
+    description: "Shani Gochar effects on your sign",
+    href: "/transits/saturn-transit-2026",
+  },
+  {
+    title: "Jupiter Transit 2026",
+    description: "Guru Gochar blessings and opportunities",
+    href: "/transits/jupiter-transit-2026",
+  },
+  {
+    title: "Mercury Retrograde 2026",
+    description: "Dates, effects, and survival guide",
+    href: "/transits/mercury-retrograde-2026",
+  },
+  {
+    title: "Eclipses 2026",
+    description: "Solar & lunar eclipse dates and effects",
+    href: "/eclipses-2026",
+  },
+  {
+    title: "Festival Calendar 2026",
+    description: "Hindu festivals and important dates",
+    href: "/festival-calendar-2026",
   },
 ];
 
@@ -173,6 +249,70 @@ export default function Home() {
                   </Link>
                 </CardContent>
               </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <Badge className="mb-4 bg-purple-100 text-purple-800">More Free Tools</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Explore Our Astrology Calculators
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover more free tools to understand your astrological profile.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {moreTools.map((tool) => (
+              <Link 
+                key={tool.title} 
+                href={tool.href}
+                className="group flex items-start gap-4 p-4 bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all"
+              >
+                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 transition-colors">
+                  <tool.icon className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">{tool.title}</h3>
+                  <p className="text-sm text-gray-600">{tool.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <Badge className="mb-4 bg-amber-400 text-amber-900">2026 Predictions</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              What Does 2026 Hold For You?
+            </h2>
+            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+              Explore detailed predictions, planetary transits, and cosmic events for 2026.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {predictions2026.map((item) => (
+              <Link 
+                key={item.title} 
+                href={item.href}
+                className="group p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 hover:border-amber-400/50 transition-all"
+              >
+                <h3 className="font-semibold text-white text-lg mb-2 group-hover:text-amber-300 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-indigo-200 text-sm">{item.description}</p>
+                <span className="inline-flex items-center text-amber-400 text-sm mt-3 group-hover:text-amber-300">
+                  Read More <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Link>
             ))}
           </div>
         </div>

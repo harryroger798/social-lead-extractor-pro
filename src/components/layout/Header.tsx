@@ -9,28 +9,60 @@ import { Button } from "@/components/ui/button";
 const navigation = [
   { name: "Home", href: "/" },
   {
-    name: "Services",
+    name: "Tools",
     href: "#",
     children: [
       { name: "Free Kundli", href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
       { name: "Nakshatra Finder", href: "/tools/nakshatra-finder", description: "Discover your lunar constellation" },
       { name: "Horoscope Matching", href: "/tools/horoscope-matching", description: "Check marriage compatibility" },
-      { name: "Consultation", href: "/consultation", description: "Talk to expert astrologers" },
+      { name: "Moon Sign Calculator", href: "/tools/moon-sign-calculator", description: "Find your Vedic Moon sign" },
+      { name: "Sun Sign Calculator", href: "/tools/sun-sign-calculator", description: "Discover your Sun sign" },
+      { name: "Ascendant Calculator", href: "/tools/ascendant-calculator", description: "Calculate your rising sign" },
+      { name: "Love Compatibility", href: "/tools/love-calculator", description: "Check zodiac compatibility" },
     ],
   },
   {
-    name: "Learn",
+    name: "Panchang",
     href: "#",
     children: [
-      { name: "Vedic Astrology Guide", href: "/vedic-astrology-guide-complete-2025", description: "Complete beginner's guide" },
-      { name: "Kundli Analysis", href: "/kundli-birth-chart-analysis-guide", description: "Understanding your birth chart" },
-      { name: "27 Nakshatras", href: "/27-nakshatras-complete-guide-vedic-astrology", description: "Lunar constellations explained" },
-      { name: "Remedies & Doshas", href: "/vedic-astrology-remedies-doshas-guide", description: "Solutions for planetary afflictions" },
+      { name: "Daily Panchang", href: "/panchang", description: "Today's tithi, nakshatra & muhurat" },
+      { name: "Festival Calendar 2026", href: "/festival-calendar-2026", description: "Hindu festivals & important dates" },
     ],
   },
-  { name: "Blog", href: "/blog" },
+  {
+    name: "Horoscope",
+    href: "#",
+    children: [
+      { name: "Daily Horoscope", href: "/daily-horoscope", description: "Today's predictions" },
+      { name: "Weekly Horoscope", href: "/horoscope/weekly", description: "This week's forecast" },
+      { name: "Monthly Horoscope", href: "/horoscope/monthly", description: "Monthly predictions" },
+      { name: "2026 Horoscope", href: "/horoscope/2026", description: "Yearly predictions for 2026" },
+    ],
+  },
+  {
+    name: "2026 Transits",
+    href: "#",
+    children: [
+      { name: "Saturn Transit 2026", href: "/transits/saturn-transit-2026", description: "Shani Gochar effects" },
+      { name: "Jupiter Transit 2026", href: "/transits/jupiter-transit-2026", description: "Guru Gochar predictions" },
+      { name: "Mercury Retrograde 2026", href: "/transits/mercury-retrograde-2026", description: "Retrograde dates & survival guide" },
+      { name: "Eclipses 2026", href: "/eclipses-2026", description: "Solar & lunar eclipse guide" },
+    ],
+  },
+  {
+    name: "Doshas",
+    href: "#",
+    children: [
+      { name: "Mangal Dosh", href: "/doshas/mangal-dosh", description: "Manglik dosha guide & remedies" },
+      { name: "Kaal Sarp Dosh", href: "/doshas/kaal-sarp-dosh", description: "12 types & remedies" },
+      { name: "Sade Sati", href: "/doshas/sade-sati", description: "Saturn's 7.5 year transit" },
+      { name: "Pitra Dosh", href: "/doshas/pitra-dosh", description: "Ancestral karma & remedies" },
+      { name: "Mangal Dosh Calculator", href: "/tools/mangal-dosh-calculator", description: "Check Manglik status" },
+      { name: "Sade Sati Calculator", href: "/tools/sade-sati-calculator", description: "Check Sade Sati phase" },
+    ],
+  },
+  { name: "Consultation", href: "/consultation" },
   { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
 ];
 
 export function Header() {

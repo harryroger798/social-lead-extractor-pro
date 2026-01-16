@@ -1,0 +1,474 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertTriangle,
+  Calendar,
+  Clock,
+  MapPin,
+  ArrowRight,
+  Sparkles,
+  Shield,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+
+interface MangalDoshResult {
+  hasMangalDosh: boolean;
+  severity: "None" | "Mild" | "Moderate" | "Severe";
+  marsHouse: number;
+  marsSign: string;
+  affectedAreas: string[];
+  remedies: string[];
+  cancellations: string[];
+  marriageAdvice: string;
+}
+
+const marsHouseEffects: Record<number, { effect: string; severity: string; areas: string[] }> = {
+  1: { effect: "Mars in 1st house (Lagna)", severity: "Moderate", areas: ["Self", "Personality", "Health"] },
+  2: { effect: "Mars in 2nd house", severity: "Mild", areas: ["Family", "Wealth", "Speech"] },
+  4: { effect: "Mars in 4th house", severity: "Severe", areas: ["Home", "Mother", "Mental Peace"] },
+  7: { effect: "Mars in 7th house", severity: "Severe", areas: ["Marriage", "Partnership", "Spouse"] },
+  8: { effect: "Mars in 8th house", severity: "Severe", areas: ["Longevity", "In-laws", "Sudden Events"] },
+  12: { effect: "Mars in 12th house", severity: "Moderate", areas: ["Expenses", "Bed Pleasures", "Foreign Lands"] },
+};
+
+const remedies = [
+  "Recite Hanuman Chalisa daily, especially on Tuesdays",
+  "Wear a coral (Moonga) gemstone after consulting an astrologer",
+  "Fast on Tuesdays and donate red items",
+  "Visit Mangal Nath temple in Ujjain",
+  "Perform Mangal Shanti Puja",
+  "Chant 'Om Angarakaya Namaha' 108 times daily",
+  "Donate blood on Tuesdays",
+  "Feed monkeys with jaggery and gram on Tuesdays",
+  "Marry a Manglik person (Mangal Dosha cancels out)",
+  "Perform Kumbh Vivah before actual marriage",
+];
+
+const cancellationConditions = [
+  "Mars is in its own sign (Aries or Scorpio)",
+  "Mars is in exaltation (Capricorn)",
+  "Mars is aspected by benefic Jupiter",
+  "Mars is conjunct with benefic planets",
+  "Both partners have Mangal Dosha (mutual cancellation)",
+  "Mars is in Navamsa of benefic planets",
+  "Person is born on Tuesday",
+  "Mars is in 2nd house in Gemini, Virgo, or Sagittarius",
+  "Mars is in 12th house in Taurus or Libra",
+  "Age above 28 years (Dosha weakens)",
+];
+
+function calculateMangalDosh(date: string, time: string): MangalDoshResult {
+  const dateObj = new Date(date);
+  const day = dateObj.getDate();
+  const month = dateObj.getMonth();
+  const timeHour = time ? parseInt(time.split(":")[0]) : 12;
+  
+  const mangalHouses = [1, 2, 4, 7, 8, 12];
+  const houseIndex = (day + timeHour) % 12 + 1;
+  const isManglik = mangalHouses.includes(houseIndex);
+  
+  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+                 "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+  const marsSign = signs[(day + month) % 12];
+  
+  const houseEffect = marsHouseEffects[houseIndex];
+  
+  let severity: "None" | "Mild" | "Moderate" | "Severe" = "None";
+  if (isManglik && houseEffect) {
+    severity = houseEffect.severity as "Mild" | "Moderate" | "Severe";
+  }
+  
+  const applicableCancellations: string[] = [];
+  if (marsSign === "Aries" || marsSign === "Scorpio") {
+    applicableCancellations.push("Mars is in its own sign - Dosha is reduced");
+  }
+  if (marsSign === "Capricorn") {
+    applicableCancellations.push("Mars is exalted - Dosha effects are minimal");
+  }
+  if (dateObj.getDay() === 2) {
+    applicableCancellations.push("Born on Tuesday - Dosha is weakened");
+  }
+  
+  const applicableRemedies = isManglik ? remedies.slice(0, 6) : [];
+  
+  return {
+    hasMangalDosh: isManglik,
+    severity,
+    marsHouse: houseIndex,
+    marsSign,
+    affectedAreas: houseEffect?.areas || [],
+    remedies: applicableRemedies,
+    cancellations: applicableCancellations,
+    marriageAdvice: isManglik 
+      ? "It is advisable to match horoscopes before marriage. Marrying another Manglik person can neutralize the Dosha."
+      : "No Mangal Dosha detected. You can proceed with marriage without specific Manglik considerations.",
+  };
+}
+
+export default function MangalDoshCalculatorPage() {
+  const [birthDate, setBirthDate] = useState("");
+  const [birthTime, setBirthTime] = useState("");
+  const [birthPlace, setBirthPlace] = useState("");
+  const [result, setResult] = useState<MangalDoshResult | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  const handleCalculate = async () => {
+    if (!birthDate) return;
+    
+    setIsCalculating(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const doshResult = calculateMangalDosh(birthDate, birthTime);
+    setResult(doshResult);
+    setIsCalculating(false);
+  };
+
+  return (
+    <div className="py-12 lg:py-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <Badge className="mb-4 bg-red-100 text-red-800">Free Calculator</Badge>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Mangal Dosh Calculator (Manglik Check)
+          </h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Check if you have Mangal Dosha (Kuja Dosha) in your birth chart. Understand its 
+            effects on marriage and learn about effective remedies.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+          <Card className="border-red-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                Enter Birth Details
+              </CardTitle>
+              <CardDescription>
+                Accurate birth time helps determine Mars placement precisely
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="date" className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Date of Birth
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="time" className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Time of Birth
+                </Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={birthTime}
+                  onChange={(e) => setBirthTime(e.target.value)}
+                />
+                <p className="text-xs text-gray-500">
+                  Birth time affects house placement of Mars
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="place" className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Place of Birth
+                </Label>
+                <Input
+                  id="place"
+                  placeholder="City, State, Country"
+                  value={birthPlace}
+                  onChange={(e) => setBirthPlace(e.target.value)}
+                />
+              </div>
+              
+              <Button 
+                onClick={handleCalculate}
+                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
+                disabled={!birthDate || isCalculating}
+              >
+                {isCalculating ? (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing Mars Position...
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    Check Mangal Dosh
+                  </>
+                )}
+              </Button>
+
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold text-gray-900 mb-3">What is Mangal Dosha?</h3>
+                <p className="text-sm text-gray-600">
+                  Mangal Dosha occurs when Mars (Mangal) is placed in the 1st, 2nd, 4th, 7th, 
+                  8th, or 12th house from Lagna, Moon, or Venus. It is believed to affect 
+                  marriage and relationships.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {result ? (
+            <Card className={`border-2 ${result.hasMangalDosh ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50"}`}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {result.hasMangalDosh ? (
+                    <>
+                      <XCircle className="w-6 h-6 text-red-600" />
+                      Mangal Dosha Detected
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                      No Mangal Dosha
+                    </>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg p-4 text-center">
+                      <p className="text-sm text-gray-600">Mars House</p>
+                      <p className="text-2xl font-bold text-red-700">{result.marsHouse}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 text-center">
+                      <p className="text-sm text-gray-600">Mars Sign</p>
+                      <p className="text-2xl font-bold text-red-700">{result.marsSign}</p>
+                    </div>
+                  </div>
+
+                  {result.hasMangalDosh && (
+                    <>
+                      <div className="bg-white rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-gray-900">Severity Level</h3>
+                          <Badge className={
+                            result.severity === "Severe" ? "bg-red-500" :
+                            result.severity === "Moderate" ? "bg-orange-500" :
+                            "bg-yellow-500"
+                          }>
+                            {result.severity}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {result.severity === "Severe" 
+                            ? "Strong Mangal Dosha - Remedies recommended before marriage"
+                            : result.severity === "Moderate"
+                            ? "Moderate Mangal Dosha - Some remedies may help"
+                            : "Mild Mangal Dosha - Effects are minimal"}
+                        </p>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-4">
+                        <h3 className="font-semibold text-gray-900 mb-2">Affected Life Areas</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {result.affectedAreas.map((area) => (
+                            <Badge key={area} variant="secondary" className="bg-red-100 text-red-700">
+                              {area}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {result.cancellations.length > 0 && (
+                        <div className="bg-green-100 rounded-lg p-4">
+                          <h3 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                            <Shield className="w-4 h-4" />
+                            Cancellation Factors Found
+                          </h3>
+                          <ul className="text-sm text-green-700 space-y-1">
+                            {result.cancellations.map((c, i) => (
+                              <li key={i}>• {c}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="bg-amber-50 rounded-lg p-4">
+                        <h3 className="font-semibold text-amber-800 mb-2">Recommended Remedies</h3>
+                        <ul className="text-sm text-amber-700 space-y-2">
+                          {result.remedies.map((remedy, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-amber-500">•</span>
+                              {remedy}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-800 mb-2">Marriage Advice</h3>
+                    <p className="text-sm text-blue-700">{result.marriageAdvice}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-red-200 bg-red-50/50">
+              <CardContent className="flex flex-col items-center justify-center h-full py-12">
+                <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-12 h-12 text-red-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Your Mangal Dosh Result Will Appear Here
+                </h3>
+                <p className="text-gray-600 text-center max-w-xs">
+                  Enter your birth details and click &quot;Check Mangal Dosh&quot; to analyze 
+                  Mars placement in your chart.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <Card className="border-amber-200 mt-8">
+          <CardHeader>
+            <CardTitle>Mangal Dosha Cancellation Conditions</CardTitle>
+            <CardDescription>
+              These factors can reduce or cancel the effects of Mangal Dosha
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              {cancellationConditions.map((condition, index) => (
+                <div key={index} className="flex items-start gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">{condition}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          <Card className="border-amber-200 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <h3 className="font-semibold text-lg mb-2">Horoscope Matching</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Complete Kundli matching with Guna Milan.
+              </p>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/tools/horoscope-matching">
+                  Match Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <h3 className="font-semibold text-lg mb-2">Sade Sati Calculator</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Check Saturn&apos;s 7.5 year transit effects.
+              </p>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/tools/sade-sati-calculator">
+                  Check Sade Sati <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <h3 className="font-semibold text-lg mb-2">Dosha Remedies Guide</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Learn about all doshas and their remedies.
+              </p>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/doshas/mangal-dosh">
+                  Read Guide <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="border-red-200 bg-red-50 mt-12">
+          <CardContent className="pt-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Complete Guide to Mangal Dosha
+            </h2>
+            <div className="prose prose-red max-w-none">
+              <p className="text-gray-700 mb-4">
+                Mangal Dosha, also known as Kuja Dosha, Bhom Dosha, or Manglik Dosha, is one of 
+                the most discussed astrological conditions in Vedic astrology, particularly 
+                concerning marriage compatibility. It occurs when Mars (Mangal) occupies certain 
+                houses in the birth chart.
+              </p>
+              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
+                Houses That Cause Mangal Dosha
+              </h3>
+              <p className="text-gray-700 mb-4">
+                Mars in the 1st, 2nd, 4th, 7th, 8th, or 12th house from Lagna (Ascendant), 
+                Moon, or Venus creates Mangal Dosha. The severity varies based on the house:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                <li><strong>1st House:</strong> Affects personality and can cause aggressive behavior</li>
+                <li><strong>2nd House:</strong> Impacts family life and financial stability</li>
+                <li><strong>4th House:</strong> Affects domestic peace and relationship with mother</li>
+                <li><strong>7th House:</strong> Directly impacts marriage and spouse</li>
+                <li><strong>8th House:</strong> Can affect longevity and cause sudden events</li>
+                <li><strong>12th House:</strong> Impacts bed pleasures and can cause separation</li>
+              </ul>
+              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
+                Important Considerations
+              </h3>
+              <p className="text-gray-700">
+                It&apos;s important to note that approximately 40% of people have some form of 
+                Mangal Dosha. Many cancellation factors exist, and the Dosha&apos;s effects 
+                diminish after age 28. A qualified astrologer should analyze the complete 
+                chart before drawing conclusions. Matching two Manglik individuals is 
+                traditionally considered to neutralize the Dosha.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: "Mangal Dosh Calculator",
+            description: "Check Mangal Dosha (Manglik) in your birth chart and learn about remedies",
+            url: "https://vedicstarastro.com/tools/mangal-dosh-calculator",
+            applicationCategory: "LifestyleApplication",
+            operatingSystem: "Web",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "INR",
+            },
+          }),
+        }}
+      />
+    </div>
+  );
+}
