@@ -253,15 +253,7 @@ How may I assist you on your spiritual journey today?`,
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [shouldScrollOnSend, setShouldScrollOnSend] = useState(false);
-
-  // Only scroll when user sends a message, not on every message update
-  useEffect(() => {
-    if (shouldScrollOnSend && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-      setShouldScrollOnSend(false);
-    }
-  }, [messages, shouldScrollOnSend]);
+  // Auto-scroll disabled - users can scroll manually
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -277,7 +269,6 @@ How may I assist you on your spiritual journey today?`,
     const currentInput = input;
     setInput("");
     setIsTyping(true);
-    setShouldScrollOnSend(true);
 
     try {
       // Prepare conversation history for API (exclude welcome message)
