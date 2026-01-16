@@ -65,52 +65,72 @@ const cancellationConditions = [
   "Age above 28 years (Dosha weakens)",
 ];
 
-function calculateMangalDosh(date: string, time: string): MangalDoshResult {
-  const dateObj = new Date(date);
-  const day = dateObj.getDate();
-  const month = dateObj.getMonth();
-  const timeHour = time ? parseInt(time.split(":")[0]) : 12;
-  
-  const mangalHouses = [1, 2, 4, 7, 8, 12];
-  const houseIndex = (day + timeHour) % 12 + 1;
-  const isManglik = mangalHouses.includes(houseIndex);
-  
-  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
-                 "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-  const marsSign = signs[(day + month) % 12];
-  
-  const houseEffect = marsHouseEffects[houseIndex];
-  
-  let severity: "None" | "Mild" | "Moderate" | "Severe" = "None";
-  if (isManglik && houseEffect) {
-    severity = houseEffect.severity as "Mild" | "Moderate" | "Severe";
+async function fetchMangalDosh(date: string, time: string, place: string): Promise<MangalDoshResult> {
+  try {
+    const response = await fetch("/api/calculate-chart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "User",
+        birth_date: date,
+        birth_time: time || "12:00",
+        birth_place: place || "Delhi",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to calculate chart");
+    }
+
+    const data = await response.json();
+    const chartData = data.chart_data;
+    
+    const marsPlanet = chartData.planets?.find((p: { name: string }) => p.name === "Mars");
+    const marsHouse = marsPlanet?.house || 1;
+    const marsSign = marsPlanet?.sign || "Aries";
+    
+    const mangalHouses = [1, 2, 4, 7, 8, 12];
+    const isManglik = mangalHouses.includes(marsHouse);
+    
+    const houseEffect = marsHouseEffects[marsHouse];
+    
+    let severity: "None" | "Mild" | "Moderate" | "Severe" = "None";
+    if (isManglik && houseEffect) {
+      severity = houseEffect.severity as "Mild" | "Moderate" | "Severe";
+    }
+    
+    const applicableCancellations: string[] = [];
+    if (marsSign === "Aries" || marsSign === "Scorpio") {
+      applicableCancellations.push("Mars is in its own sign - Dosha is reduced");
+    }
+    if (marsSign === "Capricorn") {
+      applicableCancellations.push("Mars is exalted - Dosha effects are minimal");
+    }
+    const dateObj = new Date(date);
+    if (dateObj.getDay() === 2) {
+      applicableCancellations.push("Born on Tuesday - Dosha is weakened");
+    }
+    
+    const applicableRemedies = isManglik ? remedies.slice(0, 6) : [];
+    
+    return {
+      hasMangalDosh: isManglik,
+      severity,
+      marsHouse: marsHouse,
+      marsSign,
+      affectedAreas: houseEffect?.areas || [],
+      remedies: applicableRemedies,
+      cancellations: applicableCancellations,
+      marriageAdvice: isManglik 
+        ? "It is advisable to match horoscopes before marriage. Marrying another Manglik person can neutralize the Dosha."
+        : "No Mangal Dosha detected. You can proceed with marriage without specific Manglik considerations.",
+    };
+  } catch (error) {
+    console.error("Error calculating Mangal Dosh:", error);
+    throw error;
   }
-  
-  const applicableCancellations: string[] = [];
-  if (marsSign === "Aries" || marsSign === "Scorpio") {
-    applicableCancellations.push("Mars is in its own sign - Dosha is reduced");
-  }
-  if (marsSign === "Capricorn") {
-    applicableCancellations.push("Mars is exalted - Dosha effects are minimal");
-  }
-  if (dateObj.getDay() === 2) {
-    applicableCancellations.push("Born on Tuesday - Dosha is weakened");
-  }
-  
-  const applicableRemedies = isManglik ? remedies.slice(0, 6) : [];
-  
-  return {
-    hasMangalDosh: isManglik,
-    severity,
-    marsHouse: houseIndex,
-    marsSign,
-    affectedAreas: houseEffect?.areas || [],
-    remedies: applicableRemedies,
-    cancellations: applicableCancellations,
-    marriageAdvice: isManglik 
-      ? "It is advisable to match horoscopes before marriage. Marrying another Manglik person can neutralize the Dosha."
-      : "No Mangal Dosha detected. You can proceed with marriage without specific Manglik considerations.",
-  };
 }
 
 export default function MangalDoshCalculatorPage() {
@@ -119,16 +139,23 @@ export default function MangalDoshCalculatorPage() {
   const [birthPlace, setBirthPlace] = useState("");
   const [result, setResult] = useState<MangalDoshResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCalculate = async () => {
     if (!birthDate) return;
     
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    setError("");
     
-    const doshResult = calculateMangalDosh(birthDate, birthTime);
-    setResult(doshResult);
-    setIsCalculating(false);
+    try {
+      const doshResult = await fetchMangalDosh(birthDate, birthTime, birthPlace);
+      setResult(doshResult);
+    } catch (err) {
+      console.error("Error calculating Mangal Dosh:", err);
+      setError("Unable to calculate. Please check your birth details and try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   return (

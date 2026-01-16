@@ -64,42 +64,57 @@ const nakshatras = [
   "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
 ];
 
-function generateMockChart(details: BirthDetails): ChartData {
-  const dateObj = new Date(details.date);
-  const day = dateObj.getDate();
-  const month = dateObj.getMonth();
-  
-  const ascIndex = (day + month) % 12;
-  const moonIndex = (day * 2 + month) % 12;
-  const sunIndex = month;
-  const nakshatraIndex = (day + month * 2) % 27;
+async function fetchChartFromBackend(details: BirthDetails): Promise<ChartData> {
+  try {
+    const response = await fetch("/api/calculate-chart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: details.name,
+        birth_date: details.date,
+        birth_time: details.time,
+        birth_place: details.place,
+      }),
+    });
 
-  const planets = [
-    { name: "Sun", sign: zodiacSigns[sunIndex], house: (sunIndex - ascIndex + 12) % 12 + 1, degree: `${day % 30}°${(day * 2) % 60}'`, nakshatra: nakshatras[(sunIndex * 2 + day) % 27], retrograde: false },
-    { name: "Moon", sign: zodiacSigns[moonIndex], house: (moonIndex - ascIndex + 12) % 12 + 1, degree: `${(day + 5) % 30}°${(day * 3) % 60}'`, nakshatra: nakshatras[nakshatraIndex], retrograde: false },
-    { name: "Mars", sign: zodiacSigns[(ascIndex + 3) % 12], house: 4, degree: `${(day + 10) % 30}°${(day * 4) % 60}'`, nakshatra: nakshatras[(day + 5) % 27], retrograde: day % 5 === 0 },
-    { name: "Mercury", sign: zodiacSigns[(sunIndex + 1) % 12], house: (sunIndex - ascIndex + 13) % 12 + 1, degree: `${(day + 15) % 30}°${(day * 5) % 60}'`, nakshatra: nakshatras[(day + 10) % 27], retrograde: day % 4 === 0 },
-    { name: "Jupiter", sign: zodiacSigns[(ascIndex + 5) % 12], house: 6, degree: `${(day + 20) % 30}°${(day * 6) % 60}'`, nakshatra: nakshatras[(day + 15) % 27], retrograde: day % 6 === 0 },
-    { name: "Venus", sign: zodiacSigns[(sunIndex + 2) % 12], house: (sunIndex - ascIndex + 14) % 12 + 1, degree: `${(day + 25) % 30}°${(day * 7) % 60}'`, nakshatra: nakshatras[(day + 20) % 27], retrograde: false },
-    { name: "Saturn", sign: zodiacSigns[(ascIndex + 7) % 12], house: 8, degree: `${day % 30}°${(day * 8) % 60}'`, nakshatra: nakshatras[(day + 25) % 27], retrograde: day % 3 === 0 },
-    { name: "Rahu", sign: zodiacSigns[(ascIndex + 9) % 12], house: 10, degree: `${(day + 5) % 30}°${(day * 9) % 60}'`, nakshatra: nakshatras[(day + 2) % 27], retrograde: true },
-    { name: "Ketu", sign: zodiacSigns[(ascIndex + 3) % 12], house: 4, degree: `${(day + 5) % 30}°${(day * 9) % 60}'`, nakshatra: nakshatras[(day + 14) % 27], retrograde: true },
-  ];
+    if (!response.ok) {
+      throw new Error("Failed to calculate chart");
+    }
 
-  const houses = Array.from({ length: 12 }, (_, i) => ({
-    number: i + 1,
-    sign: zodiacSigns[(ascIndex + i) % 12],
-    planets: planets.filter(p => p.house === i + 1).map(p => p.name),
-  }));
+    const data = await response.json();
+    const chartData = data.chart_data;
 
-  return {
-    ascendant: zodiacSigns[ascIndex],
-    moonSign: zodiacSigns[moonIndex],
-    sunSign: zodiacSigns[sunIndex],
-    nakshatra: nakshatras[nakshatraIndex],
-    planets,
-    houses,
-  };
+    const ascIndex = zodiacSigns.findIndex(s => s === chartData.ascendant);
+    
+    const planets = chartData.planets?.map((p: { name: string; sign: string; house: number; longitude: number; nakshatra: string; is_retrograde: boolean }) => ({
+      name: p.name,
+      sign: p.sign,
+      house: p.house,
+      degree: `${Math.floor(p.longitude % 30)}°${Math.floor((p.longitude % 1) * 60)}'`,
+      nakshatra: p.nakshatra || nakshatras[Math.floor((p.longitude / 360) * 27) % 27],
+      retrograde: p.is_retrograde || false,
+    })) || [];
+
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+      number: i + 1,
+      sign: zodiacSigns[(ascIndex + i) % 12],
+      planets: planets.filter((p: { house: number }) => p.house === i + 1).map((p: { name: string }) => p.name),
+    }));
+
+    return {
+      ascendant: chartData.ascendant,
+      moonSign: chartData.moon_sign,
+      sunSign: chartData.sun_sign,
+      nakshatra: chartData.nakshatra,
+      planets,
+      houses,
+    };
+  } catch (error) {
+    console.error("Error fetching chart:", error);
+    throw error;
+  }
 }
 
 function KundliChart({ chart }: { chart: ChartData }) {
@@ -197,6 +212,8 @@ export default function KundliCalculatorPage() {
   const [copied, setCopied] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  const [error, setError] = useState("");
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -208,8 +225,12 @@ export default function KundliCalculatorPage() {
       if (name && date && time && place) {
         const details = { name, date, time, place };
         setBirthDetails(details);
-        const chart = generateMockChart(details);
-        setChartData(chart);
+        fetchChartFromBackend(details)
+          .then(chart => setChartData(chart))
+          .catch(err => {
+            console.error("Error loading chart from URL:", err);
+            setError("Unable to load chart. Please try again.");
+          });
       }
     }
   }, []);
@@ -217,13 +238,18 @@ export default function KundliCalculatorPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCalculating(true);
+    setError("");
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const chart = generateMockChart(birthDetails);
-    setChartData(chart);
-    setIsCalculating(false);
-    setShareUrl(null);
+    try {
+      const chart = await fetchChartFromBackend(birthDetails);
+      setChartData(chart);
+      setShareUrl(null);
+    } catch (err) {
+      console.error("Error calculating chart:", err);
+      setError("Unable to calculate chart. Please check your birth details and try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const handleDownloadPdf = async () => {

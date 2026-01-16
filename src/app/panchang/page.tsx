@@ -81,62 +81,113 @@ interface PanchangData {
   amritKaal: string;
 }
 
-function calculatePanchang(date: Date, location: string): PanchangData {
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+async function fetchPanchang(date: Date, location: string): Promise<PanchangData> {
+  const dateStr = date.toISOString().split("T")[0];
   
-  const tithiIndex = (day + month) % 15;
-  const nakshatraIndex = (day * 2 + month) % 27;
-  const yogaIndex = (day + month * 3) % 27;
-  const karanaIndex = (day * 2) % 11;
-  
-  const paksha = day <= 15 ? "Shukla Paksha (Waxing Moon)" : "Krishna Paksha (Waning Moon)";
-  
-  const sunriseHour = 6 + (month % 3) * 0.1;
-  const sunsetHour = 18 - (month % 3) * 0.1;
-  
-  const formatTime = (hour: number) => {
-    const h = Math.floor(hour);
-    const m = Math.floor((hour - h) * 60);
-    const ampm = h >= 12 ? "PM" : "AM";
-    const displayH = h > 12 ? h - 12 : h;
-    return `${displayH}:${m.toString().padStart(2, "0")} ${ampm}`;
-  };
-
-  const rahuKaalStart = {
-    Sunday: 16.5, Monday: 7.5, Tuesday: 15, Wednesday: 12,
-    Thursday: 13.5, Friday: 10.5, Saturday: 9
-  }[weekday] || 12;
-
-  return {
-    date: date.toLocaleDateString("en-IN", { 
-      weekday: "long", 
-      year: "numeric", 
-      month: "long", 
-      day: "numeric" 
-    }),
-    weekday,
-    tithi: tithiNames[tithiIndex],
-    tithiEndTime: formatTime(sunsetHour - 2 + (day % 5) * 0.5),
-    nakshatra: nakshatraNames[nakshatraIndex],
-    nakshatraEndTime: formatTime(sunriseHour + 8 + (day % 7) * 0.3),
-    yoga: yogaNames[yogaIndex],
-    yogaEndTime: formatTime(sunriseHour + 12 + (day % 6) * 0.4),
-    karana: karanaNames[karanaIndex],
-    karanaEndTime: formatTime(sunriseHour + 6 + (day % 4) * 0.5),
-    paksha,
-    sunrise: formatTime(sunriseHour),
-    sunset: formatTime(sunsetHour),
-    moonrise: formatTime(sunriseHour + 6 + (day % 12) * 0.5),
-    moonset: formatTime(sunsetHour + 4 + (day % 8) * 0.3),
-    rahuKaal: `${formatTime(rahuKaalStart)} - ${formatTime(rahuKaalStart + 1.5)}`,
-    yamaganda: `${formatTime(rahuKaalStart - 3)} - ${formatTime(rahuKaalStart - 1.5)}`,
-    gulikaKaal: `${formatTime(rahuKaalStart + 3)} - ${formatTime(rahuKaalStart + 4.5)}`,
-    abhijitMuhurat: `${formatTime(11.75)} - ${formatTime(12.5)}`,
-    amritKaal: `${formatTime(sunriseHour + 4)} - ${formatTime(sunriseHour + 5.5)}`,
-  };
+  try {
+    const response = await fetch("/api/calculate-panchang", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        date: dateStr,
+        location: location,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch panchang");
+    }
+    
+    const data = await response.json();
+    const weekday = data.weekday;
+    
+    const formatTime12 = (time24: string) => {
+      if (!time24) return "N/A";
+      const [h, m] = time24.split(":").map(Number);
+      const ampm = h >= 12 ? "PM" : "AM";
+      const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
+      return `${displayH}:${m.toString().padStart(2, "0")} ${ampm}`;
+    };
+    
+    const rahuKaalTimes: Record<string, number> = {
+      Sunday: 16.5, Monday: 7.5, Tuesday: 15, Wednesday: 12,
+      Thursday: 13.5, Friday: 10.5, Saturday: 9
+    };
+    const rahuKaalStart = rahuKaalTimes[weekday as string] || 12;
+    
+    const formatTimeFromHour = (hour: number) => {
+      const h = Math.floor(hour);
+      const m = Math.floor((hour - h) * 60);
+      const ampm = h >= 12 ? "PM" : "AM";
+      const displayH = h > 12 ? h - 12 : h;
+      return `${displayH}:${m.toString().padStart(2, "0")} ${ampm}`;
+    };
+    
+    const sunriseTime = formatTime12(data.sunrise);
+    const sunsetTime = formatTime12(data.sunset);
+    const rahuStart = formatTime12(data.rahu_kaal?.start);
+    const rahuEnd = formatTime12(data.rahu_kaal?.end);
+    
+    return {
+      date: date.toLocaleDateString("en-IN", { 
+        weekday: "long", 
+        year: "numeric", 
+        month: "long", 
+        day: "numeric" 
+      }),
+      weekday,
+      tithi: data.tithi?.name || "Calculating...",
+      tithiEndTime: "Based on Moon-Sun angle",
+      nakshatra: data.nakshatra?.name || "Calculating...",
+      nakshatraEndTime: "Based on Moon position",
+      yoga: data.yoga?.name || "Calculating...",
+      yogaEndTime: "Based on Sun+Moon",
+      karana: data.karana?.name || "Calculating...",
+      karanaEndTime: "Half of Tithi",
+      paksha: data.tithi?.paksha === "Shukla" ? "Shukla Paksha (Waxing Moon)" : "Krishna Paksha (Waning Moon)",
+      sunrise: sunriseTime,
+      sunset: sunsetTime,
+      moonrise: "Based on location",
+      moonset: "Based on location",
+      rahuKaal: `${rahuStart} - ${rahuEnd}`,
+      yamaganda: `${formatTimeFromHour(rahuKaalStart - 3)} - ${formatTimeFromHour(rahuKaalStart - 1.5)}`,
+      gulikaKaal: `${formatTimeFromHour(rahuKaalStart + 3)} - ${formatTimeFromHour(rahuKaalStart + 4.5)}`,
+      abhijitMuhurat: `${formatTimeFromHour(11.75)} - ${formatTimeFromHour(12.5)}`,
+      amritKaal: "Based on Nakshatra",
+    };
+  } catch (error) {
+    console.error("Error fetching panchang:", error);
+    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+    return {
+      date: date.toLocaleDateString("en-IN", { 
+        weekday: "long", 
+        year: "numeric", 
+        month: "long", 
+        day: "numeric" 
+      }),
+      weekday,
+      tithi: "Unable to calculate",
+      tithiEndTime: "N/A",
+      nakshatra: "Unable to calculate",
+      nakshatraEndTime: "N/A",
+      yoga: "Unable to calculate",
+      yogaEndTime: "N/A",
+      karana: "Unable to calculate",
+      karanaEndTime: "N/A",
+      paksha: "N/A",
+      sunrise: "N/A",
+      sunset: "N/A",
+      moonrise: "N/A",
+      moonset: "N/A",
+      rahuKaal: "N/A",
+      yamaganda: "N/A",
+      gulikaKaal: "N/A",
+      abhijitMuhurat: "N/A",
+      amritKaal: "N/A",
+    };
+  }
 }
 
 const choghadiyaData = [
@@ -153,9 +204,16 @@ export default function PanchangPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [location, setLocation] = useState("New Delhi, India");
   const [panchang, setPanchang] = useState<PanchangData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setPanchang(calculatePanchang(selectedDate, location));
+    const loadPanchang = async () => {
+      setIsLoading(true);
+      const data = await fetchPanchang(selectedDate, location);
+      setPanchang(data);
+      setIsLoading(false);
+    };
+    loadPanchang();
   }, [selectedDate, location]);
 
   const weekdayInfo = panchang ? weekdayData[panchang.weekday as keyof typeof weekdayData] : null;

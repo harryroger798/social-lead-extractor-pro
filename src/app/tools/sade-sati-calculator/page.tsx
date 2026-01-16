@@ -90,14 +90,30 @@ const sadeSatiRemedies = [
   "Avoid starting new ventures on Saturdays",
 ];
 
-function calculateMoonSign(date: string, time: string): string {
-  const dateObj = new Date(date);
-  const day = dateObj.getDate();
-  const month = dateObj.getMonth();
-  const timeHour = time ? parseInt(time.split(":")[0]) : 12;
-  
-  const moonIndex = (day * 2 + month + Math.floor(timeHour / 6)) % 12;
-  return zodiacSigns[moonIndex];
+async function fetchMoonSign(date: string, time: string, place: string): Promise<string> {
+  try {
+    const response = await fetch("/api/calculate-moon-sign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        birth_date: date,
+        birth_time: time || "12:00",
+        birth_place: place || "Delhi",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to calculate moon sign");
+    }
+
+    const data = await response.json();
+    return data.moon_sign;
+  } catch (error) {
+    console.error("Error fetching moon sign:", error);
+    throw error;
+  }
 }
 
 function getCurrentSaturnSign(): string {
@@ -161,17 +177,24 @@ export default function SadeSatiCalculatorPage() {
   const [birthPlace, setBirthPlace] = useState("");
   const [result, setResult] = useState<SadeSatiResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCalculate = async () => {
     if (!birthDate) return;
     
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    setError("");
     
-    const moonSign = calculateMoonSign(birthDate, birthTime);
-    const sadeSatiResult = calculateSadeSati(moonSign);
-    setResult(sadeSatiResult);
-    setIsCalculating(false);
+    try {
+      const moonSign = await fetchMoonSign(birthDate, birthTime, birthPlace);
+      const sadeSatiResult = calculateSadeSati(moonSign);
+      setResult(sadeSatiResult);
+    } catch (err) {
+      console.error("Error calculating Sade Sati:", err);
+      setError("Unable to calculate. Please check your birth details and try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   return (

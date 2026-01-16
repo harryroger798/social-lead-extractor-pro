@@ -164,34 +164,45 @@ const moonSignData = {
   },
 };
 
-const zodiacSigns = Object.keys(moonSignData);
-
-function calculateMoonSign(date: string, time: string): string {
-  const dateObj = new Date(date);
-  const day = dateObj.getDate();
-  const month = dateObj.getMonth();
-  const timeHour = time ? parseInt(time.split(":")[0]) : 12;
-  
-  const moonIndex = (day * 2 + month + Math.floor(timeHour / 6)) % 12;
-  return zodiacSigns[moonIndex];
-}
-
 export default function MoonSignCalculatorPage() {
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
   const [moonSign, setMoonSign] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCalculate = async () => {
     if (!birthDate) return;
     
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    setError("");
     
-    const sign = calculateMoonSign(birthDate, birthTime);
-    setMoonSign(sign);
-    setIsCalculating(false);
+    try {
+      const response = await fetch("/api/calculate-moon-sign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          birth_date: birthDate,
+          birth_time: birthTime || "12:00",
+          birth_place: birthPlace || "Delhi",
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to calculate moon sign");
+      }
+      
+      const data = await response.json();
+      setMoonSign(data.moon_sign);
+    } catch (err) {
+      console.error("Error calculating moon sign:", err);
+      setError("Unable to calculate. Please check your birth details and try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const signData = moonSign ? moonSignData[moonSign as keyof typeof moonSignData] : null;

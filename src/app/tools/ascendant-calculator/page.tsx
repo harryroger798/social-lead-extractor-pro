@@ -164,35 +164,45 @@ const ascendantData = {
   },
 };
 
-const zodiacSigns = Object.keys(ascendantData);
-
-function calculateAscendant(date: string, time: string, place: string): string {
-  if (!time) return "Leo";
-  
-  const timeHour = parseInt(time.split(":")[0]);
-  const dateObj = new Date(date);
-  const day = dateObj.getDate();
-  
-  const ascIndex = (timeHour + Math.floor(day / 3)) % 12;
-  return zodiacSigns[ascIndex];
-}
-
 export default function AscendantCalculatorPage() {
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
   const [ascendant, setAscendant] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCalculate = async () => {
     if (!birthDate || !birthTime) return;
     
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    setError("");
     
-    const sign = calculateAscendant(birthDate, birthTime, birthPlace);
-    setAscendant(sign);
-    setIsCalculating(false);
+    try {
+      const response = await fetch("/api/calculate-ascendant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_place: birthPlace || "Delhi",
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to calculate ascendant");
+      }
+      
+      const data = await response.json();
+      setAscendant(data.ascendant);
+    } catch (err) {
+      console.error("Error calculating ascendant:", err);
+      setError("Unable to calculate. Please check your birth details and try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const signData = ascendant ? ascendantData[ascendant as keyof typeof ascendantData] : null;

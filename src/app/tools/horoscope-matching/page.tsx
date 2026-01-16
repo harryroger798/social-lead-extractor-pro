@@ -52,6 +52,72 @@ const rashis = [
   "Sagittarius (Dhanu)", "Capricorn (Makara)", "Aquarius (Kumbha)", "Pisces (Meena)"
 ];
 
+// Varna classification for each Rashi (0=Brahmin, 1=Kshatriya, 2=Vaishya, 3=Shudra)
+const rashiVarna = [1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0]; // Aries to Pisces
+
+// Vashya classification for each Rashi
+const rashiVashya: Record<number, string> = {
+  0: "Chatushpada", 1: "Chatushpada", 2: "Manav", 3: "Jalachara",
+  4: "Vanachara", 5: "Manav", 6: "Manav", 7: "Keeta",
+  8: "Manav", 9: "Jalachara", 10: "Manav", 11: "Jalachara"
+};
+
+// Yoni (animal) for each Nakshatra
+const nakshatraYoni = [
+  "Horse", "Elephant", "Sheep", "Serpent", "Serpent", "Dog",
+  "Cat", "Sheep", "Cat", "Rat", "Rat", "Cow",
+  "Buffalo", "Tiger", "Buffalo", "Tiger", "Deer", "Deer",
+  "Dog", "Monkey", "Mongoose", "Monkey", "Lion", "Horse",
+  "Lion", "Cow", "Elephant"
+];
+
+// Yoni compatibility matrix (enemy pairs get 0, friendly pairs get more)
+const yoniCompatibility: Record<string, string[]> = {
+  "Horse": ["Buffalo"],
+  "Elephant": ["Lion"],
+  "Sheep": ["Monkey"],
+  "Serpent": ["Mongoose"],
+  "Dog": ["Deer"],
+  "Cat": ["Rat"],
+  "Cow": ["Tiger"],
+  "Buffalo": ["Horse"],
+  "Tiger": ["Cow"],
+  "Rat": ["Cat"],
+  "Deer": ["Dog"],
+  "Monkey": ["Sheep"],
+  "Mongoose": ["Serpent"],
+  "Lion": ["Elephant"]
+};
+
+// Gana for each Nakshatra (0=Deva, 1=Manushya, 2=Rakshasa)
+const nakshatraGana = [
+  0, 1, 2, 1, 0, 1, 0, 0, 2, 2, 1, 1,
+  0, 2, 0, 2, 0, 2, 2, 1, 1, 0, 2, 2,
+  1, 1, 0
+];
+
+// Nadi for each Nakshatra (0=Aadi, 1=Madhya, 2=Antya)
+const nakshatraNadi = [
+  0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0,
+  0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0,
+  0, 1, 2
+];
+
+// Rashi lord for Graha Maitri
+const rashiLord = ["Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury", 
+                   "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter"];
+
+// Planet friendship matrix
+const planetFriendship: Record<string, { friends: string[], enemies: string[], neutral: string[] }> = {
+  "Sun": { friends: ["Moon", "Mars", "Jupiter"], enemies: ["Venus", "Saturn"], neutral: ["Mercury"] },
+  "Moon": { friends: ["Sun", "Mercury"], enemies: [], neutral: ["Mars", "Jupiter", "Venus", "Saturn"] },
+  "Mars": { friends: ["Sun", "Moon", "Jupiter"], enemies: ["Mercury"], neutral: ["Venus", "Saturn"] },
+  "Mercury": { friends: ["Sun", "Venus"], enemies: ["Moon"], neutral: ["Mars", "Jupiter", "Saturn"] },
+  "Jupiter": { friends: ["Sun", "Moon", "Mars"], enemies: ["Mercury", "Venus"], neutral: ["Saturn"] },
+  "Venus": { friends: ["Mercury", "Saturn"], enemies: ["Sun", "Moon"], neutral: ["Mars", "Jupiter"] },
+  "Saturn": { friends: ["Mercury", "Venus"], enemies: ["Sun", "Moon", "Mars"], neutral: ["Jupiter"] }
+};
+
 function calculateMatch(
   brideNakshatra: string,
   brideRashi: string,
@@ -63,14 +129,69 @@ function calculateMatch(
   const brideRashiIndex = rashis.indexOf(brideRashi);
   const groomRashiIndex = rashis.indexOf(groomRashi);
 
-  const varna = Math.min(1, Math.abs(brideRashiIndex - groomRashiIndex) % 4 === 0 ? 1 : Math.random() > 0.5 ? 1 : 0);
-  const vashya = Math.floor(Math.random() * 3);
-  const tara = Math.floor(Math.random() * 4);
-  const yoni = Math.floor(Math.random() * 5);
-  const graha = Math.floor(Math.random() * 6);
-  const gana = Math.floor(Math.random() * 7);
-  const bhakoot = Math.floor(Math.random() * 8);
-  const nadi = Math.abs(brideNakshatraIndex - groomNakshatraIndex) % 3 === 0 ? 0 : Math.floor(Math.random() * 9);
+  // 1. VARNA (Max 1 point) - Groom's varna should be equal or higher than bride's
+  const brideVarna = rashiVarna[brideRashiIndex];
+  const groomVarna = rashiVarna[groomRashiIndex];
+  const varna = groomVarna <= brideVarna ? 1 : 0;
+
+  // 2. VASHYA (Max 2 points) - Based on Rashi animal classification
+  const brideVashyaType = rashiVashya[brideRashiIndex];
+  const groomVashyaType = rashiVashya[groomRashiIndex];
+  let vashya = 0;
+  if (brideVashyaType === groomVashyaType) vashya = 2;
+  else if ((brideVashyaType === "Manav" && groomVashyaType !== "Vanachara") ||
+           (groomVashyaType === "Manav" && brideVashyaType !== "Vanachara")) vashya = 1;
+
+  // 3. TARA (Max 3 points) - Based on Nakshatra distance
+  const taraDiff = ((groomNakshatraIndex - brideNakshatraIndex + 27) % 27) % 9;
+  const auspiciousTaras = [1, 2, 4, 6, 8]; // 2nd, 3rd, 5th, 7th, 9th are auspicious
+  const tara = auspiciousTaras.includes(taraDiff) ? 3 : (taraDiff === 0 ? 1 : 0);
+
+  // 4. YONI (Max 4 points) - Based on Nakshatra animal compatibility
+  const brideYoni = nakshatraYoni[brideNakshatraIndex];
+  const groomYoni = nakshatraYoni[groomNakshatraIndex];
+  let yoni = 0;
+  if (brideYoni === groomYoni) yoni = 4;
+  else if (yoniCompatibility[brideYoni]?.includes(groomYoni) || 
+           yoniCompatibility[groomYoni]?.includes(brideYoni)) yoni = 0;
+  else yoni = 2;
+
+  // 5. GRAHA MAITRI (Max 5 points) - Based on Rashi lord friendship
+  const brideLord = rashiLord[brideRashiIndex];
+  const groomLord = rashiLord[groomRashiIndex];
+  let graha = 0;
+  if (brideLord === groomLord) graha = 5;
+  else if (planetFriendship[brideLord]?.friends.includes(groomLord) &&
+           planetFriendship[groomLord]?.friends.includes(brideLord)) graha = 5;
+  else if (planetFriendship[brideLord]?.friends.includes(groomLord) ||
+           planetFriendship[groomLord]?.friends.includes(brideLord)) graha = 4;
+  else if (planetFriendship[brideLord]?.neutral.includes(groomLord) ||
+           planetFriendship[groomLord]?.neutral.includes(brideLord)) graha = 3;
+  else if (planetFriendship[brideLord]?.enemies.includes(groomLord) &&
+           planetFriendship[groomLord]?.enemies.includes(brideLord)) graha = 0;
+  else graha = 1;
+
+  // 6. GANA (Max 6 points) - Based on Nakshatra temperament
+  const brideGana = nakshatraGana[brideNakshatraIndex];
+  const groomGana = nakshatraGana[groomNakshatraIndex];
+  let gana = 0;
+  if (brideGana === groomGana) gana = 6;
+  else if ((brideGana === 0 && groomGana === 1) || (brideGana === 1 && groomGana === 0)) gana = 5;
+  else if ((brideGana === 1 && groomGana === 2) || (brideGana === 2 && groomGana === 1)) gana = 1;
+  else if ((brideGana === 0 && groomGana === 2) || (brideGana === 2 && groomGana === 0)) gana = 0;
+
+  // 7. BHAKOOT (Max 7 points) - Based on Rashi positions
+  const rashiDiff = Math.abs(brideRashiIndex - groomRashiIndex);
+  let bhakoot = 7;
+  // 6-8 and 2-12 positions are inauspicious
+  if (rashiDiff === 5 || rashiDiff === 7) bhakoot = 0; // 6-8 position
+  else if (rashiDiff === 1 || rashiDiff === 11) bhakoot = 0; // 2-12 position
+  else if (rashiDiff === 4 || rashiDiff === 8) bhakoot = 4; // 5-9 position (partial)
+
+  // 8. NADI (Max 8 points) - Based on Nakshatra Nadi (most important)
+  const brideNadi = nakshatraNadi[brideNakshatraIndex];
+  const groomNadi = nakshatraNadi[groomNakshatraIndex];
+  const nadi = brideNadi === groomNadi ? 0 : 8; // Same Nadi = Nadi Dosha = 0 points
 
   const gunas = [
     { name: "Varna", nameHindi: "वर्ण", maxPoints: 1, score: varna, description: "Spiritual compatibility and ego levels" },
@@ -94,15 +215,18 @@ function calculateMatch(
   else if (percentage >= 36) verdict = "Below Average - Significant remedies required";
   else verdict = "Not Recommended - Major incompatibilities present";
 
-  const mangalDosha = Math.random() > 0.7;
+  // Dosha detection based on actual calculations
   const nadiDosha = nadi === 0;
+  const bhakootDosha = bhakoot < 3;
+  // Mangal Dosha would require Mars position - we'll mark it as "Check Required"
+  const mangalDoshaCheckRequired = true;
 
   const doshas = [
     {
       name: "Mangal Dosha",
-      present: mangalDosha,
-      severity: mangalDosha ? "Medium" : "None",
-      remedy: mangalDosha ? "Kumbh Vivah or Mangal Shanti Puja recommended" : "No remedy needed",
+      present: false,
+      severity: "Check Required",
+      remedy: "Use Mangal Dosh Calculator with birth details for accurate assessment",
     },
     {
       name: "Nadi Dosha",
@@ -112,9 +236,9 @@ function calculateMatch(
     },
     {
       name: "Bhakoot Dosha",
-      present: bhakoot < 3,
-      severity: bhakoot < 3 ? "Low" : "None",
-      remedy: bhakoot < 3 ? "Graha Shanti Puja may be beneficial" : "No remedy needed",
+      present: bhakootDosha,
+      severity: bhakootDosha ? "Medium" : "None",
+      remedy: bhakootDosha ? "Graha Shanti Puja may be beneficial" : "No remedy needed",
     },
   ];
 
