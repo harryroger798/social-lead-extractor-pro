@@ -16,7 +16,12 @@ from app.auth import (
     get_password_hash, authenticate_user, create_access_token,
     get_current_user, get_current_user_required, ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from app.services.astrology import calculate_birth_chart, generate_share_token, NAKSHATRAS
+from app.services.astrology import (
+    calculate_birth_chart, generate_share_token, NAKSHATRAS,
+    calculate_vimshottari_dasha, calculate_all_divisional_charts,
+    detect_yogas, calculate_planetary_strength, calculate_ashtakavarga,
+    calculate_muhurta, calculate_current_transits
+)
 from app.services.payment import create_order, verify_payment_signature, get_key_id
 from app.services.email import send_consultation_confirmation, send_contact_form_notification
 
@@ -317,4 +322,319 @@ async def get_daily_horoscope(sign: str):
         "lucky_color": ["Red", "Blue", "Green", "Yellow", "Orange", "Purple", "Pink", "White", "Gold", "Silver", "Violet", "Indigo"][signs.index(sign.lower())],
         "mood": "Optimistic",
         "compatibility": signs[(signs.index(sign.lower()) + 4) % 12].capitalize()
+    }
+
+
+# ============================================
+# ADVANCED ASTROLOGY ENDPOINTS
+# ============================================
+
+@app.post("/api/charts/dasha")
+async def calculate_dasha(request: ChartCalculationRequest):
+    """Calculate Vimshottari Dasha periods for a birth chart."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    # First calculate the birth chart to get Moon's longitude
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Get Moon's longitude from the chart
+    moon_planet = next((p for p in chart_data["planets"] if p["name"] == "Moon"), None)
+    if not moon_planet:
+        raise HTTPException(status_code=500, detail="Could not calculate Moon position")
+    
+    moon_longitude = moon_planet["longitude"]
+    
+    # Calculate Vimshottari Dasha
+    dasha_data = calculate_vimshottari_dasha(birth_date, moon_longitude)
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "moon_sign": chart_data["moon_sign"],
+        "nakshatra": chart_data["nakshatra"],
+        "dasha": dasha_data
+    }
+
+
+@app.post("/api/charts/divisional")
+async def calculate_divisional_charts(request: ChartCalculationRequest):
+    """Calculate all divisional charts (Vargas) for a birth chart."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Get ascendant longitude
+    asc_sign = chart_data["ascendant"]
+    asc_degree = chart_data["ascendant_degree"]
+    from app.services.astrology import SIGNS
+    asc_longitude = SIGNS.index(asc_sign) * 30 + asc_degree
+    
+    # Calculate all divisional charts
+    divisional_charts = calculate_all_divisional_charts(chart_data["planets"], asc_longitude)
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "rashi_chart": {
+            "ascendant": chart_data["ascendant"],
+            "planets": chart_data["planets"],
+            "houses": chart_data["houses"]
+        },
+        "divisional_charts": divisional_charts
+    }
+
+
+@app.post("/api/charts/yogas")
+async def detect_chart_yogas(request: ChartCalculationRequest):
+    """Detect Yogas (planetary combinations) in a birth chart."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Detect yogas
+    yogas = detect_yogas(chart_data["planets"], chart_data["houses"], chart_data["ascendant"])
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "ascendant": chart_data["ascendant"],
+        "yogas": yogas,
+        "yoga_count": len(yogas),
+        "yoga_types": list(set(y["type"] for y in yogas))
+    }
+
+
+@app.post("/api/charts/strength")
+async def calculate_chart_strength(request: ChartCalculationRequest):
+    """Calculate planetary strengths (Shadbala) for a birth chart."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Calculate strength for each planet
+    strengths = []
+    for planet in chart_data["planets"]:
+        strength = calculate_planetary_strength(planet, chart_data["ascendant"])
+        strengths.append(strength)
+    
+    # Sort by strength score
+    strengths.sort(key=lambda x: x["total_score"], reverse=True)
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "ascendant": chart_data["ascendant"],
+        "planetary_strengths": strengths,
+        "strongest_planet": strengths[0]["planet"] if strengths else None,
+        "weakest_planet": strengths[-1]["planet"] if strengths else None
+    }
+
+
+@app.post("/api/charts/ashtakavarga")
+async def calculate_chart_ashtakavarga(request: ChartCalculationRequest):
+    """Calculate Ashtakavarga points for transit predictions."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Calculate Ashtakavarga
+    ashtakavarga = calculate_ashtakavarga(chart_data["planets"])
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "moon_sign": chart_data["moon_sign"],
+        "ashtakavarga": ashtakavarga
+    }
+
+
+@app.post("/api/muhurta")
+async def get_muhurta(
+    date: str,
+    latitude: float = 28.6139,
+    longitude: float = 77.2090,
+    event_type: str = "general"
+):
+    """Calculate Muhurta (auspicious timing) for a given date."""
+    from datetime import datetime
+    
+    try:
+        check_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use ISO format (YYYY-MM-DD)")
+    
+    valid_events = ["general", "marriage", "business", "travel", "griha_pravesh"]
+    if event_type not in valid_events:
+        raise HTTPException(status_code=400, detail=f"Invalid event type. Valid types: {valid_events}")
+    
+    muhurta = calculate_muhurta(check_date, latitude, longitude, event_type)
+    
+    return muhurta
+
+
+@app.post("/api/charts/transits")
+async def get_transits(request: ChartCalculationRequest):
+    """Calculate current planetary transits and their effects on a birth chart."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Calculate current transits
+    transits = calculate_current_transits(chart_data)
+    
+    return {
+        "birth_details": {
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place
+        },
+        "birth_chart_summary": {
+            "ascendant": chart_data["ascendant"],
+            "moon_sign": chart_data["moon_sign"],
+            "sun_sign": chart_data["sun_sign"],
+            "nakshatra": chart_data["nakshatra"]
+        },
+        "transits": transits
+    }
+
+
+@app.post("/api/charts/complete")
+async def calculate_complete_chart(
+    request: ChartCalculationRequest,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Calculate a complete birth chart with all advanced features."""
+    from datetime import datetime
+    birth_date = datetime.fromisoformat(request.birth_date.replace('Z', '+00:00'))
+    
+    # Calculate basic birth chart
+    chart_data = calculate_birth_chart(
+        birth_date=birth_date,
+        birth_time=request.birth_time,
+        birth_place=request.birth_place,
+        latitude=request.latitude,
+        longitude=request.longitude
+    )
+    
+    # Get Moon's longitude for Dasha calculation
+    moon_planet = next((p for p in chart_data["planets"] if p["name"] == "Moon"), None)
+    moon_longitude = moon_planet["longitude"] if moon_planet else 0
+    
+    # Get ascendant longitude for divisional charts
+    from app.services.astrology import SIGNS
+    asc_longitude = SIGNS.index(chart_data["ascendant"]) * 30 + chart_data["ascendant_degree"]
+    
+    # Calculate all advanced features
+    dasha_data = calculate_vimshottari_dasha(birth_date, moon_longitude)
+    divisional_charts = calculate_all_divisional_charts(chart_data["planets"], asc_longitude)
+    yogas = detect_yogas(chart_data["planets"], chart_data["houses"], chart_data["ascendant"])
+    
+    strengths = []
+    for planet in chart_data["planets"]:
+        strength = calculate_planetary_strength(planet, chart_data["ascendant"])
+        strengths.append(strength)
+    strengths.sort(key=lambda x: x["total_score"], reverse=True)
+    
+    ashtakavarga = calculate_ashtakavarga(chart_data["planets"])
+    transits = calculate_current_transits(chart_data)
+    
+    # Generate share token
+    share_token = generate_share_token()
+    
+    # Save to database if user is logged in
+    if current_user:
+        db_chart = BirthChart(
+            user_id=current_user.id,
+            name=request.name,
+            birth_date=birth_date,
+            birth_time=request.birth_time,
+            birth_place=request.birth_place,
+            latitude=request.latitude,
+            longitude=request.longitude,
+            chart_data_json=chart_data,
+            share_token=share_token
+        )
+        db.add(db_chart)
+        db.commit()
+        db.refresh(db_chart)
+    
+    return {
+        "share_token": share_token,
+        "birth_details": {
+            "name": request.name,
+            "date": request.birth_date,
+            "time": request.birth_time,
+            "place": request.birth_place,
+            "latitude": request.latitude,
+            "longitude": request.longitude
+        },
+        "basic_chart": chart_data,
+        "vimshottari_dasha": dasha_data,
+        "divisional_charts": divisional_charts,
+        "yogas": {
+            "detected": yogas,
+            "count": len(yogas),
+            "types": list(set(y["type"] for y in yogas))
+        },
+        "planetary_strengths": strengths,
+        "ashtakavarga": ashtakavarga,
+        "current_transits": transits
     }
