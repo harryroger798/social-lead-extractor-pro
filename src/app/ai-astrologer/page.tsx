@@ -179,6 +179,31 @@ Please ask me anything about Vedic astrology, and I'll provide detailed guidance
 For personalized predictions based on your exact birth chart, I recommend using our free calculators or booking a consultation with our expert astrologers.`
 };
 
+// Parse markdown-style bold text (**text**) into React elements
+function parseMarkdownLine(line: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  const boldRegex = /\*\*([^*]+)\*\*/g;
+  let match;
+
+  while ((match = boldRegex.exec(line)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(line.slice(lastIndex, match.index));
+    }
+    // Add the bold text
+    parts.push(<strong key={match.index} className="font-semibold">{match[1]}</strong>);
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text after last match
+  if (lastIndex < line.length) {
+    parts.push(line.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : line;
+}
+
 function getAstrologyResponse(question: string): string {
   const lowerQuestion = question.toLowerCase();
   
@@ -227,14 +252,16 @@ How may I assist you on your spiritual journey today?`,
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [shouldScrollOnSend, setShouldScrollOnSend] = useState(false);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Only scroll when user sends a message, not on every message update
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (shouldScrollOnSend && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      setShouldScrollOnSend(false);
+    }
+  }, [messages, shouldScrollOnSend]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -250,6 +277,7 @@ How may I assist you on your spiritual journey today?`,
     const currentInput = input;
     setInput("");
     setIsTyping(true);
+    setShouldScrollOnSend(true);
 
     try {
       // Prepare conversation history for API (exclude welcome message)
@@ -368,7 +396,10 @@ How may I assist you on your spiritual journey today?`,
           
           <CardContent className="p-0">
             {/* Messages */}
-            <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <div 
+              ref={chatContainerRef}
+              className="h-[450px] overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50 via-white to-indigo-50"
+            >
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -392,24 +423,45 @@ How may I assist you on your spiritual journey today?`,
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       message.role === "user"
-                        ? "bg-amber-500 text-white rounded-tr-none"
-                        : "bg-white shadow-sm border rounded-tl-none"
+                        ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-tr-none shadow-md"
+                        : "bg-white shadow-md border border-purple-100 rounded-tl-none"
                     }`}
                   >
-                    <div className={`text-sm whitespace-pre-wrap ${
+                    <div className={`text-sm leading-relaxed ${
                       message.role === "user" ? "" : "text-gray-700"
                     }`}>
                       {message.content.split('\n').map((line, i) => {
-                        if (line.startsWith('**') && line.endsWith('**')) {
-                          return <p key={i} className="font-semibold mt-2 mb-1">{line.replace(/\*\*/g, '')}</p>;
+                        // Empty line = paragraph break
+                        if (line.trim() === '') {
+                          return <div key={i} className="h-2" />;
                         }
+                        // Section headers (full line bold)
+                        if (line.startsWith('**') && line.endsWith('**') && !line.includes(': ')) {
+                          return <p key={i} className="font-bold text-purple-800 mt-3 mb-1">{line.replace(/\*\*/g, '')}</p>;
+                        }
+                        // Bullet points
                         if (line.startsWith('- ')) {
-                          return <p key={i} className="ml-2">{line}</p>;
+                          return (
+                            <div key={i} className="flex gap-2 ml-1 my-0.5">
+                              <span className="text-purple-500">•</span>
+                              <span>{parseMarkdownLine(line.slice(2))}</span>
+                            </div>
+                          );
                         }
-                        if (line.match(/^\d+\./)) {
-                          return <p key={i} className="ml-2">{line}</p>;
+                        // Numbered lists
+                        if (line.match(/^\d+\.\s/)) {
+                          const match = line.match(/^(\d+)\.\s(.*)$/);
+                          if (match) {
+                            return (
+                              <div key={i} className="flex gap-2 ml-1 my-0.5">
+                                <span className="text-purple-600 font-medium min-w-[1.25rem]">{match[1]}.</span>
+                                <span>{parseMarkdownLine(match[2])}</span>
+                              </div>
+                            );
+                          }
                         }
-                        return <p key={i}>{line}</p>;
+                        // Regular text with inline bold parsing
+                        return <p key={i} className="my-0.5">{parseMarkdownLine(line)}</p>;
                       })}
                     </div>
                     <div
@@ -445,14 +497,14 @@ How may I assist you on your spiritual journey today?`,
 
             {/* Suggested Questions */}
             {messages.length <= 2 && (
-              <div className="p-4 border-t bg-white">
-                <p className="text-sm text-gray-500 mb-3">Suggested questions:</p>
+              <div className="p-4 border-t bg-gradient-to-r from-purple-50 to-indigo-50">
+                <p className="text-sm font-medium text-purple-700 mb-3">Suggested questions:</p>
                 <div className="flex flex-wrap gap-2">
                   {suggestedQuestions.map((question, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestedQuestion(question)}
-                      className="text-xs px-3 py-1.5 rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors border border-purple-200"
+                      className="text-xs px-4 py-2 rounded-full bg-white text-purple-700 hover:bg-purple-100 hover:shadow-md transition-all duration-200 border border-purple-200 shadow-sm"
                     >
                       {question}
                     </button>
@@ -468,19 +520,19 @@ How may I assist you on your spiritual journey today?`,
                   e.preventDefault();
                   handleSend();
                 }}
-                className="flex gap-2"
+                className="flex gap-3"
               >
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about your horoscope, transits, doshas..."
-                  className="flex-1"
+                  className="flex-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   disabled={isTyping}
                 />
                 <Button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-md px-6"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
