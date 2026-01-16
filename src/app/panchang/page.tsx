@@ -105,8 +105,9 @@ async function fetchPanchang(date: Date, location: string): Promise<PanchangData
     const weekday = data.weekday;
     
     const formatTime12 = (time24: string) => {
-      if (!time24) return "N/A";
+      if (!time24 || time24 === "--:--") return "N/A";
       const [h, m] = time24.split(":").map(Number);
+      if (isNaN(h) || isNaN(m)) return "N/A";
       const ampm = h >= 12 ? "PM" : "AM";
       const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
       return `${displayH}:${m.toString().padStart(2, "0")} ${ampm}`;
