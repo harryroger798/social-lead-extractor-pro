@@ -78,76 +78,52 @@ function calculateRahuKaal(date: Date, sunrise: string, sunset: string): { start
   };
 }
 
-// Calculate approximate sunrise/sunset for a location
+// Calculate approximate sunrise/sunset for a location using simplified algorithm
 function calculateSunTimes(date: Date, lat: number, lon: number): { sunrise: string; sunset: string } {
-  const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000);
-  
-  // Approximate calculation
-  const zenith = 90.833;
   const D2R = Math.PI / 180;
-  const R2D = 180 / Math.PI;
   
-  // Calculate sunrise
-  const lngHour = lon / 15;
-  let t = dayOfYear + ((6 - lngHour) / 24);
-  let M = (0.9856 * t) - 3.289;
-  let L = M + (1.916 * Math.sin(M * D2R)) + (0.020 * Math.sin(2 * M * D2R)) + 282.634;
-  L = L % 360;
+  // Day of year
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date.getTime() - start.getTime();
+  const dayOfYear = Math.floor(diff / 86400000);
   
-  let RA = R2D * Math.atan(0.91764 * Math.tan(L * D2R));
-  RA = RA % 360;
+  // Solar declination (simplified)
+  const declination = -23.45 * Math.cos(D2R * (360 / 365) * (dayOfYear + 10));
   
-  const Lquadrant = Math.floor(L / 90) * 90;
-  const RAquadrant = Math.floor(RA / 90) * 90;
-  RA = RA + (Lquadrant - RAquadrant);
-  RA = RA / 15;
+  // Hour angle at sunrise/sunset
+  const latRad = lat * D2R;
+  const decRad = declination * D2R;
   
-  const sinDec = 0.39782 * Math.sin(L * D2R);
-  const cosDec = Math.cos(Math.asin(sinDec));
+  // Calculate hour angle
+  let cosHourAngle = -Math.tan(latRad) * Math.tan(decRad);
   
-  const cosH = (Math.cos(zenith * D2R) - (sinDec * Math.sin(lat * D2R))) / (cosDec * Math.cos(lat * D2R));
+  // Clamp to valid range
+  if (cosHourAngle > 1) cosHourAngle = 1;
+  if (cosHourAngle < -1) cosHourAngle = -1;
   
-  let H = R2D * Math.acos(cosH);
-  H = H / 15;
+  const hourAngle = Math.acos(cosHourAngle) / D2R;
   
-  let sunriseTime = RA - H - (0.06571 * t) - 6.622;
-  sunriseTime = sunriseTime - lngHour;
-  sunriseTime = (sunriseTime + 24) % 24;
+  // Solar noon in hours (approximate for IST)
+  // IST is UTC+5:30, and solar noon varies by longitude
+  const solarNoon = 12 - (lon - 82.5) / 15; // 82.5 is roughly center of IST zone
   
-  // Calculate sunset
-  t = dayOfYear + ((18 - lngHour) / 24);
-  M = (0.9856 * t) - 3.289;
-  L = M + (1.916 * Math.sin(M * D2R)) + (0.020 * Math.sin(2 * M * D2R)) + 282.634;
-  L = L % 360;
-  
-  RA = R2D * Math.atan(0.91764 * Math.tan(L * D2R));
-  RA = RA % 360;
-  
-  const Lquadrant2 = Math.floor(L / 90) * 90;
-  const RAquadrant2 = Math.floor(RA / 90) * 90;
-  RA = RA + (Lquadrant2 - RAquadrant2);
-  RA = RA / 15;
-  
-  H = 360 - R2D * Math.acos(cosH);
-  H = H / 15;
-  
-  let sunsetTime = RA + H - (0.06571 * t) - 6.622;
-  sunsetTime = sunsetTime - lngHour;
-  sunsetTime = (sunsetTime + 24) % 24;
-  
-  // Add timezone offset for IST (+5:30)
-  sunriseTime = (sunriseTime + 5.5) % 24;
-  sunsetTime = (sunsetTime + 5.5) % 24;
+  // Calculate sunrise and sunset times
+  const dayLengthHours = (2 * hourAngle) / 15;
+  const sunriseHour = solarNoon - dayLengthHours / 2;
+  const sunsetHour = solarNoon + dayLengthHours / 2;
   
   const formatTime = (time: number) => {
-    const h = Math.floor(time);
-    const m = Math.floor((time - h) * 60);
+    // Ensure time is in valid range
+    let h = Math.floor(time);
+    let m = Math.floor((time - h) * 60);
+    if (h < 0) h += 24;
+    if (h >= 24) h -= 24;
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   };
   
   return {
-    sunrise: formatTime(sunriseTime),
-    sunset: formatTime(sunsetTime),
+    sunrise: formatTime(sunriseHour),
+    sunset: formatTime(sunsetHour),
   };
 }
 
