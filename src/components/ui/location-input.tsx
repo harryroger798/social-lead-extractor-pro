@@ -148,6 +148,35 @@ const LocationInput = React.forwardRef<HTMLInputElement, LocationInputProps>(
       }
     };
 
+    // Auto-select best match when user blurs the input
+    const handleBlur = () => {
+      // Small delay to allow click events on suggestions to fire first
+      setTimeout(() => {
+        if (inputValue.length >= 1) {
+          // Find best matching city
+          const exactMatch = CITIES.find(city => 
+            city.toLowerCase() === inputValue.toLowerCase()
+          );
+          const partialMatch = CITIES.find(city =>
+            city.toLowerCase().includes(inputValue.toLowerCase()) ||
+            inputValue.toLowerCase().includes(city.toLowerCase())
+          );
+          
+          const bestMatch = exactMatch || partialMatch;
+          if (bestMatch && bestMatch !== inputValue) {
+            setInputValue(bestMatch);
+            if (onLocationSelect) {
+              onLocationSelect(bestMatch);
+            }
+          } else if (inputValue && onLocationSelect) {
+            // Even if no match, trigger the callback with current value
+            onLocationSelect(inputValue);
+          }
+        }
+        setShowSuggestions(false);
+      }, 200);
+    };
+
     return (
       <div ref={wrapperRef} className="relative w-full">
         <div className="relative">
@@ -163,6 +192,7 @@ const LocationInput = React.forwardRef<HTMLInputElement, LocationInputProps>(
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
+            onBlur={handleBlur}
             autoComplete="off"
             {...props}
           />

@@ -39,6 +39,11 @@ const NAKSHATRAS = [
 
 // Calculate Rahu Kaal based on weekday
 function calculateRahuKaal(date: Date, sunrise: string, sunset: string): { start: string; end: string } {
+  // Handle invalid sunrise/sunset values
+  if (!sunrise || !sunset || sunrise === "--:--" || sunset === "--:--") {
+    return { start: "--:--", end: "--:--" };
+  }
+  
   const weekday = date.getDay();
   
   // Rahu Kaal periods for each day (in 8ths of the day from sunrise)
@@ -59,6 +64,11 @@ function calculateRahuKaal(date: Date, sunrise: string, sunset: string): { start
   const [sunriseHour, sunriseMin] = sunrise.split(":").map(Number);
   const [sunsetHour, sunsetMin] = sunset.split(":").map(Number);
   
+  // Validate parsed values
+  if (isNaN(sunriseHour) || isNaN(sunriseMin) || isNaN(sunsetHour) || isNaN(sunsetMin)) {
+    return { start: "--:--", end: "--:--" };
+  }
+  
   const sunriseMinutes = sunriseHour * 60 + sunriseMin;
   const sunsetMinutes = sunsetHour * 60 + sunsetMin;
   const dayLength = sunsetMinutes - sunriseMinutes;
@@ -68,6 +78,7 @@ function calculateRahuKaal(date: Date, sunrise: string, sunset: string): { start
   const endMinutes = startMinutes + periodLength;
   
   const formatTime = (minutes: number) => {
+    if (isNaN(minutes)) return "--:--";
     const h = Math.floor(minutes / 60);
     const m = Math.floor(minutes % 60);
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
