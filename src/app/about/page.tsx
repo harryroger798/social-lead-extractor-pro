@@ -273,9 +273,9 @@ export default function AboutPage() {
               <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
                 <Link href="/tools/kundli-calculator">Generate Free Kundli</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <Link href="/consultation">Book Consultation</Link>
-              </Button>
+                            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                              <Link href="/consultation">Book Consultation</Link>
+                            </Button>
             </div>
           </CardContent>
         </Card>
