@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/lib/i18n";
 import { 
   Star, 
   Calculator, 
@@ -21,116 +24,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-const features = [
-  {
-    icon: Calculator,
-    title: "Free Kundli Calculator",
-    description: "Generate your complete birth chart with planetary positions, houses, and doshas instantly.",
-    href: "/tools/kundli-calculator",
-    badge: "Free",
-  },
-  {
-    icon: Moon,
-    title: "Moon Sign Calculator",
-    description: "Discover your Vedic Moon sign (Chandra Rashi) and understand your emotional nature.",
-    href: "/tools/moon-sign-calculator",
-    badge: "Free",
-  },
-  {
-    icon: Calendar,
-    title: "Daily Panchang",
-    description: "Get today's tithi, nakshatra, yoga, karana, Rahu Kaal, and auspicious timings.",
-    href: "/panchang",
-    badge: "Free",
-  },
-  {
-    icon: BookOpen,
-    title: "Expert Consultation",
-    description: "Connect with verified Vedic astrologers for personalized guidance and predictions.",
-    href: "/consultation",
-    badge: "Premium",
-  },
-];
-
-const moreTools = [
-  {
-    icon: Sun,
-    title: "Sun Sign Calculator",
-    description: "Find your Western zodiac sign based on your birth date.",
-    href: "/tools/sun-sign-calculator",
-  },
-  {
-    icon: Star,
-    title: "Ascendant Calculator",
-    description: "Calculate your rising sign (Lagna) for accurate predictions.",
-    href: "/tools/ascendant-calculator",
-  },
-  {
-    icon: Heart,
-    title: "Love Compatibility",
-    description: "Check zodiac compatibility with your partner.",
-    href: "/tools/love-calculator",
-  },
-  {
-    icon: Users,
-    title: "Horoscope Matching",
-    description: "Detailed Guna Milan for marriage compatibility.",
-    href: "/tools/horoscope-matching",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Mangal Dosh Calculator",
-    description: "Check if you have Manglik Dosha in your chart.",
-    href: "/tools/mangal-dosh-calculator",
-  },
-  {
-    icon: Clock,
-    title: "Sade Sati Calculator",
-    description: "Check your current Sade Sati status and phase.",
-    href: "/tools/sade-sati-calculator",
-  },
-];
-
-const predictions2026 = [
-  {
-    title: "2026 Horoscope",
-    description: "Yearly predictions for all 12 zodiac signs",
-    href: "/horoscope/2026",
-  },
-  {
-    title: "Saturn Transit 2026",
-    description: "Shani Gochar effects on your sign",
-    href: "/transits/saturn-transit-2026",
-  },
-  {
-    title: "Jupiter Transit 2026",
-    description: "Guru Gochar blessings and opportunities",
-    href: "/transits/jupiter-transit-2026",
-  },
-  {
-    title: "Mercury Retrograde 2026",
-    description: "Dates, effects, and survival guide",
-    href: "/transits/mercury-retrograde-2026",
-  },
-  {
-    title: "Eclipses 2026",
-    description: "Solar & lunar eclipse dates and effects",
-    href: "/eclipses-2026",
-  },
-  {
-    title: "Festival Calendar 2026",
-    description: "Hindu festivals and important dates",
-    href: "/festival-calendar-2026",
-  },
-];
-
-const stats = [
-  { value: "50,000+", label: "Charts Generated" },
-  { value: "10,000+", label: "Happy Clients" },
-  { value: "100+", label: "Expert Astrologers" },
-  { value: "4.9/5", label: "User Rating" },
-];
-
+// Testimonials stay in original language as requested by user
 const testimonials = [
   {
     name: "Priya Sharma",
@@ -153,6 +47,117 @@ const testimonials = [
 ];
 
 export default function Home() {
+  const { t } = useLanguage();
+
+  const features = [
+    {
+      icon: Calculator,
+      title: t.home.freeKundliTitle,
+      description: t.home.freeKundliDesc,
+      href: "/tools/kundli-calculator",
+      badge: t.home.free,
+    },
+    {
+      icon: Moon,
+      title: t.home.moonSignTitle,
+      description: t.home.moonSignDesc,
+      href: "/tools/moon-sign-calculator",
+      badge: t.home.free,
+    },
+    {
+      icon: Calendar,
+      title: t.home.dailyPanchangTitle,
+      description: t.home.dailyPanchangDesc,
+      href: "/panchang",
+      badge: t.home.free,
+    },
+    {
+      icon: BookOpen,
+      title: t.home.expertConsultationTitle,
+      description: t.home.expertConsultationDesc,
+      href: "/consultation",
+      badge: t.home.premium,
+    },
+  ];
+
+  const moreTools = [
+    {
+      icon: Sun,
+      title: t.home.sunSignTitle,
+      description: t.home.sunSignDesc,
+      href: "/tools/sun-sign-calculator",
+    },
+    {
+      icon: Star,
+      title: t.home.ascendantTitle,
+      description: t.home.ascendantDesc,
+      href: "/tools/ascendant-calculator",
+    },
+    {
+      icon: Heart,
+      title: t.home.loveCompatibilityTitle,
+      description: t.home.loveCompatibilityDesc,
+      href: "/tools/love-calculator",
+    },
+    {
+      icon: Users,
+      title: t.home.horoscopeMatchingTitle,
+      description: t.home.horoscopeMatchingDesc,
+      href: "/tools/horoscope-matching",
+    },
+    {
+      icon: AlertTriangle,
+      title: t.home.mangalDoshTitle,
+      description: t.home.mangalDoshDesc,
+      href: "/tools/mangal-dosh-calculator",
+    },
+    {
+      icon: Clock,
+      title: t.home.sadeSatiTitle,
+      description: t.home.sadeSatiDesc,
+      href: "/tools/sade-sati-calculator",
+    },
+  ];
+
+  const predictions2026 = [
+    {
+      title: t.home.horoscope2026Title,
+      description: t.home.horoscope2026Desc,
+      href: "/horoscope/2026",
+    },
+    {
+      title: t.home.saturnTransitTitle,
+      description: t.home.saturnTransitDesc,
+      href: "/transits/saturn-transit-2026",
+    },
+    {
+      title: t.home.jupiterTransitTitle,
+      description: t.home.jupiterTransitDesc,
+      href: "/transits/jupiter-transit-2026",
+    },
+    {
+      title: t.home.mercuryRetrogradeTitle,
+      description: t.home.mercuryRetrogradeDesc,
+      href: "/transits/mercury-retrograde-2026",
+    },
+    {
+      title: t.home.eclipsesTitle,
+      description: t.home.eclipsesDesc,
+      href: "/eclipses-2026",
+    },
+    {
+      title: t.home.festivalCalendarTitle,
+      description: t.home.festivalCalendarDesc,
+      href: "/festival-calendar-2026",
+    },
+  ];
+
+  const stats = [
+    { value: "50,000+", label: t.home.chartsGenerated },
+    { value: "10,000+", label: t.home.happyClients },
+    { value: "100+", label: t.home.expertAstrologers },
+    { value: "4.9/5", label: t.home.userRating },
+  ];
   return (
     <>
       <section className="relative overflow-hidden py-20 lg:py-28">
@@ -162,19 +167,18 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-4 bg-amber-100 text-amber-800 hover:bg-amber-100">
               <Sparkles className="w-3 h-3 mr-1" />
-              Trusted by 50,000+ Users
+              {t.home.trustedBadge}
             </Badge>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Discover Your Destiny with{" "}
+              {t.home.heroTitle}{" "}
               <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                Authentic Vedic Astrology
+                {t.home.heroTitleHighlight}
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              Get accurate Kundli analysis, Nakshatra insights, and personalized predictions 
-              from expert astrologers with 20+ years of experience in Jyotish Shastra.
+              {t.home.heroSubtitle}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -184,7 +188,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/tools/kundli-calculator">
-                  Get Free Kundli
+                  {t.home.getFreeKundli}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -195,7 +199,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/consultation">
-                  Talk to Astrologer
+                  {t.home.talkToAstrologer}
                 </Link>
               </Button>
             </div>
@@ -216,11 +220,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Free Astrology Tools & Services
+              {t.home.featuresTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Access powerful Vedic astrology tools and connect with expert astrologers 
-              for personalized guidance.
+              {t.home.featuresDesc}
             </p>
           </div>
           
@@ -232,7 +235,7 @@ export default function Home() {
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center group-hover:from-amber-200 group-hover:to-orange-200 transition-colors">
                       <feature.icon className="w-6 h-6 text-amber-600" />
                     </div>
-                    <Badge variant={feature.badge === "Free" ? "secondary" : "default"} className={feature.badge === "Free" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
+                    <Badge variant={feature.badge === t.home.free ? "secondary" : "default"} className={feature.badge === t.home.free ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
                       {feature.badge}
                     </Badge>
                   </div>
@@ -244,7 +247,7 @@ export default function Home() {
                     href={feature.href}
                     className="inline-flex items-center text-amber-600 font-medium hover:text-amber-700 transition-colors"
                   >
-                    Try Now
+                    {t.home.tryNow}
                     <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </CardContent>
@@ -257,12 +260,12 @@ export default function Home() {
       <section className="py-16 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-purple-100 text-purple-800">More Free Tools</Badge>
+            <Badge className="mb-4 bg-purple-100 text-purple-800">{t.home.moreToolsBadge}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Explore Our Astrology Calculators
+              {t.home.moreToolsTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover more free tools to understand your astrological profile.
+              {t.home.moreToolsDesc}
             </p>
           </div>
           
@@ -289,12 +292,12 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-amber-400 text-amber-900">2026 Predictions</Badge>
+            <Badge className="mb-4 bg-amber-400 text-amber-900">{t.home.predictions2026Badge}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              What Does 2026 Hold For You?
+              {t.home.predictions2026Title}
             </h2>
             <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              Explore detailed predictions, planetary transits, and cosmic events for 2026.
+              {t.home.predictions2026Desc}
             </p>
           </div>
           
@@ -310,7 +313,7 @@ export default function Home() {
                 </h3>
                 <p className="text-indigo-200 text-sm">{item.description}</p>
                 <span className="inline-flex items-center text-amber-400 text-sm mt-3 group-hover:text-amber-300">
-                  Read More <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  {t.common.readMore} <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
             ))}
@@ -322,22 +325,20 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="mb-4 bg-amber-100 text-amber-800">Why Choose Us</Badge>
+              <Badge className="mb-4 bg-amber-100 text-amber-800">{t.home.whyChooseUsBadge}</Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Authentic Vedic Wisdom, Modern Experience
+                {t.home.whyChooseUsTitle}
               </h2>
               <p className="text-lg text-gray-600 mb-8">
-                We combine ancient Jyotish Shastra knowledge with modern technology to provide 
-                accurate, personalized astrological guidance. Our expert astrologers follow 
-                traditional Parashari and Jaimini systems for precise predictions.
+                {t.home.whyChooseUsDesc}
               </p>
               
               <div className="space-y-4">
                 {[
-                  { icon: Shield, text: "Verified Expert Astrologers with 10+ Years Experience" },
-                  { icon: Clock, text: "24/7 Availability for Consultations" },
-                  { icon: Award, text: "100% Satisfaction Guarantee" },
-                  { icon: CheckCircle, text: "Accurate Calculations Based on Swiss Ephemeris" },
+                  { icon: Shield, text: t.home.verifiedExperts },
+                  { icon: Clock, text: t.home.availability247 },
+                  { icon: Award, text: t.home.satisfactionGuarantee },
+                  { icon: CheckCircle, text: t.home.accurateCalculations },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
@@ -354,7 +355,7 @@ export default function Home() {
                 asChild
               >
                 <Link href="/about">
-                  Learn More About Us
+                  {t.home.learnMoreAboutUs}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -378,12 +379,12 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-amber-100 text-amber-800">Testimonials</Badge>
+            <Badge className="mb-4 bg-amber-100 text-amber-800">{t.home.testimonialsBadge}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              What Our Clients Say
+              {t.home.testimonialsTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join thousands of satisfied clients who have found guidance through our services.
+              {t.home.testimonialsDesc}
             </p>
           </div>
           
@@ -416,11 +417,10 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-r from-amber-500 to-orange-600">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Discover Your Cosmic Path?
+            {t.home.ctaTitle}
           </h2>
           <p className="text-lg text-amber-100 mb-8 max-w-2xl mx-auto">
-            Get your free Kundli analysis now and unlock insights about your life, 
-            career, relationships, and future.
+            {t.home.ctaDesc}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -429,7 +429,7 @@ export default function Home() {
               asChild
             >
               <Link href="/tools/kundli-calculator">
-                Generate Free Kundli
+                {t.home.generateFreeKundli}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -440,7 +440,7 @@ export default function Home() {
               asChild
             >
               <Link href="/consultation">
-                Book Consultation
+                {t.home.bookConsultation}
               </Link>
             </Button>
           </div>
