@@ -22,6 +22,15 @@ export const metadata: Metadata = {
     default: "VedicStarAstro - Authentic Vedic Astrology & Kundli Analysis",
     template: "%s | VedicStarAstro",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "any" },
+      { url: "/images/logo.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/images/logo.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   description:
     "Get accurate Vedic astrology readings, free Kundli analysis, Nakshatra insights, and personalized horoscope predictions. Expert astrologers with 20+ years experience.",
   keywords: [
