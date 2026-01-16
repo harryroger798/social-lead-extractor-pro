@@ -216,10 +216,10 @@ export default function AscendantCalculatorPage() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-indigo-100 text-indigo-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('calculator.ascendant.title', 'Ascendant Calculator (Lagna Calculator)')}
+            {t('calculator.ascendantCalc.title', 'Ascendant Calculator (Lagna Calculator)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('calculator.ascendant.subtitle', 'Discover your Rising Sign (Lagna) based on your exact birth time. Your Ascendant determines how others perceive you and shapes your physical appearance.')}
+            {t('calculator.ascendantCalc.subtitle', 'Discover your Rising Sign (Lagna) based on your exact birth time. Your Ascendant determines how others perceive you and shapes your physical appearance.')}
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function AscendantCalculatorPage() {
                 {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                {t('calculator.ascendant.birthTimeNote', 'Exact birth time is essential for accurate Ascendant calculation')}
+                {t('calculator.ascendantCalc.birthTimeNote', 'Exact birth time is essential for accurate Ascendant calculation')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -262,7 +262,7 @@ export default function AscendantCalculatorPage() {
                   required
                 />
                 <p className="text-xs text-red-500">
-                  {t('calculator.ascendant.timeWarning', '* Ascendant changes every 2 hours - exact time is crucial')}
+                  {t('calculator.ascendantCalc.timeWarning', '* Ascendant changes every 2 hours - exact time is crucial')}
                 </p>
               </div>
               
@@ -279,7 +279,7 @@ export default function AscendantCalculatorPage() {
                   onLocationSelect={(loc) => setBirthPlace(loc)}
                 />
                 <p className="text-xs text-gray-500">
-                  {t('calculator.ascendant.locationNote', 'Location affects time zone and local sidereal time')}
+                  {t('calculator.ascendantCalc.locationNote', 'Location affects time zone and local sidereal time')}
                 </p>
               </div>
               
@@ -296,7 +296,7 @@ export default function AscendantCalculatorPage() {
                 ) : (
                   <>
                     <Sunrise className="w-4 h-4 mr-2" />
-                    {t('calculator.ascendant.findAscendant', 'Find My Ascendant')}
+                    {t('calculator.ascendantCalc.findAscendant', 'Find My Ascendant')}
                   </>
                 )}
               </Button>

@@ -216,10 +216,10 @@ export default function MoonSignCalculatorPage() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-purple-100 text-purple-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('calculator.moonSign.title', 'Moon Sign Calculator (Rashi Calculator)')}
+            {t('calculator.moonSignCalc.title', 'Moon Sign Calculator (Rashi Calculator)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('calculator.moonSign.subtitle', 'Discover your Moon Sign (Chandra Rashi) based on your birth details. Your Moon Sign reveals your emotional nature, instincts, and inner self in Vedic astrology.')}
+            {t('calculator.moonSignCalc.subtitle', 'Discover your Moon Sign (Chandra Rashi) based on your birth details. Your Moon Sign reveals your emotional nature, instincts, and inner self in Vedic astrology.')}
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function MoonSignCalculatorPage() {
                 {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                {t('calculator.moonSign.birthTimeNote', 'Accurate birth time helps determine precise Moon position')}
+                {t('calculator.moonSignCalc.birthTimeNote', 'Accurate birth time helps determine precise Moon position')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -261,7 +261,7 @@ export default function MoonSignCalculatorPage() {
                   onChange={(e) => setBirthTime(e.target.value)}
                 />
                 <p className="text-xs text-gray-500">
-                  {t('calculator.moonSign.moonChangeNote', 'Moon changes sign every 2.5 days, so accurate time improves precision')}
+                  {t('calculator.moonSignCalc.moonChangeNote', 'Moon changes sign every 2.5 days, so accurate time improves precision')}
                 </p>
               </div>
               
@@ -292,7 +292,7 @@ export default function MoonSignCalculatorPage() {
                 ) : (
                   <>
                     <Moon className="w-4 h-4 mr-2" />
-                    {t('calculator.moonSign.findMoonSign', 'Find My Moon Sign')}
+                    {t('calculator.moonSignCalc.findMoonSign', 'Find My Moon Sign')}
                   </>
                 )}
               </Button>

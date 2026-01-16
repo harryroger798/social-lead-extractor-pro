@@ -161,10 +161,10 @@ export default function LoveCalculatorPage() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-pink-100 text-pink-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('calculator.love.title', 'Love Compatibility Calculator')}
+            {t('calculator.loveCalc.title', 'Love Compatibility Calculator')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('calculator.love.subtitle', 'Discover your romantic compatibility based on zodiac signs. Find out how well you match with your partner in love, emotions, and life.')}
+            {t('calculator.loveCalc.subtitle', 'Discover your romantic compatibility based on zodiac signs. Find out how well you match with your partner in love, emotions, and life.')}
           </p>
         </div>
 
@@ -173,17 +173,17 @@ export default function LoveCalculatorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Heart className="w-5 h-5 text-pink-600" />
-                {t('calculator.love.enterDetails', 'Enter Your Details')}
+                {t('calculator.loveCalc.enterDetails', 'Enter Your Details')}
               </CardTitle>
               <CardDescription>
-                {t('calculator.love.enterBirthDates', 'Enter birth dates to calculate zodiac compatibility')}
+                {t('calculator.loveCalc.enterBirthDates', 'Enter birth dates to calculate zodiac compatibility')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-pink-50 rounded-lg p-4 space-y-4">
                 <h3 className="font-semibold text-pink-800 flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  {t('calculator.love.person1', 'Person 1')}
+                  {t('calculator.loveCalc.person1', 'Person 1')}
                 </h3>
                 <div className="space-y-2">
                   <Label htmlFor="name1">{t('calculator.name', 'Name')}</Label>
@@ -218,7 +218,7 @@ export default function LoveCalculatorPage() {
               <div className="bg-red-50 rounded-lg p-4 space-y-4">
                 <h3 className="font-semibold text-red-800 flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  {t('calculator.love.person2', 'Person 2')}
+                  {t('calculator.loveCalc.person2', 'Person 2')}
                 </h3>
                 <div className="space-y-2">
                   <Label htmlFor="name2">{t('calculator.name', 'Name')}</Label>
@@ -252,12 +252,12 @@ export default function LoveCalculatorPage() {
                 {isCalculating ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                    {t('calculator.love.calculatingMatch', 'Calculating Love Match...')}
+                    {t('calculator.loveCalc.calculatingMatch', 'Calculating Love Match...')}
                   </>
                 ) : (
                   <>
                     <Heart className="w-4 h-4 mr-2" />
-                    {t('calculator.love.checkCompatibility', 'Check Compatibility')}
+                    {t('calculator.loveCalc.checkCompatibility', 'Check Compatibility')}
                   </>
                 )}
               </Button>
@@ -269,7 +269,7 @@ export default function LoveCalculatorPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-center justify-center">
                   <Heart className="w-6 h-6 text-pink-600" />
-                  {t('calculator.love.result', 'Love Compatibility Result')}
+                  {t('calculator.loveCalc.result', 'Love Compatibility Result')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -302,32 +302,32 @@ export default function LoveCalculatorPage() {
                   </div>
 
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3">{t('calculator.love.compatibilityAspects', 'Compatibility Aspects')}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('calculator.loveCalc.compatibilityAspects', 'Compatibility Aspects')}</h3>
                     <div className="space-y-3">
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>{t('calculator.love.emotionalConnection', 'Emotional Connection')}</span>
+                          <span>{t('calculator.loveCalc.emotionalConnection', 'Emotional Connection')}</span>
                           <span>{result.aspects.emotional}%</span>
                         </div>
                         <Progress value={result.aspects.emotional} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>{t('calculator.love.intellectualBond', 'Intellectual Bond')}</span>
+                          <span>{t('calculator.loveCalc.intellectualBond', 'Intellectual Bond')}</span>
                           <span>{result.aspects.intellectual}%</span>
                         </div>
                         <Progress value={result.aspects.intellectual} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>{t('calculator.love.physicalChemistry', 'Physical Chemistry')}</span>
+                          <span>{t('calculator.loveCalc.physicalChemistry', 'Physical Chemistry')}</span>
                           <span>{result.aspects.physical}%</span>
                         </div>
                         <Progress value={result.aspects.physical} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>{t('calculator.love.spiritualHarmony', 'Spiritual Harmony')}</span>
+                          <span>{t('calculator.loveCalc.spiritualHarmony', 'Spiritual Harmony')}</span>
                           <span>{result.aspects.spiritual}%</span>
                         </div>
                         <Progress value={result.aspects.spiritual} className="h-2" />
@@ -338,7 +338,7 @@ export default function LoveCalculatorPage() {
                   <div className="bg-amber-50 rounded-lg p-4">
                     <h3 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
                       <Star className="w-4 h-4" />
-                      {t('calculator.love.relationshipAdvice', 'Relationship Advice')}
+                      {t('calculator.loveCalc.relationshipAdvice', 'Relationship Advice')}
                     </h3>
                     <p className="text-amber-700">{message.advice}</p>
                   </div>
@@ -352,10 +352,10 @@ export default function LoveCalculatorPage() {
                   <Heart className="w-12 h-12 text-pink-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('calculator.love.resultPlaceholder', 'Your Love Match Will Appear Here')}
+                  {t('calculator.loveCalc.resultPlaceholder', 'Your Love Match Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  {t('calculator.love.resultPlaceholderDesc', 'Enter both birth dates and click "Check Compatibility" to discover your romantic compatibility score.')}
+                  {t('calculator.loveCalc.resultPlaceholderDesc', 'Enter both birth dates and click "Check Compatibility" to discover your romantic compatibility score.')}
                 </p>
               </CardContent>
             </Card>
@@ -409,7 +409,7 @@ export default function LoveCalculatorPage() {
         <Card className="border-pink-200 bg-pink-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {t('calculator.love.understandingTitle', 'Understanding Zodiac Love Compatibility')}
+              {t('calculator.loveCalc.understandingTitle', 'Understanding Zodiac Love Compatibility')}
             </h2>
             <div className="prose prose-pink max-w-none">
               <p className="text-gray-700 mb-4">

@@ -270,10 +270,10 @@ export default function SunSignCalculatorPage() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-orange-100 text-orange-800">{t('calculator.freeTool', 'Free Calculator')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('calculator.sunSign.title', 'Sun Sign Calculator (Surya Rashi)')}
+            {t('calculator.sunSignCalc.title', 'Sun Sign Calculator (Surya Rashi)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('calculator.sunSign.subtitle', 'Discover your Sun Sign based on your birth date. Your Sun Sign represents your core identity, ego, and the essence of who you are.')}
+            {t('calculator.sunSignCalc.subtitle', 'Discover your Sun Sign based on your birth date. Your Sun Sign represents your core identity, ego, and the essence of who you are.')}
           </p>
         </div>
 
@@ -285,7 +285,7 @@ export default function SunSignCalculatorPage() {
                 {t('calculator.enterBirthDate', 'Enter Your Birth Date')}
               </CardTitle>
               <CardDescription>
-                {t('calculator.sunSign.sunPositionNote', 'Your Sun Sign is determined by the position of the Sun on your birth date')}
+                {t('calculator.sunSignCalc.sunPositionNote', 'Your Sun Sign is determined by the position of the Sun on your birth date')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -316,7 +316,7 @@ export default function SunSignCalculatorPage() {
                 ) : (
                   <>
                     <Sun className="w-4 h-4 mr-2" />
-                    {t('calculator.sunSign.findSunSign', 'Find My Sun Sign')}
+                    {t('calculator.sunSignCalc.findSunSign', 'Find My Sun Sign')}
                   </>
                 )}
               </Button>
