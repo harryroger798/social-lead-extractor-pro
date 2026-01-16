@@ -298,7 +298,7 @@ export default function YogaCalculatorPage() {
                             </Badge>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">Strength:</span>
+                            <span className="text-sm text-gray-500">{t('calculator.yoga.strength', 'Strength')}:</span>
                             <div className="flex items-center gap-1">
                               <div
                                 className={`w-3 h-3 rounded-full ${
@@ -311,7 +311,7 @@ export default function YogaCalculatorPage() {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{yoga.description}</p>
                         <div className="flex flex-wrap gap-1">
-                          <span className="text-xs text-gray-500">Planets involved:</span>
+                          <span className="text-xs text-gray-500">{t('calculator.yoga.planetsInvolved', 'Planets involved')}:</span>
                           {yoga.planets.map((planet) => (
                             <Badge key={planet} variant="secondary" className="text-xs">
                               {planet}
@@ -326,9 +326,7 @@ export default function YogaCalculatorPage() {
                 <Card className="border-yellow-200">
                   <CardContent className="py-8 text-center">
                     <p className="text-gray-500">
-                      No major Yogas detected in your chart. This doesn&apos;t mean your chart 
-                      lacks potential - individual planetary strengths and house placements 
-                      also play important roles.
+                      {t('calculator.yoga.noYogasMessage', "No major Yogas detected in your chart. This doesn't mean your chart lacks potential - individual planetary strengths and house placements also play important roles.")}
                     </p>
                   </CardContent>
                 </Card>
@@ -354,13 +352,12 @@ export default function YogaCalculatorPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Crown className="w-5 h-5 text-purple-600" />
-                Raj Yoga
+                {t('calculator.yoga.rajYoga', 'Raj Yoga')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Formed by conjunction of Kendra and Trikona lords. Indicates power, 
-                authority, and rise to prominent positions in life.
+                {t('calculator.yoga.rajYogaDesc', 'Formed by conjunction of Kendra and Trikona lords. Indicates power, authority, and rise to prominent positions in life.')}
               </p>
             </CardContent>
           </Card>
@@ -368,13 +365,12 @@ export default function YogaCalculatorPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Gem className="w-5 h-5 text-green-600" />
-                Dhana Yoga
+                {t('calculator.yoga.dhanaYoga', 'Dhana Yoga')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Wealth-producing combinations involving 2nd and 11th house lords. 
-                Indicates financial prosperity and material abundance.
+                {t('calculator.yoga.dhanaYogaDesc', 'Wealth-producing combinations involving 2nd and 11th house lords. Indicates financial prosperity and material abundance.')}
               </p>
             </CardContent>
           </Card>
@@ -382,13 +378,12 @@ export default function YogaCalculatorPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Star className="w-5 h-5 text-amber-600" />
-                Panch Mahapurusha
+                {t('calculator.yoga.panchMahapurusha', 'Panch Mahapurusha')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">
-                Five great person yogas formed when Mars, Mercury, Jupiter, Venus, 
-                or Saturn are in Kendra in their own or exaltation sign.
+                {t('calculator.yoga.panchMahapurushaDesc', 'Five great person yogas formed when Mars, Mercury, Jupiter, Venus, or Saturn are in Kendra in their own or exaltation sign.')}
               </p>
             </CardContent>
           </Card>
