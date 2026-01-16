@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCoordinatesFromPlace } from "@/lib/coordinates";
+import SunCalc from "suncalc";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
 
@@ -78,112 +79,43 @@ function calculateRahuKaal(date: Date, sunrise: string, sunset: string): { start
   };
 }
 
-// Calculate approximate moonrise/moonset for a location
-// Moon rises about 50 minutes later each day on average
-function calculateMoonTimes(date: Date, lat: number, lon: number, moonLongitude: number): { moonrise: string; moonset: string } {
-  const D2R = Math.PI / 180;
+// Calculate accurate sunrise/sunset/moonrise/moonset using SunCalc library
+function calculateAstronomicalTimes(date: Date, lat: number, lon: number): { 
+  sunrise: string; 
+  sunset: string; 
+  moonrise: string; 
+  moonset: string;
+} {
+  // Create date at noon in IST for the given date
+  const dateAtNoon = new Date(date);
+  dateAtNoon.setHours(12, 0, 0, 0);
   
-  // Day of year
-  const start = new Date(date.getFullYear(), 0, 0);
-  const diff = date.getTime() - start.getTime();
-  const dayOfYear = Math.floor(diff / 86400000);
+  // Get sun times using SunCalc
+  const sunTimes = SunCalc.getTimes(dateAtNoon, lat, lon);
   
-  // Moon's declination varies based on its ecliptic longitude
-  // Simplified: Moon's declination ranges from about -28.5 to +28.5 degrees
-  // It depends on the Moon's position relative to the ecliptic
-  const moonDeclination = 23.45 * Math.sin(moonLongitude * D2R) * Math.cos(5.14 * D2R);
+  // Get moon times using SunCalc
+  const moonTimes = SunCalc.getMoonTimes(dateAtNoon, lat, lon);
   
-  // Hour angle calculation for moonrise/moonset
-  const latRad = lat * D2R;
-  const decRad = moonDeclination * D2R;
-  
-  let cosHourAngle = -Math.tan(latRad) * Math.tan(decRad);
-  
-  // Clamp to valid range
-  if (cosHourAngle > 1) cosHourAngle = 1;
-  if (cosHourAngle < -1) cosHourAngle = -1;
-  
-  const hourAngle = Math.acos(cosHourAngle) / D2R;
-  
-  // Moon transit time varies throughout the lunar month
-  // New Moon transits at noon, Full Moon at midnight
-  // Each day the Moon transits about 50 minutes later
-  const lunarDay = (moonLongitude / 360) * 29.5; // Approximate day in lunar cycle
-  const moonTransitHour = (12 + (lunarDay * 0.83)) % 24; // 50 min = 0.83 hours per day
-  
-  // Adjust for longitude (IST timezone)
-  const lonCorrection = (lon - 82.5) / 15;
-  const adjustedTransit = moonTransitHour - lonCorrection;
-  
-  // Calculate moonrise and moonset
-  const moonDayLength = (2 * hourAngle) / 15;
-  let moonriseHour = adjustedTransit - moonDayLength / 2;
-  let moonsetHour = adjustedTransit + moonDayLength / 2;
-  
-  // Normalize to 0-24 range
-  moonriseHour = ((moonriseHour % 24) + 24) % 24;
-  moonsetHour = ((moonsetHour % 24) + 24) % 24;
-  
-  const formatTime = (time: number) => {
-    let h = Math.floor(time);
-    let m = Math.floor((time - h) * 60);
-    if (h < 0) h += 24;
-    if (h >= 24) h -= 24;
-    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  // Format time to HH:MM in IST
+  const formatTimeIST = (dateObj: Date | null | undefined): string => {
+    if (!dateObj || isNaN(dateObj.getTime())) {
+      return "--:--";
+    }
+    // Convert to IST (UTC+5:30)
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const utcTime = dateObj.getTime() + (dateObj.getTimezoneOffset() * 60 * 1000);
+    const istTime = new Date(utcTime + istOffset);
+    
+    const hours = istTime.getUTCHours();
+    const minutes = istTime.getUTCMinutes();
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
   };
   
   return {
-    moonrise: formatTime(moonriseHour),
-    moonset: formatTime(moonsetHour),
-  };
-}
-
-// Calculate approximate sunrise/sunset for a location using simplified algorithm
-function calculateSunTimes(date: Date, lat: number, lon: number): { sunrise: string; sunset: string } {
-  const D2R = Math.PI / 180;
-  
-  // Day of year
-  const start = new Date(date.getFullYear(), 0, 0);
-  const diff = date.getTime() - start.getTime();
-  const dayOfYear = Math.floor(diff / 86400000);
-  
-  // Solar declination (simplified)
-  const declination = -23.45 * Math.cos(D2R * (360 / 365) * (dayOfYear + 10));
-  
-  // Hour angle at sunrise/sunset
-  const latRad = lat * D2R;
-  const decRad = declination * D2R;
-  
-  // Calculate hour angle
-  let cosHourAngle = -Math.tan(latRad) * Math.tan(decRad);
-  
-  // Clamp to valid range
-  if (cosHourAngle > 1) cosHourAngle = 1;
-  if (cosHourAngle < -1) cosHourAngle = -1;
-  
-  const hourAngle = Math.acos(cosHourAngle) / D2R;
-  
-  // Solar noon in hours (approximate for IST)
-  // IST is UTC+5:30, and solar noon varies by longitude
-  const solarNoon = 12 - (lon - 82.5) / 15; // 82.5 is roughly center of IST zone
-  
-  // Calculate sunrise and sunset times
-  const dayLengthHours = (2 * hourAngle) / 15;
-  const sunriseHour = solarNoon - dayLengthHours / 2;
-  const sunsetHour = solarNoon + dayLengthHours / 2;
-  
-  const formatTime = (time: number) => {
-    // Ensure time is in valid range
-    let h = Math.floor(time);
-    let m = Math.floor((time - h) * 60);
-    if (h < 0) h += 24;
-    if (h >= 24) h -= 24;
-    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-  };
-  
-  return {
-    sunrise: formatTime(sunriseHour),
-    sunset: formatTime(sunsetHour),
+    sunrise: formatTimeIST(sunTimes.sunrise),
+    sunset: formatTimeIST(sunTimes.sunset),
+    moonrise: moonTimes.rise ? formatTimeIST(moonTimes.rise) : "--:--",
+    moonset: moonTimes.set ? formatTimeIST(moonTimes.set) : "--:--",
   };
 }
 
@@ -202,11 +134,11 @@ export async function POST(request: NextRequest) {
     const dateObj = new Date(date);
     const coords = getCoordinatesFromPlace(location || "Delhi");
     
-    // Calculate sunrise/sunset
-    const sunTimes = calculateSunTimes(dateObj, coords.lat, coords.lon);
+    // Calculate sunrise/sunset/moonrise/moonset using SunCalc
+    const astroTimes = calculateAstronomicalTimes(dateObj, coords.lat, coords.lon);
     
     // Calculate Rahu Kaal
-    const rahuKaal = calculateRahuKaal(dateObj, sunTimes.sunrise, sunTimes.sunset);
+    const rahuKaal = calculateRahuKaal(dateObj, astroTimes.sunrise, astroTimes.sunset);
 
     // Call the FastAPI backend for Moon position (needed for Tithi, Nakshatra)
     const backendResponse = await fetch(`${BACKEND_URL}/api/charts/calculate`, {
@@ -257,9 +189,6 @@ export async function POST(request: NextRequest) {
     // Get Nakshatra from Moon position
     const nakshatraIndex = Math.floor(moonLon / (360 / 27)) % 27;
 
-    // Calculate moonrise/moonset using Moon's longitude
-    const moonTimes = calculateMoonTimes(dateObj, coords.lat, coords.lon, moonLon);
-
     return NextResponse.json({
       date: date,
       weekday: dateObj.toLocaleDateString("en-US", { weekday: "long" }),
@@ -278,14 +207,14 @@ export async function POST(request: NextRequest) {
       karana: {
         name: KARANAS[karanaIndex],
       },
-      sunrise: sunTimes.sunrise,
-      sunset: sunTimes.sunset,
-      moonrise: moonTimes.moonrise,
-      moonset: moonTimes.moonset,
+      sunrise: astroTimes.sunrise,
+      sunset: astroTimes.sunset,
+      moonrise: astroTimes.moonrise,
+      moonset: astroTimes.moonset,
       rahu_kaal: rahuKaal,
       moon_sign: chartData.moon_sign,
       sun_sign: chartData.sun_sign,
-      calculation_method: chartData.calculation_method,
+      calculation_method: "SunCalc + Swiss Ephemeris",
     });
   } catch (error) {
     console.error("Error calculating panchang:", error);
