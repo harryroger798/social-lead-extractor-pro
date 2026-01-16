@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ArrowRight, BookOpen, Star, Clock, CheckCircle, Sun, Moon } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Kundli Birth Chart Analysis Guide - Understanding Your Janam Kundli",
@@ -123,6 +126,7 @@ const faqs = [
 ];
 
 export default function KundliAnalysisGuidePage() {
+  const { t } = useLanguage();
   return (
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

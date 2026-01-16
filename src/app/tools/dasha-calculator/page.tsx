@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -95,6 +96,7 @@ function formatDate(isoDate: string): string {
 }
 
 export default function DashaCalculatorPage() {
+  const { t } = useLanguage();
   const [birthDetails, setBirthDetails] = useState<BirthDetails>({
     name: "",
     date: "",

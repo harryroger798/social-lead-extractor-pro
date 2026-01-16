@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +15,7 @@ import {
   Award,
   Calendar,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Book Vedic Astrology Consultation - Expert Astrologers",
@@ -175,6 +178,7 @@ const faqs = [
 ];
 
 export default function ConsultationPage() {
+  const { t } = useLanguage();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

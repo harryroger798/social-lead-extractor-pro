@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -188,6 +189,7 @@ function getWeekDates() {
 }
 
 export default function WeeklyHoroscopePage() {
+  const { t } = useLanguage();
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
   const prediction = selectedSign ? weeklyPredictions[selectedSign] : null;
   const signData = selectedSign ? zodiacSigns.find(s => s.name === selectedSign) : null;

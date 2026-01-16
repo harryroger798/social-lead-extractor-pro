@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Loader2,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface Message {
   id: string;
@@ -230,6 +231,7 @@ function getAstrologyResponse(question: string): string {
 }
 
 export default function AIAstrologerPage() {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",

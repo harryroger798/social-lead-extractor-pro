@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Metadata } from "next";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -166,6 +166,7 @@ const horoscopeData: Record<string, {
 };
 
 export default function DailyHoroscopePage() {
+  const { t } = useLanguage();
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",

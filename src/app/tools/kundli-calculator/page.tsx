@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -200,6 +201,7 @@ function KundliChart({ chart }: { chart: ChartData }) {
 }
 
 export default function KundliCalculatorPage() {
+  const { t } = useLanguage();
   const [birthDetails, setBirthDetails] = useState<BirthDetails>({
     name: "",
     date: "",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -87,6 +88,7 @@ const CHART_DESCRIPTIONS: Record<string, { name: string; purpose: string }> = {
 const PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Ascendant"];
 
 export default function NavamsaChartPage() {
+  const { t } = useLanguage();
   const [birthDetails, setBirthDetails] = useState<BirthDetails>({
     name: "",
     date: "",

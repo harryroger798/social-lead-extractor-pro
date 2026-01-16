@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,6 +16,7 @@ import {
   Users,
   CheckCircle,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Our Expert Astrologers - Verified Vedic Astrology Experts",
@@ -129,6 +132,7 @@ const stats = [
 ];
 
 export default function AstrologersPage() {
+  const { t } = useLanguage();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

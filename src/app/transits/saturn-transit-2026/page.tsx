@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +12,7 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Saturn Transit 2026 - Shani Gochar Effects on All Zodiac Signs | VedicStarAstro",
@@ -155,6 +158,7 @@ const remedies = [
 ];
 
 export default function SaturnTransit2026Page() {
+  const { t } = useLanguage();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

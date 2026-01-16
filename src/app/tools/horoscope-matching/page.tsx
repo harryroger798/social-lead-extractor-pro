@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -246,6 +247,7 @@ function calculateMatch(
 }
 
 export default function HoroscopeMatchingPage() {
+  const { t } = useLanguage();
   const [brideNakshatra, setBrideNakshatra] = useState("");
   const [brideRashi, setBrideRashi] = useState("");
   const [groomNakshatra, setGroomNakshatra] = useState("");

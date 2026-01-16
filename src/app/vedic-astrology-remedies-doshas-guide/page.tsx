@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ArrowRight, Gem, Sparkles, Clock, Shield, Heart } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Vedic Astrology Remedies & Doshas Guide - Effective Solutions",
@@ -156,6 +159,7 @@ const faqs = [
 ];
 
 export default function RemediesGuidePage() {
+  const { t } = useLanguage();
   return (
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

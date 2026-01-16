@@ -1,7 +1,10 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Refund Policy - VedicStarAstro",
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function RefundPolicyPage() {
+  const { t } = useLanguage();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

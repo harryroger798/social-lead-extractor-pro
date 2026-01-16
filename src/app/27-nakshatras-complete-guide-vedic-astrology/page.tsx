@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,6 +13,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ArrowRight, Moon, Star, Clock } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "27 Nakshatras Complete Guide - Vedic Astrology Lunar Mansions",
@@ -385,6 +388,7 @@ const faqs = [
 ];
 
 export default function NakshatrasGuidePage() {
+  const { t } = useLanguage();
   return (
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

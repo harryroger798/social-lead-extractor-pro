@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,7 @@ const AUSPICIOUSNESS_COLORS: Record<string, string> = {
 };
 
 export default function MuhurtaCalculatorPage() {
+  const { t } = useLanguage();
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPlace, setSelectedPlace] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("general");

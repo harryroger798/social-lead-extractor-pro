@@ -1,5 +1,8 @@
+"use client";
+
 import { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Terms of Service - VedicStarAstro",
@@ -9,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
+  const { t } = useLanguage();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

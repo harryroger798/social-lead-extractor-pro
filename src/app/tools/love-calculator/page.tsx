@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -116,6 +117,7 @@ interface CompatibilityResult {
 }
 
 export default function LoveCalculatorPage() {
+  const { t } = useLanguage();
   const [person1Name, setPerson1Name] = useState("");
   const [person1Date, setPerson1Date] = useState("");
   const [person2Name, setPerson2Name] = useState("");
