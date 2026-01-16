@@ -13,10 +13,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const LANGUAGE_STORAGE_KEY = "vedicstarastro-language";
 
+const VALID_LANGUAGES: Language[] = ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa"];
+
 function getInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
   const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language | null;
-  if (savedLanguage && (savedLanguage === "en" || savedLanguage === "hi")) {
+  if (savedLanguage && VALID_LANGUAGES.includes(savedLanguage)) {
     return savedLanguage;
   }
   return "en";

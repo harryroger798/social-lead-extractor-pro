@@ -6,61 +6,63 @@ import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
-
-const navigation = [
-  {
-    name: "Tools",
-    href: "#",
-    children: [
-      { name: "AI Astrologer", href: "/ai-astrologer", description: "Chat with our AI for instant guidance" },
-      { name: "Free Kundli", href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
-      { name: "Nakshatra Finder", href: "/tools/nakshatra-finder", description: "Discover your lunar constellation" },
-      { name: "Horoscope Matching", href: "/tools/horoscope-matching", description: "Check marriage compatibility" },
-      { name: "Moon Sign Calculator", href: "/tools/moon-sign-calculator", description: "Find your Vedic Moon sign" },
-      { name: "Sun Sign Calculator", href: "/tools/sun-sign-calculator", description: "Discover your Sun sign" },
-      { name: "Ascendant Calculator", href: "/tools/ascendant-calculator", description: "Calculate your rising sign" },
-      { name: "Love Compatibility", href: "/tools/love-calculator", description: "Check zodiac compatibility" },
-    ],
-  },
-  {
-    name: "Panchang",
-    href: "#",
-    children: [
-      { name: "Daily Panchang", href: "/panchang", description: "Today's tithi, nakshatra & muhurat" },
-      { name: "Festival Calendar 2026", href: "/festival-calendar-2026", description: "Hindu festivals & important dates" },
-    ],
-  },
-  {
-    name: "Horoscope",
-    href: "#",
-    children: [
-      { name: "Daily Horoscope", href: "/daily-horoscope", description: "Today's predictions" },
-      { name: "Weekly Horoscope", href: "/horoscope/weekly", description: "This week's forecast" },
-      { name: "Monthly Horoscope", href: "/horoscope/monthly", description: "Monthly predictions" },
-      { name: "2026 Horoscope", href: "/horoscope/2026", description: "Yearly predictions for 2026" },
-      { name: "Saturn Transit 2026", href: "/transits/saturn-transit-2026", description: "Shani Gochar effects" },
-      { name: "Jupiter Transit 2026", href: "/transits/jupiter-transit-2026", description: "Guru Gochar predictions" },
-      { name: "Mercury Retrograde", href: "/transits/mercury-retrograde-2026", description: "Retrograde dates & survival guide" },
-      { name: "Eclipses 2026", href: "/eclipses-2026", description: "Solar & lunar eclipse guide" },
-    ],
-  },
-  {
-    name: "Doshas",
-    href: "#",
-    children: [
-      { name: "Mangal Dosh", href: "/doshas/mangal-dosh", description: "Manglik dosha guide & remedies" },
-      { name: "Kaal Sarp Dosh", href: "/doshas/kaal-sarp-dosh", description: "12 types & remedies" },
-      { name: "Sade Sati", href: "/doshas/sade-sati", description: "Saturn's 7.5 year transit" },
-      { name: "Pitra Dosh", href: "/doshas/pitra-dosh", description: "Ancestral karma & remedies" },
-      { name: "Mangal Dosh Calculator", href: "/tools/mangal-dosh-calculator", description: "Check Manglik status" },
-      { name: "Sade Sati Calculator", href: "/tools/sade-sati-calculator", description: "Check Sade Sati phase" },
-    ],
-  },
-  { name: "Consultation", href: "/consultation" },
-  { name: "About", href: "/about" },
-];
+import { useLanguage } from "@/lib/i18n";
 
 export function Header() {
+  const { t } = useLanguage();
+  
+  const navigation = [
+    {
+      name: t.nav.tools,
+      href: "#",
+      children: [
+        { name: "AI Astrologer", href: "/ai-astrologer", description: "Chat with our AI for instant guidance" },
+        { name: t.nav.freeKundli, href: "/tools/kundli-calculator", description: "Generate your birth chart instantly" },
+        { name: "Nakshatra Finder", href: "/tools/nakshatra-finder", description: "Discover your lunar constellation" },
+        { name: "Horoscope Matching", href: "/tools/horoscope-matching", description: "Check marriage compatibility" },
+        { name: "Moon Sign Calculator", href: "/tools/moon-sign-calculator", description: "Find your Vedic Moon sign" },
+        { name: "Sun Sign Calculator", href: "/tools/sun-sign-calculator", description: "Discover your Sun sign" },
+        { name: "Ascendant Calculator", href: "/tools/ascendant-calculator", description: "Calculate your rising sign" },
+        { name: "Love Compatibility", href: "/tools/love-calculator", description: "Check zodiac compatibility" },
+      ],
+    },
+    {
+      name: t.nav.panchang,
+      href: "#",
+      children: [
+        { name: "Daily Panchang", href: "/panchang", description: "Today's tithi, nakshatra & muhurat" },
+        { name: "Festival Calendar 2026", href: "/festival-calendar-2026", description: "Hindu festivals & important dates" },
+      ],
+    },
+    {
+      name: t.nav.horoscope,
+      href: "#",
+      children: [
+        { name: "Daily Horoscope", href: "/daily-horoscope", description: "Today's predictions" },
+        { name: "Weekly Horoscope", href: "/horoscope/weekly", description: "This week's forecast" },
+        { name: "Monthly Horoscope", href: "/horoscope/monthly", description: "Monthly predictions" },
+        { name: "2026 Horoscope", href: "/horoscope/2026", description: "Yearly predictions for 2026" },
+        { name: "Saturn Transit 2026", href: "/transits/saturn-transit-2026", description: "Shani Gochar effects" },
+        { name: "Jupiter Transit 2026", href: "/transits/jupiter-transit-2026", description: "Guru Gochar predictions" },
+        { name: "Mercury Retrograde", href: "/transits/mercury-retrograde-2026", description: "Retrograde dates & survival guide" },
+        { name: "Eclipses 2026", href: "/eclipses-2026", description: "Solar & lunar eclipse guide" },
+      ],
+    },
+    {
+      name: t.nav.doshas,
+      href: "#",
+      children: [
+        { name: "Mangal Dosh", href: "/doshas/mangal-dosh", description: "Manglik dosha guide & remedies" },
+        { name: "Kaal Sarp Dosh", href: "/doshas/kaal-sarp-dosh", description: "12 types & remedies" },
+        { name: "Sade Sati", href: "/doshas/sade-sati", description: "Saturn's 7.5 year transit" },
+        { name: "Pitra Dosh", href: "/doshas/pitra-dosh", description: "Ancestral karma & remedies" },
+        { name: "Mangal Dosh Calculator", href: "/tools/mangal-dosh-calculator", description: "Check Manglik status" },
+        { name: "Sade Sati Calculator", href: "/tools/sade-sati-calculator", description: "Check Sade Sati phase" },
+      ],
+    },
+    { name: t.nav.consultation, href: "/consultation" },
+    { name: t.nav.about, href: "/about" },
+  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -127,13 +129,13 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex lg:items-center lg:gap-x-4">
-            <LanguageSwitcher />
-            <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
-              Free Kundli
-            </Button>
-            <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
-              Book Consultation
-            </Button>
+                        <LanguageSwitcher />
+                        <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
+                          {t.nav.freeKundli}
+                        </Button>
+                        <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
+                          {t.nav.bookConsultation}
+                        </Button>
           </div>
 
           <div className="flex lg:hidden">
@@ -183,15 +185,15 @@ export function Header() {
                 </div>
               ))}
               <div className="pt-4 px-3 space-y-2">
-                <div className="flex justify-center pb-2">
-                  <LanguageSwitcher />
-                </div>
-                <Button variant="outline" className="w-full border-amber-500 text-amber-600">
-                  Free Kundli
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
-                  Book Consultation
-                </Button>
+                                <div className="flex justify-center pb-2">
+                                  <LanguageSwitcher />
+                                </div>
+                                <Button variant="outline" className="w-full border-amber-500 text-amber-600">
+                                  {t.nav.freeKundli}
+                                </Button>
+                                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                                  {t.nav.bookConsultation}
+                                </Button>
               </div>
             </div>
           </div>
