@@ -12,180 +12,180 @@ import {
   Clock,
 } from "lucide-react";
 
-const phases = [
-  {
-    name: "Rising Phase (First Phase)",
-    duration: "2.5 Years",
-    position: "Saturn in 12th from Moon",
-    description: "Saturn transits the 12th house from your Moon sign. This phase affects expenses, sleep, foreign connections, and spiritual matters.",
-    effects: [
-      "Increased expenses and financial strain",
-      "Sleep disturbances and health issues",
-      "Mental stress and anxiety",
-      "Possible foreign travel or relocation",
-      "Spiritual awakening begins",
-    ],
-    severity: "Moderate",
-  },
-  {
-    name: "Peak Phase (Second Phase)",
-    duration: "2.5 Years",
-    position: "Saturn over Moon Sign",
-    description: "Saturn transits directly over your Moon sign. This is the most intense phase affecting mind, emotions, and overall life circumstances.",
-    effects: [
-      "Emotional turbulence and mental pressure",
-      "Career challenges and obstacles",
-      "Health issues, especially mental health",
-      "Relationship strain and family issues",
-      "Major life transformations",
-    ],
-    severity: "High",
-  },
-  {
-    name: "Setting Phase (Third Phase)",
-    duration: "2.5 Years",
-    position: "Saturn in 2nd from Moon",
-    description: "Saturn transits the 2nd house from your Moon sign. This phase affects wealth, family, speech, and accumulated resources.",
-    effects: [
-      "Financial fluctuations and losses",
-      "Family disputes and tensions",
-      "Speech-related issues",
-      "Eye and face-related health concerns",
-      "Gradual improvement towards end",
-    ],
-    severity: "Moderate",
-  },
-];
-
-const signEffects = [
-  {
-    sign: "Aries",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2027-2034",
-    advice: "Prepare for upcoming Sade Sati by strengthening Saturn in your chart.",
-  },
-  {
-    sign: "Taurus",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2029-2037",
-    advice: "Good period for growth. Use this time to build strong foundations.",
-  },
-  {
-    sign: "Gemini",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2032-2039",
-    advice: "Favorable period. Focus on career and relationship building.",
-  },
-  {
-    sign: "Cancer",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2034-2042",
-    advice: "Excellent period for personal growth and achievements.",
-  },
-  {
-    sign: "Leo",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2037-2044",
-    advice: "Use this favorable time for major life decisions.",
-  },
-  {
-    sign: "Virgo",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2039-2047",
-    advice: "Good period for health improvements and service.",
-  },
-  {
-    sign: "Libra",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2042-2049",
-    advice: "Focus on relationships and partnerships during this favorable time.",
-  },
-  {
-    sign: "Scorpio",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2044-2052",
-    advice: "Excellent period for transformation and research.",
-  },
-  {
-    sign: "Sagittarius",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2047-2054",
-    advice: "Good time for higher education and spiritual pursuits.",
-  },
-  {
-    sign: "Capricorn",
-    currentStatus: "Not in Sade Sati",
-    nextSadeSati: "2020-2027 (ending)",
-    advice: "Sade Sati ending soon. Relief and rewards coming.",
-  },
-  {
-    sign: "Aquarius",
-    currentStatus: "Rising Phase",
-    nextSadeSati: "Current (2023-2030)",
-    advice: "First phase active. Focus on spiritual growth and managing expenses.",
-  },
-  {
-    sign: "Pisces",
-    currentStatus: "Peak Phase",
-    nextSadeSati: "Current (2025-2032)",
-    advice: "Most intense phase. Practice patience and follow remedies diligently.",
-  },
-];
-
-const remedies = {
-  daily: [
-    "Chant 'Om Sham Shanicharaya Namaha' 108 times daily",
-    "Light a sesame oil lamp on Saturdays",
-    "Recite Hanuman Chalisa, especially on Saturdays",
-    "Meditate and practice patience",
-    "Wake up before sunrise on Saturdays",
-  ],
-  weekly: [
-    "Fast on Saturdays (eat only once after sunset)",
-    "Visit Shani temple on Saturdays",
-    "Donate black items (sesame, oil, cloth) on Saturdays",
-    "Feed crows with rice mixed in sesame oil",
-    "Serve the elderly and disabled on Saturdays",
-  ],
-  special: [
-    "Perform Shani Shanti Puja",
-    "Conduct Til (sesame) Havan",
-    "Visit Shani Shingnapur temple",
-    "Wear Blue Sapphire only after proper consultation",
-    "Wear iron ring made from horseshoe on middle finger",
-    "Donate to organizations helping the disabled",
-  ],
-  lifestyle: [
-    "Practice honesty and ethical conduct",
-    "Respect elders, servants, and workers",
-    "Avoid alcohol and non-vegetarian food on Saturdays",
-    "Maintain discipline and punctuality",
-    "Help the poor and underprivileged",
-    "Avoid starting new ventures on Saturdays",
-  ],
-};
-
-const faqs = [
-  {
-    question: "Does everyone experience Sade Sati the same way?",
-    answer: "No, the effects vary based on Saturn's position in your birth chart, its strength, aspects from other planets, and your overall karma. Some people experience mild effects while others face significant challenges.",
-  },
-  {
-    question: "How many times does Sade Sati occur in a lifetime?",
-    answer: "Sade Sati occurs 2-3 times in an average lifetime, as Saturn takes approximately 29.5 years to complete one cycle through all 12 zodiac signs.",
-  },
-  {
-    question: "Is Sade Sati always negative?",
-    answer: "Not necessarily. While it brings challenges, it also offers opportunities for growth, maturity, and spiritual development. Many people achieve great success during Sade Sati through hard work and perseverance.",
-  },
-  {
-    question: "Can remedies completely remove Sade Sati effects?",
-    answer: "Remedies help reduce the intensity of challenges and provide strength to face them. They don't completely remove effects but make the journey smoother and more manageable.",
-  },
-];
-
 export default function SadeSatiPage() {
   const { t } = useLanguage();
+
+  const phases = [
+    {
+      name: t('doshas.sadeSati.phases.rising.name', 'Rising Phase (First Phase)'),
+      duration: t('doshas.sadeSati.phases.rising.duration', '2.5 Years'),
+      position: t('doshas.sadeSati.phases.rising.position', 'Saturn in 12th from Moon'),
+      description: t('doshas.sadeSati.phases.rising.description', 'Saturn transits the 12th house from your Moon sign. This phase affects expenses, sleep, foreign connections, and spiritual matters.'),
+      effects: [
+        t('doshas.sadeSati.phases.rising.effect1', 'Increased expenses and financial strain'),
+        t('doshas.sadeSati.phases.rising.effect2', 'Sleep disturbances and health issues'),
+        t('doshas.sadeSati.phases.rising.effect3', 'Mental stress and anxiety'),
+        t('doshas.sadeSati.phases.rising.effect4', 'Possible foreign travel or relocation'),
+        t('doshas.sadeSati.phases.rising.effect5', 'Spiritual awakening begins'),
+      ],
+      severity: t('doshas.severity.moderate', 'Moderate'),
+    },
+    {
+      name: t('doshas.sadeSati.phases.peak.name', 'Peak Phase (Second Phase)'),
+      duration: t('doshas.sadeSati.phases.peak.duration', '2.5 Years'),
+      position: t('doshas.sadeSati.phases.peak.position', 'Saturn over Moon Sign'),
+      description: t('doshas.sadeSati.phases.peak.description', 'Saturn transits directly over your Moon sign. This is the most intense phase affecting mind, emotions, and overall life circumstances.'),
+      effects: [
+        t('doshas.sadeSati.phases.peak.effect1', 'Emotional turbulence and mental pressure'),
+        t('doshas.sadeSati.phases.peak.effect2', 'Career challenges and obstacles'),
+        t('doshas.sadeSati.phases.peak.effect3', 'Health issues, especially mental health'),
+        t('doshas.sadeSati.phases.peak.effect4', 'Relationship strain and family issues'),
+        t('doshas.sadeSati.phases.peak.effect5', 'Major life transformations'),
+      ],
+      severity: t('doshas.severity.high', 'High'),
+    },
+    {
+      name: t('doshas.sadeSati.phases.setting.name', 'Setting Phase (Third Phase)'),
+      duration: t('doshas.sadeSati.phases.setting.duration', '2.5 Years'),
+      position: t('doshas.sadeSati.phases.setting.position', 'Saturn in 2nd from Moon'),
+      description: t('doshas.sadeSati.phases.setting.description', 'Saturn transits the 2nd house from your Moon sign. This phase affects wealth, family, speech, and accumulated resources.'),
+      effects: [
+        t('doshas.sadeSati.phases.setting.effect1', 'Financial fluctuations and losses'),
+        t('doshas.sadeSati.phases.setting.effect2', 'Family disputes and tensions'),
+        t('doshas.sadeSati.phases.setting.effect3', 'Speech-related issues'),
+        t('doshas.sadeSati.phases.setting.effect4', 'Eye and face-related health concerns'),
+        t('doshas.sadeSati.phases.setting.effect5', 'Gradual improvement towards end'),
+      ],
+      severity: t('doshas.severity.moderate', 'Moderate'),
+    },
+  ];
+
+  const signEffects = [
+    {
+      sign: t('horoscope.signs.aries', 'Aries'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2027-2034",
+      advice: t('doshas.sadeSati.signs.aries.advice', 'Prepare for upcoming Sade Sati by strengthening Saturn in your chart.'),
+    },
+    {
+      sign: t('horoscope.signs.taurus', 'Taurus'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2029-2037",
+      advice: t('doshas.sadeSati.signs.taurus.advice', 'Good period for growth. Use this time to build strong foundations.'),
+    },
+    {
+      sign: t('horoscope.signs.gemini', 'Gemini'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2032-2039",
+      advice: t('doshas.sadeSati.signs.gemini.advice', 'Favorable period. Focus on career and relationship building.'),
+    },
+    {
+      sign: t('horoscope.signs.cancer', 'Cancer'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2034-2042",
+      advice: t('doshas.sadeSati.signs.cancer.advice', 'Excellent period for personal growth and achievements.'),
+    },
+    {
+      sign: t('horoscope.signs.leo', 'Leo'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2037-2044",
+      advice: t('doshas.sadeSati.signs.leo.advice', 'Use this favorable time for major life decisions.'),
+    },
+    {
+      sign: t('horoscope.signs.virgo', 'Virgo'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2039-2047",
+      advice: t('doshas.sadeSati.signs.virgo.advice', 'Good period for health improvements and service.'),
+    },
+    {
+      sign: t('horoscope.signs.libra', 'Libra'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2042-2049",
+      advice: t('doshas.sadeSati.signs.libra.advice', 'Focus on relationships and partnerships during this favorable time.'),
+    },
+    {
+      sign: t('horoscope.signs.scorpio', 'Scorpio'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2044-2052",
+      advice: t('doshas.sadeSati.signs.scorpio.advice', 'Excellent period for transformation and research.'),
+    },
+    {
+      sign: t('horoscope.signs.sagittarius', 'Sagittarius'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2047-2054",
+      advice: t('doshas.sadeSati.signs.sagittarius.advice', 'Good time for higher education and spiritual pursuits.'),
+    },
+    {
+      sign: t('horoscope.signs.capricorn', 'Capricorn'),
+      currentStatus: t('doshas.sadeSati.status.notInSadeSati', 'Not in Sade Sati'),
+      nextSadeSati: "2020-2027 (ending)",
+      advice: t('doshas.sadeSati.signs.capricorn.advice', 'Sade Sati ending soon. Relief and rewards coming.'),
+    },
+    {
+      sign: t('horoscope.signs.aquarius', 'Aquarius'),
+      currentStatus: t('doshas.sadeSati.status.risingPhase', 'Rising Phase'),
+      nextSadeSati: "Current (2023-2030)",
+      advice: t('doshas.sadeSati.signs.aquarius.advice', 'First phase active. Focus on spiritual growth and managing expenses.'),
+    },
+    {
+      sign: t('horoscope.signs.pisces', 'Pisces'),
+      currentStatus: t('doshas.sadeSati.status.peakPhase', 'Peak Phase'),
+      nextSadeSati: "Current (2025-2032)",
+      advice: t('doshas.sadeSati.signs.pisces.advice', 'Most intense phase. Practice patience and follow remedies diligently.'),
+    },
+  ];
+
+  const remedies = {
+    daily: [
+      t('doshas.sadeSati.remedies.daily.1', "Chant 'Om Sham Shanicharaya Namaha' 108 times daily"),
+      t('doshas.sadeSati.remedies.daily.2', 'Light a sesame oil lamp on Saturdays'),
+      t('doshas.sadeSati.remedies.daily.3', 'Recite Hanuman Chalisa, especially on Saturdays'),
+      t('doshas.sadeSati.remedies.daily.4', 'Meditate and practice patience'),
+      t('doshas.sadeSati.remedies.daily.5', 'Wake up before sunrise on Saturdays'),
+    ],
+    weekly: [
+      t('doshas.sadeSati.remedies.weekly.1', 'Fast on Saturdays (eat only once after sunset)'),
+      t('doshas.sadeSati.remedies.weekly.2', 'Visit Shani temple on Saturdays'),
+      t('doshas.sadeSati.remedies.weekly.3', 'Donate black items (sesame, oil, cloth) on Saturdays'),
+      t('doshas.sadeSati.remedies.weekly.4', 'Feed crows with rice mixed in sesame oil'),
+      t('doshas.sadeSati.remedies.weekly.5', 'Serve the elderly and disabled on Saturdays'),
+    ],
+    special: [
+      t('doshas.sadeSati.remedies.special.1', 'Perform Shani Shanti Puja'),
+      t('doshas.sadeSati.remedies.special.2', 'Conduct Til (sesame) Havan'),
+      t('doshas.sadeSati.remedies.special.3', 'Visit Shani Shingnapur temple'),
+      t('doshas.sadeSati.remedies.special.4', 'Wear Blue Sapphire only after proper consultation'),
+      t('doshas.sadeSati.remedies.special.5', 'Wear iron ring made from horseshoe on middle finger'),
+      t('doshas.sadeSati.remedies.special.6', 'Donate to organizations helping the disabled'),
+    ],
+    lifestyle: [
+      t('doshas.sadeSati.remedies.lifestyle.1', 'Practice honesty and ethical conduct'),
+      t('doshas.sadeSati.remedies.lifestyle.2', 'Respect elders, servants, and workers'),
+      t('doshas.sadeSati.remedies.lifestyle.3', 'Avoid alcohol and non-vegetarian food on Saturdays'),
+      t('doshas.sadeSati.remedies.lifestyle.4', 'Maintain discipline and punctuality'),
+      t('doshas.sadeSati.remedies.lifestyle.5', 'Help the poor and underprivileged'),
+      t('doshas.sadeSati.remedies.lifestyle.6', 'Avoid starting new ventures on Saturdays'),
+    ],
+  };
+
+  const faqs = [
+    {
+      question: t('doshas.sadeSati.faq.1.question', 'Does everyone experience Sade Sati the same way?'),
+      answer: t('doshas.sadeSati.faq.1.answer', "No, the effects vary based on Saturn's position in your birth chart, its strength, aspects from other planets, and your overall karma. Some people experience mild effects while others face significant challenges."),
+    },
+    {
+      question: t('doshas.sadeSati.faq.2.question', 'How many times does Sade Sati occur in a lifetime?'),
+      answer: t('doshas.sadeSati.faq.2.answer', 'Sade Sati occurs 2-3 times in an average lifetime, as Saturn takes approximately 29.5 years to complete one cycle through all 12 zodiac signs.'),
+    },
+    {
+      question: t('doshas.sadeSati.faq.3.question', 'Is Sade Sati always negative?'),
+      answer: t('doshas.sadeSati.faq.3.answer', 'Not necessarily. While it brings challenges, it also offers opportunities for growth, maturity, and spiritual development. Many people achieve great success during Sade Sati through hard work and perseverance.'),
+    },
+    {
+      question: t('doshas.sadeSati.faq.4.question', 'Can remedies completely remove Sade Sati effects?'),
+      answer: t('doshas.sadeSati.faq.4.answer', "Remedies help reduce the intensity of challenges and provide strength to face them. They don't completely remove effects but make the journey smoother and more manageable."),
+    },
+  ];
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -207,25 +207,17 @@ export default function SadeSatiPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-blue max-w-none">
-              <p className="text-gray-700 mb-4">
-                Sade Sati (साढ़े साती) literally means &quot;seven and a half&quot; in Hindi, 
-                referring to the approximately 7.5 years Saturn takes to transit through 
-                three zodiac signs - the sign before your Moon sign, your Moon sign itself, 
-                and the sign after your Moon sign.
-              </p>
-              <p className="text-gray-700 mb-4">
-                Since Saturn spends about 2.5 years in each sign, the total transit period 
-                is 7.5 years. This period is considered significant in Vedic astrology as 
-                Saturn, the planet of karma, discipline, and hard work, directly influences 
-                your mind (represented by the Moon).
-              </p>
-              <p className="text-gray-700">
-                While Sade Sati is often feared, it&apos;s actually a period of karmic 
-                balancing and spiritual growth. Those who embrace its lessons with patience 
-                and discipline often emerge stronger and wiser.
-              </p>
-            </div>
+                        <div className="prose prose-blue max-w-none">
+                          <p className="text-gray-700 mb-4">
+                            {t('doshas.sadeSati.description1', 'Sade Sati (साढ़े साती) literally means "seven and a half" in Hindi, referring to the approximately 7.5 years Saturn takes to transit through three zodiac signs - the sign before your Moon sign, your Moon sign itself, and the sign after your Moon sign.')}
+                          </p>
+                          <p className="text-gray-700 mb-4">
+                            {t('doshas.sadeSati.description2', 'Since Saturn spends about 2.5 years in each sign, the total transit period is 7.5 years. This period is considered significant in Vedic astrology as Saturn, the planet of karma, discipline, and hard work, directly influences your mind (represented by the Moon).')}
+                          </p>
+                          <p className="text-gray-700">
+                            {t('doshas.sadeSati.description3', "While Sade Sati is often feared, it's actually a period of karmic balancing and spiritual growth. Those who embrace its lessons with patience and discipline often emerge stronger and wiser.")}
+                          </p>
+                        </div>
           </CardContent>
         </Card>
 
@@ -241,9 +233,9 @@ export default function SadeSatiPage() {
             >
               <CardHeader className={phase.severity === "High" ? "bg-red-50" : "bg-amber-50"}>
                 <div className="flex items-center justify-between">
-                  <Badge className={phase.severity === "High" ? "bg-red-500" : "bg-amber-500"}>
-                    Phase {index + 1}
-                  </Badge>
+                                    <Badge className={phase.severity === "High" ? "bg-red-500" : "bg-amber-500"}>
+                                      {t('doshas.sadeSati.phase', 'Phase')} {index + 1}
+                                    </Badge>
                   <span className="text-sm font-medium text-gray-600">{phase.duration}</span>
                 </div>
                 <CardTitle className="text-lg mt-2">{phase.name}</CardTitle>
@@ -251,7 +243,7 @@ export default function SadeSatiPage() {
               </CardHeader>
               <CardContent className="pt-4">
                 <p className="text-sm text-gray-700 mb-4">{phase.description}</p>
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm">Key Effects:</h4>
+                <h4 className="font-semibold text-gray-900 mb-2 text-sm">{t('doshas.sadeSati.keyEffects', 'Key Effects:')}</h4>
                 <ul className="space-y-1">
                   {phase.effects.map((effect, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs">
@@ -419,41 +411,32 @@ export default function SadeSatiPage() {
                 {t('dosha.sadeSati.consultDesc', 'Get personalized Sade Sati guidance.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/consultation">
-                  Book Consultation <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
+                                <Link href="/consultation">
+                                  {t('consultation.bookConsultation', 'Book Consultation')} <ArrowRight className="w-4 h-4 ml-2" />
+                                </Link>
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="border-blue-200 bg-blue-50 mt-12">
-          <CardContent className="pt-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              The Spiritual Purpose of Sade Sati
-            </h2>
-            <div className="prose prose-blue max-w-none">
-              <p className="text-gray-700 mb-4">
-                Saturn is known as the great teacher in Vedic astrology. Sade Sati is not 
-                meant to punish but to teach valuable life lessons. It strips away what 
-                is not serving your highest good and helps you build a more authentic, 
-                disciplined life.
-              </p>
-              <p className="text-gray-700 mb-4">
-                During this period, you may be called to let go of attachments, face your 
-                fears, and develop inner strength. The challenges you face are opportunities 
-                for growth. Many people report that their greatest achievements and spiritual 
-                breakthroughs occurred during Sade Sati.
-              </p>
-              <p className="text-gray-700">
-                Approach this period with humility, patience, and a willingness to learn. 
-                Follow the remedies with faith, maintain ethical conduct, and trust that 
-                this too shall pass. The rewards of navigating Sade Sati successfully are 
-                lasting wisdom, inner strength, and karmic purification.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                <Card className="border-blue-200 bg-blue-50 mt-12">
+                  <CardContent className="pt-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                      {t('doshas.sadeSati.spiritualPurpose.title', 'The Spiritual Purpose of Sade Sati')}
+                    </h2>
+                    <div className="prose prose-blue max-w-none">
+                      <p className="text-gray-700 mb-4">
+                        {t('doshas.sadeSati.spiritualPurpose.para1', 'Saturn is known as the great teacher in Vedic astrology. Sade Sati is not meant to punish but to teach valuable life lessons. It strips away what is not serving your highest good and helps you build a more authentic, disciplined life.')}
+                      </p>
+                      <p className="text-gray-700 mb-4">
+                        {t('doshas.sadeSati.spiritualPurpose.para2', 'During this period, you may be called to let go of attachments, face your fears, and develop inner strength. The challenges you face are opportunities for growth. Many people report that their greatest achievements and spiritual breakthroughs occurred during Sade Sati.')}
+                      </p>
+                      <p className="text-gray-700">
+                        {t('doshas.sadeSati.spiritualPurpose.para3', 'Approach this period with humility, patience, and a willingness to learn. Follow the remedies with faith, maintain ethical conduct, and trust that this too shall pass. The rewards of navigating Sade Sati successfully are lasting wisdom, inner strength, and karmic purification.')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
       </div>
 
       <script
