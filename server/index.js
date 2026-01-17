@@ -10,7 +10,7 @@ const fs = require('fs');
 
 const { initializeDatabase, getDatabase, getSetting } = require('./database/db');
 const { errorHandler, notFoundHandler, logger } = require('./middleware/errorHandler');
-const { morganMiddleware } = require('./middleware/logging');
+const { requestLogger } = require('./middleware/logging');
 
 const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
@@ -57,7 +57,7 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.use(morganMiddleware);
+app.use(requestLogger);
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
