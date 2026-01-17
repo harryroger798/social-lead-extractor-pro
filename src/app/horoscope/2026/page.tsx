@@ -14,148 +14,25 @@ import {
   Wallet,
 } from "lucide-react";
 
-const zodiacSigns = [
-  {
-    name: "Aries",
-    hindi: "मेष",
-    symbol: "♈",
-    dates: "Mar 21 - Apr 19",
-    element: "Fire",
-    overview: "2026 brings transformative energy for Aries. Jupiter's influence in the first half promises career growth, while Saturn encourages financial discipline. Love life sees positive developments after mid-year.",
-    rating: { overall: 4, love: 4, career: 5, finance: 3 },
-    highlights: ["Career breakthrough in Q2", "New relationship opportunities", "Property investments favorable"],
-  },
-  {
-    name: "Taurus",
-    hindi: "वृषभ",
-    symbol: "♉",
-    dates: "Apr 20 - May 20",
-    element: "Earth",
-    overview: "A year of stability and growth for Taurus. Financial gains are indicated, especially through investments. Relationships deepen, and health requires attention in the latter half.",
-    rating: { overall: 4, love: 5, career: 4, finance: 4 },
-    highlights: ["Strong financial gains", "Marriage prospects for singles", "Health focus needed in Q4"],
-  },
-  {
-    name: "Gemini",
-    hindi: "मिथुन",
-    symbol: "♊",
-    dates: "May 21 - Jun 20",
-    element: "Air",
-    overview: "Communication and networking bring success in 2026. Career changes are possible, and travel opportunities arise. Love life may face some challenges requiring patience.",
-    rating: { overall: 4, love: 3, career: 4, finance: 4 },
-    highlights: ["Career advancement through networking", "International travel likely", "Communication skills shine"],
-  },
-  {
-    name: "Cancer",
-    hindi: "कर्क",
-    symbol: "♋",
-    dates: "Jun 21 - Jul 22",
-    element: "Water",
-    overview: "Home and family take center stage in 2026. Property matters resolve favorably. Career sees steady progress, and emotional well-being improves significantly.",
-    rating: { overall: 4, love: 4, career: 4, finance: 4 },
-    highlights: ["Property acquisition favorable", "Family harmony improves", "Emotional healing journey"],
-  },
-  {
-    name: "Leo",
-    hindi: "सिंह",
-    symbol: "♌",
-    dates: "Jul 23 - Aug 22",
-    element: "Fire",
-    overview: "Creative pursuits flourish in 2026. Recognition and fame are indicated for Leos. Romance blooms, and children bring joy. Financial management needs attention.",
-    rating: { overall: 5, love: 5, career: 5, finance: 3 },
-    highlights: ["Creative success and recognition", "Romantic fulfillment", "Children bring happiness"],
-  },
-  {
-    name: "Virgo",
-    hindi: "कन्या",
-    symbol: "♍",
-    dates: "Aug 23 - Sep 22",
-    element: "Earth",
-    overview: "Health and service themes dominate 2026. Career improvements through skill development. Relationships require effort, but rewards come to those who persist.",
-    rating: { overall: 4, love: 3, career: 4, finance: 4 },
-    highlights: ["Health improvements possible", "Skill development pays off", "Service-oriented success"],
-  },
-  {
-    name: "Libra",
-    hindi: "तुला",
-    symbol: "♎",
-    dates: "Sep 23 - Oct 22",
-    element: "Air",
-    overview: "Partnerships and relationships are highlighted in 2026. Business partnerships prove beneficial. Marriage is favored for singles. Legal matters resolve positively.",
-    rating: { overall: 4, love: 5, career: 4, finance: 4 },
-    highlights: ["Marriage prospects excellent", "Business partnerships thrive", "Legal victories possible"],
-  },
-  {
-    name: "Scorpio",
-    hindi: "वृश्चिक",
-    symbol: "♏",
-    dates: "Oct 23 - Nov 21",
-    element: "Water",
-    overview: "Transformation and rebirth define 2026 for Scorpio. Hidden matters come to light. Financial gains through inheritance or insurance. Health requires vigilance.",
-    rating: { overall: 4, love: 4, career: 4, finance: 5 },
-    highlights: ["Unexpected financial gains", "Deep transformation period", "Research and investigation success"],
-  },
-  {
-    name: "Sagittarius",
-    hindi: "धनु",
-    symbol: "♐",
-    dates: "Nov 22 - Dec 21",
-    element: "Fire",
-    overview: "Higher learning and travel expand horizons in 2026. Spiritual growth is emphasized. Father figures play important roles. Publishing and teaching opportunities arise.",
-    rating: { overall: 4, love: 4, career: 4, finance: 4 },
-    highlights: ["Educational achievements", "Spiritual awakening", "Long-distance travel favorable"],
-  },
-  {
-    name: "Capricorn",
-    hindi: "मकर",
-    symbol: "♑",
-    dates: "Dec 22 - Jan 19",
-    element: "Earth",
-    overview: "Career reaches new heights in 2026. Professional recognition and promotions are likely. Work-life balance needs attention. Authority figures support your growth.",
-    rating: { overall: 5, love: 3, career: 5, finance: 5 },
-    highlights: ["Major career advancement", "Professional recognition", "Leadership opportunities"],
-  },
-  {
-    name: "Aquarius",
-    hindi: "कुंभ",
-    symbol: "♒",
-    dates: "Jan 20 - Feb 18",
-    element: "Air",
-    overview: "Social connections and friendships bring opportunities in 2026. Group activities prove beneficial. Hopes and wishes manifest. Technology-related ventures succeed.",
-    rating: { overall: 4, love: 4, career: 4, finance: 4 },
-    highlights: ["Social network expansion", "Dreams becoming reality", "Technology ventures succeed"],
-  },
-  {
-    name: "Pisces",
-    hindi: "मीन",
-    symbol: "♓",
-    dates: "Feb 19 - Mar 20",
-    element: "Water",
-    overview: "Spiritual and creative pursuits dominate 2026. Intuition guides important decisions. Some isolation may be needed for growth. Hidden enemies may surface.",
-    rating: { overall: 4, love: 4, career: 3, finance: 4 },
-    highlights: ["Spiritual enlightenment", "Creative inspiration flows", "Intuitive guidance strong"],
-  },
+const zodiacSignsData = [
+  { key: "aries", symbol: "♈", dates: "Mar 21 - Apr 19", element: "Fire", rating: { overall: 4, love: 4, career: 5, finance: 3 } },
+  { key: "taurus", symbol: "♉", dates: "Apr 20 - May 20", element: "Earth", rating: { overall: 4, love: 5, career: 4, finance: 4 } },
+  { key: "gemini", symbol: "♊", dates: "May 21 - Jun 20", element: "Air", rating: { overall: 4, love: 3, career: 4, finance: 4 } },
+  { key: "cancer", symbol: "♋", dates: "Jun 21 - Jul 22", element: "Water", rating: { overall: 4, love: 4, career: 4, finance: 4 } },
+  { key: "leo", symbol: "♌", dates: "Jul 23 - Aug 22", element: "Fire", rating: { overall: 5, love: 5, career: 5, finance: 3 } },
+  { key: "virgo", symbol: "♍", dates: "Aug 23 - Sep 22", element: "Earth", rating: { overall: 4, love: 3, career: 4, finance: 4 } },
+  { key: "libra", symbol: "♎", dates: "Sep 23 - Oct 22", element: "Air", rating: { overall: 4, love: 5, career: 4, finance: 4 } },
+  { key: "scorpio", symbol: "♏", dates: "Oct 23 - Nov 21", element: "Water", rating: { overall: 4, love: 4, career: 4, finance: 5 } },
+  { key: "sagittarius", symbol: "♐", dates: "Nov 22 - Dec 21", element: "Fire", rating: { overall: 4, love: 4, career: 4, finance: 4 } },
+  { key: "capricorn", symbol: "♑", dates: "Dec 22 - Jan 19", element: "Earth", rating: { overall: 5, love: 3, career: 5, finance: 5 } },
+  { key: "aquarius", symbol: "♒", dates: "Jan 20 - Feb 18", element: "Air", rating: { overall: 4, love: 4, career: 4, finance: 4 } },
+  { key: "pisces", symbol: "♓", dates: "Feb 19 - Mar 20", element: "Water", rating: { overall: 4, love: 4, career: 3, finance: 4 } },
 ];
 
-const majorTransits2026 = [
-  {
-    planet: "Saturn",
-    event: "Saturn in Pisces",
-    period: "Throughout 2026",
-    effect: "Discipline in spiritual matters, karmic lessons in compassion",
-  },
-  {
-    planet: "Jupiter",
-    event: "Jupiter enters Cancer",
-    period: "Mid-2026",
-    effect: "Expansion in home, family, and emotional security",
-  },
-  {
-    planet: "Rahu-Ketu",
-    event: "Rahu in Pisces, Ketu in Virgo",
-    period: "Throughout 2026",
-    effect: "Focus on spirituality vs. practical service",
-  },
+const majorTransitsData = [
+  { key: "saturn" },
+  { key: "jupiter" },
+  { key: "rahuKetu" },
 ];
 
 function RatingStars({ rating }: { rating: number }) {
@@ -195,12 +72,12 @@ export default function Horoscope2026Page() {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
-              {majorTransits2026.map((transit, index) => (
+              {majorTransitsData.map((transit, index) => (
                 <div key={index} className="bg-amber-50 rounded-lg p-4">
-                  <Badge className="bg-amber-500 mb-2">{transit.planet}</Badge>
-                  <h3 className="font-semibold text-gray-900">{transit.event}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{transit.period}</p>
-                  <p className="text-sm text-amber-700">{transit.effect}</p>
+                  <Badge className="bg-amber-500 mb-2">{t(`horoscope.2026.transits.${transit.key}.planet`, transit.key)}</Badge>
+                  <h3 className="font-semibold text-gray-900">{t(`horoscope.2026.transits.${transit.key}.event`, '')}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{t(`horoscope.2026.transits.${transit.key}.period`, '')}</p>
+                  <p className="text-sm text-amber-700">{t(`horoscope.2026.transits.${transit.key}.effect`, '')}</p>
                 </div>
               ))}
             </div>
@@ -208,15 +85,15 @@ export default function Horoscope2026Page() {
         </Card>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {zodiacSigns.map((sign) => (
-            <Card key={sign.name} className="border-amber-200 hover:shadow-lg transition-shadow">
+          {zodiacSignsData.map((sign) => (
+            <Card key={sign.key} className="border-amber-200 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-4xl">{sign.symbol}</span>
                     <div>
-                      <CardTitle className="text-xl">{sign.name}</CardTitle>
-                      <p className="text-sm text-gray-500">{sign.hindi} | {sign.dates}</p>
+                      <CardTitle className="text-xl">{t(`horoscope.2026.zodiac.${sign.key}.name`, sign.key)}</CardTitle>
+                      <p className="text-sm text-gray-500">{t(`horoscope.2026.zodiac.${sign.key}.hindi`, '')} | {sign.dates}</p>
                     </div>
                   </div>
                   <Badge className={
@@ -225,48 +102,48 @@ export default function Horoscope2026Page() {
                     sign.element === "Air" ? "bg-cyan-500" :
                     "bg-blue-500"
                   }>
-                    {sign.element}
+                    {t(`horoscope.2026.elements.${sign.element.toLowerCase()}`, sign.element)}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 text-sm mb-4">{sign.overview}</p>
+                <p className="text-gray-600 text-sm mb-4">{t(`horoscope.2026.zodiac.${sign.key}.overview`, '')}</p>
                 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-amber-600" />
-                    <span className="text-sm">Overall</span>
+                    <span className="text-sm">{t('horoscope.2026.labels.overall', 'Overall')}</span>
                     <RatingStars rating={sign.rating.overall} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-pink-500" />
-                    <span className="text-sm">Love</span>
+                    <span className="text-sm">{t('horoscope.2026.labels.love', 'Love')}</span>
                     <RatingStars rating={sign.rating.love} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm">Career</span>
+                    <span className="text-sm">{t('horoscope.2026.labels.career', 'Career')}</span>
                     <RatingStars rating={sign.rating.career} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Wallet className="w-4 h-4 text-green-500" />
-                    <span className="text-sm">Finance</span>
+                    <span className="text-sm">{t('horoscope.2026.labels.finance', 'Finance')}</span>
                     <RatingStars rating={sign.rating.finance} />
                   </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">2026 Highlights</h4>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('horoscope.2026.highlights', '2026 Highlights')}</h4>
                   <ul className="text-xs text-gray-600 space-y-1">
-                    {sign.highlights.map((highlight, i) => (
-                      <li key={i}>• {highlight}</li>
-                    ))}
+                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight1`, '')}</li>
+                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight2`, '')}</li>
+                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight3`, '')}</li>
                   </ul>
                 </div>
 
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href={`/horoscope/yearly/${sign.name.toLowerCase()}`}>
-                    Read Full 2026 Horoscope <ArrowRight className="w-4 h-4 ml-2" />
+                  <Link href={`/horoscope/yearly/${sign.key}`}>
+                    {t('horoscope.2026.readFull', 'Read Full 2026 Horoscope')} <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
               </CardContent>
@@ -277,13 +154,13 @@ export default function Horoscope2026Page() {
         <div className="mt-12 grid md:grid-cols-4 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Saturn Transit 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.saturnTransit', 'Saturn Transit 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Detailed Saturn transit predictions and effects.
+                {t('horoscope.2026.cards.saturnDesc', 'Detailed Saturn transit predictions and effects.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/transits/saturn-transit-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -291,13 +168,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Jupiter Transit 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.jupiterTransit', 'Jupiter Transit 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Jupiter&apos;s movement and its impact on signs.
+                {t('horoscope.2026.cards.jupiterDesc', "Jupiter's movement and its impact on signs.")}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/transits/jupiter-transit-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -305,13 +182,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Mercury Retrograde 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.mercuryRetrograde', 'Mercury Retrograde 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Dates and survival guide for retrogrades.
+                {t('horoscope.2026.cards.mercuryDesc', 'Dates and survival guide for retrogrades.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/transits/mercury-retrograde-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -319,13 +196,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Eclipses 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.eclipses', 'Eclipses 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Solar and lunar eclipse dates and effects.
+                {t('horoscope.2026.cards.eclipsesDesc', 'Solar and lunar eclipse dates and effects.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/eclipses-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -335,26 +212,17 @@ export default function Horoscope2026Page() {
         <Card className="border-amber-200 bg-amber-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              2026 Astrological Overview
+              {t('horoscope.2026.overviewTitle', '2026 Astrological Overview')}
             </h2>
             <div className="prose prose-amber max-w-none">
               <p className="text-gray-700 mb-4">
-                2026 promises to be a year of significant transformation and growth across all 
-                zodiac signs. With Saturn continuing its transit through Pisces, themes of 
-                spiritual discipline, karmic resolution, and compassionate service remain 
-                prominent throughout the year.
+                {t('horoscope.2026.overviewP1', '2026 promises to be a year of significant transformation and growth across all zodiac signs. With Saturn continuing its transit through Pisces, themes of spiritual discipline, karmic resolution, and compassionate service remain prominent throughout the year.')}
               </p>
               <p className="text-gray-700 mb-4">
-                Jupiter&apos;s movement brings expansion and opportunities, particularly in areas 
-                related to home, family, and emotional security. The Rahu-Ketu axis in Pisces-Virgo 
-                creates a tension between spiritual aspirations and practical responsibilities, 
-                encouraging balance between dreams and daily duties.
+                {t('horoscope.2026.overviewP2', "Jupiter's movement brings expansion and opportunities, particularly in areas related to home, family, and emotional security. The Rahu-Ketu axis in Pisces-Virgo creates a tension between spiritual aspirations and practical responsibilities, encouraging balance between dreams and daily duties.")}
               </p>
               <p className="text-gray-700">
-                The four eclipses in 2026 mark important turning points for collective and 
-                individual evolution. Pay attention to the eclipse dates and their effects on 
-                your specific zodiac sign for optimal planning and decision-making throughout 
-                the year.
+                {t('horoscope.2026.overviewP3', 'The four eclipses in 2026 mark important turning points for collective and individual evolution. Pay attention to the eclipse dates and their effects on your specific zodiac sign for optimal planning and decision-making throughout the year.')}
               </p>
             </div>
           </CardContent>
