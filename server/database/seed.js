@@ -12,7 +12,7 @@ async function seedDatabase() {
   
   try {
     db.prepare(`
-      INSERT OR IGNORE INTO users (username, email, password, role, is_active)
+      INSERT OR IGNORE INTO users (username, email, password_hash, role, is_active)
       VALUES ('admin', 'harryroger798@gmail.com', ?, 'admin', 1)
     `).run(adminPassword);
     console.log('Admin user created: admin / 007JamesBond@@');
@@ -23,7 +23,7 @@ async function seedDatabase() {
   const techPassword = await bcrypt.hash('Tech@123', 12);
   try {
     db.prepare(`
-      INSERT OR IGNORE INTO users (username, email, password, role, is_active)
+      INSERT OR IGNORE INTO users (username, email, password_hash, role, is_active)
       VALUES ('technician', 'tech@bytecare.com', ?, 'technician', 1)
     `).run(techPassword);
     console.log('Technician user created: technician / Tech@123');
@@ -33,16 +33,16 @@ async function seedDatabase() {
   
   console.log('Creating sample customers...');
   const customers = [
-    { name: 'Rahul Sharma', phone: '9876543210', email: 'rahul.sharma@gmail.com', address: '123 Park Street', city: 'Kolkata', source: 'walk_in', business_type: 'individual' },
-    { name: 'Priya Patel', phone: '9876543211', email: 'priya.patel@gmail.com', address: '456 MG Road', city: 'Barrackpore', source: 'referral', business_type: 'individual' },
-    { name: 'Tech Solutions Pvt Ltd', phone: '9876543212', email: 'contact@techsolutions.com', address: '789 IT Park', city: 'Salt Lake', source: 'google', business_type: 'business', gst_number: '19AABCT1234A1Z5' },
-    { name: 'Amit Kumar', phone: '9876543213', email: 'amit.kumar@yahoo.com', address: '321 Lake Town', city: 'Kolkata', source: 'social_media', business_type: 'individual' },
-    { name: 'Sneha Gupta', phone: '9876543214', email: 'sneha.gupta@hotmail.com', address: '654 New Town', city: 'Rajarhat', source: 'walk_in', business_type: 'individual' },
-    { name: 'Digital Dreams Agency', phone: '9876543215', email: 'info@digitaldreams.in', address: '987 Sector V', city: 'Salt Lake', source: 'google', business_type: 'business', gst_number: '19AABCD5678B2Z6' },
-    { name: 'Vikram Singh', phone: '9876543216', email: 'vikram.singh@gmail.com', address: '147 Dum Dum', city: 'Kolkata', source: 'referral', business_type: 'individual' },
-    { name: 'Ananya Das', phone: '9876543217', email: 'ananya.das@gmail.com', address: '258 Howrah', city: 'Howrah', source: 'walk_in', business_type: 'individual' },
-    { name: 'StartUp Hub', phone: '9876543218', email: 'hello@startuphub.co', address: '369 Eco Park', city: 'New Town', source: 'social_media', business_type: 'business' },
-    { name: 'Rajesh Banerjee', phone: '9876543219', email: 'rajesh.b@gmail.com', address: '741 Jadavpur', city: 'Kolkata', source: 'google', business_type: 'individual' }
+    { name: 'Rahul Sharma', phone: '9876543210', email: 'rahul.sharma@gmail.com', address: '123 Park Street', city: 'Kolkata', source: 'Walk-in', business_type: 'individual' },
+    { name: 'Priya Patel', phone: '9876543211', email: 'priya.patel@gmail.com', address: '456 MG Road', city: 'Barrackpore', source: 'Referral', business_type: 'individual' },
+    { name: 'Tech Solutions Pvt Ltd', phone: '9876543212', email: 'contact@techsolutions.com', address: '789 IT Park', city: 'Salt Lake', source: 'GMB', business_type: 'business', gst_number: '19AABCT1234A1Z5' },
+    { name: 'Amit Kumar', phone: '9876543213', email: 'amit.kumar@yahoo.com', address: '321 Lake Town', city: 'Kolkata', source: 'Facebook', business_type: 'individual' },
+    { name: 'Sneha Gupta', phone: '9876543214', email: 'sneha.gupta@hotmail.com', address: '654 New Town', city: 'Rajarhat', source: 'Walk-in', business_type: 'individual' },
+    { name: 'Digital Dreams Agency', phone: '9876543215', email: 'info@digitaldreams.in', address: '987 Sector V', city: 'Salt Lake', source: 'GMB', business_type: 'business', gst_number: '19AABCD5678B2Z6' },
+    { name: 'Vikram Singh', phone: '9876543216', email: 'vikram.singh@gmail.com', address: '147 Dum Dum', city: 'Kolkata', source: 'Referral', business_type: 'individual' },
+    { name: 'Ananya Das', phone: '9876543217', email: 'ananya.das@gmail.com', address: '258 Howrah', city: 'Howrah', source: 'Walk-in', business_type: 'individual' },
+    { name: 'StartUp Hub', phone: '9876543218', email: 'hello@startuphub.co', address: '369 Eco Park', city: 'New Town', source: 'Facebook', business_type: 'business' },
+    { name: 'Rajesh Banerjee', phone: '9876543219', email: 'rajesh.b@gmail.com', address: '741 Jadavpur', city: 'Kolkata', source: 'JustDial', business_type: 'individual' }
   ];
   
   const customerStmt = db.prepare(`
@@ -69,16 +69,16 @@ async function seedDatabase() {
   const customerIds = db.prepare('SELECT id FROM customers').all().map(c => c.id);
   
   const repairs = [
-    { customer_idx: 0, service_name: 'Windows Installation', device_type: 'laptop', brand: 'Dell', model: 'Inspiron 15', issue: 'System running slow, needs fresh Windows installation', status: 'completed', parts_cost: 0 },
-    { customer_idx: 1, service_name: 'Screen Replacement', device_type: 'mobile', brand: 'Apple', model: 'iPhone 13', issue: 'Cracked screen after drop', status: 'in_progress', parts_cost: 4500 },
-    { customer_idx: 2, service_name: 'Virus Removal', device_type: 'desktop', brand: 'HP', model: 'ProDesk 400', issue: 'Multiple virus infections, system compromised', status: 'completed', parts_cost: 0 },
-    { customer_idx: 3, service_name: 'Battery Replacement', device_type: 'mobile', brand: 'Samsung', model: 'Galaxy S23', issue: 'Battery draining fast, needs replacement', status: 'pending', parts_cost: 1600 },
-    { customer_idx: 4, service_name: 'SSD Upgrade', device_type: 'laptop', brand: 'Lenovo', model: 'ThinkPad T480', issue: 'Upgrade from HDD to SSD for better performance', status: 'completed', parts_cost: 3500 },
-    { customer_idx: 5, service_name: 'Data Recovery', device_type: 'desktop', brand: 'Custom', model: 'Custom Build', issue: 'Hard drive failure, need to recover important data', status: 'in_progress', parts_cost: 500 },
-    { customer_idx: 6, service_name: 'Charging Port Repair', device_type: 'mobile', brand: 'OnePlus', model: 'Nord 3', issue: 'Charging port loose, not charging properly', status: 'diagnosed', parts_cost: 600 },
-    { customer_idx: 7, service_name: 'Laptop Screen Replacement', device_type: 'laptop', brand: 'Asus', model: 'VivoBook 15', issue: 'Screen flickering and has dead pixels', status: 'waiting_parts', parts_cost: 4000 },
-    { customer_idx: 8, service_name: 'RAM Upgrade', device_type: 'laptop', brand: 'Acer', model: 'Aspire 5', issue: 'Need to upgrade RAM from 8GB to 16GB', status: 'completed', parts_cost: 2500 },
-    { customer_idx: 9, service_name: 'Software Repair', device_type: 'mobile', brand: 'Xiaomi', model: 'Redmi Note 12', issue: 'Phone stuck in boot loop', status: 'completed', parts_cost: 0 }
+    { customer_idx: 0, service_name: 'Windows Installation', device_type: 'LAPTOP', brand: 'Dell', model: 'Inspiron 15', issue: 'System running slow, needs fresh Windows installation', status: 'completed', parts_cost: 0 },
+    { customer_idx: 1, service_name: 'Screen Replacement', device_type: 'MOBILE', brand: 'Apple', model: 'iPhone 13', issue: 'Cracked screen after drop', status: 'in_progress', parts_cost: 4500 },
+    { customer_idx: 2, service_name: 'Virus Removal', device_type: 'PC', brand: 'HP', model: 'ProDesk 400', issue: 'Multiple virus infections, system compromised', status: 'completed', parts_cost: 0 },
+    { customer_idx: 3, service_name: 'Battery Replacement', device_type: 'MOBILE', brand: 'Samsung', model: 'Galaxy S23', issue: 'Battery draining fast, needs replacement', status: 'pending', parts_cost: 1600 },
+    { customer_idx: 4, service_name: 'SSD Upgrade', device_type: 'LAPTOP', brand: 'Lenovo', model: 'ThinkPad T480', issue: 'Upgrade from HDD to SSD for better performance', status: 'completed', parts_cost: 3500 },
+    { customer_idx: 5, service_name: 'Data Recovery', device_type: 'PC', brand: 'Custom', model: 'Custom Build', issue: 'Hard drive failure, need to recover important data', status: 'in_progress', parts_cost: 500 },
+    { customer_idx: 6, service_name: 'Charging Port Repair', device_type: 'MOBILE', brand: 'OnePlus', model: 'Nord 3', issue: 'Charging port loose, not charging properly', status: 'diagnosis_done', parts_cost: 600 },
+    { customer_idx: 7, service_name: 'Laptop Screen Replacement', device_type: 'LAPTOP', brand: 'Asus', model: 'VivoBook 15', issue: 'Screen flickering and has dead pixels', status: 'pending', parts_cost: 4000 },
+    { customer_idx: 8, service_name: 'RAM Upgrade', device_type: 'LAPTOP', brand: 'Acer', model: 'Aspire 5', issue: 'Need to upgrade RAM from 8GB to 16GB', status: 'completed', parts_cost: 2500 },
+    { customer_idx: 9, service_name: 'Software Repair', device_type: 'MOBILE', brand: 'Xiaomi', model: 'Redmi Note 12', issue: 'Phone stuck in boot loop', status: 'completed', parts_cost: 0 }
   ];
   
   for (const repair of repairs) {
@@ -147,7 +147,7 @@ async function seedDatabase() {
       repair.gst_amount,
       repair.final_price,
       isPaid ? 'paid' : 'unpaid',
-      isPaid ? 'upi' : null,
+      isPaid ? 'gpay' : null,
       dueDate,
       isPaid ? new Date().toISOString() : null
     );
@@ -156,8 +156,8 @@ async function seedDatabase() {
       const invoiceId = db.prepare('SELECT id FROM invoices WHERE invoice_number = ?').get(repair.invoice_number).id;
       db.prepare(`
         INSERT INTO payments (invoice_id, amount, payment_method, payment_date, reference_number)
-        VALUES (?, ?, 'upi', datetime('now'), ?)
-      `).run(invoiceId, repair.final_price, `UPI${Date.now()}`);
+        VALUES (?, ?, 'gpay', datetime('now'), ?)
+      `).run(invoiceId, repair.final_price, `GPAY${Date.now()}`);
       
       db.prepare(`
         UPDATE customers SET total_spent = total_spent + ?, repair_count = repair_count + 1 WHERE id = ?
@@ -168,11 +168,11 @@ async function seedDatabase() {
   
   console.log('Creating sample digital service projects...');
   const digitalServices = [
-    { customer_idx: 2, service_type: 'website', title: 'Corporate Website Redesign', amount: 35000, status: 'in_progress', is_retainer: false },
-    { customer_idx: 5, service_type: 'seo', title: 'Monthly SEO Package', amount: 15000, status: 'signed', is_retainer: true, retainer_frequency: 'monthly' },
-    { customer_idx: 8, service_type: 'social_media', title: 'Social Media Management', amount: 12000, status: 'proposal', is_retainer: true, retainer_frequency: 'monthly' },
-    { customer_idx: 2, service_type: 'ecommerce', title: 'E-commerce Platform Development', amount: 75000, status: 'in_progress', is_retainer: false },
-    { customer_idx: 5, service_type: 'google_ads', title: 'Google Ads Campaign', amount: 10000, status: 'completed', is_retainer: true, retainer_frequency: 'monthly' }
+    { customer_idx: 2, service_type: 'WEBSITE', title: 'Corporate Website Redesign', amount: 35000, status: 'in_progress', is_retainer: false },
+    { customer_idx: 5, service_type: 'SEO', title: 'Monthly SEO Package', amount: 15000, status: 'signed', is_retainer: true, retainer_frequency: 'monthly' },
+    { customer_idx: 8, service_type: 'SOCIAL_MEDIA', title: 'Social Media Management', amount: 12000, status: 'proposal', is_retainer: true, retainer_frequency: 'monthly' },
+    { customer_idx: 2, service_type: 'WEBSITE', title: 'E-commerce Platform Development', amount: 75000, status: 'in_progress', is_retainer: false },
+    { customer_idx: 5, service_type: 'CUSTOM', title: 'Google Ads Campaign', amount: 10000, status: 'completed', is_retainer: true, retainer_frequency: 'monthly' }
   ];
   
   for (const ds of digitalServices) {
