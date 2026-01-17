@@ -43,10 +43,30 @@ export function ReportsPage() {
     queryFn: () => dashboardApi.getTopServices(),
   })
 
-  const stats = overview?.data?.data || {}
+  // API returns { success: true, data: {...} } and axios wraps in .data
+  const overviewData = overview?.data?.data || {}
+  const stats = {
+    month: {
+      revenue: overviewData.month_revenue || 0,
+      repairs: overviewData.month_repairs || 0,
+      profit: overviewData.month_profit || 0,
+    },
+    avg_turnaround_time: overviewData.average_turnaround_hours || 0,
+  }
   const revenueData = revenueChart?.data?.data || []
-  const serviceData = serviceBreakdown?.data?.data || []
-  const topServicesData = topServices?.data?.data || []
+  // service-breakdown returns { repairs: [...], digital_services: [...] }
+  const serviceBreakdownData = serviceBreakdown?.data?.data || { repairs: [], digital_services: [] }
+  const serviceData = Array.isArray(serviceBreakdownData) ? serviceBreakdownData : (serviceBreakdownData.repairs || [])
+  // Map service data to expected format for pie chart
+  const formattedServiceData = serviceData.map((item: { category?: string; total_revenue?: number }) => ({
+    category: item.category || 'Unknown',
+    revenue: item.total_revenue || 0,
+  }))
+  const topServicesData = (topServices?.data?.data || []).map((item: { name?: string; total_revenue?: number; repair_count?: number }) => ({
+    name: item.name || 'Unknown',
+    revenue: item.total_revenue || 0,
+    count: item.repair_count || 0,
+  }))
 
   const handleExportCSV = async () => {
     try {
@@ -227,7 +247,7 @@ export function ReportsPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={serviceData}
+                        data={formattedServiceData}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -239,7 +259,7 @@ export function ReportsPage() {
                         dataKey="revenue"
                         nameKey="category"
                       >
-                        {serviceData.map((_: unknown, index: number) => (
+                        {formattedServiceData.map((_: unknown, index: number) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}

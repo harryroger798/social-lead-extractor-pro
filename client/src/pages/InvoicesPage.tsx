@@ -269,28 +269,28 @@ export function InvoicesPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Subtotal</p>
-                    <p className="font-medium">{formatCurrency(viewingInvoice.subtotal)}</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.subtotal || 0)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Discount</p>
-                    <p className="font-medium">{formatCurrency(viewingInvoice.discount)}</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.discount || 0)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">GST</p>
-                    <p className="font-medium">{formatCurrency(viewingInvoice.gst_amount)}</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.gst_amount || 0)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Total</p>
-                    <p className="text-lg font-bold">{formatCurrency(viewingInvoice.total_amount)}</p>
+                    <p className="text-lg font-bold">{formatCurrency(viewingInvoice.total_amount || 0)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Amount Paid</p>
-                    <p className="font-medium text-green-600">{formatCurrency(viewingInvoice.amount_paid)}</p>
+                    <p className="font-medium text-green-600">{formatCurrency(viewingInvoice.amount_paid || 0)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Balance Due</p>
                     <p className="font-medium text-red-600">
-                      {formatCurrency(viewingInvoice.total_amount - viewingInvoice.amount_paid)}
+                      {formatCurrency((viewingInvoice.total_amount || 0) - (viewingInvoice.amount_paid || 0))}
                     </p>
                   </div>
                 </div>

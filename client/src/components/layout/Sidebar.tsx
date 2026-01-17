@@ -67,8 +67,8 @@ export function Sidebar() {
 
       <div className="p-4">
         <div className="mb-3 rounded-lg bg-muted p-3">
-          <p className="text-sm font-medium">{user?.username}</p>
-          <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+          <p className="text-sm font-medium capitalize">{user?.username || 'User'}</p>
+          <p className="text-xs text-muted-foreground capitalize">{user?.role || 'User'}</p>
         </div>
         <Button
           variant="outline"

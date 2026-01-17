@@ -87,7 +87,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   {user?.username?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <span className="hidden md:inline-block">{user?.username}</span>
+              <span className="hidden md:inline-block capitalize">{user?.username}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
