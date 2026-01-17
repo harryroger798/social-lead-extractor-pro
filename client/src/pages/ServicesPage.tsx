@@ -29,8 +29,8 @@ interface Service {
   name: string
   category: string
   description: string
-  base_price: number
-  estimated_time: number
+  price: number
+  estimated_hours: number
   is_active: boolean
 }
 
@@ -140,8 +140,8 @@ export function ServicesPage() {
       name: formData.get('name'),
       category: formData.get('category'),
       description: formData.get('description'),
-      base_price: Number(formData.get('base_price')),
-      estimated_time: Number(formData.get('estimated_time')),
+      price: Number(formData.get('price')),
+      estimated_hours: Number(formData.get('estimated_hours')),
       is_active: formData.get('is_active') === 'true',
     }
 
@@ -260,8 +260,8 @@ export function ServicesPage() {
                           <TableCell>
                             <Badge variant="outline">{service.category.replace('_', ' ')}</Badge>
                           </TableCell>
-                          <TableCell>{formatCurrency(service.base_price)}</TableCell>
-                          <TableCell>{service.estimated_time} min</TableCell>
+                          <TableCell>{formatCurrency(service.price || 0)}</TableCell>
+                          <TableCell>{service.estimated_hours || 0} min</TableCell>
                           <TableCell>
                             <Badge variant={service.is_active ? 'success' : 'secondary'}>
                               {service.is_active ? 'Active' : 'Inactive'}
@@ -416,25 +416,25 @@ export function ServicesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="base_price">Base Price *</Label>
+                  <Label htmlFor="price">Base Price *</Label>
                   <Input
-                    id="base_price"
-                    name="base_price"
+                    id="price"
+                    name="price"
                     type="number"
                     min="0"
                     step="0.01"
-                    defaultValue={editingService?.base_price || 0}
+                    defaultValue={editingService?.price || 0}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="estimated_time">Est. Time (min)</Label>
+                  <Label htmlFor="estimated_hours">Est. Time (hours)</Label>
                   <Input
-                    id="estimated_time"
-                    name="estimated_time"
+                    id="estimated_hours"
+                    name="estimated_hours"
                     type="number"
                     min="0"
-                    defaultValue={editingService?.estimated_time || 30}
+                    defaultValue={editingService?.estimated_hours || 1}
                   />
                 </div>
               </div>
