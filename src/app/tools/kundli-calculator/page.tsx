@@ -590,15 +590,15 @@ export default function KundliCalculatorPage() {
                         <div key={house.number} className="bg-gray-50 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-semibold text-amber-700">
-                              House {house.number}
+                              {t('calculator.house', 'House')} {house.number}
                             </span>
                             <Badge variant="outline">{house.sign}</Badge>
                           </div>
                           <div className="text-sm text-gray-600">
                             {house.planets.length > 0 ? (
-                              <span>Planets: {house.planets.join(", ")}</span>
+                              <span>{t('calculator.planets', 'Planets')}: {house.planets.join(", ")}</span>
                             ) : (
-                              <span className="text-gray-400">Empty</span>
+                              <span className="text-gray-400">{t('calculator.empty', 'Empty')}</span>
                             )}
                           </div>
                         </div>
