@@ -16,58 +16,58 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-const contactInfo = [
-  {
-    icon: Mail,
-    title: "Email Us",
-    details: "contact@vedicstarastro.com",
-    description: "We'll respond within 24 hours",
-    href: "mailto:contact@vedicstarastro.com",
-  },
-  {
-    icon: Phone,
-    title: "Call Us",
-    details: "+91 98765 43210",
-    description: "Mon-Sat, 9 AM - 8 PM IST",
-    href: "tel:+919876543210",
-  },
-  {
-    icon: MessageSquare,
-    title: "WhatsApp",
-    details: "+91 98765 43210",
-    description: "Quick responses on WhatsApp",
-    href: "https://wa.me/919876543210",
-  },
-  {
-    icon: MapPin,
-    title: "Visit Us",
-    details: "Bangalore, Karnataka",
-    description: "By appointment only",
-    href: "#",
-  },
-];
-
-const faqs = [
-  {
-    question: "How do I book a consultation?",
-    answer: "You can book a consultation through our website by visiting the Consultation page and selecting your preferred astrologer and time slot.",
-  },
-  {
-    question: "What information do I need for a reading?",
-    answer: "You'll need your exact date, time, and place of birth. If you don't know your exact birth time, let us know and we can help with birth time rectification.",
-  },
-  {
-    question: "Do you offer refunds?",
-    answer: "Yes, we offer a 100% satisfaction guarantee. If you're not satisfied with your consultation, contact us within 24 hours for a full refund.",
-  },
-  {
-    question: "Can I reschedule my appointment?",
-    answer: "Yes, you can reschedule your appointment up to 4 hours before the scheduled time through your account or by contacting us.",
-  },
-];
-
 export default function ContactPage() {
   const { t } = useLanguage();
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: t('contact.emailUs', 'Email Us'),
+      details: "contact@vedicstarastro.com",
+      description: t('contact.emailDesc', "We'll respond within 24 hours"),
+      href: "mailto:contact@vedicstarastro.com",
+    },
+    {
+      icon: Phone,
+      title: t('contact.callUs', 'Call Us'),
+      details: "+91 98765 43210",
+      description: t('contact.callDesc', 'Mon-Sat, 9 AM - 8 PM IST'),
+      href: "tel:+919876543210",
+    },
+    {
+      icon: MessageSquare,
+      title: t('contact.whatsapp', 'WhatsApp'),
+      details: "+91 98765 43210",
+      description: t('contact.whatsappDesc', 'Quick responses on WhatsApp'),
+      href: "https://wa.me/919876543210",
+    },
+    {
+      icon: MapPin,
+      title: t('contact.visitUs', 'Visit Us'),
+      details: t('contact.location', 'Bangalore, Karnataka'),
+      description: t('contact.visitDesc', 'By appointment only'),
+      href: "#",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: t('contact.faq1Q', 'How do I book a consultation?'),
+      answer: t('contact.faq1A', 'You can book a consultation through our website by visiting the Consultation page and selecting your preferred astrologer and time slot.'),
+    },
+    {
+      question: t('contact.faq2Q', 'What information do I need for a reading?'),
+      answer: t('contact.faq2A', "You'll need your exact date, time, and place of birth. If you don't know your exact birth time, let us know and we can help with birth time rectification."),
+    },
+    {
+      question: t('contact.faq3Q', 'Do you offer refunds?'),
+      answer: t('contact.faq3A', "Yes, we offer a 100% satisfaction guarantee. If you're not satisfied with your consultation, contact us within 24 hours for a full refund."),
+    },
+    {
+      question: t('contact.faq4Q', 'Can I reschedule my appointment?'),
+      answer: t('contact.faq4A', 'Yes, you can reschedule your appointment up to 4 hours before the scheduled time through your account or by contacting us.'),
+    },
+  ];
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -104,47 +104,47 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           <Card className="border-amber-200">
             <CardHeader>
-              <CardTitle>Send Us a Message</CardTitle>
+              <CardTitle>{t('contact.sendMessage', 'Send Us a Message')}</CardTitle>
               <CardDescription>
-                Fill out the form below and we&apos;ll get back to you within 24 hours.
+                {t('contact.formDesc', "Fill out the form below and we'll get back to you within 24 hours.")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="Your name" required />
+                    <Label htmlFor="name">{t('contact.fullName', 'Full Name')}</Label>
+                    <Input id="name" placeholder={t('contact.namePlaceholder', 'Your name')} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="your@email.com" required />
+                    <Label htmlFor="email">{t('contact.email', 'Email')}</Label>
+                    <Input id="email" type="email" placeholder={t('contact.emailPlaceholder', 'your@email.com')} required />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone">{t('contact.phoneNumber', 'Phone Number')}</Label>
                   <Input id="phone" type="tel" placeholder="+91 98765 43210" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input id="subject" placeholder="How can we help?" required />
+                  <Label htmlFor="subject">{t('contact.subject', 'Subject')}</Label>
+                  <Input id="subject" placeholder={t('contact.subjectPlaceholder', 'How can we help?')} required />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">{t('contact.message', 'Message')}</Label>
                   <textarea
                     id="message"
                     className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Tell us more about your inquiry..."
+                    placeholder={t('contact.messagePlaceholder', 'Tell us more about your inquiry...')}
                     required
                   />
                 </div>
                 
                 <Button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
                   <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                  {t('contact.sendBtn', 'Send Message')}
                 </Button>
               </form>
             </CardContent>
@@ -155,20 +155,20 @@ export default function ContactPage() {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Clock className="w-6 h-6 text-amber-600" />
-                  <h3 className="font-semibold text-gray-900">Business Hours</h3>
+                  <h3 className="font-semibold text-gray-900">{t('contact.businessHours', 'Business Hours')}</h3>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Monday - Saturday</span>
-                    <span className="font-medium">9:00 AM - 8:00 PM IST</span>
+                    <span className="text-gray-600">{t('contact.monSat', 'Monday - Saturday')}</span>
+                    <span className="font-medium">{t('contact.monSatTime', '9:00 AM - 8:00 PM IST')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Sunday</span>
-                    <span className="font-medium">10:00 AM - 6:00 PM IST</span>
+                    <span className="text-gray-600">{t('contact.sunday', 'Sunday')}</span>
+                    <span className="font-medium">{t('contact.sundayTime', '10:00 AM - 6:00 PM IST')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Consultations</span>
-                    <span className="font-medium">24/7 (By Appointment)</span>
+                    <span className="text-gray-600">{t('contact.consultations', 'Consultations')}</span>
+                    <span className="font-medium">{t('contact.consultationsTime', '24/7 (By Appointment)')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -176,7 +176,7 @@ export default function ContactPage() {
 
             <Card className="border-amber-100">
               <CardHeader>
-                <CardTitle className="text-lg">Frequently Asked Questions</CardTitle>
+                <CardTitle className="text-lg">{t('contact.faqTitle', 'Frequently Asked Questions')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -194,16 +194,16 @@ export default function ContactPage() {
 
         <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Ready for Your Consultation?</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('contact.readyTitle', 'Ready for Your Consultation?')}</h2>
             <p className="mb-4 text-amber-100">
-              Book a session with our expert astrologers and get personalized guidance.
+              {t('contact.readyDesc', 'Book a session with our expert astrologers and get personalized guidance.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                <Link href="/consultation">Book Consultation</Link>
+                <Link href="/consultation">{t('contact.bookConsultation', 'Book Consultation')}</Link>
               </Button>
                             <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/tools/kundli-calculator">Try Free Kundli</Link>
+                              <Link href="/tools/kundli-calculator">{t('contact.tryFreeKundli', 'Try Free Kundli')}</Link>
                             </Button>
             </div>
           </CardContent>
