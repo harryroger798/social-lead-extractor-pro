@@ -74,17 +74,7 @@ const PLANET_COLORS: Record<string, string> = {
   Ketu: "bg-indigo-100 text-indigo-800 border-indigo-300",
 };
 
-const PLANET_DESCRIPTIONS: Record<string, string> = {
-  Sun: "Leadership, authority, father, government, health, vitality",
-  Moon: "Mind, emotions, mother, public, travel, liquids",
-  Mars: "Energy, courage, siblings, property, accidents, surgery",
-  Mercury: "Intelligence, communication, business, education, friends",
-  Jupiter: "Wisdom, expansion, children, wealth, spirituality, teachers",
-  Venus: "Love, marriage, arts, luxury, vehicles, beauty",
-  Saturn: "Discipline, delays, hard work, longevity, karma, servants",
-  Rahu: "Obsession, foreign, technology, unconventional, sudden gains",
-  Ketu: "Spirituality, liberation, past karma, losses, mysticism",
-};
+// PLANET_DESCRIPTIONS moved inside component to use t() function
 
 function formatDate(isoDate: string): string {
   const date = new Date(isoDate);
@@ -97,6 +87,20 @@ function formatDate(isoDate: string): string {
 
 export default function DashaCalculatorPage() {
   const { t } = useLanguage();
+  
+  // Planet descriptions using translation function
+  const planetDescriptions: Record<string, string> = {
+    Sun: t('calculator.dasha.planetDesc.sun', 'Leadership, authority, father, government, health, vitality'),
+    Moon: t('calculator.dasha.planetDesc.moon', 'Mind, emotions, mother, public, travel, liquids'),
+    Mars: t('calculator.dasha.planetDesc.mars', 'Energy, courage, siblings, property, accidents, surgery'),
+    Mercury: t('calculator.dasha.planetDesc.mercury', 'Intelligence, communication, business, education, friends'),
+    Jupiter: t('calculator.dasha.planetDesc.jupiter', 'Wisdom, expansion, children, wealth, spirituality, teachers'),
+    Venus: t('calculator.dasha.planetDesc.venus', 'Love, marriage, arts, luxury, vehicles, beauty'),
+    Saturn: t('calculator.dasha.planetDesc.saturn', 'Discipline, delays, hard work, longevity, karma, servants'),
+    Rahu: t('calculator.dasha.planetDesc.rahu', 'Obsession, foreign, technology, unconventional, sudden gains'),
+    Ketu: t('calculator.dasha.planetDesc.ketu', 'Spirituality, liberation, past karma, losses, mysticism'),
+  };
+
   const [birthDetails, setBirthDetails] = useState<BirthDetails>({
     name: "",
     date: "",
@@ -321,9 +325,9 @@ export default function DashaCalculatorPage() {
                               {formatDate(dasha.start_date)} - {formatDate(dasha.end_date)}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {dasha.duration_years} years
+                              {dasha.duration_years} {t('calculator.dasha.years', 'years')}
                               {dasha.is_current && (
-                                <span className="ml-2 text-purple-600 font-medium">(Current)</span>
+                                <span className="ml-2 text-purple-600 font-medium">({t('calculator.dasha.current', 'Current')})</span>
                               )}
                             </div>
                           </div>
@@ -339,14 +343,14 @@ export default function DashaCalculatorPage() {
                         <div className="p-4 bg-gray-50 border-t">
                           <div className="mb-3 p-3 bg-white rounded-lg">
                             <div className="text-sm font-medium text-gray-700 mb-1">
-                              {dasha.planet} Mahadasha Significations:
+                              {dasha.planet} {t('calculator.dasha.mahadashaSignifications', 'Mahadasha Significations')}:
                             </div>
                             <div className="text-sm text-gray-600">
-                              {PLANET_DESCRIPTIONS[dasha.planet]}
+                              {planetDescriptions[dasha.planet]}
                             </div>
                           </div>
                           <div className="text-sm font-medium text-gray-700 mb-2">
-                            Antardasha Sub-periods:
+                            {t('calculator.dasha.antardashaSubperiods', 'Antardasha Sub-periods')}:
                           </div>
                           <div className="space-y-2">
                             {dasha.antardashas.map((ad) => (
@@ -370,9 +374,9 @@ export default function DashaCalculatorPage() {
                                   </span>
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  {ad.duration_months.toFixed(1)} months
+                                  {ad.duration_months.toFixed(1)} {t('calculator.dasha.months', 'months')}
                                   {ad.is_current && (
-                                    <span className="ml-2 text-purple-600 font-medium">(Now)</span>
+                                    <span className="ml-2 text-purple-600 font-medium">({t('calculator.dasha.now', 'Now')})</span>
                                   )}
                                 </div>
                               </div>
