@@ -177,7 +177,7 @@ export function InvoicesPage() {
                         </div>
                       </TableCell>
                       <TableCell>{formatCurrency(invoice.total_amount)}</TableCell>
-                      <TableCell>{formatCurrency(invoice.amount_paid)}</TableCell>
+                      <TableCell>{formatCurrency(invoice.amount_paid || 0)}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(invoice.payment_status)}>
                           {invoice.payment_status}
