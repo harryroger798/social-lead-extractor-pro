@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { Language, translations } from "./translations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
@@ -17,13 +17,13 @@ const LANGUAGE_STORAGE_KEY = "vedicstarastro-language";
 
 const VALID_LANGUAGES: Language[] = ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa"];
 
-function getInitialLanguage(): Language {
-  if (typeof window === "undefined") return "en";
+function getSavedLanguage(): Language | null {
+  if (typeof window === "undefined") return null;
   const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language | null;
   if (savedLanguage && VALID_LANGUAGES.includes(savedLanguage)) {
     return savedLanguage;
   }
-  return "en";
+  return null;
 }
 
 function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
@@ -50,7 +50,16 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string | un
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+  // Start with "en" for SSR, then update from localStorage on client
+  const [language, setLanguageState] = useState<Language>("en");
+
+  // Read language from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    const savedLanguage = getSavedLanguage();
+    if (savedLanguage && savedLanguage !== language) {
+      setLanguageState(savedLanguage);
+    }
+  }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -60,10 +69,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t: TranslateFunction = useCallback((key: string, fallback?: string): string => {
     const currentTranslations = translations[language];
     const value = getNestedValue(currentTranslations as Record<string, unknown>, key);
-    // Debug logging for pitra-dosh keys
-    if (key.includes('pitraDosh') && typeof window !== 'undefined') {
-      console.log(`[t] key=${key}, lang=${language}, value=${value}, fallback=${fallback}`);
-    }
     if (value !== undefined) {
       return value;
     }
