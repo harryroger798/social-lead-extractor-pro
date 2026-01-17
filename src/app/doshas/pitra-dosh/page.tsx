@@ -157,12 +157,12 @@ export default function PitraDoshPage() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-orange-100 text-orange-800">{t('dosha.ancestralKarma', 'Ancestral Karma')}</Badge>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('dosha.pitraDosh.title', 'Pitra Dosh (Pitru Dosha)')}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('dosha.pitraDosh.subtitle', 'Complete guide to understanding Pitra Dosh, ancestral karma, its effects on family and life, and powerful remedies to honor and pacify ancestors.')}
+                    <Badge className="mb-4 bg-orange-100 text-orange-800">{t('doshas.pitraDosh.ancestralKarma', 'Ancestral Karma')}</Badge>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                      {t('doshas.pitraDosh.title', 'Pitra Dosh (Pitru Dosha)')}
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                      {t('doshas.pitraDosh.subtitle', 'Complete guide to understanding Pitra Dosh, ancestral karma, its effects on family and life, and powerful remedies to honor and pacify ancestors.')}
           </p>
         </div>
 
