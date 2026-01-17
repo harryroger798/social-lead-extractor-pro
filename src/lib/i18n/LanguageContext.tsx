@@ -29,14 +29,15 @@ function getInitialLanguage(): Language {
 function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
   const keys = path.split('.');
   let current: unknown = obj;
-  for (const key of keys) {
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
     if (current && typeof current === 'object' && key in current) {
       current = (current as Record<string, unknown>)[key];
     } else {
       // Try to find a flat key with dots at the current level
       // This handles keys like "pitraDosh.causes.cause1" stored as flat strings
       if (current && typeof current === 'object') {
-        const remainingPath = keys.slice(keys.indexOf(key)).join('.');
+        const remainingPath = keys.slice(i).join('.');
         if (remainingPath in (current as Record<string, unknown>)) {
           const value = (current as Record<string, unknown>)[remainingPath];
           return typeof value === 'string' ? value : undefined;
@@ -59,6 +60,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t: TranslateFunction = useCallback((key: string, fallback?: string): string => {
     const currentTranslations = translations[language];
     const value = getNestedValue(currentTranslations as Record<string, unknown>, key);
+    // Debug logging for pitra-dosh keys
+    if (key.includes('pitraDosh') && typeof window !== 'undefined') {
+      console.log(`[t] key=${key}, lang=${language}, value=${value}, fallback=${fallback}`);
+    }
     if (value !== undefined) {
       return value;
     }
