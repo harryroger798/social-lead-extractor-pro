@@ -445,34 +445,26 @@ export default function AscendantCalculatorPage() {
             </h2>
             <div className="prose prose-indigo max-w-none">
               <p className="text-gray-700 mb-4">
-                The Ascendant, known as Lagna in Vedic astrology, is one of the most important 
-                factors in your birth chart. It represents the zodiac sign that was rising on 
-                the eastern horizon at the exact moment of your birth and serves as the starting 
-                point for all house calculations in your horoscope.
+                {t('calculator.ascendantCalc.understandingDesc1', 'The Ascendant, known as Lagna in Vedic astrology, is one of the most important factors in your birth chart. It represents the zodiac sign that was rising on the eastern horizon at the exact moment of your birth and serves as the starting point for all house calculations in your horoscope.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                What Your Ascendant Reveals
+                {t('calculator.ascendantCalc.whatRevealsTitle', 'What Your Ascendant Reveals')}
               </h3>
               <p className="text-gray-700 mb-4">
-                While your Sun Sign represents your core identity and Moon Sign reflects your 
-                emotional nature, your Ascendant determines:
+                {t('calculator.ascendantCalc.whatRevealsDesc', 'While your Sun Sign represents your core identity and Moon Sign reflects your emotional nature, your Ascendant determines:')}
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>How others perceive you at first meeting</li>
-                <li>Your physical appearance and body type</li>
-                <li>Your natural approach to new situations</li>
-                <li>The lens through which you view the world</li>
-                <li>Your outward personality and social mask</li>
+                <li>{t('calculator.ascendantCalc.reveal1', 'How others perceive you at first meeting')}</li>
+                <li>{t('calculator.ascendantCalc.reveal2', 'Your physical appearance and body type')}</li>
+                <li>{t('calculator.ascendantCalc.reveal3', 'Your natural approach to new situations')}</li>
+                <li>{t('calculator.ascendantCalc.reveal4', 'The lens through which you view the world')}</li>
+                <li>{t('calculator.ascendantCalc.reveal5', 'Your outward personality and social mask')}</li>
               </ul>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                The Three Pillars of Your Chart
+                {t('calculator.ascendantCalc.threePillarsTitle', 'The Three Pillars of Your Chart')}
               </h3>
               <p className="text-gray-700">
-                In Vedic astrology, the combination of Sun Sign, Moon Sign, and Ascendant creates 
-                a complete picture of your personality. The Sun represents your soul and ego, the 
-                Moon represents your mind and emotions, and the Ascendant represents your body and 
-                how you interact with the physical world. Understanding all three provides deep 
-                insight into your complete astrological profile.
+                {t('calculator.ascendantCalc.threePillarsDesc', 'In Vedic astrology, the combination of Sun Sign, Moon Sign, and Ascendant creates a complete picture of your personality. The Sun represents your soul and ego, the Moon represents your mind and emotions, and the Ascendant represents your body and how you interact with the physical world. Understanding all three provides deep insight into your complete astrological profile.')}
               </p>
             </div>
           </CardContent>
