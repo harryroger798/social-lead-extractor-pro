@@ -97,7 +97,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-x-4 lg:ml-8">
+          <div className="hidden xl:flex xl:items-center xl:gap-x-2 xl:ml-6">
             {navigation.map((item) => (
               <div key={item.name} className="relative">
                 {item.children ? (
@@ -106,9 +106,9 @@ export function Header() {
                     onMouseEnter={() => setOpenDropdown(item.name)}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <button className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-amber-600 transition-colors py-2">
+                    <button className="flex items-center gap-0.5 text-xs font-medium text-gray-700 hover:text-amber-600 transition-colors py-2 whitespace-nowrap">
                       {item.name}
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-3 h-3" />
                     </button>
                     {openDropdown === item.name && (
                       <div className="absolute left-0 top-full pt-2 w-72">
@@ -130,7 +130,7 @@ export function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="text-sm font-medium text-gray-700 hover:text-amber-600 transition-colors"
+                    className="text-xs font-medium text-gray-700 hover:text-amber-600 transition-colors whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -139,7 +139,7 @@ export function Header() {
             ))}
           </div>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-x-4">
+          <div className="hidden xl:flex xl:items-center xl:gap-x-2">
                         <LanguageSwitcher />
                         <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
                           {t('nav.freeKundli', 'Free Kundli')}
@@ -149,7 +149,7 @@ export function Header() {
                         </Button>
           </div>
 
-          <div className="flex lg:hidden">
+          <div className="flex xl:hidden">
             <button
               type="button"
               className="inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -166,7 +166,7 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-amber-100">
+          <div className="xl:hidden py-4 border-t border-amber-100">
             <div className="space-y-2">
               {navigation.map((item) => (
                 <div key={item.name}>
