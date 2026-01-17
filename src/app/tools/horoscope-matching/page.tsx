@@ -283,7 +283,7 @@ export default function HoroscopeMatchingPage() {
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             {t('calculator.horoscopeMatching.subtitle', 'Check marriage compatibility using the traditional Ashtakoot Guna Milan system.')}
-            Get detailed analysis of 8 Gunas and Dosha assessment.
+            {t('calculator.matching.getDetailedAnalysis', 'Get detailed analysis of 8 Gunas and Dosha assessment.')}
           </p>
         </div>
 
@@ -386,12 +386,11 @@ export default function HoroscopeMatchingPage() {
               <div className="mt-8 p-4 bg-amber-50 rounded-lg flex items-start gap-3">
                 <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-700">
-                  <strong>Note:</strong> For accurate results, use the Nakshatra and Rashi from your Kundli. 
-                  If you don&apos;t know your Nakshatra, use our{" "}
+                  <strong>{t('common.note', 'Note')}:</strong> {t('calculator.matching.noteText', "For accurate results, use the Nakshatra and Rashi from your Kundli. If you don't know your Nakshatra, use our")}{" "}
                   <Link href="/tools/nakshatra-finder" className="text-amber-600 hover:underline">
-                    Nakshatra Finder
+                    {t('calculator.nakshatraFinder', 'Nakshatra Finder')}
                   </Link>{" "}
-                  tool first.
+                  {t('calculator.matching.toolFirst', 'tool first.')}
                 </p>
               </div>
             </CardContent>
@@ -408,7 +407,7 @@ export default function HoroscopeMatchingPage() {
                   {result.totalScore}/{result.maxScore}
                 </div>
                 <div className="text-2xl font-semibold text-gray-700 mb-2">
-                  {result.percentage}% Compatible
+                  {result.percentage}% {t('calculator.matching.compatible', 'Compatible')}
                 </div>
                 <Badge className={`text-lg px-4 py-1 ${
                   result.percentage >= 60 ? "bg-green-100 text-green-800" :
@@ -467,12 +466,12 @@ export default function HoroscopeMatchingPage() {
                         {dosha.present ? (
                           <Badge className="bg-red-100 text-red-800">
                             <XCircle className="w-4 h-4 mr-1" />
-                            Present ({dosha.severity})
+                            {t('calculator.matching.present', 'Present')} ({dosha.severity})
                           </Badge>
                         ) : (
                           <Badge className="bg-green-100 text-green-800">
                             <CheckCircle className="w-4 h-4 mr-1" />
-                            Not Present
+                            {t('calculator.matching.notPresent', 'Not Present')}
                           </Badge>
                         )}
                       </div>
@@ -498,12 +497,10 @@ export default function HoroscopeMatchingPage() {
             <Card className="bg-amber-50 border-amber-200">
               <CardContent className="pt-6 text-center">
                 <p className="text-gray-700 mb-4">
-                  <strong>Disclaimer:</strong> This is a simplified Guna Milan calculation. 
-                  For accurate marriage compatibility analysis, please consult with our expert astrologers 
-                  who can analyze complete birth charts including planetary positions, Dasha periods, and more.
+                  <strong>{t('common.disclaimer', 'Disclaimer')}:</strong> {t('calculator.matching.disclaimerText', 'This is a simplified Guna Milan calculation. For accurate marriage compatibility analysis, please consult with our expert astrologers who can analyze complete birth charts including planetary positions, Dasha periods, and more.')}
                 </p>
                 <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                  <Link href="/consultation">Get Detailed Analysis from Expert</Link>
+                  <Link href="/consultation">{t('calculator.matching.getDetailedFromExpert', 'Get Detailed Analysis from Expert')}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -525,7 +522,7 @@ export default function HoroscopeMatchingPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.maxPoints', 'Maximum Points')}</h3>
                 <p className="text-sm text-gray-600">
-                  The Ashtakoot system has a maximum of 36 points across 8 Gunas.
+                  {t('calculator.matching.maxPointsDesc', 'The Ashtakoot system has a maximum of 36 points across 8 Gunas.')}
                 </p>
               </CardContent>
             </Card>
@@ -537,7 +534,7 @@ export default function HoroscopeMatchingPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.minRequired', 'Minimum Required')}</h3>
                 <p className="text-sm text-gray-600">
-                  At least 18 points (50%) is traditionally considered acceptable for marriage.
+                  {t('calculator.matching.minRequiredDesc', 'At least 18 points (50%) is traditionally considered acceptable for marriage.')}
                 </p>
               </CardContent>
             </Card>
@@ -549,7 +546,7 @@ export default function HoroscopeMatchingPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.gunasAnalyzed', 'Gunas Analyzed')}</h3>
                 <p className="text-sm text-gray-600">
-                  Eight aspects of compatibility are analyzed: Varna, Vashya, Tara, Yoni, Graha, Gana, Bhakoot, Nadi.
+                  {t('calculator.matching.gunasAnalyzedDesc', 'Eight aspects of compatibility are analyzed: Varna, Vashya, Tara, Yoni, Graha, Gana, Bhakoot, Nadi.')}
                 </p>
               </CardContent>
             </Card>
@@ -561,7 +558,7 @@ export default function HoroscopeMatchingPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.matching.nadiCrucial', 'Nadi is Crucial')}</h3>
                 <p className="text-sm text-gray-600">
-                  Nadi Dosha (0 points in Nadi) is considered serious and requires remedies.
+                  {t('calculator.matching.nadiCrucialDesc', 'Nadi Dosha (0 points in Nadi) is considered serious and requires remedies.')}
                 </p>
               </CardContent>
             </Card>
