@@ -48,28 +48,7 @@ const zodiacDates = [
   { sign: "Pisces", start: { month: 2, day: 19 }, end: { month: 3, day: 20 } },
 ];
 
-const compatibilityMessages: Record<string, { title: string; description: string; advice: string }> = {
-  excellent: {
-    title: "Excellent Match!",
-    description: "Your zodiac signs are highly compatible. This relationship has strong potential for lasting love and deep understanding.",
-    advice: "Nurture this connection by maintaining open communication and celebrating your natural harmony.",
-  },
-  good: {
-    title: "Good Compatibility",
-    description: "You share a positive connection with good potential. While some differences exist, they can complement each other well.",
-    advice: "Focus on your shared values and be patient with areas where you differ.",
-  },
-  moderate: {
-    title: "Moderate Match",
-    description: "Your compatibility is average with both harmonious and challenging aspects. Success requires effort from both partners.",
-    advice: "Work on understanding each other's perspectives and find common ground.",
-  },
-  challenging: {
-    title: "Challenging Match",
-    description: "Your signs have significant differences that may require extra work to overcome. However, opposites can attract!",
-    advice: "Focus on learning from each other and embrace your differences as opportunities for growth.",
-  },
-};
+// compatibilityMessages moved inside component to use t() function
 
 function getZodiacSign(dateStr: string): string {
   const date = new Date(dateStr);
@@ -118,6 +97,30 @@ interface CompatibilityResult {
 
 export default function LoveCalculatorPage() {
   const { t } = useLanguage();
+  
+  const compatibilityMessages: Record<string, { title: string; description: string; advice: string }> = {
+    excellent: {
+      title: t('calculator.loveCalc.excellentTitle', 'Excellent Match!'),
+      description: t('calculator.loveCalc.excellentDesc', 'Your zodiac signs are highly compatible. This relationship has strong potential for lasting love and deep understanding.'),
+      advice: t('calculator.loveCalc.excellentAdvice', 'Nurture this connection by maintaining open communication and celebrating your natural harmony.'),
+    },
+    good: {
+      title: t('calculator.loveCalc.goodTitle', 'Good Compatibility'),
+      description: t('calculator.loveCalc.goodDesc', 'You share a positive connection with good potential. While some differences exist, they can complement each other well.'),
+      advice: t('calculator.loveCalc.goodAdvice', 'Focus on your shared values and be patient with areas where you differ.'),
+    },
+    moderate: {
+      title: t('calculator.loveCalc.moderateTitle', 'Moderate Match'),
+      description: t('calculator.loveCalc.moderateDesc', 'Your compatibility is average with both harmonious and challenging aspects. Success requires effort from both partners.'),
+      advice: t('calculator.loveCalc.moderateAdvice', "Work on understanding each other's perspectives and find common ground."),
+    },
+    challenging: {
+      title: t('calculator.loveCalc.challengingTitle', 'Challenging Match'),
+      description: t('calculator.loveCalc.challengingDesc', 'Your signs have significant differences that may require extra work to overcome. However, opposites can attract!'),
+      advice: t('calculator.loveCalc.challengingAdvice', 'Focus on learning from each other and embrace your differences as opportunities for growth.'),
+    },
+  };
+  
   const [person1Name, setPerson1Name] = useState("");
   const [person1Date, setPerson1Date] = useState("");
   const [person2Name, setPerson2Name] = useState("");
@@ -399,7 +402,7 @@ export default function LoveCalculatorPage() {
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
-                  Read Now <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.readNow', 'Read Now')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -413,35 +416,31 @@ export default function LoveCalculatorPage() {
             </h2>
             <div className="prose prose-pink max-w-none">
               <p className="text-gray-700 mb-4">
-                Zodiac compatibility is based on the elemental and modal relationships between 
-                signs. Signs of the same element (Fire, Earth, Air, Water) typically share 
-                natural understanding, while complementary elements can create dynamic partnerships.
+                {t('calculator.loveCalc.understandingDesc', 'Zodiac compatibility is based on the elemental and modal relationships between signs. Signs of the same element (Fire, Earth, Air, Water) typically share natural understanding, while complementary elements can create dynamic partnerships.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Element Compatibility
+                {t('calculator.loveCalc.elementCompatibility', 'Element Compatibility')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-red-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-800">Fire Signs (Aries, Leo, Sagittarius)</h4>
-                  <p className="text-sm text-red-700">Best with Fire and Air signs. Passionate and energetic relationships.</p>
+                  <h4 className="font-semibold text-red-800">{t('calculator.loveCalc.fireSigns', 'Fire Signs (Aries, Leo, Sagittarius)')}</h4>
+                  <p className="text-sm text-red-700">{t('calculator.loveCalc.fireSignsDesc', 'Best with Fire and Air signs. Passionate and energetic relationships.')}</p>
                 </div>
                 <div className="bg-green-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-green-800">Earth Signs (Taurus, Virgo, Capricorn)</h4>
-                  <p className="text-sm text-green-700">Best with Earth and Water signs. Stable and nurturing relationships.</p>
+                  <h4 className="font-semibold text-green-800">{t('calculator.loveCalc.earthSigns', 'Earth Signs (Taurus, Virgo, Capricorn)')}</h4>
+                  <p className="text-sm text-green-700">{t('calculator.loveCalc.earthSignsDesc', 'Best with Earth and Water signs. Stable and nurturing relationships.')}</p>
                 </div>
                 <div className="bg-cyan-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-cyan-800">Air Signs (Gemini, Libra, Aquarius)</h4>
-                  <p className="text-sm text-cyan-700">Best with Air and Fire signs. Intellectual and communicative bonds.</p>
+                  <h4 className="font-semibold text-cyan-800">{t('calculator.loveCalc.airSigns', 'Air Signs (Gemini, Libra, Aquarius)')}</h4>
+                  <p className="text-sm text-cyan-700">{t('calculator.loveCalc.airSignsDesc', 'Best with Air and Fire signs. Intellectual and communicative bonds.')}</p>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-800">Water Signs (Cancer, Scorpio, Pisces)</h4>
-                  <p className="text-sm text-blue-700">Best with Water and Earth signs. Deep emotional connections.</p>
+                  <h4 className="font-semibold text-blue-800">{t('calculator.loveCalc.waterSigns', 'Water Signs (Cancer, Scorpio, Pisces)')}</h4>
+                  <p className="text-sm text-blue-700">{t('calculator.loveCalc.waterSignsDesc', 'Best with Water and Earth signs. Deep emotional connections.')}</p>
                 </div>
               </div>
               <p className="text-gray-700">
-                While zodiac compatibility provides insights, remember that successful relationships 
-                depend on many factors including communication, respect, and shared values. Use this 
-                calculator as a fun guide, but trust your heart and personal experience above all.
+                {t('calculator.loveCalc.disclaimer', 'While zodiac compatibility provides insights, remember that successful relationships depend on many factors including communication, respect, and shared values. Use this calculator as a fun guide, but trust your heart and personal experience above all.')}
               </p>
             </div>
           </CardContent>
