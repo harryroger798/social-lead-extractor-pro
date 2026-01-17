@@ -347,7 +347,7 @@ export default function SadeSatiCalculatorPage() {
                           </div>
                           <Progress value={result.percentComplete} className="h-2" />
                           <p className="text-xs text-center text-gray-500">
-                            {result.percentComplete}% Complete
+                            {result.percentComplete}% {t('calculator.sadeSati.complete', 'Complete')}
                           </p>
                         </div>
                       </div>
@@ -424,7 +424,7 @@ export default function SadeSatiCalculatorPage() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{sign}</span>
-                      {isActive && <Badge className="bg-blue-500">Active</Badge>}
+                      {isActive && <Badge className="bg-blue-500">{t('calculator.sadeSati.activeLabel', 'Active')}</Badge>}
                     </div>
                   </div>
                 );
@@ -436,13 +436,13 @@ export default function SadeSatiCalculatorPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Moon Sign Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sadeSati.moonSignCalculator', 'Moon Sign Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Find your Moon Sign for accurate predictions.
+                {t('calculator.sadeSati.moonSignCalculatorDesc', 'Find your Moon Sign for accurate predictions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/moon-sign-calculator">
-                  Calculate <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.calculate', 'Calculate')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -450,13 +450,13 @@ export default function SadeSatiCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Saturn Transit 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sadeSati.saturnTransit2026', 'Saturn Transit 2026')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Detailed Saturn transit predictions for 2026.
+                {t('calculator.sadeSati.saturnTransit2026Desc', 'Detailed Saturn transit predictions for 2026.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/transits/saturn-transit-2026">
-                  Read More <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -464,13 +464,13 @@ export default function SadeSatiCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Sade Sati Guide</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.sadeSati.sadeSatiGuide', 'Sade Sati Guide')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Complete guide to Sade Sati effects and remedies.
+                {t('calculator.sadeSati.sadeSatiGuideDesc', 'Complete guide to Sade Sati effects and remedies.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/doshas/sade-sati">
-                  Read Guide <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.readGuide', 'Read Guide')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
