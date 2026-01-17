@@ -22,4 +22,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
   },
+  // For Electron builds, use relative paths
+  // Set ELECTRON_BUILD=true to use relative base
+  base: process.env.ELECTRON_BUILD === 'true' ? './' : '/',
 })
