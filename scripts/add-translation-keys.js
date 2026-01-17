@@ -248,14 +248,15 @@ function addKeysToSubsection(content, language, section, subsection, keys, dryRu
     return content;
   }
 
-  const sectionStartIndex = sectionMatch.index;
+  let targetStartIndex = sectionMatch.index;
+  let targetEndIndex;
   
   // Find the closing brace for this section by counting braces
   let braceCount = 0;
-  let sectionEndIndex = sectionStartIndex + sectionMatch[0].length;
+  let sectionEndIndex = targetStartIndex + sectionMatch[0].length;
   let foundOpen = false;
   
-  for (let i = sectionStartIndex; i < nextLangIndex && i < content.length; i++) {
+  for (let i = targetStartIndex; i < nextLangIndex && i < content.length; i++) {
     if (content[i] === '{') {
       braceCount++;
       foundOpen = true;
@@ -268,14 +269,47 @@ function addKeysToSubsection(content, language, section, subsection, keys, dryRu
     }
   }
 
-  // Extract section content to check for duplicates
-  const sectionContent = content.substring(sectionStartIndex, sectionEndIndex + 1);
+  // If there's a subsection, find it within the section
+  if (subsection) {
+    const sectionContent = content.substring(targetStartIndex, sectionEndIndex + 1);
+    const subsectionPattern = new RegExp(`${subsection}:\\s*\\{`);
+    const subsectionMatch = sectionContent.match(subsectionPattern);
+    
+    if (!subsectionMatch) {
+      console.error(`  Could not find subsection "${subsection}" in section "${section}" for language "${language}"`);
+      return content;
+    }
+    
+    // Update target to point to subsection
+    targetStartIndex = targetStartIndex + subsectionMatch.index;
+    
+    // Find the closing brace for the subsection
+    braceCount = 0;
+    foundOpen = false;
+    for (let i = targetStartIndex; i <= sectionEndIndex; i++) {
+      if (content[i] === '{') {
+        braceCount++;
+        foundOpen = true;
+      } else if (content[i] === '}') {
+        braceCount--;
+        if (foundOpen && braceCount === 0) {
+          targetEndIndex = i;
+          break;
+        }
+      }
+    }
+  } else {
+    targetEndIndex = sectionEndIndex;
+  }
+
+  // Extract target content (section or subsection) to check for duplicates
+  const targetContent = content.substring(targetStartIndex, targetEndIndex + 1);
   
   // Check if this is a compact format (single line or very few lines)
-  const isCompactFormat = !sectionContent.includes('\n') || sectionContent.split('\n').length <= 2;
+  const isCompactFormat = !targetContent.includes('\n') || targetContent.split('\n').length <= 2;
   
-  // Generate key-value pairs, filtering out duplicates
-  const pairs = generateKeyValuePairs(keys, language, sectionContent);
+  // Generate key-value pairs, filtering out duplicates (only check within target, not entire section)
+  const pairs = generateKeyValuePairs(keys, language, targetContent);
   
   if (pairs.length === 0) {
     console.log(`  No keys to add for ${language}`);
@@ -292,30 +326,30 @@ function addKeysToSubsection(content, language, section, subsection, keys, dryRu
   if (isCompactFormat) {
     // For compact single-line format, add keys inline before closing brace
     insertion = ', ' + pairs.join(', ');
-    content = content.substring(0, sectionEndIndex) + insertion + content.substring(sectionEndIndex);
+    content = content.substring(0, targetEndIndex) + insertion + content.substring(targetEndIndex);
   } else {
     // For multi-line format, add keys with proper indentation
-    const beforeBrace = content.substring(0, sectionEndIndex);
+    const beforeBrace = content.substring(0, targetEndIndex);
     const lastNewline = beforeBrace.lastIndexOf('\n');
     const lineBeforeBrace = beforeBrace.substring(lastNewline + 1);
     const baseIndent = lineBeforeBrace.match(/^\s*/)[0];
     const keyIndent = baseIndent + '  ';
     
     // Check if we need a comma after the last existing key
-    const contentBeforeBrace = content.substring(0, sectionEndIndex).trimEnd();
+    const contentBeforeBrace = content.substring(0, targetEndIndex).trimEnd();
     const needsComma = !contentBeforeBrace.endsWith(',') && !contentBeforeBrace.endsWith('{');
     
     if (needsComma) {
       // Find the last non-whitespace character before the closing brace
-      let insertPos = sectionEndIndex;
+      let insertPos = targetEndIndex;
       while (insertPos > 0 && /\s/.test(content[insertPos - 1])) {
         insertPos--;
       }
       insertion = ',\n' + pairs.map((p, i) => `${keyIndent}${p}${i < pairs.length - 1 ? ',' : ''}`).join('\n') + '\n' + baseIndent;
-      content = content.substring(0, insertPos) + insertion + content.substring(sectionEndIndex);
+      content = content.substring(0, insertPos) + insertion + content.substring(targetEndIndex);
     } else {
       insertion = '\n' + pairs.map((p, i) => `${keyIndent}${p}${i < pairs.length - 1 ? ',' : ''}`).join('\n') + '\n' + baseIndent;
-      content = content.substring(0, sectionEndIndex) + insertion + content.substring(sectionEndIndex);
+      content = content.substring(0, targetEndIndex) + insertion + content.substring(targetEndIndex);
     }
   }
 
