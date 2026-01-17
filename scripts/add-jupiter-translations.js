@@ -26,8 +26,9 @@ const LANGUAGE_SECTIONS = {
   pa: { start: 6186, multiline: false }
 };
 
-function loadJsonFiles() {
-  const files = [
+function loadJsonFiles(jsonFiles) {
+  // If no files specified, use default Jupiter Transit files
+  const files = jsonFiles.length > 0 ? jsonFiles : [
     'jupiter-transit-translations.json',
     'jupiter-transit-signs-translations.json',
     'jupiter-transit-signs-2-translations.json',
@@ -37,12 +38,13 @@ function loadJsonFiles() {
   const allKeys = {};
   
   for (const file of files) {
-    const filePath = path.join(__dirname, file);
+    // Handle both absolute paths and relative paths
+    const filePath = path.isAbsolute(file) ? file : path.join(__dirname, file);
     if (fs.existsSync(filePath)) {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       const keys = data.keys || data;
       Object.assign(allKeys, keys);
-      console.log(`Loaded ${Object.keys(keys).length} keys from ${file}`);
+      console.log(`Loaded ${Object.keys(keys).length} keys from ${path.basename(file)}`);
     } else {
       console.log(`File not found: ${file}`);
     }
@@ -188,8 +190,12 @@ function addKeysToLanguage(content, language, keys, isMultiline) {
 }
 
 function main() {
+  // Parse command-line arguments for JSON files
+  const args = process.argv.slice(2);
+  const jsonFiles = args.filter(arg => arg.endsWith('.json'));
+  
   console.log('Loading translation JSON files...');
-  const keys = loadJsonFiles();
+  const keys = loadJsonFiles(jsonFiles);
   console.log(`Total keys: ${Object.keys(keys).length}`);
   console.log('');
 
