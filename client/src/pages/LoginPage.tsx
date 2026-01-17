@@ -37,10 +37,11 @@ export function LoginPage() {
     setIsLoading(true)
     try {
       const response = await authApi.login(data)
-      login(response.data.user, response.data.token)
+      const { user, token } = response.data.data
+      login(user, token)
       toast({
         title: 'Welcome back!',
-        description: `Logged in as ${response.data.user.username}`,
+        description: `Logged in as ${user.username}`,
       })
       navigate('/')
     } catch (error: unknown) {
