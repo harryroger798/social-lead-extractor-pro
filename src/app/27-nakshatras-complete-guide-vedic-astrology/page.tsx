@@ -341,31 +341,31 @@ const nakshatras = [
   },
 ];
 
-const faqs = [
-  {
-    question: "What is a Nakshatra in Vedic Astrology?",
-    answer: "A Nakshatra is one of 27 lunar mansions or star constellations that the Moon passes through during its monthly cycle. Each Nakshatra spans 13°20' of the zodiac and has unique characteristics, ruling deity, and planetary lord that influence those born under it.",
-  },
-  {
-    question: "How do I find my birth Nakshatra?",
-    answer: "Your birth Nakshatra (Janma Nakshatra) is determined by the Moon's position at the exact time and place of your birth. You can use our free Nakshatra Finder tool or consult your Kundli to find your Nakshatra.",
-  },
-  {
-    question: "What is the importance of Nakshatra in marriage matching?",
-    answer: "Nakshatra matching (Nakshatra Porutham) is a crucial part of horoscope matching for marriage in Vedic astrology. It assesses compatibility between partners based on their birth Nakshatras, considering factors like Gana (temperament), Yoni (sexual compatibility), and Nadi (health).",
-  },
-  {
-    question: "Can Nakshatra predict personality traits?",
-    answer: "Yes, your birth Nakshatra reveals deep insights about your personality, emotional nature, strengths, challenges, and life tendencies. It's considered more precise than zodiac signs for understanding individual characteristics.",
-  },
-  {
-    question: "What is the difference between Rashi and Nakshatra?",
-    answer: "Rashi (zodiac sign) divides the zodiac into 12 equal parts of 30° each, while Nakshatras divide it into 27 parts of 13°20' each. Nakshatras provide more detailed and nuanced information about personality and destiny compared to Rashis.",
-  },
-];
-
 export default function NakshatrasGuidePage() {
   const { t } = useLanguage();
+
+  const faqs = [
+    {
+      question: t('guides.nakshatras.faq.q1', "What is a Nakshatra in Vedic Astrology?"),
+      answer: t('guides.nakshatras.faq.a1', "A Nakshatra is one of 27 lunar mansions or star constellations that the Moon passes through during its monthly cycle. Each Nakshatra spans 13°20' of the zodiac and has unique characteristics, ruling deity, and planetary lord that influence those born under it."),
+    },
+    {
+      question: t('guides.nakshatras.faq.q2', "How do I find my birth Nakshatra?"),
+      answer: t('guides.nakshatras.faq.a2', "Your birth Nakshatra (Janma Nakshatra) is determined by the Moon's position at the exact time and place of your birth. You can use our free Nakshatra Finder tool or consult your Kundli to find your Nakshatra."),
+    },
+    {
+      question: t('guides.nakshatras.faq.q3', "What is the importance of Nakshatra in marriage matching?"),
+      answer: t('guides.nakshatras.faq.a3', "Nakshatra matching (Nakshatra Porutham) is a crucial part of horoscope matching for marriage in Vedic astrology. It assesses compatibility between partners based on their birth Nakshatras, considering factors like Gana (temperament), Yoni (sexual compatibility), and Nadi (health)."),
+    },
+    {
+      question: t('guides.nakshatras.faq.q4', "Can Nakshatra predict personality traits?"),
+      answer: t('guides.nakshatras.faq.a4', "Yes, your birth Nakshatra reveals deep insights about your personality, emotional nature, strengths, challenges, and life tendencies. It's considered more precise than zodiac signs for understanding individual characteristics."),
+    },
+    {
+      question: t('guides.nakshatras.faq.q5', "What is the difference between Rashi and Nakshatra?"),
+      answer: t('guides.nakshatras.faq.a5', "Rashi (zodiac sign) divides the zodiac into 12 equal parts of 30° each, while Nakshatras divide it into 27 parts of 13°20' each. Nakshatras provide more detailed and nuanced information about personality and destiny compared to Rashis."),
+    },
+  ];
   return (
     <article className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -380,9 +380,9 @@ export default function NakshatrasGuidePage() {
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              20 min read
+              {t('guides.nakshatras.readTime', '20 min read')}
             </span>
-            <span>Updated: January 2025</span>
+            <span>{t('guides.nakshatras.updated', 'Updated: January 2025')}</span>
           </div>
         </div>
 
@@ -399,20 +399,16 @@ export default function NakshatrasGuidePage() {
 
         <Card className="mb-8 bg-amber-50 border-amber-200">
           <CardContent className="pt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">TL;DR - Quick Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('guides.nakshatras.tldr.title', 'TL;DR - Quick Summary')}</h2>
             <p className="text-gray-700 mb-4">
-              Nakshatras are 27 lunar mansions in Vedic astrology, each spanning 13°20&apos; of the zodiac. 
-              Your birth Nakshatra (based on Moon&apos;s position) reveals your emotional nature, personality 
-              traits, and life path. Each Nakshatra has a ruling planet, deity, symbol, and unique 
-              characteristics. They&apos;re essential for marriage matching, muhurta selection, and the 
-              Vimshottari Dasha system.
+              {t('guides.nakshatras.tldr.content', "Nakshatras are 27 lunar mansions in Vedic astrology, each spanning 13°20' of the zodiac. Your birth Nakshatra (based on Moon's position) reveals your emotional nature, personality traits, and life path. Each Nakshatra has a ruling planet, deity, symbol, and unique characteristics. They're essential for marriage matching, muhurta selection, and the Vimshottari Dasha system.")}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" asChild>
-                <Link href="/tools/nakshatra-finder">Find Your Nakshatra</Link>
+                <Link href="/tools/nakshatra-finder">{t('guides.nakshatras.findYourNakshatra', 'Find Your Nakshatra')}</Link>
               </Button>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/tools/kundli-calculator">Generate Kundli</Link>
+                <Link href="/tools/kundli-calculator">{t('guides.nakshatras.generateKundli', 'Generate Kundli')}</Link>
               </Button>
             </div>
           </CardContent>
@@ -420,19 +416,19 @@ export default function NakshatrasGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Complete List of 27 Nakshatras
+            {t('guides.nakshatras.sections.completeList', 'Complete List of 27 Nakshatras')}
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-amber-50">
-                  <th className="border border-amber-200 px-3 py-2 text-left">#</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Nakshatra</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Degrees</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Lord</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Deity</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Symbol</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Gana</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.number', '#')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.nakshatra', 'Nakshatra')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.degrees', 'Degrees')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.lord', 'Lord')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.deity', 'Deity')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.symbol', 'Symbol')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.nakshatras.table.gana', 'Gana')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -457,7 +453,7 @@ export default function NakshatrasGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Detailed Nakshatra Descriptions
+            {t('guides.nakshatras.sections.detailedDescriptions', 'Detailed Nakshatra Descriptions')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {nakshatras.slice(0, 9).map((nakshatra) => (
@@ -499,7 +495,7 @@ export default function NakshatrasGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            Understanding Nakshatra Groups
+            {t('guides.nakshatras.sections.understandingGroups', 'Understanding Nakshatra Groups')}
           </h2>
           
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -507,10 +503,10 @@ export default function NakshatrasGuidePage() {
               <CardContent className="pt-4">
                 <h3 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
                   <Star className="w-5 h-5" />
-                  Deva Gana (Divine)
+                  {t('guides.nakshatras.gana.deva.title', 'Deva Gana (Divine)')}
                 </h3>
                 <p className="text-sm text-green-700 mb-2">
-                  Gentle, spiritual, and benevolent nature. Good for spiritual pursuits.
+                  {t('guides.nakshatras.gana.deva.desc', 'Gentle, spiritual, and benevolent nature. Good for spiritual pursuits.')}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {["Ashwini", "Mrigashira", "Punarvasu", "Pushya", "Hasta", "Swati", "Anuradha", "Shravana", "Revati"].map(n => (
@@ -524,10 +520,10 @@ export default function NakshatrasGuidePage() {
               <CardContent className="pt-4">
                 <h3 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
                   <Star className="w-5 h-5" />
-                  Manushya Gana (Human)
+                  {t('guides.nakshatras.gana.manushya.title', 'Manushya Gana (Human)')}
                 </h3>
                 <p className="text-sm text-amber-700 mb-2">
-                  Balanced nature with both material and spiritual interests.
+                  {t('guides.nakshatras.gana.manushya.desc', 'Balanced nature with both material and spiritual interests.')}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {["Bharani", "Rohini", "Purva Phalguni", "Uttara Phalguni", "Purva Ashadha", "Uttara Ashadha", "Purva Bhadrapada", "Uttara Bhadrapada"].map(n => (
@@ -541,10 +537,10 @@ export default function NakshatrasGuidePage() {
               <CardContent className="pt-4">
                 <h3 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
                   <Star className="w-5 h-5" />
-                  Rakshasa Gana (Demon)
+                  {t('guides.nakshatras.gana.rakshasa.title', 'Rakshasa Gana (Demon)')}
                 </h3>
                 <p className="text-sm text-red-700 mb-2">
-                  Intense, powerful, and transformative. Strong willpower.
+                  {t('guides.nakshatras.gana.rakshasa.desc', 'Intense, powerful, and transformative. Strong willpower.')}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {["Krittika", "Ashlesha", "Magha", "Chitra", "Vishakha", "Jyeshtha", "Mula", "Dhanishta", "Shatabhisha"].map(n => (
@@ -558,7 +554,7 @@ export default function NakshatrasGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
+            {t('guides.nakshatras.sections.faq', 'Frequently Asked Questions')}
           </h2>
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
@@ -572,20 +568,20 @@ export default function NakshatrasGuidePage() {
 
         <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Discover Your Nakshatra</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('guides.nakshatras.cta.title', 'Discover Your Nakshatra')}</h2>
             <p className="mb-4 text-amber-100">
-              Find your birth Nakshatra and understand its influence on your life.
+              {t('guides.nakshatras.cta.description', 'Find your birth Nakshatra and understand its influence on your life.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
                 <Link href="/tools/nakshatra-finder">
-                  Find My Nakshatra
+                  {t('guides.nakshatras.cta.findMyNakshatra', 'Find My Nakshatra')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
-                            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/consultation">Expert Consultation</Link>
-                            </Button>
+              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                <Link href="/consultation">{t('guides.nakshatras.cta.expertConsultation', 'Expert Consultation')}</Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
