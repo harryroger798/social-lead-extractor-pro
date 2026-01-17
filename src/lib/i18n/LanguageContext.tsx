@@ -31,18 +31,23 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string | un
   let current: unknown = obj;
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
+    
+    // First, try to find a flat key with dots at the current level
+    // This handles keys like "pitraDosh.causes.cause1" stored as flat strings
+    if (current && typeof current === 'object') {
+      const remainingPath = keys.slice(i).join('.');
+      if (remainingPath in (current as Record<string, unknown>)) {
+        const value = (current as Record<string, unknown>)[remainingPath];
+        if (typeof value === 'string') {
+          return value;
+        }
+      }
+    }
+    
+    // Then try nested traversal
     if (current && typeof current === 'object' && key in current) {
       current = (current as Record<string, unknown>)[key];
     } else {
-      // Try to find a flat key with dots at the current level
-      // This handles keys like "pitraDosh.causes.cause1" stored as flat strings
-      if (current && typeof current === 'object') {
-        const remainingPath = keys.slice(i).join('.');
-        if (remainingPath in (current as Record<string, unknown>)) {
-          const value = (current as Record<string, unknown>)[remainingPath];
-          return typeof value === 'string' ? value : undefined;
-        }
-      }
       return undefined;
     }
   }
