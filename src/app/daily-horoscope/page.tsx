@@ -207,9 +207,9 @@ export default function DailyHoroscopePage() {
             >
               <CardContent className="pt-4 text-center">
                 <div className="text-3xl mb-2">{sign.symbol}</div>
-                <h3 className="font-semibold text-gray-900">{sign.name}</h3>
-                <p className="text-xs text-gray-500">{sign.hindi}</p>
-                <p className="text-xs text-gray-400 mt-1">{sign.dates}</p>
+                <h3 className="font-semibold text-gray-900">{t(`horoscope.zodiac.${sign.name.toLowerCase()}`, sign.name)}</h3>
+                <p className="text-xs text-gray-500">{t(`horoscope.zodiacHindi.${sign.name.toLowerCase()}`, sign.hindi)}</p>
+                <p className="text-xs text-gray-400 mt-1">{t(`horoscope.zodiacDates.${sign.name.toLowerCase()}`, sign.dates)}</p>
               </CardContent>
             </Card>
           ))}
@@ -225,10 +225,10 @@ export default function DailyHoroscopePage() {
                       {zodiacSigns.find((s) => s.name === selectedSign)?.symbol}
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">{selectedSign}</h2>
+                      <h2 className="text-2xl font-bold text-gray-900">{t(`horoscope.zodiac.${selectedSign.toLowerCase()}`, selectedSign)}</h2>
                       <p className="text-gray-600">
-                        {zodiacSigns.find((s) => s.name === selectedSign)?.hindi} |{" "}
-                        {zodiacSigns.find((s) => s.name === selectedSign)?.element} Sign
+                        {t(`horoscope.zodiacHindi.${selectedSign.toLowerCase()}`, zodiacSigns.find((s) => s.name === selectedSign)?.hindi)} |{" "}
+                        {t(`horoscope.element.${zodiacSigns.find((s) => s.name === selectedSign)?.element.toLowerCase()}`, zodiacSigns.find((s) => s.name === selectedSign)?.element)} {t('horoscope.sign', 'Sign')}
                       </p>
                     </div>
                   </div>
@@ -251,11 +251,11 @@ export default function DailyHoroscopePage() {
 
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Lucky Number</p>
+                    <p className="text-sm text-gray-600">{t('horoscope.luckyNumber', 'Lucky Number')}</p>
                     <p className="text-2xl font-bold text-amber-600">{horoscope.luckyNumber}</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Lucky Color</p>
+                    <p className="text-sm text-gray-600">{t('horoscope.luckyColor', 'Lucky Color')}</p>
                     <p className="text-2xl font-bold text-amber-600">{horoscope.luckyColor}</p>
                   </div>
                 </div>
@@ -319,10 +319,10 @@ export default function DailyHoroscopePage() {
             <CardContent className="pt-6 text-center">
               <Moon className="w-12 h-12 mx-auto text-amber-600 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Select Your Zodiac Sign
+                {t('horoscope.selectYourSign', 'Select Your Zodiac Sign')}
               </h3>
               <p className="text-gray-600">
-                Click on your zodiac sign above to view your personalized daily horoscope.
+                {t('horoscope.clickToView', 'Click on your zodiac sign above to view your personalized daily horoscope.')}
               </p>
             </CardContent>
           </Card>
@@ -330,17 +330,17 @@ export default function DailyHoroscopePage() {
 
         <div className="mt-12 text-center">
           <p className="text-gray-600 mb-4">
-            Want a more detailed and personalized reading based on your exact birth chart?
+            {t('horoscope.wantDetailedReading', 'Want a more detailed and personalized reading based on your exact birth chart?')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
               <Link href="/tools/kundli-calculator">
-                Generate Free Kundli
+                {t('horoscope.generateFreeKundli', 'Generate Free Kundli')}
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Link>
             </Button>
             <Button variant="outline" className="border-amber-500 text-amber-600" asChild>
-              <Link href="/consultation">Talk to an Astrologer</Link>
+              <Link href="/consultation">{t('horoscope.talkToAstrologer', 'Talk to an Astrologer')}</Link>
             </Button>
           </div>
         </div>
