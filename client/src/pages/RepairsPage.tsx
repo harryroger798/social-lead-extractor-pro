@@ -51,7 +51,7 @@ const STATUSES = ['pending', 'diagnosed', 'waiting_parts', 'in_progress', 'compl
 
 export function RepairsPage() {
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingRepair, setEditingRepair] = useState<Repair | null>(null)
   const [viewingRepair, setViewingRepair] = useState<Repair | null>(null)
@@ -60,7 +60,7 @@ export function RepairsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['repairs', search, statusFilter],
-    queryFn: () => repairsApi.getAll({ search, status: statusFilter || undefined, limit: 50 }),
+    queryFn: () => repairsApi.getAll({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 }),
   })
 
   const { data: customersData } = useQuery({
@@ -159,7 +159,7 @@ export function RepairsPage() {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 {STATUSES.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status.replace('_', ' ')}

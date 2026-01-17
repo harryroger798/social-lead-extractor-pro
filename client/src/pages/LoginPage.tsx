@@ -43,7 +43,7 @@ export function LoginPage() {
         title: 'Welcome back!',
         description: `Logged in as ${user.username}`,
       })
-      navigate('/')
+      navigate('/app')
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } }
       toast({

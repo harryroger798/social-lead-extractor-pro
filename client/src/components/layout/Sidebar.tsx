@@ -17,15 +17,15 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Repairs', href: '/repairs', icon: Wrench },
-  { name: 'Invoices', href: '/invoices', icon: FileText },
-  { name: 'Services', href: '/services', icon: Package },
-  { name: 'Digital Services', href: '/digital-services', icon: Monitor },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Activity Log', href: '/activity', icon: Activity },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/app', icon: LayoutDashboard },
+  { name: 'Customers', href: '/app/customers', icon: Users },
+  { name: 'Repairs', href: '/app/repairs', icon: Wrench },
+  { name: 'Invoices', href: '/app/invoices', icon: FileText },
+  { name: 'Services', href: '/app/services', icon: Package },
+  { name: 'Digital Services', href: '/app/digital-services', icon: Monitor },
+  { name: 'Reports', href: '/app/reports', icon: BarChart3 },
+  { name: 'Activity Log', href: '/app/activity', icon: Activity },
+  { name: 'Settings', href: '/app/settings', icon: Settings },
 ]
 
 export function Sidebar() {

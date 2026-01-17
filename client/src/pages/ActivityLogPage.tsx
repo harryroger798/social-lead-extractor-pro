@@ -32,8 +32,8 @@ const TABLES = ['customers', 'repairs', 'invoices', 'services', 'digital_service
 
 export function ActivityLogPage() {
   const [search, setSearch] = useState('')
-  const [actionFilter, setActionFilter] = useState<string>('')
-  const [tableFilter, setTableFilter] = useState<string>('')
+  const [actionFilter, setActionFilter] = useState<string>('all')
+  const [tableFilter, setTableFilter] = useState<string>('all')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
@@ -41,8 +41,8 @@ export function ActivityLogPage() {
     queryKey: ['activity-log', search, actionFilter, tableFilter, dateFrom, dateTo],
     queryFn: () => settingsApi.getActivityLog({
       search: search || undefined,
-      action: actionFilter || undefined,
-      table_name: tableFilter || undefined,
+      action: actionFilter === 'all' ? undefined : actionFilter,
+      table_name: tableFilter === 'all' ? undefined : tableFilter,
       date_from: dateFrom || undefined,
       date_to: dateTo || undefined,
       limit: 100,
@@ -134,7 +134,7 @@ export function ActivityLogPage() {
                   <SelectValue placeholder="All Actions" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Actions</SelectItem>
+                  <SelectItem value="all">All Actions</SelectItem>
                   {ACTIONS.map((action) => (
                     <SelectItem key={action} value={action}>
                       {action.replace('_', ' ')}
@@ -150,7 +150,7 @@ export function ActivityLogPage() {
                   <SelectValue placeholder="All Tables" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Tables</SelectItem>
+                  <SelectItem value="all">All Tables</SelectItem>
                   {TABLES.map((table) => (
                     <SelectItem key={table} value={table}>
                       {table.replace('_', ' ')}

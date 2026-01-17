@@ -49,7 +49,7 @@ const STATUSES = ['pending', 'in_progress', 'review', 'completed', 'cancelled']
 
 export function DigitalServicesPage() {
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<DigitalService | null>(null)
   const [viewingProject, setViewingProject] = useState<DigitalService | null>(null)
@@ -59,7 +59,7 @@ export function DigitalServicesPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['digital-services', search, statusFilter],
-    queryFn: () => digitalServicesApi.getAll({ search, status: statusFilter || undefined, limit: 50 }),
+    queryFn: () => digitalServicesApi.getAll({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 }),
   })
 
   const { data: customersData } = useQuery({
@@ -161,7 +161,7 @@ export function DigitalServicesPage() {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 {STATUSES.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status.replace('_', ' ')}

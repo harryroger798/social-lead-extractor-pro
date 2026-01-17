@@ -49,7 +49,7 @@ const CATEGORIES = ['pc_repair', 'mobile_repair', 'digital_services']
 
 export function ServicesPage() {
   const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<string>('')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false)
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
@@ -59,7 +59,7 @@ export function ServicesPage() {
 
   const { data: servicesData, isLoading: servicesLoading } = useQuery({
     queryKey: ['services', search, categoryFilter],
-    queryFn: () => servicesApi.getAll({ search, category: categoryFilter || undefined }),
+    queryFn: () => servicesApi.getAll({ search, category: categoryFilter === 'all' ? undefined : categoryFilter }),
   })
 
   const { data: phoneModelsData, isLoading: phonesLoading } = useQuery({
@@ -210,7 +210,7 @@ export function ServicesPage() {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {CATEGORIES.map((cat) => (
                       <SelectItem key={cat} value={cat}>
                         {cat.replace('_', ' ')}

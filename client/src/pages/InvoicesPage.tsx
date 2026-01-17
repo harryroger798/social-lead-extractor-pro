@@ -42,7 +42,7 @@ interface Invoice {
 
 export function InvoicesPage() {
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
   const [qrDialogOpen, setQrDialogOpen] = useState(false)
@@ -53,7 +53,7 @@ export function InvoicesPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['invoices', search, statusFilter],
-    queryFn: () => invoicesApi.getAll({ search, status: statusFilter || undefined, limit: 50 }),
+    queryFn: () => invoicesApi.getAll({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 }),
   })
 
   const markPaidMutation = useMutation({
@@ -131,7 +131,7 @@ export function InvoicesPage() {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="unpaid">Unpaid</SelectItem>
                 <SelectItem value="partial">Partial</SelectItem>
                 <SelectItem value="paid">Paid</SelectItem>
