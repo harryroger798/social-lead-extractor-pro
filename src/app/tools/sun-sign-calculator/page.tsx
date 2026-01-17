@@ -471,7 +471,7 @@ export default function SunSignCalculatorPage() {
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
-                  Read Now <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('common.readNow', 'Read Now')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
