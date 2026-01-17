@@ -412,13 +412,13 @@ export default function MoonSignCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Full Kundli</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.moonSignCalc.fullKundli', 'Full Kundli')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Generate complete birth chart with all planetary positions.
+                {t('calculator.moonSignCalc.fullKundliDesc', 'Generate complete birth chart with all planetary positions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/kundli-calculator">
-                  Generate <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.generate', 'Generate')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
