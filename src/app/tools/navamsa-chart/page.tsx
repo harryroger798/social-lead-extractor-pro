@@ -77,28 +77,28 @@ export default function NavamsaChartPage() {
 
   const chartDescriptions: Record<string, { name: string; purpose: string }> = {
     D1_Rashi: {
-      name: t('calculator.navamsa.charts.d1Name', 'Rashi Chart (D-1)'),
-      purpose: t('calculator.navamsa.charts.d1Purpose', 'Main birth chart showing overall life patterns and personality'),
+      name: t('calculator.navamsa.rashiChart', 'Rashi Chart (D-1)'),
+      purpose: t('calculator.navamsa.rashiChartDesc', 'Main birth chart showing overall life patterns and personality'),
     },
     D9_Navamsa: {
-      name: t('calculator.navamsa.charts.d9Name', 'Navamsa Chart (D-9)'),
-      purpose: t('calculator.navamsa.charts.d9Purpose', 'Marriage, spouse, dharma, and spiritual path. Most important divisional chart.'),
+      name: t('calculator.navamsa.navamsaChart', 'Navamsa Chart (D-9)'),
+      purpose: t('calculator.navamsa.navamsaChartDesc', 'Marriage, spouse, dharma, and spiritual path. Most important divisional chart.'),
     },
     D10_Dasamsa: {
-      name: t('calculator.navamsa.charts.d10Name', 'Dasamsa Chart (D-10)'),
-      purpose: t('calculator.navamsa.charts.d10Purpose', 'Career, profession, status, and achievements in society'),
+      name: t('calculator.navamsa.dasamsaChart', 'Dasamsa Chart (D-10)'),
+      purpose: t('calculator.navamsa.dasamsaChartDesc', 'Career, profession, status, and achievements in society'),
     },
     D7_Saptamsa: {
-      name: t('calculator.navamsa.charts.d7Name', 'Saptamsa Chart (D-7)'),
-      purpose: t('calculator.navamsa.charts.d7Purpose', 'Children, progeny, and creative abilities'),
+      name: t('calculator.navamsa.saptamsaChart', 'Saptamsa Chart (D-7)'),
+      purpose: t('calculator.navamsa.saptamsaChartDesc', 'Children, progeny, and creative abilities'),
     },
     D12_Dwadasamsa: {
-      name: t('calculator.navamsa.charts.d12Name', 'Dwadasamsa Chart (D-12)'),
-      purpose: t('calculator.navamsa.charts.d12Purpose', 'Parents, ancestry, and karmic inheritance'),
+      name: t('calculator.navamsa.dwadasamsaChart', 'Dwadasamsa Chart (D-12)'),
+      purpose: t('calculator.navamsa.dwadasamsaChartDesc', 'Parents, ancestry, and karmic inheritance'),
     },
     D24_Chaturvimsamsa: {
-      name: t('calculator.navamsa.charts.d24Name', 'Chaturvimsamsa Chart (D-24)'),
-      purpose: t('calculator.navamsa.charts.d24Purpose', 'Education, learning, and academic achievements'),
+      name: t('calculator.navamsa.chaturvimsamsaChart', 'Chaturvimsamsa Chart (D-24)'),
+      purpose: t('calculator.navamsa.chaturvimsamsaChartDesc', 'Education, learning, and academic achievements'),
     },
   };
 
