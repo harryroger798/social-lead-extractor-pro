@@ -16,102 +16,8 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-const consultationTypes = [
-  {
-    image: "/images/phone-consultation.png",
-    title: "Phone Consultation",
-    duration: "30-60 minutes",
-    price: "₹999",
-    originalPrice: "₹1,499",
-    description: "Direct phone call with our expert astrologer for personalized guidance.",
-    features: [
-      "One-on-one discussion",
-      "Kundli analysis",
-      "Personalized predictions",
-      "Remedies recommendation",
-      "Follow-up support",
-    ],
-    popular: false,
-  },
-  {
-    image: "/images/video-consultation.png",
-    title: "Video Consultation",
-    duration: "45-60 minutes",
-    price: "₹1,499",
-    originalPrice: "₹2,499",
-    description: "Face-to-face video session with screen sharing for detailed chart analysis.",
-    features: [
-      "Face-to-face interaction",
-      "Screen sharing for charts",
-      "Detailed Kundli walkthrough",
-      "Visual remedies explanation",
-      "Recording available",
-      "Priority support",
-    ],
-    popular: true,
-  },
-  {
-    image: "/images/chat-consultation.png",
-    title: "Chat Consultation",
-    duration: "Unlimited (24 hours)",
-    price: "₹499",
-    originalPrice: "₹799",
-    description: "Text-based consultation at your convenience within 24 hours.",
-    features: [
-      "Flexible timing",
-      "Written analysis report",
-      "Ask multiple questions",
-      "Reference anytime",
-      "Email summary",
-    ],
-    popular: false,
-  },
-];
-
-const astrologers = [
-  {
-    name: "Pt. Ramesh Sharma",
-    specialization: "Kundli Analysis, Career",
-    experience: "25+ years",
-    rating: 4.9,
-    consultations: 15000,
-    languages: ["Hindi", "English"],
-    image: "/images/astrologer-profile.png",
-  },
-  {
-    name: "Dr. Lakshmi Devi",
-    specialization: "Marriage, Relationships",
-    experience: "20+ years",
-    rating: 4.8,
-    consultations: 12000,
-    languages: ["Hindi", "English", "Telugu"],
-    image: "/images/astrologer-profile.png",
-  },
-  {
-    name: "Acharya Suresh Kumar",
-    specialization: "Remedies, Doshas",
-    experience: "18+ years",
-    rating: 4.9,
-    consultations: 10000,
-    languages: ["Hindi", "English", "Kannada"],
-    image: "/images/astrologer-profile.png",
-  },
-];
-
-const consultationTopics = [
-  "Career & Business",
-  "Marriage & Relationships",
-  "Health & Wellness",
-  "Finance & Wealth",
-  "Education & Studies",
-  "Family & Children",
-  "Property & Legal",
-  "Foreign Travel",
-  "Dosha Analysis",
-  "Gemstone Recommendation",
-  "Muhurta Selection",
-  "Annual Predictions",
-];
+// Testimonials stay in original language as requested by user
+// consultationTypes, astrologers, consultationTopics moved inside component to use t() function
 
 const testimonials = [
   {
@@ -137,27 +43,133 @@ const testimonials = [
   },
 ];
 
-const faqs = [
-  {
-    question: "What information do I need for a consultation?",
-    answer: "You'll need your exact date, time, and place of birth. If you don't know your exact birth time, our astrologers can help with birth time rectification.",
-  },
-  {
-    question: "How do I prepare for my consultation?",
-    answer: "Write down your specific questions beforehand. Have your birth details ready. For video consultations, ensure you have a stable internet connection.",
-  },
-  {
-    question: "Can I get a refund if I'm not satisfied?",
-    answer: "Yes, we offer a 100% satisfaction guarantee. If you're not satisfied with your consultation, contact us within 24 hours for a full refund.",
-  },
-  {
-    question: "How soon can I book a consultation?",
-    answer: "Most consultations can be scheduled within 24-48 hours. For urgent matters, we offer same-day appointments with available astrologers.",
-  },
-];
 
 export default function ConsultationPage() {
   const { t } = useLanguage();
+
+  const consultationTypes = [
+    {
+      image: "/images/phone-consultation.png",
+      title: t('consultation.phoneTitle', 'Phone Consultation'),
+      duration: t('consultation.phoneDuration', '30-60 minutes'),
+      price: "₹999",
+      originalPrice: "₹1,499",
+      description: t('consultation.phoneDesc', 'Direct phone call with our expert astrologer for personalized guidance.'),
+      features: [
+        t('consultation.feature.oneOnOne', 'One-on-one discussion'),
+        t('consultation.feature.kundliAnalysis', 'Kundli analysis'),
+        t('consultation.feature.personalizedPredictions', 'Personalized predictions'),
+        t('consultation.feature.remediesRecommendation', 'Remedies recommendation'),
+        t('consultation.feature.followUpSupport', 'Follow-up support'),
+      ],
+      popular: false,
+    },
+    {
+      image: "/images/video-consultation.png",
+      title: t('consultation.videoTitle', 'Video Consultation'),
+      duration: t('consultation.videoDuration', '45-60 minutes'),
+      price: "₹1,499",
+      originalPrice: "₹2,499",
+      description: t('consultation.videoDesc', 'Face-to-face video session with screen sharing for detailed chart analysis.'),
+      features: [
+        t('consultation.feature.faceToFace', 'Face-to-face interaction'),
+        t('consultation.feature.screenSharing', 'Screen sharing for charts'),
+        t('consultation.feature.detailedWalkthrough', 'Detailed Kundli walkthrough'),
+        t('consultation.feature.visualRemedies', 'Visual remedies explanation'),
+        t('consultation.feature.recordingAvailable', 'Recording available'),
+        t('consultation.feature.prioritySupport', 'Priority support'),
+      ],
+      popular: true,
+    },
+    {
+      image: "/images/chat-consultation.png",
+      title: t('consultation.chatTitle', 'Chat Consultation'),
+      duration: t('consultation.chatDuration', 'Unlimited (24 hours)'),
+      price: "₹499",
+      originalPrice: "₹799",
+      description: t('consultation.chatDesc', 'Text-based consultation at your convenience within 24 hours.'),
+      features: [
+        t('consultation.feature.flexibleTiming', 'Flexible timing'),
+        t('consultation.feature.writtenReport', 'Written analysis report'),
+        t('consultation.feature.multipleQuestions', 'Ask multiple questions'),
+        t('consultation.feature.referenceAnytime', 'Reference anytime'),
+        t('consultation.feature.emailSummary', 'Email summary'),
+      ],
+      popular: false,
+    },
+  ];
+
+  const astrologers = [
+    {
+      name: "Pt. Ramesh Sharma",
+      specialization: t('consultation.spec.kundliCareer', 'Kundli Analysis, Career'),
+      experience: t('consultation.exp.25years', '25+ years'),
+      rating: 4.9,
+      consultations: 15000,
+      languages: [t('common.hindi', 'Hindi'), t('common.english', 'English')],
+      image: "/images/astrologer-profile.png",
+    },
+    {
+      name: "Dr. Lakshmi Devi",
+      specialization: t('consultation.spec.marriageRelationships', 'Marriage, Relationships'),
+      experience: t('consultation.exp.20years', '20+ years'),
+      rating: 4.8,
+      consultations: 12000,
+      languages: [t('common.hindi', 'Hindi'), t('common.english', 'English'), t('common.telugu', 'Telugu')],
+      image: "/images/astrologer-profile.png",
+    },
+    {
+      name: "Acharya Suresh Kumar",
+      specialization: t('consultation.spec.remediesDoshas', 'Remedies, Doshas'),
+      experience: t('consultation.exp.18years', '18+ years'),
+      rating: 4.9,
+      consultations: 10000,
+      languages: [t('common.hindi', 'Hindi'), t('common.english', 'English'), t('common.kannada', 'Kannada')],
+      image: "/images/astrologer-profile.png",
+    },
+  ];
+
+  const consultationTopics = [
+    t('consultation.topic.careerBusiness', 'Career & Business'),
+    t('consultation.topic.marriageRelationships', 'Marriage & Relationships'),
+    t('consultation.topic.healthWellness', 'Health & Wellness'),
+    t('consultation.topic.financeWealth', 'Finance & Wealth'),
+    t('consultation.topic.educationStudies', 'Education & Studies'),
+    t('consultation.topic.familyChildren', 'Family & Children'),
+    t('consultation.topic.propertyLegal', 'Property & Legal'),
+    t('consultation.topic.foreignTravel', 'Foreign Travel'),
+    t('consultation.topic.doshaAnalysis', 'Dosha Analysis'),
+    t('consultation.topic.gemstoneRecommendation', 'Gemstone Recommendation'),
+    t('consultation.topic.muhurtaSelection', 'Muhurta Selection'),
+    t('consultation.topic.annualPredictions', 'Annual Predictions'),
+  ];
+
+  const faqs = [
+    {
+      question: t('consultation.faq.q1', 'What information do I need for a consultation?'),
+      answer: t('consultation.faq.a1', "You'll need your exact date, time, and place of birth. If you don't know your exact birth time, our astrologers can help with birth time rectification."),
+    },
+    {
+      question: t('consultation.faq.q2', 'How do I prepare for my consultation?'),
+      answer: t('consultation.faq.a2', 'Write down your specific questions beforehand. Have your birth details ready. For video consultations, ensure you have a stable internet connection.'),
+    },
+    {
+      question: t('consultation.faq.q3', "Can I get a refund if I'm not satisfied?"),
+      answer: t('consultation.faq.a3', "Yes, we offer a 100% satisfaction guarantee. If you're not satisfied with your consultation, contact us within 24 hours for a full refund."),
+    },
+    {
+      question: t('consultation.faq.q4', 'How soon can I book a consultation?'),
+      answer: t('consultation.faq.a4', 'Most consultations can be scheduled within 24-48 hours. For urgent matters, we offer same-day appointments with available astrologers.'),
+    },
+  ];
+
+  const whyChooseUs = [
+    { icon: Shield, title: t('consultation.why.verifiedExperts', 'Verified Experts'), desc: t('consultation.why.verifiedExpertsDesc', 'All astrologers verified with 10+ years experience') },
+    { icon: Award, title: t('consultation.why.satisfaction', '100% Satisfaction'), desc: t('consultation.why.satisfactionDesc', 'Full refund if not satisfied with consultation') },
+    { icon: Clock, title: t('consultation.why.available247', '24/7 Available'), desc: t('consultation.why.available247Desc', 'Book consultations anytime, any day') },
+    { icon: Users, title: t('consultation.why.happyClients', '50,000+ Happy Clients'), desc: t('consultation.why.happyClientsDesc', 'Trusted by thousands across India') },
+  ];
+
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -274,7 +286,7 @@ export default function ConsultationPage() {
                   <div className="flex items-center gap-2 mb-4">
                     <Users className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      {astrologer.consultations.toLocaleString()}+ consultations
+                      {astrologer.consultations.toLocaleString()}+ {t('consultation.consultationsCount', 'consultations')}
                     </span>
                   </div>
                   
@@ -327,12 +339,7 @@ export default function ConsultationPage() {
           </div>
           
           <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { icon: Shield, title: "Verified Experts", desc: "All astrologers verified with 10+ years experience" },
-              { icon: Award, title: "100% Satisfaction", desc: "Full refund if not satisfied with consultation" },
-              { icon: Clock, title: "24/7 Available", desc: "Book consultations anytime, any day" },
-              { icon: Users, title: "50,000+ Happy Clients", desc: "Trusted by thousands across India" },
-            ].map((item) => (
+            {whyChooseUs.map((item) => (
               <div key={item.title} className="text-center">
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
                   <item.icon className="w-6 h-6 text-amber-600" />
