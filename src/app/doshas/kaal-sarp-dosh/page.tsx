@@ -11,139 +11,139 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const kaalSarpTypes = [
-  {
-    name: "Anant Kaal Sarp Dosh",
-    rahu: "1st House",
-    ketu: "7th House",
-    effects: "Affects health, personality, and marriage. May cause delays in marriage and partnership issues.",
-    severity: "High",
-  },
-  {
-    name: "Kulik Kaal Sarp Dosh",
-    rahu: "2nd House",
-    ketu: "8th House",
-    effects: "Impacts wealth, family, and longevity. Financial instability and family disputes possible.",
-    severity: "High",
-  },
-  {
-    name: "Vasuki Kaal Sarp Dosh",
-    rahu: "3rd House",
-    ketu: "9th House",
-    effects: "Affects courage, siblings, and fortune. May cause issues with siblings and luck.",
-    severity: "Medium",
-  },
-  {
-    name: "Shankhpal Kaal Sarp Dosh",
-    rahu: "4th House",
-    ketu: "10th House",
-    effects: "Impacts home, mother, and career. Property issues and career obstacles possible.",
-    severity: "High",
-  },
-  {
-    name: "Padma Kaal Sarp Dosh",
-    rahu: "5th House",
-    ketu: "11th House",
-    effects: "Affects children, education, and gains. May cause delays in childbirth and income issues.",
-    severity: "Medium",
-  },
-  {
-    name: "Mahapadma Kaal Sarp Dosh",
-    rahu: "6th House",
-    ketu: "12th House",
-    effects: "Impacts enemies, health, and expenses. Legal issues and health problems possible.",
-    severity: "Medium",
-  },
-  {
-    name: "Takshak Kaal Sarp Dosh",
-    rahu: "7th House",
-    ketu: "1st House",
-    effects: "Affects marriage, partnerships, and self. Relationship troubles and identity issues.",
-    severity: "High",
-  },
-  {
-    name: "Karkotak Kaal Sarp Dosh",
-    rahu: "8th House",
-    ketu: "2nd House",
-    effects: "Impacts longevity, secrets, and family. Sudden events and family wealth issues.",
-    severity: "High",
-  },
-  {
-    name: "Shankhachud Kaal Sarp Dosh",
-    rahu: "9th House",
-    ketu: "3rd House",
-    effects: "Affects fortune, father, and courage. Luck fluctuations and sibling issues.",
-    severity: "Medium",
-  },
-  {
-    name: "Ghatak Kaal Sarp Dosh",
-    rahu: "10th House",
-    ketu: "4th House",
-    effects: "Impacts career, reputation, and home. Professional setbacks and domestic unrest.",
-    severity: "High",
-  },
-  {
-    name: "Vishdhar Kaal Sarp Dosh",
-    rahu: "11th House",
-    ketu: "5th House",
-    effects: "Affects gains, friends, and children. Income fluctuations and children-related concerns.",
-    severity: "Medium",
-  },
-  {
-    name: "Sheshnag Kaal Sarp Dosh",
-    rahu: "12th House",
-    ketu: "6th House",
-    effects: "Impacts expenses, spirituality, and enemies. Foreign connections and hidden enemies.",
-    severity: "Medium",
-  },
-];
-
-const remedies = {
-  puja: [
-    "Perform Kaal Sarp Dosh Nivaran Puja at Trimbakeshwar",
-    "Conduct Rahu-Ketu Shanti Puja",
-    "Perform Naag Panchami Puja with devotion",
-    "Visit Kaal Sarp temples like Mahakaleshwar, Ujjain",
-    "Perform Rudrabhishek on Mondays",
-    "Conduct Sarpa Suktam Parayanam",
-  ],
-  mantras: [
-    "Chant Rahu Mantra: 'Om Bhram Bhreem Bhroum Sah Rahave Namaha' 18,000 times",
-    "Chant Ketu Mantra: 'Om Stram Streem Straum Sah Ketave Namaha' 17,000 times",
-    "Recite Maha Mrityunjaya Mantra 108 times daily",
-    "Chant Naag Gayatri Mantra on Naag Panchami",
-    "Recite Vishnu Sahasranama on Saturdays",
-  ],
-  donations: [
-    "Donate black and white sesame seeds on Saturdays",
-    "Feed snakes milk on Naag Panchami (symbolically at temples)",
-    "Donate blankets to the needy",
-    "Offer coconut and flowers at snake temples",
-    "Donate iron items on Saturdays",
-  ],
-  lifestyle: [
-    "Wear Gomed (Hessonite) for Rahu after consultation",
-    "Wear Cat's Eye (Lehsunia) for Ketu after consultation",
-    "Keep a silver snake idol at home and worship",
-    "Avoid harming snakes or any reptiles",
-    "Practice meditation and spiritual activities",
-    "Fast on Naag Panchami",
-  ],
-};
-
-const generalEffects = [
-  "Delays and obstacles in major life events",
-  "Sudden ups and downs in career and finances",
-  "Health issues, especially related to nervous system",
-  "Relationship and marriage difficulties",
-  "Mental stress, anxiety, and fear",
-  "Obstacles in education and career growth",
-  "Property and legal disputes",
-  "Lack of peace and satisfaction despite efforts",
-];
-
 export default function KaalSarpDoshPage() {
   const { t } = useLanguage();
+
+  const kaalSarpTypes = [
+    {
+      name: t('dosha.kaalSarp.types.anant.name', 'Anant Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house1', '1st House'),
+      ketu: t('dosha.kaalSarp.house7', '7th House'),
+      effects: t('dosha.kaalSarp.types.anant.effects', 'Affects health, personality, and marriage. May cause delays in marriage and partnership issues.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.kulik.name', 'Kulik Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house2', '2nd House'),
+      ketu: t('dosha.kaalSarp.house8', '8th House'),
+      effects: t('dosha.kaalSarp.types.kulik.effects', 'Impacts wealth, family, and longevity. Financial instability and family disputes possible.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.vasuki.name', 'Vasuki Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house3', '3rd House'),
+      ketu: t('dosha.kaalSarp.house9', '9th House'),
+      effects: t('dosha.kaalSarp.types.vasuki.effects', 'Affects courage, siblings, and fortune. May cause issues with siblings and luck.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.shankhpal.name', 'Shankhpal Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house4', '4th House'),
+      ketu: t('dosha.kaalSarp.house10', '10th House'),
+      effects: t('dosha.kaalSarp.types.shankhpal.effects', 'Impacts home, mother, and career. Property issues and career obstacles possible.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.padma.name', 'Padma Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house5', '5th House'),
+      ketu: t('dosha.kaalSarp.house11', '11th House'),
+      effects: t('dosha.kaalSarp.types.padma.effects', 'Affects children, education, and gains. May cause delays in childbirth and income issues.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.mahapadma.name', 'Mahapadma Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house6', '6th House'),
+      ketu: t('dosha.kaalSarp.house12', '12th House'),
+      effects: t('dosha.kaalSarp.types.mahapadma.effects', 'Impacts enemies, health, and expenses. Legal issues and health problems possible.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.takshak.name', 'Takshak Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house7', '7th House'),
+      ketu: t('dosha.kaalSarp.house1', '1st House'),
+      effects: t('dosha.kaalSarp.types.takshak.effects', 'Affects marriage, partnerships, and self. Relationship troubles and identity issues.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.karkotak.name', 'Karkotak Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house8', '8th House'),
+      ketu: t('dosha.kaalSarp.house2', '2nd House'),
+      effects: t('dosha.kaalSarp.types.karkotak.effects', 'Impacts longevity, secrets, and family. Sudden events and family wealth issues.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.shankhachud.name', 'Shankhachud Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house9', '9th House'),
+      ketu: t('dosha.kaalSarp.house3', '3rd House'),
+      effects: t('dosha.kaalSarp.types.shankhachud.effects', 'Affects fortune, father, and courage. Luck fluctuations and sibling issues.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.ghatak.name', 'Ghatak Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house10', '10th House'),
+      ketu: t('dosha.kaalSarp.house4', '4th House'),
+      effects: t('dosha.kaalSarp.types.ghatak.effects', 'Impacts career, reputation, and home. Professional setbacks and domestic unrest.'),
+      severity: t('dosha.severity.high', 'High'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.vishdhar.name', 'Vishdhar Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house11', '11th House'),
+      ketu: t('dosha.kaalSarp.house5', '5th House'),
+      effects: t('dosha.kaalSarp.types.vishdhar.effects', 'Affects gains, friends, and children. Income fluctuations and children-related concerns.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+    {
+      name: t('dosha.kaalSarp.types.sheshnag.name', 'Sheshnag Kaal Sarp Dosh'),
+      rahu: t('dosha.kaalSarp.house12', '12th House'),
+      ketu: t('dosha.kaalSarp.house6', '6th House'),
+      effects: t('dosha.kaalSarp.types.sheshnag.effects', 'Impacts expenses, spirituality, and enemies. Foreign connections and hidden enemies.'),
+      severity: t('dosha.severity.medium', 'Medium'),
+    },
+  ];
+
+  const remedies = {
+    puja: [
+      t('dosha.kaalSarp.remedies.puja.1', 'Perform Kaal Sarp Dosh Nivaran Puja at Trimbakeshwar'),
+      t('dosha.kaalSarp.remedies.puja.2', 'Conduct Rahu-Ketu Shanti Puja'),
+      t('dosha.kaalSarp.remedies.puja.3', 'Perform Naag Panchami Puja with devotion'),
+      t('dosha.kaalSarp.remedies.puja.4', 'Visit Kaal Sarp temples like Mahakaleshwar, Ujjain'),
+      t('dosha.kaalSarp.remedies.puja.5', 'Perform Rudrabhishek on Mondays'),
+      t('dosha.kaalSarp.remedies.puja.6', 'Conduct Sarpa Suktam Parayanam'),
+    ],
+    mantras: [
+      t('dosha.kaalSarp.remedies.mantras.1', "Chant Rahu Mantra: 'Om Bhram Bhreem Bhroum Sah Rahave Namaha' 18,000 times"),
+      t('dosha.kaalSarp.remedies.mantras.2', "Chant Ketu Mantra: 'Om Stram Streem Straum Sah Ketave Namaha' 17,000 times"),
+      t('dosha.kaalSarp.remedies.mantras.3', 'Recite Maha Mrityunjaya Mantra 108 times daily'),
+      t('dosha.kaalSarp.remedies.mantras.4', 'Chant Naag Gayatri Mantra on Naag Panchami'),
+      t('dosha.kaalSarp.remedies.mantras.5', 'Recite Vishnu Sahasranama on Saturdays'),
+    ],
+    donations: [
+      t('dosha.kaalSarp.remedies.donations.1', 'Donate black and white sesame seeds on Saturdays'),
+      t('dosha.kaalSarp.remedies.donations.2', 'Feed snakes milk on Naag Panchami (symbolically at temples)'),
+      t('dosha.kaalSarp.remedies.donations.3', 'Donate blankets to the needy'),
+      t('dosha.kaalSarp.remedies.donations.4', 'Offer coconut and flowers at snake temples'),
+      t('dosha.kaalSarp.remedies.donations.5', 'Donate iron items on Saturdays'),
+    ],
+    lifestyle: [
+      t('dosha.kaalSarp.remedies.lifestyle.1', 'Wear Gomed (Hessonite) for Rahu after consultation'),
+      t('dosha.kaalSarp.remedies.lifestyle.2', "Wear Cat's Eye (Lehsunia) for Ketu after consultation"),
+      t('dosha.kaalSarp.remedies.lifestyle.3', 'Keep a silver snake idol at home and worship'),
+      t('dosha.kaalSarp.remedies.lifestyle.4', 'Avoid harming snakes or any reptiles'),
+      t('dosha.kaalSarp.remedies.lifestyle.5', 'Practice meditation and spiritual activities'),
+      t('dosha.kaalSarp.remedies.lifestyle.6', 'Fast on Naag Panchami'),
+    ],
+  };
+
+  const generalEffects = [
+    t('dosha.kaalSarp.effects.1', 'Delays and obstacles in major life events'),
+    t('dosha.kaalSarp.effects.2', 'Sudden ups and downs in career and finances'),
+    t('dosha.kaalSarp.effects.3', 'Health issues, especially related to nervous system'),
+    t('dosha.kaalSarp.effects.4', 'Relationship and marriage difficulties'),
+    t('dosha.kaalSarp.effects.5', 'Mental stress, anxiety, and fear'),
+    t('dosha.kaalSarp.effects.6', 'Obstacles in education and career growth'),
+    t('dosha.kaalSarp.effects.7', 'Property and legal disputes'),
+    t('dosha.kaalSarp.effects.8', 'Lack of peace and satisfaction despite efforts'),
+  ];
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -167,20 +167,13 @@ export default function KaalSarpDoshPage() {
           <CardContent>
             <div className="prose prose-purple max-w-none">
               <p className="text-gray-700 mb-4">
-                Kaal Sarp Dosh is formed when all seven planets (Sun, Moon, Mars, Mercury, 
-                Jupiter, Venus, Saturn) are hemmed between Rahu and Ketu in a birth chart. 
-                This creates a serpent-like formation where Rahu is the head and Ketu is the 
-                tail, with all planets trapped within.
+                {t('dosha.kaalSarp.desc1', 'Kaal Sarp Dosh is formed when all seven planets (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn) are hemmed between Rahu and Ketu in a birth chart. This creates a serpent-like formation where Rahu is the head and Ketu is the tail, with all planets trapped within.')}
               </p>
               <p className="text-gray-700 mb-4">
-                The word &quot;Kaal&quot; means time or death, and &quot;Sarp&quot; means serpent. This yoga 
-                is believed to bring karmic challenges from past lives that need to be 
-                resolved in the current lifetime.
+                {t('dosha.kaalSarp.desc2', 'The word "Kaal" means time or death, and "Sarp" means serpent. This yoga is believed to bring karmic challenges from past lives that need to be resolved in the current lifetime.')}
               </p>
               <p className="text-gray-700">
-                There are 12 types of Kaal Sarp Dosh, each named after a mythological serpent, 
-                depending on which house Rahu occupies. The effects vary based on the type 
-                and the overall strength of the birth chart.
+                {t('dosha.kaalSarp.desc3', 'There are 12 types of Kaal Sarp Dosh, each named after a mythological serpent, depending on which house Rahu occupies. The effects vary based on the type and the overall strength of the birth chart.')}
               </p>
             </div>
           </CardContent>
@@ -220,7 +213,7 @@ export default function KaalSarpDoshPage() {
                   </Badge>
                 </div>
                 <CardDescription>
-                  Rahu: {type.rahu} | Ketu: {type.ketu}
+                  {t('dosha.rahu', 'Rahu')}: {type.rahu} | {t('dosha.ketu', 'Ketu')}: {type.ketu}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -308,28 +301,28 @@ export default function KaalSarpDoshPage() {
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Trimbakeshwar, Nashik</h4>
-                <p className="text-sm text-indigo-600">Most famous for Kaal Sarp Puja</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.trimbakeshwar.name', 'Trimbakeshwar, Nashik')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.trimbakeshwar.desc', 'Most famous for Kaal Sarp Puja')}</p>
               </div>
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Mahakaleshwar, Ujjain</h4>
-                <p className="text-sm text-indigo-600">One of 12 Jyotirlingas</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.mahakaleshwar.name', 'Mahakaleshwar, Ujjain')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.mahakaleshwar.desc', 'One of 12 Jyotirlingas')}</p>
               </div>
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Kalahasti, Andhra Pradesh</h4>
-                <p className="text-sm text-indigo-600">Famous for Rahu-Ketu Puja</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.kalahasti.name', 'Kalahasti, Andhra Pradesh')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.kalahasti.desc', 'Famous for Rahu-Ketu Puja')}</p>
               </div>
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Rameswaram, Tamil Nadu</h4>
-                <p className="text-sm text-indigo-600">For Naag Dosha Nivaran</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.rameswaram.name', 'Rameswaram, Tamil Nadu')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.rameswaram.desc', 'For Naag Dosha Nivaran')}</p>
               </div>
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Kukke Subramanya, Karnataka</h4>
-                <p className="text-sm text-indigo-600">Famous Naag temple</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.kukke.name', 'Kukke Subramanya, Karnataka')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.kukke.desc', 'Famous Naag temple')}</p>
               </div>
               <div className="bg-indigo-50 rounded-lg p-4">
-                <h4 className="font-semibold text-indigo-800">Thirunageswaram, Tamil Nadu</h4>
-                <p className="text-sm text-indigo-600">Rahu temple</p>
+                <h4 className="font-semibold text-indigo-800">{t('dosha.kaalSarp.temples.thirunageswaram.name', 'Thirunageswaram, Tamil Nadu')}</h4>
+                <p className="text-sm text-indigo-600">{t('dosha.kaalSarp.temples.thirunageswaram.desc', 'Rahu temple')}</p>
               </div>
             </div>
           </CardContent>
@@ -382,26 +375,17 @@ export default function KaalSarpDoshPage() {
         <Card className="border-purple-200 bg-purple-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Kaal Sarp Dosh in Context
+              {t('dosha.kaalSarp.understanding.title', 'Understanding Kaal Sarp Dosh in Context')}
             </h2>
             <div className="prose prose-purple max-w-none">
               <p className="text-gray-700 mb-4">
-                While Kaal Sarp Dosh is considered significant in Vedic astrology, it&apos;s 
-                important to understand that its effects are modified by many factors. The 
-                strength of individual planets, beneficial aspects, and the overall chart 
-                configuration all play a role.
+                {t('dosha.kaalSarp.understanding.para1', "While Kaal Sarp Dosh is considered significant in Vedic astrology, it's important to understand that its effects are modified by many factors. The strength of individual planets, beneficial aspects, and the overall chart configuration all play a role.")}
               </p>
               <p className="text-gray-700 mb-4">
-                Many successful people have Kaal Sarp Yoga in their charts. The yoga can 
-                also bring intense focus, determination, and the ability to overcome 
-                obstacles. It often indicates a soul that has chosen challenging lessons 
-                for spiritual growth.
+                {t('dosha.kaalSarp.understanding.para2', 'Many successful people have Kaal Sarp Yoga in their charts. The yoga can also bring intense focus, determination, and the ability to overcome obstacles. It often indicates a soul that has chosen challenging lessons for spiritual growth.')}
               </p>
               <p className="text-gray-700">
-                Rather than fearing this yoga, approach it as an opportunity for 
-                transformation. The remedies help balance the energies and reduce 
-                challenging effects while enhancing the positive potential of this 
-                powerful configuration.
+                {t('dosha.kaalSarp.understanding.para3', 'Rather than fearing this yoga, approach it as an opportunity for transformation. The remedies help balance the energies and reduce challenging effects while enhancing the positive potential of this powerful configuration.')}
               </p>
             </div>
           </CardContent>
