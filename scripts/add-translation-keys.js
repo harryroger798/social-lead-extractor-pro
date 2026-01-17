@@ -49,9 +49,16 @@ function parseArgs() {
 }
 
 function loadInputFile(inputFile) {
-  const fullPath = path.isAbsolute(inputFile) ? inputFile : path.join(__dirname, inputFile);
+  // First try relative to current working directory, then relative to script directory
+  let fullPath = path.isAbsolute(inputFile) ? inputFile : path.join(process.cwd(), inputFile);
   if (!fs.existsSync(fullPath)) {
-    console.error(`Error: Input file not found: ${fullPath}`);
+    // Try relative to script directory as fallback
+    fullPath = path.join(__dirname, inputFile);
+  }
+  if (!fs.existsSync(fullPath)) {
+    console.error(`Error: Input file not found: ${inputFile}`);
+    console.error(`Tried: ${path.join(process.cwd(), inputFile)}`);
+    console.error(`Tried: ${path.join(__dirname, inputFile)}`);
     process.exit(1);
   }
   return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
@@ -199,7 +206,7 @@ function insertKeysIntoSection(content, language, section, subsection, keys, dry
 }
 
 function addKeysToSubsection(content, language, section, subsection, keys, dryRun) {
-  // For languages with compact horoscope sections (single line), we need special handling
+  // For languages with compact sections (single line), we need special handling
   const langPattern = new RegExp(`^\\s*${language}:\\s*\\{`, 'm');
   const langMatch = content.match(langPattern);
   
@@ -209,15 +216,6 @@ function addKeysToSubsection(content, language, section, subsection, keys, dryRu
   }
 
   const langStartIndex = langMatch.index;
-  
-  // Find the horoscope section
-  const horoscopePattern = new RegExp(`horoscope:\\s*\\{[^}]*\\}`, 'g');
-  horoscopePattern.lastIndex = langStartIndex;
-  
-  // Check if this is a compact format by looking for the pattern
-  const compactPattern = new RegExp(`horoscope:\\s*\\{[^\\n]*\\}`, 'g');
-  compactPattern.lastIndex = langStartIndex;
-  const compactMatch = compactPattern.exec(content);
   
   // Find the next language section to bound our search
   let nextLangIndex = content.length;
@@ -234,35 +232,90 @@ function addKeysToSubsection(content, language, section, subsection, keys, dryRu
     }
   }
 
-  // Check if horoscope section exists and is within this language's bounds
-  if (compactMatch && compactMatch.index > langStartIndex && compactMatch.index < nextLangIndex) {
-    // Compact format - add keys inline
-    // Pass the existing section content to filter out duplicate keys
-    const existingSectionContent = compactMatch[0];
-    const pairs = generateKeyValuePairs(keys, language, existingSectionContent);
-    if (pairs.length === 0) {
-      console.log(`  No keys to add for ${language}`);
-      return content;
-    }
-
-    const horoscopeEnd = compactMatch.index + compactMatch[0].length - 1; // Position of closing }
-    
-    if (dryRun) {
-      console.log(`  Would add ${pairs.length} keys to ${language}/horoscope (compact format)`);
-      console.log(`  Keys: ${pairs.slice(0, 3).join(', ')}${pairs.length > 3 ? '...' : ''}`);
-      return content;
-    }
-
-    // Insert before the closing brace
-    const insertion = ', ' + pairs.join(', ');
-    content = content.substring(0, horoscopeEnd) + insertion + content.substring(horoscopeEnd);
-    
-    console.log(`  Added ${pairs.length} keys to ${language}/horoscope (compact format)`);
+  // Find the section within this language's bounds
+  // Use a pattern that matches the section and captures content up to closing brace
+  const sectionPattern = new RegExp(`${section}:\\s*\\{`, 'g');
+  sectionPattern.lastIndex = langStartIndex;
+  const sectionMatch = sectionPattern.exec(content);
+  
+  if (!sectionMatch || sectionMatch.index >= nextLangIndex) {
+    console.error(`  Could not find section "${section}" in language "${language}"`);
     return content;
   }
 
-  // Multi-line format - use the standard insertion method
-  return insertKeysIntoSection(content, language, section, subsection, keys, dryRun);
+  const sectionStartIndex = sectionMatch.index;
+  
+  // Find the closing brace for this section by counting braces
+  let braceCount = 0;
+  let sectionEndIndex = sectionStartIndex + sectionMatch[0].length;
+  let foundOpen = false;
+  
+  for (let i = sectionStartIndex; i < nextLangIndex && i < content.length; i++) {
+    if (content[i] === '{') {
+      braceCount++;
+      foundOpen = true;
+    } else if (content[i] === '}') {
+      braceCount--;
+      if (foundOpen && braceCount === 0) {
+        sectionEndIndex = i;
+        break;
+      }
+    }
+  }
+
+  // Extract section content to check for duplicates
+  const sectionContent = content.substring(sectionStartIndex, sectionEndIndex + 1);
+  
+  // Check if this is a compact format (single line or very few lines)
+  const isCompactFormat = !sectionContent.includes('\n') || sectionContent.split('\n').length <= 2;
+  
+  // Generate key-value pairs, filtering out duplicates
+  const pairs = generateKeyValuePairs(keys, language, sectionContent);
+  
+  if (pairs.length === 0) {
+    console.log(`  No keys to add for ${language}`);
+    return content;
+  }
+
+  if (dryRun) {
+    console.log(`  Would add ${pairs.length} keys to ${language}/${section}${subsection ? '/' + subsection : ''} (${isCompactFormat ? 'compact' : 'multi-line'} format)`);
+    console.log(`  Keys: ${pairs.slice(0, 3).join(', ')}${pairs.length > 3 ? '...' : ''}`);
+    return content;
+  }
+
+  let insertion;
+  if (isCompactFormat) {
+    // For compact single-line format, add keys inline before closing brace
+    insertion = ', ' + pairs.join(', ');
+    content = content.substring(0, sectionEndIndex) + insertion + content.substring(sectionEndIndex);
+  } else {
+    // For multi-line format, add keys with proper indentation
+    const beforeBrace = content.substring(0, sectionEndIndex);
+    const lastNewline = beforeBrace.lastIndexOf('\n');
+    const lineBeforeBrace = beforeBrace.substring(lastNewline + 1);
+    const baseIndent = lineBeforeBrace.match(/^\s*/)[0];
+    const keyIndent = baseIndent + '  ';
+    
+    // Check if we need a comma after the last existing key
+    const contentBeforeBrace = content.substring(0, sectionEndIndex).trimEnd();
+    const needsComma = !contentBeforeBrace.endsWith(',') && !contentBeforeBrace.endsWith('{');
+    
+    if (needsComma) {
+      // Find the last non-whitespace character before the closing brace
+      let insertPos = sectionEndIndex;
+      while (insertPos > 0 && /\s/.test(content[insertPos - 1])) {
+        insertPos--;
+      }
+      insertion = ',\n' + pairs.map((p, i) => `${keyIndent}${p}${i < pairs.length - 1 ? ',' : ''}`).join('\n') + '\n' + baseIndent;
+      content = content.substring(0, insertPos) + insertion + content.substring(sectionEndIndex);
+    } else {
+      insertion = '\n' + pairs.map((p, i) => `${keyIndent}${p}${i < pairs.length - 1 ? ',' : ''}`).join('\n') + '\n' + baseIndent;
+      content = content.substring(0, sectionEndIndex) + insertion + content.substring(sectionEndIndex);
+    }
+  }
+
+  console.log(`  Added ${pairs.length} keys to ${language}/${section}${subsection ? '/' + subsection : ''} (${isCompactFormat ? 'compact' : 'multi-line'} format)`);
+  return content;
 }
 
 function validateOutput(content) {
