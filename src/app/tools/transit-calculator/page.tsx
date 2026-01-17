@@ -267,9 +267,9 @@ export default function TransitCalculatorPage() {
                     <Sparkles className="w-5 h-5 text-blue-600" />
                     {t('calculator.transit.summary', 'Transit Summary')}
                   </CardTitle>
-                  <CardDescription>
-                    As of {new Date(transitResult.transits.transit_date).toLocaleDateString("en-IN")}
-                  </CardDescription>
+                    <CardDescription>
+                      {t('calculator.transit.asOf', 'As of')} {new Date(transitResult.transits.transit_date).toLocaleDateString("en-IN")}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -360,7 +360,7 @@ export default function TransitCalculatorPage() {
                         </div>
                         {planet.retrograde && (
                           <Badge variant="outline" className="text-xs">
-                            Retrograde
+                            {t('calculator.transit.retrograde', 'Retrograde')}
                           </Badge>
                         )}
                       </div>
@@ -386,7 +386,7 @@ export default function TransitCalculatorPage() {
                           <div>
                             <div className="font-medium text-gray-900">{effect.planet}</div>
                             <div className="text-xs text-gray-500">
-                              {effect.current_sign} - {effect.house_from_moon}th from Moon
+                              {effect.current_sign} - {effect.house_from_moon}{t('calculator.transit.thFromMoon', 'th from Moon')}
                             </div>
                           </div>
                         </div>
