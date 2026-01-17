@@ -408,13 +408,13 @@ export default function MangalDoshCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Sade Sati Calculator</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.mangalDosh.sadeSatiCalculator', 'Sade Sati Calculator')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Check Saturn&apos;s 7.5 year transit effects.
+                {t('calculator.mangalDosh.sadeSatiCalculatorDesc', "Check Saturn's 7.5 year transit effects.")}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/sade-sati-calculator">
-                  Check Sade Sati <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.mangalDosh.checkSadeSati', 'Check Sade Sati')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -422,13 +422,13 @@ export default function MangalDoshCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Dosha Remedies Guide</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('calculator.mangalDosh.doshaRemediesGuide', 'Dosha Remedies Guide')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Learn about all doshas and their remedies.
+                {t('calculator.mangalDosh.doshaRemediesGuideDesc', 'Learn about all doshas and their remedies.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/doshas/mangal-dosh">
-                  Read Guide <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('calculator.readGuide', 'Read Guide')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
