@@ -36,13 +36,7 @@ interface MuhurtaResult {
   };
 }
 
-const EVENT_TYPES = [
-  { value: "general", label: "General Activities", description: "Day-to-day important activities" },
-  { value: "marriage", label: "Marriage", description: "Wedding ceremonies and engagements" },
-  { value: "business", label: "Business", description: "Starting business, signing contracts" },
-  { value: "travel", label: "Travel", description: "Starting journeys, trips" },
-  { value: "griha_pravesh", label: "Griha Pravesh", description: "House warming, moving into new home" },
-];
+// EVENT_TYPES moved inside component to use t() function
 
 const AUSPICIOUSNESS_COLORS: Record<string, string> = {
   "Highly Auspicious": "bg-green-100 text-green-800 border-green-300",
@@ -59,6 +53,14 @@ export default function MuhurtaCalculatorPage() {
   const [muhurtaResult, setMuhurtaResult] = useState<MuhurtaResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState("");
+
+  const EVENT_TYPES = [
+    { value: "general", label: t('calculator.muhurta.eventGeneral', 'General Activities'), description: t('calculator.muhurta.eventGeneralDesc', 'Day-to-day important activities') },
+    { value: "marriage", label: t('calculator.muhurta.eventMarriage', 'Marriage'), description: t('calculator.muhurta.eventMarriageDesc', 'Wedding ceremonies and engagements') },
+    { value: "business", label: t('calculator.muhurta.eventBusiness', 'Business'), description: t('calculator.muhurta.eventBusinessDesc', 'Starting business, signing contracts') },
+    { value: "travel", label: t('calculator.muhurta.eventTravel', 'Travel'), description: t('calculator.muhurta.eventTravelDesc', 'Starting journeys, trips') },
+    { value: "griha_pravesh", label: t('calculator.muhurta.eventGrihaPravesh', 'Griha Pravesh'), description: t('calculator.muhurta.eventGrihaPraveshDesc', 'House warming, moving into new home') },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
