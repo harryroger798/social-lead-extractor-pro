@@ -434,7 +434,7 @@ export default function KundliCalculatorPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-amber-600" />
-                    Your Birth Chart
+                    {t('calculator.kundli.yourBirthChart', 'Your Birth Chart')}
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button 
@@ -444,20 +444,20 @@ export default function KundliCalculatorPage() {
                       disabled={isGeneratingPdf}
                     >
                       <Download className="w-4 h-4 mr-1" />
-                      {isGeneratingPdf ? 'Generating...' : 'PDF'}
+                      {isGeneratingPdf ? t('calculator.generating', 'Generating...') : t('calculator.pdf', 'PDF')}
                     </Button>
                     <Button size="sm" variant="outline" onClick={handleShare}>
                       <Share2 className="w-4 h-4 mr-1" />
-                      Share
+                      {t('calculator.share', 'Share')}
                     </Button>
                   </div>
                 </div>
                 <CardDescription>
-                  Kundli for {birthDetails.name}
+                  {t('calculator.kundli.kundliFor', 'Kundli for')} {birthDetails.name}
                 </CardDescription>
                 {shareUrl && (
                   <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="text-sm text-green-800 font-medium mb-2">Shareable Link:</div>
+                    <div className="text-sm text-green-800 font-medium mb-2">{t('calculator.shareableLink', 'Shareable Link:')}</div>
                     <div className="flex gap-2">
                       <Input 
                         value={shareUrl} 
@@ -482,19 +482,19 @@ export default function KundliCalculatorPage() {
                   
                   <div className="mt-6 grid grid-cols-2 gap-4">
                     <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Ascendant (Lagna)</div>
+                      <div className="text-sm text-gray-600">{t('calculator.ascendantLagna', 'Ascendant (Lagna)')}</div>
                       <div className="font-semibold text-amber-700">{chartData.ascendant}</div>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Moon Sign (Rashi)</div>
+                      <div className="text-sm text-gray-600">{t('calculator.moonSignRashi', 'Moon Sign (Rashi)')}</div>
                       <div className="font-semibold text-amber-700">{chartData.moonSign}</div>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Sun Sign</div>
+                      <div className="text-sm text-gray-600">{t('calculator.sunSign', 'Sun Sign')}</div>
                       <div className="font-semibold text-amber-700">{chartData.sunSign}</div>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">Nakshatra</div>
+                      <div className="text-sm text-gray-600">{t('calculator.nakshatra', 'Nakshatra')}</div>
                       <div className="font-semibold text-amber-700">{chartData.nakshatra}</div>
                     </div>
                   </div>
@@ -508,11 +508,10 @@ export default function KundliCalculatorPage() {
                   <Star className="w-12 h-12 text-amber-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your Kundli Will Appear Here
+                  {t('calculator.kundli.resultPlaceholder', 'Your Kundli Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
-                  Enter your birth details and click &ldquo;Generate Kundli&rdquo; to see your 
-                  complete birth chart with planetary positions.
+                  {t('calculator.kundli.resultPlaceholderDesc', 'Enter your birth details and click "Generate Kundli" to see your complete birth chart with planetary positions.')}
                 </p>
               </CardContent>
             </Card>
@@ -523,17 +522,17 @@ export default function KundliCalculatorPage() {
           <div className="mt-8">
             <Tabs defaultValue="planets" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="planets">Planetary Positions</TabsTrigger>
-                <TabsTrigger value="houses">House Analysis</TabsTrigger>
-                <TabsTrigger value="doshas">Dosha Check</TabsTrigger>
+                <TabsTrigger value="planets">{t('calculator.kundli.planetaryPositions', 'Planetary Positions')}</TabsTrigger>
+                <TabsTrigger value="houses">{t('calculator.kundli.houseAnalysis', 'House Analysis')}</TabsTrigger>
+                <TabsTrigger value="doshas">{t('calculator.kundli.doshaCheck', 'Dosha Check')}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="planets" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Planetary Positions (Graha Sthiti)</CardTitle>
+                    <CardTitle>{t('calculator.kundli.planetaryPositionsTitle', 'Planetary Positions (Graha Sthiti)')}</CardTitle>
                     <CardDescription>
-                      Detailed positions of all nine planets in your birth chart
+                      {t('calculator.kundli.planetaryPositionsDesc', 'Detailed positions of all nine planets in your birth chart')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -541,12 +540,12 @@ export default function KundliCalculatorPage() {
                       <table className="w-full">
                         <thead>
                           <tr className="bg-amber-50">
-                            <th className="px-4 py-2 text-left">Planet</th>
-                            <th className="px-4 py-2 text-left">Sign</th>
-                            <th className="px-4 py-2 text-left">House</th>
-                            <th className="px-4 py-2 text-left">Degree</th>
-                            <th className="px-4 py-2 text-left">Nakshatra</th>
-                            <th className="px-4 py-2 text-left">Status</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.planet', 'Planet')}</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.sign', 'Sign')}</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.house', 'House')}</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.degree', 'Degree')}</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.nakshatra', 'Nakshatra')}</th>
+                            <th className="px-4 py-2 text-left">{t('calculator.status', 'Status')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -560,11 +559,11 @@ export default function KundliCalculatorPage() {
                               <td className="px-4 py-2">
                                 {planet.retrograde ? (
                                   <Badge variant="outline" className="text-red-600 border-red-200">
-                                    Retrograde
+                                    {t('calculator.retrograde', 'Retrograde')}
                                   </Badge>
                                 ) : (
                                   <Badge variant="outline" className="text-green-600 border-green-200">
-                                    Direct
+                                    {t('calculator.direct', 'Direct')}
                                   </Badge>
                                 )}
                               </td>
@@ -580,9 +579,9 @@ export default function KundliCalculatorPage() {
               <TabsContent value="houses" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>House Analysis (Bhava Vichar)</CardTitle>
+                    <CardTitle>{t('calculator.kundli.houseAnalysisTitle', 'House Analysis (Bhava Vichar)')}</CardTitle>
                     <CardDescription>
-                      Analysis of all 12 houses and their planetary occupants
+                      {t('calculator.kundli.houseAnalysisDesc', 'Analysis of all 12 houses and their planetary occupants')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -612,9 +611,9 @@ export default function KundliCalculatorPage() {
               <TabsContent value="doshas" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Dosha Analysis</CardTitle>
+                    <CardTitle>{t('calculator.kundli.doshaAnalysis', 'Dosha Analysis')}</CardTitle>
                     <CardDescription>
-                      Check for common doshas in your birth chart
+                      {t('calculator.kundli.doshaAnalysisDesc', 'Check for common doshas in your birth chart')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -622,44 +621,41 @@ export default function KundliCalculatorPage() {
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                          <span className="font-semibold text-green-800">Mangal Dosha</span>
+                          <span className="font-semibold text-green-800">{t('calculator.kundli.mangalDosha', 'Mangal Dosha')}</span>
                         </div>
                         <p className="text-sm text-green-700">
-                          Based on Mars position in House {chartData.planets.find(p => p.name === "Mars")?.house}, 
-                          Mangal Dosha is not present in your chart.
+                          {t('calculator.kundli.mangalDoshaResult', 'Based on Mars position in House')} {chartData.planets.find(p => p.name === "Mars")?.house}, 
+                          {t('calculator.kundli.mangalDoshaNotPresent', 'Mangal Dosha is not present in your chart.')}
                         </p>
                       </div>
                       
                       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                          <span className="font-semibold text-amber-800">Kaal Sarp Dosha</span>
+                          <span className="font-semibold text-amber-800">{t('calculator.kundli.kaalSarpDosha', 'Kaal Sarp Dosha')}</span>
                         </div>
                         <p className="text-sm text-amber-700">
-                          Partial Kaal Sarp Yoga may be present. Consult an astrologer for detailed analysis.
+                          {t('calculator.kundli.kaalSarpDoshaResult', 'Partial Kaal Sarp Yoga may be present. Consult an astrologer for detailed analysis.')}
                         </p>
                       </div>
                       
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                          <span className="font-semibold text-blue-800">Sade Sati Status</span>
+                          <span className="font-semibold text-blue-800">{t('calculator.kundli.sadeSatiStatus', 'Sade Sati Status')}</span>
                         </div>
                         <p className="text-sm text-blue-700">
-                          Based on your Moon sign ({chartData.moonSign}), check current Saturn transit 
-                          for Sade Sati status.
+                          {t('calculator.kundli.sadeSatiResult', 'Based on your Moon sign')} ({chartData.moonSign}), {t('calculator.kundli.sadeSatiCheck', 'check current Saturn transit for Sade Sati status.')}
                         </p>
                       </div>
                     </div>
                     
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-600">
-                        <strong>Note:</strong> This is a basic dosha analysis. For comprehensive 
-                        dosha evaluation and personalized remedies, please consult with our expert 
-                        astrologers.
+                        <strong>{t('calculator.note', 'Note')}:</strong> {t('calculator.kundli.doshaNote', 'This is a basic dosha analysis. For comprehensive dosha evaluation and personalized remedies, please consult with our expert astrologers.')}
                       </p>
                       <Button className="mt-4" asChild>
-                        <Link href="/consultation">Book Detailed Consultation</Link>
+                        <Link href="/consultation">{t('calculator.kundli.bookDetailedConsultation', 'Book Detailed Consultation')}</Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -671,37 +667,33 @@ export default function KundliCalculatorPage() {
 
         <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            About Our Kundli Calculator
+            {t('calculator.kundli.aboutTitle', 'About Our Kundli Calculator')}
           </h2>
           <div className="prose prose-amber max-w-none">
             <p className="text-gray-700 mb-4">
-              Our free Kundli calculator uses the Lahiri Ayanamsa and follows the North Indian 
-              chart style (also known as the diamond chart). The calculations are based on the 
-              Swiss Ephemeris for accurate planetary positions.
+              {t('calculator.kundli.aboutDesc', 'Our free Kundli calculator uses the Lahiri Ayanamsa and follows the North Indian chart style (also known as the diamond chart). The calculations are based on the Swiss Ephemeris for accurate planetary positions.')}
             </p>
-            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">What You Get:</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">{t('calculator.kundli.whatYouGet', 'What You Get:')}</h3>
             <ul className="list-disc list-inside text-gray-700 space-y-1">
-              <li>Complete birth chart (Rashi chart/D-1)</li>
-              <li>Planetary positions with degrees and Nakshatras</li>
-              <li>House-wise planet placement</li>
-              <li>Basic Dosha analysis (Mangal, Kaal Sarp)</li>
-              <li>Ascendant, Moon sign, and Sun sign</li>
-              <li>Downloadable PDF report</li>
-              <li>Shareable chart link</li>
+              <li>{t('calculator.kundli.feature1', 'Complete birth chart (Rashi chart/D-1)')}</li>
+              <li>{t('calculator.kundli.feature2', 'Planetary positions with degrees and Nakshatras')}</li>
+              <li>{t('calculator.kundli.feature3', 'House-wise planet placement')}</li>
+              <li>{t('calculator.kundli.feature4', 'Basic Dosha analysis (Mangal, Kaal Sarp)')}</li>
+              <li>{t('calculator.kundli.feature5', 'Ascendant, Moon sign, and Sun sign')}</li>
+              <li>{t('calculator.kundli.feature6', 'Downloadable PDF report')}</li>
+              <li>{t('calculator.kundli.feature7', 'Shareable chart link')}</li>
             </ul>
-            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">For Detailed Analysis:</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">{t('calculator.kundli.forDetailedAnalysis', 'For Detailed Analysis:')}</h3>
             <p className="text-gray-700">
-              While this free tool provides accurate basic calculations, for in-depth analysis 
-              including Dasha predictions, Yoga analysis, marriage compatibility, career guidance, 
-              and personalized remedies, we recommend consulting with our expert astrologers.
+              {t('calculator.kundli.detailedAnalysisDesc', 'While this free tool provides accurate basic calculations, for in-depth analysis including Dasha predictions, Yoga analysis, marriage compatibility, career guidance, and personalized remedies, we recommend consulting with our expert astrologers.')}
             </p>
           </div>
           <div className="mt-6 flex flex-wrap gap-4">
             <Button asChild>
-              <Link href="/consultation">Book Expert Consultation</Link>
+              <Link href="/consultation">{t('calculator.kundli.bookExpertConsultation', 'Book Expert Consultation')}</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/vedic-astrology-guide-complete-2025">Learn Kundli Reading</Link>
+              <Link href="/vedic-astrology-guide-complete-2025">{t('calculator.kundli.learnKundliReading', 'Learn Kundli Reading')}</Link>
             </Button>
           </div>
         </div>

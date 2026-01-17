@@ -69,12 +69,17 @@ function generateKeyValuePairs(keys, language, existingContent = '') {
   for (const [key, translations] of Object.entries(keys)) {
     if (translations[language]) {
       // Check if key already exists in the section content
-      const keyPattern = new RegExp(`\\b${key}:\\s*["']`);
+      const keyPattern = new RegExp(`["']?${key.replace(/\./g, '\\.')}["']?:\\s*["']`);
       if (existingContent && keyPattern.test(existingContent)) {
         console.log(`    Skipping existing key: ${key}`);
         continue;
       }
-      pairs.push(`${key}: "${translations[language]}"`);
+      // Quote keys that contain dots or special characters
+      const needsQuotes = /[.\-\s]/.test(key);
+      const quotedKey = needsQuotes ? `"${key}"` : key;
+      // Escape any double quotes in the value
+      const escapedValue = translations[language].replace(/"/g, '\\"');
+      pairs.push(`${quotedKey}: "${escapedValue}"`);
     }
   }
   return pairs;

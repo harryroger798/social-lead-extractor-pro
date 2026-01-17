@@ -58,32 +58,7 @@ interface ChartResult {
   divisional_charts: DivisionalCharts;
 }
 
-const CHART_DESCRIPTIONS: Record<string, { name: string; purpose: string }> = {
-  D1_Rashi: {
-    name: "Rashi Chart (D-1)",
-    purpose: "Main birth chart showing overall life patterns and personality",
-  },
-  D9_Navamsa: {
-    name: "Navamsa Chart (D-9)",
-    purpose: "Marriage, spouse, dharma, and spiritual path. Most important divisional chart.",
-  },
-  D10_Dasamsa: {
-    name: "Dasamsa Chart (D-10)",
-    purpose: "Career, profession, status, and achievements in society",
-  },
-  D7_Saptamsa: {
-    name: "Saptamsa Chart (D-7)",
-    purpose: "Children, progeny, and creative abilities",
-  },
-  D12_Dwadasamsa: {
-    name: "Dwadasamsa Chart (D-12)",
-    purpose: "Parents, ancestry, and karmic inheritance",
-  },
-  D24_Chaturvimsamsa: {
-    name: "Chaturvimsamsa Chart (D-24)",
-    purpose: "Education, learning, and academic achievements",
-  },
-};
+const CHART_KEYS = ["D1_Rashi", "D9_Navamsa", "D10_Dasamsa", "D7_Saptamsa", "D12_Dwadasamsa", "D24_Chaturvimsamsa"] as const;
 
 const PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Ascendant"];
 
@@ -99,6 +74,33 @@ export default function NavamsaChartPage() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState("");
   const [activeChart, setActiveChart] = useState("D9_Navamsa");
+
+  const chartDescriptions: Record<string, { name: string; purpose: string }> = {
+    D1_Rashi: {
+      name: t('calculator.navamsa.charts.d1Name', 'Rashi Chart (D-1)'),
+      purpose: t('calculator.navamsa.charts.d1Purpose', 'Main birth chart showing overall life patterns and personality'),
+    },
+    D9_Navamsa: {
+      name: t('calculator.navamsa.charts.d9Name', 'Navamsa Chart (D-9)'),
+      purpose: t('calculator.navamsa.charts.d9Purpose', 'Marriage, spouse, dharma, and spiritual path. Most important divisional chart.'),
+    },
+    D10_Dasamsa: {
+      name: t('calculator.navamsa.charts.d10Name', 'Dasamsa Chart (D-10)'),
+      purpose: t('calculator.navamsa.charts.d10Purpose', 'Career, profession, status, and achievements in society'),
+    },
+    D7_Saptamsa: {
+      name: t('calculator.navamsa.charts.d7Name', 'Saptamsa Chart (D-7)'),
+      purpose: t('calculator.navamsa.charts.d7Purpose', 'Children, progeny, and creative abilities'),
+    },
+    D12_Dwadasamsa: {
+      name: t('calculator.navamsa.charts.d12Name', 'Dwadasamsa Chart (D-12)'),
+      purpose: t('calculator.navamsa.charts.d12Purpose', 'Parents, ancestry, and karmic inheritance'),
+    },
+    D24_Chaturvimsamsa: {
+      name: t('calculator.navamsa.charts.d24Name', 'Chaturvimsamsa Chart (D-24)'),
+      purpose: t('calculator.navamsa.charts.d24Purpose', 'Education, learning, and academic achievements'),
+    },
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,9 +146,9 @@ export default function NavamsaChartPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-amber-50">
-              <th className="border border-amber-200 px-4 py-2 text-left">Planet</th>
-              <th className="border border-amber-200 px-4 py-2 text-left">Sign</th>
-              <th className="border border-amber-200 px-4 py-2 text-left">Sanskrit</th>
+              <th className="border border-amber-200 px-4 py-2 text-left">{t('calculator.planet', 'Planet')}</th>
+              <th className="border border-amber-200 px-4 py-2 text-left">{t('calculator.sign', 'Sign')}</th>
+              <th className="border border-amber-200 px-4 py-2 text-left">{t('calculator.sanskrit', 'Sanskrit')}</th>
             </tr>
           </thead>
           <tbody>
@@ -291,7 +293,7 @@ export default function NavamsaChartPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Grid3X3 className="w-5 h-5 text-amber-600" />
-                  Divisional Charts
+                  {t('calculator.navamsa.divisionalCharts', 'Divisional Charts')}
                 </CardTitle>
                 <CardDescription>
                   For {birthDetails.name} - {birthDetails.date}
@@ -310,14 +312,14 @@ export default function NavamsaChartPage() {
                     <TabsTrigger value="D1_Rashi">D-1</TabsTrigger>
                   </TabsList>
 
-                  {Object.keys(CHART_DESCRIPTIONS).map((chartKey) => (
+                  {Object.keys(chartDescriptions).map((chartKey) => (
                     <TabsContent key={chartKey} value={chartKey}>
                       <div className="mb-4 p-3 bg-amber-50 rounded-lg">
                         <h4 className="font-semibold text-amber-900">
-                          {CHART_DESCRIPTIONS[chartKey].name}
+                          {chartDescriptions[chartKey].name}
                         </h4>
                         <p className="text-sm text-amber-700">
-                          {CHART_DESCRIPTIONS[chartKey].purpose}
+                          {chartDescriptions[chartKey].purpose}
                         </p>
                       </div>
                       {renderChartTable(chartKey)}
@@ -342,7 +344,7 @@ export default function NavamsaChartPage() {
         </div>
 
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(CHART_DESCRIPTIONS).map(([key, info]) => (
+          {Object.entries(chartDescriptions).map(([key, info]) => (
             <Card key={key}>
               <CardHeader>
                 <CardTitle className="text-lg">{info.name}</CardTitle>
