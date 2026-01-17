@@ -55,7 +55,13 @@ export function DashboardPage() {
 
   const stats = overview?.data?.data || {}
   const chartData = revenueChart?.data?.data || []
-  const statusData = repairStatus?.data?.data || []
+  const statusDataRaw = repairStatus?.data?.data || {}
+  // Convert status object to array format for PieChart
+  const statusData = Object.entries(statusDataRaw).map(([status, count]) => ({
+    status: status.replace('_', ' '),
+    count: count as number,
+    name: status.replace('_', ' ')
+  })).filter(item => item.count > 0)
   const repairs = recentRepairs?.data?.data || []
   const alertsData = alerts?.data?.data || {}
 
