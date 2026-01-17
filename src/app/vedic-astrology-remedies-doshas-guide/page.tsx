@@ -151,28 +151,24 @@ export default function RemediesGuidePage() {
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              18 min read
+              {t('guides.remedies.readTime', '18 min read')}
             </span>
-            <span>Updated: January 2025</span>
+            <span>{t('guides.remedies.updated', 'Updated: January 2025')}</span>
           </div>
         </div>
 
         <Card className="mb-8 bg-amber-50 border-amber-200">
           <CardContent className="pt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">TL;DR - Quick Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('guides.remedies.tldr.title', 'TL;DR - Quick Summary')}</h2>
             <p className="text-gray-700 mb-4">
-              Vedic astrology offers various remedies to mitigate challenging planetary influences. 
-              Common doshas include Mangal Dosha (Mars affliction), Kaal Sarp Dosha (Rahu-Ketu axis), 
-              Pitru Dosha (ancestral karma), and Sade Sati (Saturn transit). Remedies include 
-              gemstones, mantras, charity, fasting, and pujas. Always consult an expert before 
-              implementing remedies, especially for gemstones.
+              {t('guides.remedies.tldr.content', "Vedic astrology offers various remedies to mitigate challenging planetary influences. Common doshas include Mangal Dosha (Mars affliction), Kaal Sarp Dosha (Rahu-Ketu axis), Pitru Dosha (ancestral karma), and Sade Sati (Saturn transit). Remedies include gemstones, mantras, charity, fasting, and pujas. Always consult an expert before implementing remedies, especially for gemstones.")}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" asChild>
-                <Link href="/tools/kundli-calculator">Check Your Doshas</Link>
+                <Link href="/tools/kundli-calculator">{t('guides.remedies.checkDoshas', 'Check Your Doshas')}</Link>
               </Button>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/consultation">Consult Expert</Link>
+                <Link href="/consultation">{t('guides.remedies.consultExpert', 'Consult Expert')}</Link>
               </Button>
             </div>
           </CardContent>
@@ -180,14 +176,10 @@ export default function RemediesGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Understanding Doshas in Vedic Astrology
+            {t('guides.remedies.sections.understandingDoshas', 'Understanding Doshas in Vedic Astrology')}
           </h2>
           <p className="text-gray-700 mb-6">
-            Doshas are specific planetary combinations in a birth chart that indicate challenges 
-            or obstacles in certain life areas. While they may sound alarming, it&apos;s important 
-            to understand that most charts have some doshas, and their effects vary significantly 
-            based on other factors in the chart. Proper analysis and appropriate remedies can 
-            help minimize their negative impact.
+            {t('guides.remedies.sections.understandingDoshasDesc', "Doshas are specific planetary combinations in a birth chart that indicate challenges or obstacles in certain life areas. While they may sound alarming, it's important to understand that most charts have some doshas, and their effects vary significantly based on other factors in the chart. Proper analysis and appropriate remedies can help minimize their negative impact.")}
           </p>
           
           <div className="space-y-6">
@@ -203,7 +195,7 @@ export default function RemediesGuidePage() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Effects:</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{t('guides.remedies.tables.effects', 'Effects')}:</h4>
                       <ul className="space-y-1">
                         {dosha.effects.map((effect) => (
                           <li key={effect} className="flex items-start gap-2 text-sm text-gray-600">
@@ -213,11 +205,11 @@ export default function RemediesGuidePage() {
                         ))}
                       </ul>
                       <p className="text-sm text-gray-500 mt-3">
-                        <strong>Intensity:</strong> {dosha.intensity}
+                        <strong>{t('guides.remedies.tables.intensity', 'Intensity')}:</strong> {dosha.intensity}
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Remedies:</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{t('guides.remedies.tables.remedies', 'Remedies')}:</h4>
                       <ul className="space-y-1">
                         {dosha.remedies.slice(0, 4).map((remedy) => (
                           <li key={remedy} className="flex items-start gap-2 text-sm text-gray-600">
@@ -227,7 +219,7 @@ export default function RemediesGuidePage() {
                         ))}
                       </ul>
                       <p className="text-sm text-green-700 mt-3">
-                        <strong>Cancellation:</strong> {dosha.cancellation}
+                        <strong>{t('guides.remedies.tables.cancellation', 'Cancellation')}:</strong> {dosha.cancellation}
                       </p>
                     </div>
                   </div>
@@ -240,23 +232,21 @@ export default function RemediesGuidePage() {
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
             <Gem className="inline w-8 h-8 text-amber-600 mr-2" />
-            Gemstone Remedies
+            {t('guides.remedies.sections.gemstoneRemedies', 'Gemstone Remedies')}
           </h2>
           <p className="text-gray-700 mb-6">
-            Gemstones are powerful remedies that work by absorbing and transmitting planetary 
-            energies. However, they must be chosen carefully based on individual chart analysis, 
-            as wearing the wrong gemstone can cause harm.
+            {t('guides.remedies.sections.gemstoneDesc', 'Gemstones are powerful remedies that work by absorbing and transmitting planetary energies. However, they must be chosen carefully based on individual chart analysis, as wearing the wrong gemstone can cause harm.')}
           </p>
           
           <div className="overflow-x-auto mb-6">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-amber-50">
-                  <th className="border border-amber-200 px-3 py-2 text-left">Planet</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Gemstone</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Metal</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Finger</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Day to Wear</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.planet', 'Planet')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.gemstone', 'Gemstone')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.metal', 'Metal')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.finger', 'Finger')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.dayToWear', 'Day to Wear')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -276,9 +266,7 @@ export default function RemediesGuidePage() {
           <Card className="bg-red-50 border-red-200">
             <CardContent className="pt-4">
               <p className="text-sm text-red-700">
-                <strong>Important Warning:</strong> Never wear gemstones without proper consultation. 
-                Gemstones for malefic planets (Saturn, Rahu, Ketu, Mars) can cause serious problems 
-                if worn incorrectly. Always consult an experienced astrologer before wearing any gemstone.
+                <strong>{t('guides.remedies.warning.title', 'Important Warning:')}</strong> {t('guides.remedies.warning.content', 'Never wear gemstones without proper consultation. Gemstones for malefic planets (Saturn, Rahu, Ketu, Mars) can cause serious problems if worn incorrectly. Always consult an experienced astrologer before wearing any gemstone.')}
               </p>
             </CardContent>
           </Card>
@@ -287,21 +275,19 @@ export default function RemediesGuidePage() {
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
             <Sparkles className="inline w-8 h-8 text-amber-600 mr-2" />
-            Mantra Remedies
+            {t('guides.remedies.sections.mantraRemedies', 'Mantra Remedies')}
           </h2>
           <p className="text-gray-700 mb-6">
-            Mantras are sacred sound vibrations that connect us with planetary energies. 
-            Regular chanting with proper pronunciation and devotion can significantly 
-            strengthen weak planets and reduce malefic effects.
+            {t('guides.remedies.sections.mantraDesc', 'Mantras are sacred sound vibrations that connect us with planetary energies. Regular chanting with proper pronunciation and devotion can significantly strengthen weak planets and reduce malefic effects.')}
           </p>
           
           <div className="overflow-x-auto mb-6">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-amber-50">
-                  <th className="border border-amber-200 px-3 py-2 text-left">Planet</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Beej Mantra</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Recommended Count</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.planet', 'Planet')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.beejMantra', 'Beej Mantra')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.recommendedCount', 'Recommended Count')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -320,22 +306,20 @@ export default function RemediesGuidePage() {
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
             <Heart className="inline w-8 h-8 text-amber-600 mr-2" />
-            Charity (Dana) Remedies
+            {t('guides.remedies.sections.charityRemedies', 'Charity (Dana) Remedies')}
           </h2>
           <p className="text-gray-700 mb-6">
-            Charity is one of the most accessible and effective remedies. Donating items 
-            associated with specific planets on their designated days helps reduce negative 
-            karma and strengthen positive planetary influences.
+            {t('guides.remedies.sections.charityDesc', 'Charity is one of the most accessible and effective remedies. Donating items associated with specific planets on their designated days helps reduce negative karma and strengthen positive planetary influences.')}
           </p>
           
           <div className="overflow-x-auto mb-6">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-amber-50">
-                  <th className="border border-amber-200 px-3 py-2 text-left">Planet</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Items to Donate</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Day</th>
-                  <th className="border border-amber-200 px-3 py-2 text-left">Recipient</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.planet', 'Planet')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.itemsToDonate', 'Items to Donate')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.day', 'Day')}</th>
+                  <th className="border border-amber-200 px-3 py-2 text-left">{t('guides.remedies.tables.recipient', 'Recipient')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -354,33 +338,47 @@ export default function RemediesGuidePage() {
 
         <section className="mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
+            {t('guides.remedies.sections.faq', 'Frequently Asked Questions')}
           </h2>
           <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
-                <AccordionContent className="text-gray-600">{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
+            <AccordionItem value="item-0">
+              <AccordionTrigger className="text-left">{t('guides.remedies.faq.q1', 'Do astrological remedies really work?')}</AccordionTrigger>
+              <AccordionContent className="text-gray-600">{t('guides.remedies.faq.a1', 'Astrological remedies work on the principle of resonance with planetary energies. Their effectiveness depends on faith, consistency, and choosing appropriate remedies based on individual charts. Many people report positive changes after following prescribed remedies sincerely.')}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-left">{t('guides.remedies.faq.q2', 'Should I wear gemstones for weak planets?')}</AccordionTrigger>
+              <AccordionContent className="text-gray-600">{t('guides.remedies.faq.a2', 'Gemstones strengthen the planet they represent, so they should typically be worn for benefic planets that are weak, not for malefic planets. Always consult an experienced astrologer before wearing any gemstone, as incorrect gemstones can cause harm.')}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-left">{t('guides.remedies.faq.q3', 'How long do I need to perform remedies?')}</AccordionTrigger>
+              <AccordionContent className="text-gray-600">{t('guides.remedies.faq.a3', 'The duration depends on the severity of the dosha and the remedy chosen. Some remedies like mantras require completion of a specific count (japa), while others like charity and fasting may need to be continued for extended periods or even lifelong for best results.')}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-left">{t('guides.remedies.faq.q4', 'Can remedies completely remove a dosha?')}</AccordionTrigger>
+              <AccordionContent className="text-gray-600">{t('guides.remedies.faq.a4', 'Remedies can significantly reduce the negative effects of doshas but may not completely eliminate them, as they represent karmic patterns. The goal is to minimize suffering and maximize positive outcomes within the karmic framework.')}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger className="text-left">{t('guides.remedies.faq.q5', 'Are expensive remedies more effective?')}</AccordionTrigger>
+              <AccordionContent className="text-gray-600">{t('guides.remedies.faq.a5', 'Not necessarily. The effectiveness of a remedy depends on its appropriateness for your chart, your faith, and consistency in practice. Simple remedies like mantras, charity, and lifestyle changes can be as effective as elaborate pujas when done with sincerity.')}</AccordionContent>
+            </AccordionItem>
           </Accordion>
         </section>
 
         <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Need Personalized Remedies?</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('guides.remedies.cta.title', 'Need Personalized Remedies?')}</h2>
             <p className="mb-4 text-amber-100">
-              Get your chart analyzed by our expert astrologers for customized remedy recommendations.
+              {t('guides.remedies.cta.description', 'Get your chart analyzed by our expert astrologers for customized remedy recommendations.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
                 <Link href="/consultation">
-                  Book Consultation
+                  {t('guides.remedies.cta.bookConsultation', 'Book Consultation')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
                             <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/tools/kundli-calculator">Check Your Chart</Link>
+                              <Link href="/tools/kundli-calculator">{t('guides.remedies.cta.checkYourChart', 'Check Your Chart')}</Link>
                             </Button>
             </div>
           </CardContent>
