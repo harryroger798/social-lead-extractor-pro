@@ -898,31 +898,27 @@ export default function NakshatraFinderPage() {
           </h2>
           <div className="prose prose-amber max-w-none">
             <p className="text-gray-700 mb-4">
-              Nakshatras are the 27 lunar mansions in Vedic astrology, each spanning 13°20&apos; of the 
-              zodiac. Your birth Nakshatra (Janma Nakshatra) is determined by the Moon&apos;s position 
-              at the time of your birth and reveals deep insights about your personality, emotional 
-              nature, and life path.
+              {t('calculator.nakshatraFinder.understandingDesc1', "Nakshatras are the 27 lunar mansions in Vedic astrology, each spanning 13°20' of the zodiac. Your birth Nakshatra (Janma Nakshatra) is determined by the Moon's position at the time of your birth and reveals deep insights about your personality, emotional nature, and life path.")}
             </p>
             <p className="text-gray-700 mb-4">
-              Each Nakshatra has a ruling deity, planetary lord, symbol, and unique characteristics 
-              that influence those born under it. Understanding your Nakshatra can help you:
+              {t('calculator.nakshatraFinder.understandingDesc2', 'Each Nakshatra has a ruling deity, planetary lord, symbol, and unique characteristics that influence those born under it. Understanding your Nakshatra can help you:')}
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
-              <li>Understand your innate personality traits and tendencies</li>
-              <li>Identify your strengths and areas for growth</li>
-              <li>Find compatible partners for marriage (Nakshatra matching)</li>
-              <li>Choose auspicious times for important events (Muhurta)</li>
-              <li>Select appropriate remedies and gemstones</li>
+              <li>{t('calculator.nakshatraFinder.benefit1', 'Understand your innate personality traits and tendencies')}</li>
+              <li>{t('calculator.nakshatraFinder.benefit2', 'Identify your strengths and areas for growth')}</li>
+              <li>{t('calculator.nakshatraFinder.benefit3', 'Find compatible partners for marriage (Nakshatra matching)')}</li>
+              <li>{t('calculator.nakshatraFinder.benefit4', 'Choose auspicious times for important events (Muhurta)')}</li>
+              <li>{t('calculator.nakshatraFinder.benefit5', 'Select appropriate remedies and gemstones')}</li>
             </ul>
           </div>
           <div className="mt-6 flex flex-wrap gap-4">
             <Button asChild>
               <Link href="/27-nakshatras-complete-guide-vedic-astrology">
-                Complete Nakshatra Guide
+                {t('calculator.nakshatraFinder.completeGuide', 'Complete Nakshatra Guide')}
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/tools/kundli-calculator">Generate Full Kundli</Link>
+              <Link href="/tools/kundli-calculator">{t('calculator.nakshatraFinder.generateKundli', 'Generate Full Kundli')}</Link>
             </Button>
           </div>
         </div>
