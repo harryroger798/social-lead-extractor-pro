@@ -13,114 +13,114 @@ import {
   Heart,
 } from "lucide-react";
 
-const mangalDoshHouses = [
-  {
-    house: "1st House (Lagna)",
-    effect: "Affects personality and can cause aggressive behavior. May lead to conflicts in marriage due to dominating nature.",
-    severity: "Moderate",
-  },
-  {
-    house: "2nd House",
-    effect: "Impacts family life, wealth, and speech. May cause harsh speech leading to family disputes.",
-    severity: "Mild",
-  },
-  {
-    house: "4th House",
-    effect: "Affects domestic peace, property, and relationship with mother. Can cause frequent changes in residence.",
-    severity: "Severe",
-  },
-  {
-    house: "7th House",
-    effect: "Directly impacts marriage and spouse. Most severe placement causing delays, conflicts, or separation.",
-    severity: "Severe",
-  },
-  {
-    house: "8th House",
-    effect: "Affects longevity, in-laws, and sudden events. Can cause health issues for spouse or accidents.",
-    severity: "Severe",
-  },
-  {
-    house: "12th House",
-    effect: "Impacts bed pleasures, expenses, and foreign connections. May cause separation or excessive expenses.",
-    severity: "Moderate",
-  },
-];
-
-const cancellationConditions = [
-  "Mars is in its own sign (Aries or Scorpio)",
-  "Mars is exalted in Capricorn",
-  "Mars is aspected by benefic Jupiter",
-  "Mars is conjunct with benefic planets (Jupiter, Venus, Mercury)",
-  "Both partners have Mangal Dosha (mutual cancellation)",
-  "Mars is in Navamsa of benefic planets",
-  "Person is born on Tuesday",
-  "Mars is in 2nd house in Gemini, Virgo, or Sagittarius",
-  "Mars is in 12th house in Taurus or Libra",
-  "Mars is in 4th house in Aries or Scorpio",
-  "Mars is in 7th house in Cancer or Capricorn",
-  "Mars is in 8th house in Sagittarius or Pisces",
-  "Age above 28 years (Dosha weakens significantly)",
-  "Mars is retrograde",
-  "Mars is combust (close to Sun)",
-];
-
-const remedies = {
-  puja: [
-    "Perform Mangal Shanti Puja on Tuesday",
-    "Conduct Navagraha Shanti Puja",
-    "Perform Kumbh Vivah (symbolic marriage to a pot or tree)",
-    "Visit Mangalnath Temple in Ujjain",
-    "Perform Rudrabhishek on Mondays",
-  ],
-  mantras: [
-    "Chant 'Om Angarakaya Namaha' 108 times daily",
-    "Recite Hanuman Chalisa daily, especially on Tuesdays",
-    "Chant Mangal Beej Mantra: 'Om Kram Kreem Kraum Sah Bhaumaya Namaha'",
-    "Recite Sunderkand on Tuesdays and Saturdays",
-    "Chant Gayatri Mantra 108 times daily",
-  ],
-  donations: [
-    "Donate red items (red cloth, red lentils, red flowers) on Tuesdays",
-    "Donate blood on Tuesdays (highly recommended)",
-    "Donate wheat, jaggery, and copper on Tuesdays",
-    "Feed monkeys with jaggery and gram on Tuesdays",
-    "Donate to soldiers or fire department",
-  ],
-  lifestyle: [
-    "Fast on Tuesdays (eat only once after sunset)",
-    "Wear a coral (Moonga) gemstone after consultation",
-    "Wear red or orange clothes on Tuesdays",
-    "Serve your siblings and younger people",
-    "Practice anger management and patience",
-    "Avoid non-vegetarian food on Tuesdays",
-  ],
-};
-
-const faqs = [
-  {
-    question: "What percentage of people have Mangal Dosha?",
-    answer: "Approximately 40-50% of people have some form of Mangal Dosha in their birth chart. This is because Mars occupies one of the six houses (1, 2, 4, 7, 8, 12) in about half of all charts.",
-  },
-  {
-    question: "Can two Manglik people marry each other?",
-    answer: "Yes, when two Manglik individuals marry, their doshas are believed to cancel each other out. This is called 'Dosha Samya' and is considered an ideal match for Manglik natives.",
-  },
-  {
-    question: "Does Mangal Dosha affect everyone equally?",
-    answer: "No, the severity depends on the house Mars occupies, the sign it's in, aspects from other planets, and various cancellation conditions. A proper analysis by an astrologer is recommended.",
-  },
-  {
-    question: "At what age does Mangal Dosha reduce?",
-    answer: "Mangal Dosha is believed to significantly reduce after age 28. Some traditions say it completely nullifies after this age, while others suggest it merely weakens.",
-  },
-  {
-    question: "Is Kumbh Vivah effective for Mangal Dosha?",
-    answer: "Kumbh Vivah is a traditional remedy where the Manglik person symbolically marries a banana tree, peepal tree, or silver/gold idol of Lord Vishnu before their actual marriage. Many believe this transfers the negative effects.",
-  },
-];
-
 export default function MangalDoshPage() {
   const { t } = useLanguage();
+
+  const mangalDoshHouses = [
+    {
+      house: t('doshas.mangalDosh.houses.1st.name', '1st House (Lagna)'),
+      effect: t('doshas.mangalDosh.houses.1st.effect', 'Affects personality and can cause aggressive behavior. May lead to conflicts in marriage due to dominating nature.'),
+      severity: t('doshas.severity.moderate', 'Moderate'),
+    },
+    {
+      house: t('doshas.mangalDosh.houses.2nd.name', '2nd House'),
+      effect: t('doshas.mangalDosh.houses.2nd.effect', 'Impacts family life, wealth, and speech. May cause harsh speech leading to family disputes.'),
+      severity: t('doshas.severity.mild', 'Mild'),
+    },
+    {
+      house: t('doshas.mangalDosh.houses.4th.name', '4th House'),
+      effect: t('doshas.mangalDosh.houses.4th.effect', 'Affects domestic peace, property, and relationship with mother. Can cause frequent changes in residence.'),
+      severity: t('doshas.severity.severe', 'Severe'),
+    },
+    {
+      house: t('doshas.mangalDosh.houses.7th.name', '7th House'),
+      effect: t('doshas.mangalDosh.houses.7th.effect', 'Directly impacts marriage and spouse. Most severe placement causing delays, conflicts, or separation.'),
+      severity: t('doshas.severity.severe', 'Severe'),
+    },
+    {
+      house: t('doshas.mangalDosh.houses.8th.name', '8th House'),
+      effect: t('doshas.mangalDosh.houses.8th.effect', 'Affects longevity, in-laws, and sudden events. Can cause health issues for spouse or accidents.'),
+      severity: t('doshas.severity.severe', 'Severe'),
+    },
+    {
+      house: t('doshas.mangalDosh.houses.12th.name', '12th House'),
+      effect: t('doshas.mangalDosh.houses.12th.effect', 'Impacts bed pleasures, expenses, and foreign connections. May cause separation or excessive expenses.'),
+      severity: t('doshas.severity.moderate', 'Moderate'),
+    },
+  ];
+
+  const cancellationConditions = [
+    t('doshas.mangalDosh.cancellation.1', 'Mars is in its own sign (Aries or Scorpio)'),
+    t('doshas.mangalDosh.cancellation.2', 'Mars is exalted in Capricorn'),
+    t('doshas.mangalDosh.cancellation.3', 'Mars is aspected by benefic Jupiter'),
+    t('doshas.mangalDosh.cancellation.4', 'Mars is conjunct with benefic planets (Jupiter, Venus, Mercury)'),
+    t('doshas.mangalDosh.cancellation.5', 'Both partners have Mangal Dosha (mutual cancellation)'),
+    t('doshas.mangalDosh.cancellation.6', 'Mars is in Navamsa of benefic planets'),
+    t('doshas.mangalDosh.cancellation.7', 'Person is born on Tuesday'),
+    t('doshas.mangalDosh.cancellation.8', 'Mars is in 2nd house in Gemini, Virgo, or Sagittarius'),
+    t('doshas.mangalDosh.cancellation.9', 'Mars is in 12th house in Taurus or Libra'),
+    t('doshas.mangalDosh.cancellation.10', 'Mars is in 4th house in Aries or Scorpio'),
+    t('doshas.mangalDosh.cancellation.11', 'Mars is in 7th house in Cancer or Capricorn'),
+    t('doshas.mangalDosh.cancellation.12', 'Mars is in 8th house in Sagittarius or Pisces'),
+    t('doshas.mangalDosh.cancellation.13', 'Age above 28 years (Dosha weakens significantly)'),
+    t('doshas.mangalDosh.cancellation.14', 'Mars is retrograde'),
+    t('doshas.mangalDosh.cancellation.15', 'Mars is combust (close to Sun)'),
+  ];
+
+  const remedies = {
+    puja: [
+      t('doshas.mangalDosh.remedies.puja.1', 'Perform Mangal Shanti Puja on Tuesday'),
+      t('doshas.mangalDosh.remedies.puja.2', 'Conduct Navagraha Shanti Puja'),
+      t('doshas.mangalDosh.remedies.puja.3', 'Perform Kumbh Vivah (symbolic marriage to a pot or tree)'),
+      t('doshas.mangalDosh.remedies.puja.4', 'Visit Mangalnath Temple in Ujjain'),
+      t('doshas.mangalDosh.remedies.puja.5', 'Perform Rudrabhishek on Mondays'),
+    ],
+    mantras: [
+      t('doshas.mangalDosh.remedies.mantras.1', "Chant 'Om Angarakaya Namaha' 108 times daily"),
+      t('doshas.mangalDosh.remedies.mantras.2', 'Recite Hanuman Chalisa daily, especially on Tuesdays'),
+      t('doshas.mangalDosh.remedies.mantras.3', "Chant Mangal Beej Mantra: 'Om Kram Kreem Kraum Sah Bhaumaya Namaha'"),
+      t('doshas.mangalDosh.remedies.mantras.4', 'Recite Sunderkand on Tuesdays and Saturdays'),
+      t('doshas.mangalDosh.remedies.mantras.5', 'Chant Gayatri Mantra 108 times daily'),
+    ],
+    donations: [
+      t('doshas.mangalDosh.remedies.donations.1', 'Donate red items (red cloth, red lentils, red flowers) on Tuesdays'),
+      t('doshas.mangalDosh.remedies.donations.2', 'Donate blood on Tuesdays (highly recommended)'),
+      t('doshas.mangalDosh.remedies.donations.3', 'Donate wheat, jaggery, and copper on Tuesdays'),
+      t('doshas.mangalDosh.remedies.donations.4', 'Feed monkeys with jaggery and gram on Tuesdays'),
+      t('doshas.mangalDosh.remedies.donations.5', 'Donate to soldiers or fire department'),
+    ],
+    lifestyle: [
+      t('doshas.mangalDosh.remedies.lifestyle.1', 'Fast on Tuesdays (eat only once after sunset)'),
+      t('doshas.mangalDosh.remedies.lifestyle.2', 'Wear a coral (Moonga) gemstone after consultation'),
+      t('doshas.mangalDosh.remedies.lifestyle.3', 'Wear red or orange clothes on Tuesdays'),
+      t('doshas.mangalDosh.remedies.lifestyle.4', 'Serve your siblings and younger people'),
+      t('doshas.mangalDosh.remedies.lifestyle.5', 'Practice anger management and patience'),
+      t('doshas.mangalDosh.remedies.lifestyle.6', 'Avoid non-vegetarian food on Tuesdays'),
+    ],
+  };
+
+  const faqs = [
+    {
+      question: t('doshas.mangalDosh.faq.1.question', 'What percentage of people have Mangal Dosha?'),
+      answer: t('doshas.mangalDosh.faq.1.answer', 'Approximately 40-50% of people have some form of Mangal Dosha in their birth chart. This is because Mars occupies one of the six houses (1, 2, 4, 7, 8, 12) in about half of all charts.'),
+    },
+    {
+      question: t('doshas.mangalDosh.faq.2.question', 'Can two Manglik people marry each other?'),
+      answer: t('doshas.mangalDosh.faq.2.answer', "Yes, when two Manglik individuals marry, their doshas are believed to cancel each other out. This is called 'Dosha Samya' and is considered an ideal match for Manglik natives."),
+    },
+    {
+      question: t('doshas.mangalDosh.faq.3.question', 'Does Mangal Dosha affect everyone equally?'),
+      answer: t('doshas.mangalDosh.faq.3.answer', "No, the severity depends on the house Mars occupies, the sign it's in, aspects from other planets, and various cancellation conditions. A proper analysis by an astrologer is recommended."),
+    },
+    {
+      question: t('doshas.mangalDosh.faq.4.question', 'At what age does Mangal Dosha reduce?'),
+      answer: t('doshas.mangalDosh.faq.4.answer', 'Mangal Dosha is believed to significantly reduce after age 28. Some traditions say it completely nullifies after this age, while others suggest it merely weakens.'),
+    },
+    {
+      question: t('doshas.mangalDosh.faq.5.question', 'Is Kumbh Vivah effective for Mangal Dosha?'),
+      answer: t('doshas.mangalDosh.faq.5.answer', 'Kumbh Vivah is a traditional remedy where the Manglik person symbolically marries a banana tree, peepal tree, or silver/gold idol of Lord Vishnu before their actual marriage. Many believe this transfers the negative effects.'),
+    },
+  ];
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -141,22 +141,16 @@ export default function MangalDoshPage() {
               {t('dosha.mangalDosh.whatIs', 'What is Mangal Dosh?')}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="prose prose-red max-w-none">
-              <p className="text-gray-700 mb-4">
-                Mangal Dosh, also known as Kuja Dosha, Bhom Dosha, or Manglik Dosha, is an 
-                astrological condition that occurs when Mars (Mangal) is placed in certain 
-                houses in a person&apos;s birth chart. It is one of the most discussed doshas 
-                in Vedic astrology, particularly concerning marriage compatibility.
-              </p>
-              <p className="text-gray-700">
-                The dosha is formed when Mars occupies the 1st, 2nd, 4th, 7th, 8th, or 12th 
-                house from the Ascendant (Lagna), Moon, or Venus in the birth chart. Mars is 
-                a fiery, aggressive planet, and its placement in these houses is believed to 
-                affect marriage, relationships, and domestic harmony.
-              </p>
-            </div>
-          </CardContent>
+                    <CardContent>
+                      <div className="prose prose-red max-w-none">
+                        <p className="text-gray-700 mb-4">
+                          {t('doshas.mangalDosh.description1', "Mangal Dosh, also known as Kuja Dosha, Bhom Dosha, or Manglik Dosha, is an astrological condition that occurs when Mars (Mangal) is placed in certain houses in a person's birth chart. It is one of the most discussed doshas in Vedic astrology, particularly concerning marriage compatibility.")}
+                        </p>
+                        <p className="text-gray-700">
+                          {t('doshas.mangalDosh.description2', 'The dosha is formed when Mars occupies the 1st, 2nd, 4th, 7th, 8th, or 12th house from the Ascendant (Lagna), Moon, or Venus in the birth chart. Mars is a fiery, aggressive planet, and its placement in these houses is believed to affect marriage, relationships, and domestic harmony.')}
+                        </p>
+                      </div>
+                    </CardContent>
         </Card>
 
         <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dosha.mangalDosh.effectsByHouse', 'Effects by House Placement')}</h2>
@@ -348,24 +342,17 @@ export default function MangalDoshPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {t('dosha.mangalDosh.importantNote', 'Important Note About Mangal Dosh')}
             </h2>
-            <div className="prose prose-red max-w-none">
-              <p className="text-gray-700 mb-4">
-                While Mangal Dosh is an important consideration in Vedic astrology, it&apos;s 
-                essential to understand that it should not be the sole factor in marriage 
-                decisions. Many successful marriages exist between Manglik and non-Manglik 
-                individuals, and many factors in a birth chart can modify or cancel the dosha.
-              </p>
-              <p className="text-gray-700 mb-4">
-                Modern astrologers recommend a holistic analysis of both charts rather than 
-                focusing solely on Mangal Dosh. Factors like overall compatibility, planetary 
-                strengths, dasha periods, and individual character should all be considered.
-              </p>
-              <p className="text-gray-700">
-                If you&apos;re concerned about Mangal Dosh, we recommend consulting with a 
-                qualified Vedic astrologer who can analyze your complete birth chart and 
-                provide personalized guidance based on your specific planetary positions.
-              </p>
-            </div>
+                        <div className="prose prose-red max-w-none">
+                          <p className="text-gray-700 mb-4">
+                            {t('doshas.mangalDosh.importantNote1', "While Mangal Dosh is an important consideration in Vedic astrology, it's essential to understand that it should not be the sole factor in marriage decisions. Many successful marriages exist between Manglik and non-Manglik individuals, and many factors in a birth chart can modify or cancel the dosha.")}
+                          </p>
+                          <p className="text-gray-700 mb-4">
+                            {t('doshas.mangalDosh.importantNote2', 'Modern astrologers recommend a holistic analysis of both charts rather than focusing solely on Mangal Dosh. Factors like overall compatibility, planetary strengths, dasha periods, and individual character should all be considered.')}
+                          </p>
+                          <p className="text-gray-700">
+                            {t('doshas.mangalDosh.importantNote3', "If you're concerned about Mangal Dosh, we recommend consulting with a qualified Vedic astrologer who can analyze your complete birth chart and provide personalized guidance based on your specific planetary positions.")}
+                          </p>
+                        </div>
           </CardContent>
         </Card>
       </div>
