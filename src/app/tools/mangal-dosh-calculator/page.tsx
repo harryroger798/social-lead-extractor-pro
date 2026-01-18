@@ -381,7 +381,18 @@ export default function MangalDoshCalculatorPage() {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">
-              {cancellationConditions.map((condition, index) => (
+              {[
+                t('calculator.mangalDosh.cancellation1', 'Mars is in its own sign (Aries or Scorpio)'),
+                t('calculator.mangalDosh.cancellation2', 'Mars is in exaltation (Capricorn)'),
+                t('calculator.mangalDosh.cancellation3', 'Mars is aspected by benefic Jupiter'),
+                t('calculator.mangalDosh.cancellation4', 'Mars is conjunct with benefic planets'),
+                t('calculator.mangalDosh.cancellation5', 'Both partners have Mangal Dosha (mutual cancellation)'),
+                t('calculator.mangalDosh.cancellation6', 'Mars is in Navamsa of benefic planets'),
+                t('calculator.mangalDosh.cancellation7', 'Person is born on Tuesday'),
+                t('calculator.mangalDosh.cancellation8', 'Mars is in 2nd house in Gemini, Virgo, or Sagittarius'),
+                t('calculator.mangalDosh.cancellation9', 'Mars is in 12th house in Taurus or Libra'),
+                t('calculator.mangalDosh.cancellation10', 'Age above 28 years (Dosha weakens)'),
+              ].map((condition, index) => (
                 <div key={index} className="flex items-start gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-700">{condition}</span>
@@ -438,39 +449,31 @@ export default function MangalDoshCalculatorPage() {
         <Card className="border-red-200 bg-red-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Complete Guide to Mangal Dosha
+              {t('calculator.mangalDosh.guideTitle', 'Complete Guide to Mangal Dosha')}
             </h2>
             <div className="prose prose-red max-w-none">
               <p className="text-gray-700 mb-4">
-                Mangal Dosha, also known as Kuja Dosha, Bhom Dosha, or Manglik Dosha, is one of 
-                the most discussed astrological conditions in Vedic astrology, particularly 
-                concerning marriage compatibility. It occurs when Mars (Mangal) occupies certain 
-                houses in the birth chart.
+                {t('calculator.mangalDosh.guideIntro', 'Mangal Dosha, also known as Kuja Dosha, Bhom Dosha, or Manglik Dosha, is one of the most discussed astrological conditions in Vedic astrology, particularly concerning marriage compatibility. It occurs when Mars (Mangal) occupies certain houses in the birth chart.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Houses That Cause Mangal Dosha
+                {t('calculator.mangalDosh.housesTitle', 'Houses That Cause Mangal Dosha')}
               </h3>
               <p className="text-gray-700 mb-4">
-                Mars in the 1st, 2nd, 4th, 7th, 8th, or 12th house from Lagna (Ascendant), 
-                Moon, or Venus creates Mangal Dosha. The severity varies based on the house:
+                {t('calculator.mangalDosh.housesDesc', 'Mars in the 1st, 2nd, 4th, 7th, 8th, or 12th house from Lagna (Ascendant), Moon, or Venus creates Mangal Dosha. The severity varies based on the house:')}
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li><strong>1st House:</strong> Affects personality and can cause aggressive behavior</li>
-                <li><strong>2nd House:</strong> Impacts family life and financial stability</li>
-                <li><strong>4th House:</strong> Affects domestic peace and relationship with mother</li>
-                <li><strong>7th House:</strong> Directly impacts marriage and spouse</li>
-                <li><strong>8th House:</strong> Can affect longevity and cause sudden events</li>
-                <li><strong>12th House:</strong> Impacts bed pleasures and can cause separation</li>
+                <li><strong>{t('calculator.mangalDosh.house1Label', '1st House:')}</strong> {t('calculator.mangalDosh.house1Desc', 'Affects personality and can cause aggressive behavior')}</li>
+                <li><strong>{t('calculator.mangalDosh.house2Label', '2nd House:')}</strong> {t('calculator.mangalDosh.house2Desc', 'Impacts family life and financial stability')}</li>
+                <li><strong>{t('calculator.mangalDosh.house4Label', '4th House:')}</strong> {t('calculator.mangalDosh.house4Desc', 'Affects domestic peace and relationship with mother')}</li>
+                <li><strong>{t('calculator.mangalDosh.house7Label', '7th House:')}</strong> {t('calculator.mangalDosh.house7Desc', 'Directly impacts marriage and spouse')}</li>
+                <li><strong>{t('calculator.mangalDosh.house8Label', '8th House:')}</strong> {t('calculator.mangalDosh.house8Desc', 'Can affect longevity and cause sudden events')}</li>
+                <li><strong>{t('calculator.mangalDosh.house12Label', '12th House:')}</strong> {t('calculator.mangalDosh.house12Desc', 'Impacts bed pleasures and can cause separation')}</li>
               </ul>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Important Considerations
+                {t('calculator.mangalDosh.importantTitle', 'Important Considerations')}
               </h3>
               <p className="text-gray-700">
-                It&apos;s important to note that approximately 40% of people have some form of 
-                Mangal Dosha. Many cancellation factors exist, and the Dosha&apos;s effects 
-                diminish after age 28. A qualified astrologer should analyze the complete 
-                chart before drawing conclusions. Matching two Manglik individuals is 
-                traditionally considered to neutralize the Dosha.
+                {t('calculator.mangalDosh.importantDesc', "It's important to note that approximately 40% of people have some form of Mangal Dosha. Many cancellation factors exist, and the Dosha's effects diminish after age 28. A qualified astrologer should analyze the complete chart before drawing conclusions. Matching two Manglik individuals is traditionally considered to neutralize the Dosha.")}
               </p>
             </div>
           </CardContent>

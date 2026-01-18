@@ -480,56 +480,50 @@ export default function SadeSatiCalculatorPage() {
         <Card className="border-blue-200 bg-blue-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Sade Sati - Saturn&apos;s 7.5 Year Transit
+              {t('calculator.sadeSati.guideTitle', "Understanding Sade Sati - Saturn's 7.5 Year Transit")}
             </h2>
             <div className="prose prose-blue max-w-none">
               <p className="text-gray-700 mb-4">
-                Sade Sati is a 7.5 year period when Saturn transits through the 12th, 1st, and 
-                2nd houses from your natal Moon. The term &quot;Sade Sati&quot; literally means 
-                &quot;seven and a half&quot; in Hindi, referring to the approximate duration of 
-                this transit.
+                {t('calculator.sadeSati.guideIntro', 'Sade Sati is a 7.5 year period when Saturn transits through the 12th, 1st, and 2nd houses from your natal Moon. The term "Sade Sati" literally means "seven and a half" in Hindi, referring to the approximate duration of this transit.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                The Three Phases of Sade Sati
+                {t('calculator.sadeSati.threePhasesTitle', 'The Three Phases of Sade Sati')}
               </h3>
               <div className="grid md:grid-cols-3 gap-4 mb-4">
                 <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-orange-800">Rising Phase (2.5 years)</h4>
+                  <h4 className="font-semibold text-orange-800">{t('calculator.sadeSati.risingPhaseTitle', 'Rising Phase (2.5 years)')}</h4>
                   <p className="text-sm text-orange-700">
-                    Saturn in 12th from Moon. Affects finances, sleep, and foreign matters.
+                    {t('calculator.sadeSati.risingPhaseDesc', 'Saturn in 12th from Moon. Affects finances, sleep, and foreign matters.')}
                   </p>
                 </div>
                 <div className="bg-red-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-800">Peak Phase (2.5 years)</h4>
+                  <h4 className="font-semibold text-red-800">{t('calculator.sadeSati.peakPhaseTitle', 'Peak Phase (2.5 years)')}</h4>
                   <p className="text-sm text-red-700">
-                    Saturn over Moon. Most intense phase affecting mind and emotions.
+                    {t('calculator.sadeSati.peakPhaseDesc', 'Saturn over Moon. Most intense phase affecting mind and emotions.')}
                   </p>
                 </div>
                 <div className="bg-yellow-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-yellow-800">Setting Phase (2.5 years)</h4>
+                  <h4 className="font-semibold text-yellow-800">{t('calculator.sadeSati.settingPhaseTitle', 'Setting Phase (2.5 years)')}</h4>
                   <p className="text-sm text-yellow-700">
-                    Saturn in 2nd from Moon. Affects family, wealth, and speech.
+                    {t('calculator.sadeSati.settingPhaseDesc', 'Saturn in 2nd from Moon. Affects family, wealth, and speech.')}
                   </p>
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Positive Aspects of Sade Sati
+                {t('calculator.sadeSati.positiveAspectsTitle', 'Positive Aspects of Sade Sati')}
               </h3>
               <p className="text-gray-700 mb-4">
-                While Sade Sati is often feared, it&apos;s important to understand that Saturn 
-                is the planet of karma and discipline. This period can bring:
+                {t('calculator.sadeSati.positiveAspectsIntro', "While Sade Sati is often feared, it's important to understand that Saturn is the planet of karma and discipline. This period can bring:")}
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Spiritual growth and maturity</li>
-                <li>Career advancement through hard work</li>
-                <li>Clearing of past karmic debts</li>
-                <li>Development of patience and resilience</li>
-                <li>Recognition for sincere efforts</li>
+                <li>{t('calculator.sadeSati.positive1', 'Spiritual growth and maturity')}</li>
+                <li>{t('calculator.sadeSati.positive2', 'Career advancement through hard work')}</li>
+                <li>{t('calculator.sadeSati.positive3', 'Clearing of past karmic debts')}</li>
+                <li>{t('calculator.sadeSati.positive4', 'Development of patience and resilience')}</li>
+                <li>{t('calculator.sadeSati.positive5', 'Recognition for sincere efforts')}</li>
               </ul>
               <p className="text-gray-700">
-                The effects of Sade Sati vary based on Saturn&apos;s position in your birth 
-                chart, its aspects, and the overall planetary configuration. A well-placed 
-                Saturn can actually bring positive results during this period.
+                {t('calculator.sadeSati.positiveOutro', "The effects of Sade Sati vary based on Saturn's position in your birth chart, its aspects, and the overall planetary configuration. A well-placed Saturn can actually bring positive results during this period.")}
               </p>
             </div>
           </CardContent>
