@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuthStore } from '@/stores/authStore'
 import { 
   Wrench, 
   Smartphone, 
@@ -10,11 +11,21 @@ import {
   Clock, 
   Users, 
   CheckCircle,
-  ArrowRight,
-  Download
+  ArrowRight
 } from 'lucide-react'
 
 export function LandingPage() {
+  const { isAuthenticated } = useAuthStore()
+  
+  const isElectron = typeof window !== 'undefined' && window.electronAPI?.isElectron
+  
+  if (isElectron) {
+    if (isAuthenticated) {
+      return <Navigate to="/app" replace />
+    }
+    return <Navigate to="/login" replace />
+  }
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Header */}
@@ -26,13 +37,12 @@ export function LandingPage() {
             </div>
             <span className="text-2xl font-bold text-primary">ByteCare</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">Services</a>
-            <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
-            <a href="#download" className="text-muted-foreground hover:text-primary transition-colors">Download</a>
-            <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">About</a>
-            <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</a>
-          </nav>
+                    <nav className="hidden md:flex items-center gap-6">
+                      <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">Services</a>
+                      <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
+                      <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">About</a>
+                      <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</a>
+                    </nav>
           <Link to="/login">
             <Button>Sign In</Button>
           </Link>
@@ -60,30 +70,6 @@ export function LandingPage() {
               View Services
             </Button>
           </a>
-        </div>
-      </section>
-
-      {/* Download Section */}
-      <section id="download" className="bg-primary py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Download ByteCare Desktop App</h2>
-          <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Get our Windows desktop application for easy access to your repair shop management system.
-            Manage customers, repairs, invoices, and more from your desktop.
-          </p>
-          <a 
-            href="http://167.71.237.250/ByteCare-Setup-1.0.0.exe" 
-            download="ByteCare-Setup-1.0.0.exe"
-            className="inline-flex"
-          >
-            <Button size="lg" variant="secondary" className="gap-2">
-              <Download className="h-5 w-5" />
-              Download for Windows (83 MB)
-            </Button>
-          </a>
-          <p className="text-primary-foreground/60 text-sm mt-4">
-            Version 1.0.0 | Windows 10/11 (64-bit)
-          </p>
         </div>
       </section>
 

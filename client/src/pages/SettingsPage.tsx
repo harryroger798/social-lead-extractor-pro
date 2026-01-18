@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Save, RefreshCw, Database, Cloud, Mail, Building2, CreditCard, Palette } from 'lucide-react'
+import { Save, RefreshCw, Database, Cloud, Mail, Building2, CreditCard, Palette, Download, Monitor } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -131,13 +131,14 @@ export function SettingsPage() {
       </div>
 
       <Tabs defaultValue="business">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="business">Business</TabsTrigger>
-          <TabsTrigger value="payment">Payment</TabsTrigger>
-          <TabsTrigger value="integrations" disabled={!isAdmin}>Integrations</TabsTrigger>
-          <TabsTrigger value="gst">GST</TabsTrigger>
-          <TabsTrigger value="backup" disabled={!isAdmin}>Backup</TabsTrigger>
-        </TabsList>
+                <TabsList className="grid w-full grid-cols-6">
+                  <TabsTrigger value="business">Business</TabsTrigger>
+                  <TabsTrigger value="payment">Payment</TabsTrigger>
+                  <TabsTrigger value="integrations" disabled={!isAdmin}>Integrations</TabsTrigger>
+                  <TabsTrigger value="gst">GST</TabsTrigger>
+                  <TabsTrigger value="backup" disabled={!isAdmin}>Backup</TabsTrigger>
+                  {isAdmin && <TabsTrigger value="downloads">Downloads</TabsTrigger>}
+                </TabsList>
 
         <TabsContent value="business" className="space-y-4">
           <Card>
@@ -454,6 +455,60 @@ export function SettingsPage() {
             </Card>
           )}
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="downloads" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Monitor className="h-5 w-5" />
+                  ByteCare Admin Manager
+                </CardTitle>
+                <CardDescription>
+                  Download the desktop application for offline management
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/50">
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <Download className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold">ByteCare Admin Manager Setup</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Windows Desktop Application (64-bit) - Version 1.0.0
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Works offline with automatic cloud sync when connected
+                    </p>
+                  </div>
+                  <a 
+                    href="http://167.71.237.250/ByteCare-Admin-Setup-1.0.0.exe" 
+                    download="ByteCare-Admin-Setup-1.0.0.exe"
+                  >
+                    <Button>
+                      <Download className="mr-2 h-4 w-4" />
+                      Download (89 MB)
+                    </Button>
+                  </a>
+                </div>
+                <div className="text-sm text-muted-foreground space-y-2">
+                  <p><strong>Features:</strong></p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Full offline capability with local database</li>
+                    <li>Automatic sync with cloud when online</li>
+                    <li>Manage customers, repairs, invoices, and more</li>
+                    <li>Generate PDF invoices with UPI QR codes</li>
+                  </ul>
+                  <p className="mt-4"><strong>Requirements:</strong> Windows 10/11 (64-bit)</p>
+                  <p className="text-xs mt-2 text-yellow-600">
+                    Note: Windows SmartScreen may show a warning. Click "More info" then "Run anyway" to install.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )
