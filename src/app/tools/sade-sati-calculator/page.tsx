@@ -424,7 +424,7 @@ export default function SadeSatiCalculatorPage() {
                     className={`rounded-lg p-3 ${isActive ? "bg-blue-100 border border-blue-300" : "bg-gray-50"}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{t(`zodiac.${signKey}`, sign)}</span>
+                      <span className="font-medium">{t(`horoscope.${signKey}`, sign)}</span>
                       {isActive && <Badge className="bg-blue-500">{t('calculator.sadeSati.activeLabel', 'Active')}</Badge>}
                     </div>
                   </div>
