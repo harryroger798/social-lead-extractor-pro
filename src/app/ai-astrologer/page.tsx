@@ -25,14 +25,7 @@ interface Message {
   timestamp: Date;
 }
 
-const suggestedQuestions = [
-  "What does my Moon sign say about my emotions?",
-  "How will Saturn transit affect my career in 2026?",
-  "What are the remedies for Mangal Dosha?",
-  "Is this a good time for marriage according to astrology?",
-  "What does Rahu in the 7th house mean?",
-  "How can I improve my financial luck through astrology?",
-];
+// Suggested questions will be generated inside the component using t() function
 
 const astrologyResponses: Record<string, string> = {
   moon: `The Moon in Vedic astrology represents your mind, emotions, and inner self. Your Moon sign (Chandra Rashi) reveals how you process feelings, your instinctive reactions, and your emotional needs.
@@ -232,6 +225,17 @@ function getAstrologyResponse(question: string): string {
 
 export default function AIAstrologerPage() {
   const { t } = useLanguage();
+  
+  // Suggested questions using t() function
+  const suggestedQuestions = [
+    t('aiAstrologer.questions.moonSign', 'What does my Moon sign say about my emotions?'),
+    t('aiAstrologer.questions.saturnTransit', 'How will Saturn transit affect my career in 2026?'),
+    t('aiAstrologer.questions.mangalRemedies', 'What are the remedies for Mangal Dosha?'),
+    t('aiAstrologer.questions.marriageTime', 'Is this a good time for marriage according to astrology?'),
+    t('aiAstrologer.questions.rahu7thHouse', 'What does Rahu in the 7th house mean?'),
+    t('aiAstrologer.questions.financialLuck', 'How can I improve my financial luck through astrology?'),
+  ];
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -347,21 +351,21 @@ How may I assist you on your spiritual journey today?`,
             <CardContent className="pt-4 pb-4">
               <MessageCircle className="w-6 h-6 text-purple-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-purple-700">10M+</div>
-              <div className="text-xs text-gray-600">Questions Answered</div>
+              <div className="text-xs text-gray-600">{t('aiAstrologer.stats.questionsAnswered', 'Questions Answered')}</div>
             </CardContent>
           </Card>
           <Card className="text-center border-amber-200 bg-amber-50/50">
             <CardContent className="pt-4 pb-4">
               <Star className="w-6 h-6 text-amber-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-amber-700">4.8/5</div>
-              <div className="text-xs text-gray-600">User Rating</div>
+              <div className="text-xs text-gray-600">{t('aiAstrologer.stats.userRating', 'User Rating')}</div>
             </CardContent>
           </Card>
           <Card className="text-center border-green-200 bg-green-50/50">
             <CardContent className="pt-4 pb-4">
               <Sparkles className="w-6 h-6 text-green-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-green-700">24/7</div>
-              <div className="text-xs text-gray-600">Available</div>
+              <div className="text-xs text-gray-600">{t('aiAstrologer.stats.available', 'Available')}</div>
             </CardContent>
           </Card>
         </div>
@@ -374,14 +378,14 @@ How may I assist you on your spiritual journey today?`,
                 <Bot className="w-6 h-6" />
               </div>
               <div>
-                <CardTitle className="text-white">VedicStar AI Astrologer</CardTitle>
-                <CardDescription className="text-purple-100">
-                  Powered by Vedic Wisdom
-                </CardDescription>
+                                <CardTitle className="text-white">{t('aiAstrologer.chat.title', 'VedicStar AI Astrologer')}</CardTitle>
+                                <CardDescription className="text-purple-100">
+                                  {t('aiAstrologer.chat.poweredBy', 'Powered by Vedic Wisdom')}
+                                </CardDescription>
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                <span className="text-sm text-purple-100">Online</span>
+                <span className="text-sm text-purple-100">{t('aiAstrologer.chat.online', 'Online')}</span>
               </div>
             </div>
           </CardHeader>
@@ -478,7 +482,7 @@ How may I assist you on your spiritual journey today?`,
                   <div className="bg-white shadow-sm border rounded-2xl rounded-tl-none px-4 py-3">
                     <div className="flex items-center gap-2 text-gray-500">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-sm">Consulting the stars...</span>
+                      <span className="text-sm">{t('aiAstrologer.chat.loading', 'Consulting the stars...')}</span>
                     </div>
                   </div>
                 </div>
@@ -490,7 +494,7 @@ How may I assist you on your spiritual journey today?`,
             {/* Suggested Questions */}
             {messages.length <= 2 && (
               <div className="p-4 border-t bg-gradient-to-r from-purple-50 to-indigo-50">
-                <p className="text-sm font-medium text-purple-700 mb-3">Suggested questions:</p>
+                <p className="text-sm font-medium text-purple-700 mb-3">{t('aiAstrologer.chat.suggestedQuestions', 'Suggested questions:')}</p>
                 <div className="flex flex-wrap gap-2">
                   {suggestedQuestions.map((question, index) => (
                     <button
@@ -517,7 +521,7 @@ How may I assist you on your spiritual journey today?`,
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about your horoscope, transits, doshas..."
+                  placeholder={t('aiAstrologer.chat.placeholder', 'Ask about your horoscope, transits, doshas...')}
                   className="flex-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   disabled={isTyping}
                 />
@@ -535,45 +539,44 @@ How may I assist you on your spiritual journey today?`,
 
         {/* Features */}
         <div className="mt-8 grid md:grid-cols-3 gap-4">
-          <Card className="border-purple-200">
-            <CardContent className="pt-6">
-              <Moon className="w-8 h-8 text-purple-600 mb-3" />
-              <h3 className="font-semibold mb-2">Planetary Analysis</h3>
-              <p className="text-sm text-gray-600">
-                Get insights about planetary positions, transits, and their effects on your life.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-amber-200">
-            <CardContent className="pt-6">
-              <Sun className="w-8 h-8 text-amber-600 mb-3" />
-              <h3 className="font-semibold mb-2">Dosha Remedies</h3>
-              <p className="text-sm text-gray-600">
-                Learn about doshas like Mangal, Kaal Sarp, Sade Sati and their powerful remedies.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-green-200">
-            <CardContent className="pt-6">
-              <Star className="w-8 h-8 text-green-600 mb-3" />
-              <h3 className="font-semibold mb-2">Life Guidance</h3>
-              <p className="text-sm text-gray-600">
-                Receive guidance on career, relationships, health, and spiritual growth.
-              </p>
-            </CardContent>
-          </Card>
+                    <Card className="border-purple-200">
+                      <CardContent className="pt-6">
+                        <Moon className="w-8 h-8 text-purple-600 mb-3" />
+                        <h3 className="font-semibold mb-2">{t('aiAstrologer.features.planetaryAnalysis.title', 'Planetary Analysis')}</h3>
+                        <p className="text-sm text-gray-600">
+                          {t('aiAstrologer.features.planetaryAnalysis.description', 'Get insights about planetary positions, transits, and their effects on your life.')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-amber-200">
+                      <CardContent className="pt-6">
+                        <Sun className="w-8 h-8 text-amber-600 mb-3" />
+                        <h3 className="font-semibold mb-2">{t('aiAstrologer.features.doshaRemedies.title', 'Dosha Remedies')}</h3>
+                        <p className="text-sm text-gray-600">
+                          {t('aiAstrologer.features.doshaRemedies.description', 'Learn about doshas like Mangal, Kaal Sarp, Sade Sati and their powerful remedies.')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-green-200">
+                      <CardContent className="pt-6">
+                        <Star className="w-8 h-8 text-green-600 mb-3" />
+                        <h3 className="font-semibold mb-2">{t('aiAstrologer.features.lifeGuidance.title', 'Life Guidance')}</h3>
+                        <p className="text-sm text-gray-600">
+                          {t('aiAstrologer.features.lifeGuidance.description', 'Receive guidance on career, relationships, health, and spiritual growth.')}
+                        </p>
+                      </CardContent>
+                    </Card>
         </div>
 
-        {/* Disclaimer */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg border">
-          <p className="text-xs text-gray-500 text-center">
-            <strong>Note:</strong> AI Astrologer provides general guidance based on Vedic astrology principles. 
-            For personalized predictions based on your exact birth chart, please{" "}
-            <a href="/consultation" className="text-purple-600 hover:underline">
-              consult with our expert astrologers
-            </a>.
-          </p>
-        </div>
+                {/* Disclaimer */}
+                <div className="mt-8 p-4 bg-gray-50 rounded-lg border">
+                  <p className="text-xs text-gray-500 text-center">
+                    <strong>{t('aiAstrologer.disclaimer.note', 'Note')}:</strong> {t('aiAstrologer.disclaimer.text', 'AI Astrologer provides general guidance based on Vedic astrology principles. For personalized predictions based on your exact birth chart, please')}{" "}
+                    <a href="/consultation" className="text-purple-600 hover:underline">
+                      {t('aiAstrologer.disclaimer.consultLink', 'consult with our expert astrologers')}
+                    </a>.
+                  </p>
+                </div>
       </div>
     </div>
   );
