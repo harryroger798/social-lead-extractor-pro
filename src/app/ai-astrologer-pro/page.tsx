@@ -107,6 +107,7 @@ export default function AIAstrologerProPage() {
   const [isLoadingChart, setIsLoadingChart] = useState(false);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [activeMode, setActiveMode] = useState<"general" | "personalized">("general");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getWelcomeMessage = useCallback((hasChart: boolean, chart: ChartContext | null, name: string) => {
