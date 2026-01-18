@@ -37,8 +37,8 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
                         <Link to="/" className="flex items-center gap-2">
-                          <img src="/images/favicon.png" alt="ByteCare" className="h-10 w-10 object-contain" />
-                          <span className="text-2xl font-bold text-primary">ByteCare</span>
+                                                    <img src="/images/favicon.png" alt="ByteCare" className="h-14 w-14 object-contain" />
+                                                    <span className="text-3xl font-bold text-primary">ByteCare</span>
                         </Link>
 
             {/* Desktop Navigation */}
@@ -122,10 +122,10 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="grid gap-8 md:grid-cols-4">
             {/* Company Info */}
             <div className="md:col-span-1">
-                            <div className="flex items-center gap-2 mb-4">
-                              <img src="/images/favicon.png" alt="ByteCare" className="h-10 w-10 object-contain" />
-                              <span className="text-xl font-bold">ByteCare</span>
-                            </div>
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                          <img src="/images/favicon.png" alt="ByteCare" className="h-14 w-14 object-contain" />
+                                                          <span className="text-2xl font-bold">ByteCare</span>
+                                                        </div>
               <p className="text-slate-400 text-sm mb-4">
                 {t('footer.description')}
               </p>

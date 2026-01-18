@@ -612,32 +612,35 @@ export function LandingPage() {
                   </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[
-                    '/images/review-whatsapp-1.png',
-                    '/images/review-whatsapp-3.png',
-                    '/images/review-whatsapp-4.png',
-                    '/images/review-whatsapp-5.png',
-                    '/images/review-whatsapp-7.png',
-                    '/images/review-google.png',
-                  ].map((image, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
-                      className="rounded-2xl overflow-hidden shadow-xl"
-                    >
-                      <img 
-                        src={image} 
-                        alt={`Customer Review ${index + 1}`}
-                        className="w-full h-auto object-cover"
-                      />
-                    </motion.div>
-                  ))}
-                </div>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                  {[
+                                    '/images/review-whatsapp-1.png',
+                                    '/images/review-whatsapp-3.png',
+                                    '/images/review-whatsapp-4.png',
+                                    '/images/review-whatsapp-5.png',
+                                    '/images/review-whatsapp-7.png',
+                                    '/images/review-google.png',
+                                  ].map((image, index) => (
+                                    <motion.div
+                                      key={index}
+                                      initial={{ opacity: 0, y: 30 }}
+                                      whileInView={{ opacity: 1, y: 0 }}
+                                      viewport={{ once: true }}
+                                      transition={{ delay: index * 0.1 }}
+                                      whileHover={{ scale: 1.05, y: -10 }}
+                                      className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-700 bg-white dark:bg-slate-800 transform perspective-1000"
+                                      style={{ 
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 20px -5px rgba(0, 0, 0, 0.1)',
+                                      }}
+                                    >
+                                      <img 
+                                        src={image} 
+                                        alt={`Customer Review ${index + 1}`}
+                                        className="w-full h-64 object-cover object-top"
+                                      />
+                                    </motion.div>
+                                  ))}
+                                </div>
               </div>
             </section>
 
