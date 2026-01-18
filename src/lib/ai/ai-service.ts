@@ -34,8 +34,9 @@ Guidelines:
 - Provide practical remedies when discussing doshas or challenges
 - Explain astrological concepts in simple terms
 - Keep responses concise but informative (2-4 paragraphs)
-- IMPORTANT: When a user provides their birth date, you MUST calculate and provide their Moon sign, Sun sign, and basic astrological insights based on that date
-- For birth dates, use Western zodiac date ranges to determine Sun sign, and provide Moon sign based on the lunar cycle approximation
+- IMPORTANT: When birth date information is provided in a SYSTEM NOTE, use ONLY the calculated values provided. Do NOT recalculate or guess different values
+- The system automatically calculates accurate Sun Sign, Moon Sign (Chandra Rashi), and Nakshatra using astronomical algorithms
+- Always mention the user's calculated signs and nakshatra when providing personalized readings
 
 LANGUAGE INSTRUCTION: ${languageInstruction}
 
@@ -109,16 +110,54 @@ function getSunSign(date: Date): string {
   return "Pisces";
 }
 
-// Calculate approximate Moon sign (simplified calculation)
+// Calculate Moon sign using proper lunar cycle algorithm
+// The Moon takes approximately 27.32 days to complete one sidereal cycle through all 12 signs
+// Each sign takes approximately 2.28 days (27.32 / 12)
 function getMoonSign(date: Date): string {
   const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
                  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  // Simplified lunar cycle approximation
-  const moonIndex = (day * 2 + month + Math.floor(year / 10)) % 12;
+  
+  // Reference point: January 1, 2000 at 00:00 UTC, Moon was in Aries at approximately 0 degrees
+  const referenceDate = new Date(Date.UTC(2000, 0, 1, 0, 0, 0));
+  const siderealMonth = 27.321661; // Sidereal month in days
+  
+  // Calculate days since reference
+  const daysSinceReference = (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24);
+  
+  // Calculate how many complete lunar cycles have passed
+  const lunarCycles = daysSinceReference / siderealMonth;
+  
+  // Get the fractional part (position in current cycle)
+  const positionInCycle = lunarCycles - Math.floor(lunarCycles);
+  
+  // Convert to sign index (0-11)
+  const moonIndex = Math.floor(positionInCycle * 12) % 12;
+  
   return signs[moonIndex];
+}
+
+// Calculate Nakshatra (lunar mansion) from birth date
+function getNakshatra(date: Date): string {
+  const nakshatras = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+    "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+  ];
+  
+  // Reference point: January 1, 2000 at 00:00 UTC
+  const referenceDate = new Date(Date.UTC(2000, 0, 1, 0, 0, 0));
+  const siderealMonth = 27.321661;
+  
+  const daysSinceReference = (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24);
+  const lunarCycles = daysSinceReference / siderealMonth;
+  const positionInCycle = lunarCycles - Math.floor(lunarCycles);
+  
+  // 27 nakshatras in one lunar cycle
+  const nakshatraIndex = Math.floor(positionInCycle * 27) % 27;
+  
+  return nakshatras[nakshatraIndex];
 }
 
 // Enhance message with birth date information if detected
@@ -127,6 +166,7 @@ function enhanceMessageWithBirthInfo(message: string): string {
   if (birthDate) {
     const sunSign = getSunSign(birthDate);
     const moonSign = getMoonSign(birthDate);
+    const nakshatra = getNakshatra(birthDate);
     const formattedDate = birthDate.toLocaleDateString('en-US', { 
       year: 'numeric', month: 'long', day: 'numeric' 
     });
@@ -134,9 +174,12 @@ function enhanceMessageWithBirthInfo(message: string): string {
     return `${message}
 
 [SYSTEM NOTE: User's birth date detected as ${formattedDate}. 
-Calculated Sun Sign: ${sunSign}
-Calculated Moon Sign (Chandra Rashi): ${moonSign}
-Please provide personalized astrological insights based on these signs. Mention their Sun sign and Moon sign in your response and explain what these mean for them.]`;
+CALCULATED ASTROLOGICAL DATA (use these exact values in your response):
+- Sun Sign (Surya Rashi): ${sunSign}
+- Moon Sign (Chandra Rashi): ${moonSign}
+- Birth Nakshatra: ${nakshatra}
+
+IMPORTANT: Use these calculated values in your response. Do NOT guess or calculate different values. These are computed using proper astronomical algorithms based on the user's birth date. Explain what these signs and nakshatra mean for the user's personality, life path, and current period.]`;
   }
   return message;
 }
