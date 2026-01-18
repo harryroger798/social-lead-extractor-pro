@@ -59,11 +59,39 @@ const VAPI_PUBLIC_KEYS = [
   "79e3eede-bb04-4780-9f3e-f6ce67b190dd",
 ];
 
-const VAPI_ASSISTANT_IDS: Record<string, string> = {
-  en: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
-  hi: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
-  default: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
-};
+// Build transient assistant configuration using VAPI's built-in providers
+// This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
+// No external API keys required (OpenAI, ElevenLabs, etc.)
+const buildAssistantConfig = (langCode: string) => ({
+  name: "VedicStarAstro AI Astrologer",
+  firstMessage: getFirstMessage(langCode),
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: langCode === "en" ? "en" : langCode,
+  },
+  model: {
+    provider: "groq",
+    model: "llama-3.1-8b-instant",
+    messages: [
+      {
+        role: "system",
+        content: getLanguageSystemPrompt(langCode),
+      },
+    ],
+    temperature: 0.7,
+    maxTokens: 250,
+  },
+  voice: {
+    provider: "deepgram",
+    voiceId: "aura-asteria-en",
+  },
+  silenceTimeoutSeconds: 30,
+  maxDurationSeconds: 300,
+  backgroundSound: "off",
+  backchannelingEnabled: false,
+  backgroundDenoisingEnabled: true,
+});
 
 const getLanguageSystemPrompt = (langCode: string): string => {
   const languageNames: Record<string, string> = {
@@ -232,12 +260,12 @@ export default function VoiceAstrologerPage() {
         }
       });
 
-      // Use permanent assistant ID for reliable call creation
-      // This avoids the "daily-call-object-creation-error" that occurs with transient configurations
-      // Assistants are pre-configured in VAPI dashboard with OpenAI + ElevenLabs + Deepgram
-      const assistantId = VAPI_ASSISTANT_IDS[selectedLanguage] || VAPI_ASSISTANT_IDS.default;
+      // Use transient assistant configuration with VAPI's built-in providers
+      // This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
+      // No external API keys required (OpenAI, ElevenLabs, etc.)
+      const assistantConfig = buildAssistantConfig(selectedLanguage);
       
-      await vapi.start(assistantId);
+      await vapi.start(assistantConfig);
     } catch (error) {
       console.error("Failed to start call:", error);
       setCallState({
