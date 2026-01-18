@@ -68,42 +68,45 @@ export function CustomersPage() {
     queryFn: () => customersApi.getAll({ search, limit: 50 }),
   })
 
-  const createMutation = useMutation({
-    mutationFn: (data: Record<string, unknown>) => customersApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      setIsDialogOpen(false)
-      toast({ title: 'Customer created successfully' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to create customer' })
-    },
-  })
+    const createMutation = useMutation({
+      mutationFn: (data: Record<string, unknown>) => customersApi.create(data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['customers'] })
+        queryClient.invalidateQueries({ queryKey: ['customers-list'] })
+        setIsDialogOpen(false)
+        toast({ title: 'Customer created successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to create customer' })
+      },
+    })
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
-      customersApi.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      setIsDialogOpen(false)
-      setEditingCustomer(null)
-      toast({ title: 'Customer updated successfully' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to update customer' })
-    },
-  })
+    const updateMutation = useMutation({
+      mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
+        customersApi.update(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['customers'] })
+        queryClient.invalidateQueries({ queryKey: ['customers-list'] })
+        setIsDialogOpen(false)
+        setEditingCustomer(null)
+        toast({ title: 'Customer updated successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to update customer' })
+      },
+    })
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => customersApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      toast({ title: 'Customer deleted successfully' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to delete customer' })
-    },
-  })
+    const deleteMutation = useMutation({
+      mutationFn: (id: number) => customersApi.delete(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['customers'] })
+        queryClient.invalidateQueries({ queryKey: ['customers-list'] })
+        toast({ title: 'Customer deleted successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to delete customer' })
+      },
+    })
 
   const customers = data?.data?.data || []
 
