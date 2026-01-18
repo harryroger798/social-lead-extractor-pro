@@ -240,7 +240,7 @@ export default function VoiceAstrologerPage() {
         },
         model: {
           provider: "groq",
-          model: "llama-3.1-70b-versatile",
+          model: "llama-3.3-70b-versatile",
           temperature: 0.7,
           messages: [
             {
