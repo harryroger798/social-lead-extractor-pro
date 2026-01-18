@@ -19,6 +19,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { repairsApi, customersApi, servicesApi } from '@/lib/api'
 import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
@@ -63,9 +64,9 @@ export function RepairsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingRepair, setEditingRepair] = useState<Repair | null>(null)
   const [viewingRepair, setViewingRepair] = useState<Repair | null>(null)
-  const [customerSearch, setCustomerSearch] = useState('')
-  const [serviceSearch, setServiceSearch] = useState('')
-  const [deviceSearch, setDeviceSearch] = useState('')
+  const [selectedCustomer, setSelectedCustomer] = useState<string>('')
+  const [selectedService, setSelectedService] = useState<string>('')
+  const [selectedDeviceType, setSelectedDeviceType] = useState<string>('')
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
@@ -119,43 +120,42 @@ export function RepairsPage() {
     },
   })
 
-    const repairs = data?.data?.data || []
-    const customers = customersData?.data?.data || []
-    const services = servicesData?.data?.data || []
+        const repairs = data?.data?.data || []
+      const customers = customersData?.data?.data || []
+      const services = servicesData?.data?.data || []
 
-    const filteredCustomers = customers.filter((c: { id: number; name: string; phone: string }) =>
-      customerSearch === '' || 
-      c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
-      c.phone.includes(customerSearch)
-    )
+      const customerOptions = customers.map((c: { id: number; name: string; phone: string }) => ({
+        value: String(c.id),
+        label: `${c.name} - ${c.phone}`
+      }))
 
-    const filteredServices = services.filter((s: { id: number; name: string; category: string }) =>
-      serviceSearch === '' ||
-      s.name.toLowerCase().includes(serviceSearch.toLowerCase()) ||
-      s.category.toLowerCase().includes(serviceSearch.toLowerCase())
-    )
+      const serviceOptions = services.map((s: { id: number; name: string; category: string }) => ({
+        value: String(s.id),
+        label: `${s.name} (${s.category})`
+      }))
 
-    const filteredDeviceTypes = DEVICE_TYPES.filter(d =>
-      deviceSearch === '' ||
-      d.label.toLowerCase().includes(deviceSearch.toLowerCase())
-    )
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const repairData = {
-      customer_id: Number(formData.get('customer_id')),
-      service_id: Number(formData.get('service_id')),
-      device_type: formData.get('device_type'),
-      brand: formData.get('brand'),
-      model: formData.get('model'),
-      serial_number: formData.get('serial_number'),
-      issue_description: formData.get('issue_description'),
-      priority: formData.get('priority'),
-      parts_cost: Number(formData.get('parts_cost')) || 0,
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const formData = new FormData(e.currentTarget)
+      const repairData = {
+        customer_id: Number(selectedCustomer),
+        service_id: Number(selectedService),
+        device_type: selectedDeviceType,
+        brand: formData.get('brand'),
+        model: formData.get('model'),
+        serial_number: formData.get('serial_number'),
+        issue_description: formData.get('issue_description'),
+        priority: formData.get('priority'),
+        parts_cost: Number(formData.get('parts_cost')) || 0,
+      }
+      createMutation.mutate(repairData)
     }
-    createMutation.mutate(repairData)
-  }
+
+    const resetFormState = () => {
+      setSelectedCustomer('')
+      setSelectedService('')
+      setSelectedDeviceType('')
+    }
 
   return (
     <div className="space-y-6">
@@ -308,102 +308,58 @@ export function RepairsPage() {
         </CardContent>
       </Card>
 
-            <Dialog open={isDialogOpen} onOpenChange={(open) => {
-              setIsDialogOpen(open)
-              if (!open) {
-                setEditingRepair(null)
-                setCustomerSearch('')
-                setServiceSearch('')
-                setDeviceSearch('')
-              }
-            }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{editingRepair ? 'Edit Repair' : 'New Repair Ticket'}</DialogTitle>
-            <DialogDescription>
-              {editingRepair ? 'Update repair details' : 'Create a new repair ticket'}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="customer_id">Customer *</Label>
-                                <Input
-                                  placeholder="Search customer by name or phone..."
-                                  value={customerSearch}
-                                  onChange={(e) => setCustomerSearch(e.target.value)}
-                                  className="h-8 mb-1"
-                                />
-                                <Select name="customer_id" required>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select customer" />
-                                  </SelectTrigger>
-                                  <SelectContent className="max-h-60">
-                                    {filteredCustomers.length === 0 ? (
-                                      <div className="p-2 text-sm text-muted-foreground text-center">No customers found</div>
-                                    ) : (
-                                      filteredCustomers.map((c: { id: number; name: string; phone: string }) => (
-                                        <SelectItem key={c.id} value={String(c.id)}>
-                                          {c.name} - {c.phone}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="service_id">Service *</Label>
-                                <Input
-                                  placeholder="Search service by name or category..."
-                                  value={serviceSearch}
-                                  onChange={(e) => setServiceSearch(e.target.value)}
-                                  className="h-8 mb-1"
-                                />
-                                <Select name="service_id" required>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select service" />
-                                  </SelectTrigger>
-                                  <SelectContent className="max-h-60">
-                                    {filteredServices.length === 0 ? (
-                                      <div className="p-2 text-sm text-muted-foreground text-center">No services found</div>
-                                    ) : (
-                                      filteredServices.map((s: { id: number; name: string; category: string }) => (
-                                        <SelectItem key={s.id} value={String(s.id)}>
-                                          {s.name} ({s.category})
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="device_type">Device Type *</Label>
-                                <Input
-                                  placeholder="Search device type..."
-                                  value={deviceSearch}
-                                  onChange={(e) => setDeviceSearch(e.target.value)}
-                                  className="h-8 mb-1"
-                                />
-                                <Select name="device_type" required>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select type" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {filteredDeviceTypes.length === 0 ? (
-                                      <div className="p-2 text-sm text-muted-foreground text-center">No device types found</div>
-                                    ) : (
-                                      filteredDeviceTypes.map((d) => (
-                                        <SelectItem key={d.value} value={d.value}>
-                                          {d.label}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                    <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                setIsDialogOpen(open)
+                if (!open) {
+                  setEditingRepair(null)
+                  resetFormState()
+                }
+              }}>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>{editingRepair ? 'Edit Repair' : 'New Repair Ticket'}</DialogTitle>
+                    <DialogDescription>
+                      {editingRepair ? 'Update repair details' : 'Create a new repair ticket'}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleSubmit}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Customer *</Label>
+                          <SearchableSelect
+                            options={customerOptions}
+                            value={selectedCustomer}
+                            onValueChange={setSelectedCustomer}
+                            placeholder="Select customer"
+                            searchPlaceholder="Search by name or phone..."
+                            emptyMessage="No customers found"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Service *</Label>
+                          <SearchableSelect
+                            options={serviceOptions}
+                            value={selectedService}
+                            onValueChange={setSelectedService}
+                            placeholder="Select service"
+                            searchPlaceholder="Search by name or category..."
+                            emptyMessage="No services found"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label>Device Type *</Label>
+                          <SearchableSelect
+                            options={DEVICE_TYPES}
+                            value={selectedDeviceType}
+                            onValueChange={setSelectedDeviceType}
+                            placeholder="Select type"
+                            searchPlaceholder="Search device type..."
+                            emptyMessage="No device types found"
+                          />
+                        </div>
                 <div className="space-y-2">
                   <Label htmlFor="brand">Brand *</Label>
                   <Input id="brand" name="brand" required />
