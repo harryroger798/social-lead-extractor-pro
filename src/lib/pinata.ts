@@ -375,30 +375,43 @@ function generateCertificateHTML(certificateData: CertificateData): string {
 
 export async function uploadToIPFS(certificateData: CertificateData): Promise<string | null> {
   try {
-    // Generate beautiful HTML certificate
-    const htmlContent = generateCertificateHTML(certificateData);
-    
-    // Create a Blob and convert to base64 for Pinata file upload
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const formData = new FormData();
-    formData.append('file', blob, `certificate-${certificateData.certificateId}.html`);
-    formData.append('pinataMetadata', JSON.stringify({
-      name: `VedicStarAstro-Certificate-${certificateData.certificateId}`,
-      keyvalues: {
-        certificateId: certificateData.certificateId,
-        name: certificateData.birthDetails.name,
-        platform: "VedicStarAstro",
-        type: "BlockchainKundliCertificate"
-      },
-    }));
+    // Upload JSON data to IPFS (JSON works reliably on Pinata's gateway)
+    // HTML was causing issues with ipfs.io gateway timeouts
+    const jsonData = {
+      version: "1.0",
+      platform: "VedicStarAstro",
+      type: "BlockchainKundliCertificate",
+      certificateId: certificateData.certificateId,
+      birthDetails: certificateData.birthDetails,
+      chartSummary: certificateData.chartSummary,
+      cryptographicHash: certificateData.hash,
+      timestamp: certificateData.timestamp,
+      generatedAt: new Date(certificateData.timestamp).toISOString(),
+      verification: {
+        method: "SHA-256",
+        note: "This certificate data is cryptographically signed and permanently stored on IPFS."
+      }
+    };
 
-    const response = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         pinata_api_key: PINATA_API_KEY,
         pinata_secret_api_key: PINATA_SECRET_KEY,
       },
-      body: formData,
+      body: JSON.stringify({
+        pinataContent: jsonData,
+        pinataMetadata: {
+          name: `VedicStarAstro-Certificate-${certificateData.certificateId}`,
+          keyvalues: {
+            certificateId: certificateData.certificateId,
+            name: certificateData.birthDetails.name,
+            platform: "VedicStarAstro",
+            type: "BlockchainKundliCertificate"
+          },
+        },
+      }),
     });
 
     if (!response.ok) {
@@ -419,5 +432,7 @@ export function getIPFSGatewayUrl(ipfsHash: string): string {
 }
 
 export function getPublicIPFSUrl(ipfsHash: string): string {
-  return `https://ipfs.io/ipfs/${ipfsHash}`;
+  // Use Pinata's gateway - they reliably serve their own pinned content
+  // ipfs.io was causing 504 timeouts due to provider discovery issues
+  return `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
 }
