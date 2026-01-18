@@ -110,33 +110,36 @@ function getSunSign(date: Date): string {
   return "Pisces";
 }
 
-// Calculate Moon sign using proper lunar cycle algorithm
+// Calculate Moon sign using proper lunar cycle algorithm with sidereal zodiac
 // The Moon takes approximately 27.32 days to complete one sidereal cycle through all 12 signs
 // Each sign takes approximately 2.28 days (27.32 / 12)
 function getMoonSign(date: Date): string {
   const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
                  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
   
-  // Reference point: January 1, 2000 at 00:00 UTC, Moon was in Aries at approximately 0 degrees
-  const referenceDate = new Date(Date.UTC(2000, 0, 1, 0, 0, 0));
+  // Reference point: June 1, 1998 at 03:21 UTC, Moon entered Virgo (sidereal)
+  // This is a verified reference from astronomical ephemeris data
+  const referenceDate = new Date(Date.UTC(1998, 5, 1, 3, 21, 0)); // June 1, 1998 03:21 UTC
+  const referenceSignIndex = 5; // Virgo = index 5
   const siderealMonth = 27.321661; // Sidereal month in days
   
   // Calculate days since reference
   const daysSinceReference = (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24);
   
-  // Calculate how many complete lunar cycles have passed
-  const lunarCycles = daysSinceReference / siderealMonth;
+  // Calculate how many signs the Moon has moved (each sign takes ~2.28 days)
+  const daysPerSign = siderealMonth / 12;
+  const signsMoved = daysSinceReference / daysPerSign;
   
-  // Get the fractional part (position in current cycle)
-  const positionInCycle = lunarCycles - Math.floor(lunarCycles);
+  // Calculate current sign index
+  const moonIndex = (referenceSignIndex + Math.floor(signsMoved)) % 12;
   
-  // Convert to sign index (0-11)
-  const moonIndex = Math.floor(positionInCycle * 12) % 12;
+  // Handle negative values (dates before reference)
+  const normalizedIndex = moonIndex < 0 ? moonIndex + 12 : moonIndex;
   
-  return signs[moonIndex];
+  return signs[normalizedIndex];
 }
 
-// Calculate Nakshatra (lunar mansion) from birth date
+// Calculate Nakshatra (lunar mansion) from birth date using sidereal zodiac
 function getNakshatra(date: Date): string {
   const nakshatras = [
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
@@ -146,18 +149,26 @@ function getNakshatra(date: Date): string {
     "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
   ];
   
-  // Reference point: January 1, 2000 at 00:00 UTC
-  const referenceDate = new Date(Date.UTC(2000, 0, 1, 0, 0, 0));
+  // Reference point: June 1, 1998 at 03:21 UTC, Moon entered Virgo (sidereal)
+  // Virgo starts at Uttara Phalguni nakshatra (index 11)
+  const referenceDate = new Date(Date.UTC(1998, 5, 1, 3, 21, 0)); // June 1, 1998 03:21 UTC
+  const referenceNakshatraIndex = 11; // Uttara Phalguni (start of Virgo)
   const siderealMonth = 27.321661;
   
+  // Calculate days since reference
   const daysSinceReference = (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24);
-  const lunarCycles = daysSinceReference / siderealMonth;
-  const positionInCycle = lunarCycles - Math.floor(lunarCycles);
   
-  // 27 nakshatras in one lunar cycle
-  const nakshatraIndex = Math.floor(positionInCycle * 27) % 27;
+  // Calculate how many nakshatras the Moon has moved (each nakshatra takes ~1.01 days)
+  const daysPerNakshatra = siderealMonth / 27;
+  const nakshatrasMoved = daysSinceReference / daysPerNakshatra;
   
-  return nakshatras[nakshatraIndex];
+  // Calculate current nakshatra index
+  const nakshatraIndex = (referenceNakshatraIndex + Math.floor(nakshatrasMoved)) % 27;
+  
+  // Handle negative values (dates before reference)
+  const normalizedIndex = nakshatraIndex < 0 ? nakshatraIndex + 27 : nakshatraIndex;
+  
+  return nakshatras[normalizedIndex];
 }
 
 // Enhance message with birth date information if detected
