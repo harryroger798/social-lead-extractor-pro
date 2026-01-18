@@ -229,10 +229,18 @@ export default function VoiceAstrologerPage() {
       const selectedLang = voiceLanguages.find(l => l.code === selectedLanguage);
       const vapiLanguage = selectedLang?.vapiLanguage || "en";
 
+      // Using VAPI's built-in assistant configuration
+      // This uses VAPI's default providers (included in VAPI credits)
+      // instead of requiring separate OpenAI/ElevenLabs API keys
       await vapi.start({
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: vapiLanguage as "en" | "hi" | "ta",
+        },
         model: {
-          provider: "openai",
-          model: "gpt-4-turbo",
+          provider: "groq",
+          model: "llama-3.1-70b-versatile",
           temperature: 0.7,
           messages: [
             {
@@ -242,14 +250,10 @@ export default function VoiceAstrologerPage() {
           ],
         },
         voice: {
-          provider: "11labs",
-          voiceId: "pNInz6obpgDQGcFmaJgB",
+          provider: "playht",
+          voiceId: "jennifer",
         },
         firstMessage: getFirstMessage(selectedLanguage),
-        transcriber: {
-          provider: "deepgram",
-          language: vapiLanguage as "en" | "hi" | "ta",
-        },
       });
     } catch (error) {
       console.error("Failed to start call:", error);

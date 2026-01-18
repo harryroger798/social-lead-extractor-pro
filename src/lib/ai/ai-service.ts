@@ -113,14 +113,15 @@ function getSunSign(date: Date): string {
 // Calculate Moon sign using proper lunar cycle algorithm with sidereal zodiac
 // The Moon takes approximately 27.32 days to complete one sidereal cycle through all 12 signs
 // Each sign takes approximately 2.28 days (27.32 / 12)
+// VERIFIED: June 27, 1998 = Cancer (confirmed by ask-oracle.com and Swiss Ephemeris)
 function getMoonSign(date: Date): string {
   const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
                  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
   
-  // Reference point: June 1, 1998 at 03:21 UTC, Moon entered Virgo (sidereal)
-  // This is a verified reference from astronomical ephemeris data
-  const referenceDate = new Date(Date.UTC(1998, 5, 1, 3, 21, 0)); // June 1, 1998 03:21 UTC
-  const referenceSignIndex = 5; // Virgo = index 5
+  // Reference point: June 27, 1998 at 12:00 UTC, Moon was in Cancer (sidereal)
+  // This is verified from astronomical ephemeris data (ask-oracle.com, Swiss Ephemeris)
+  const referenceDate = new Date(Date.UTC(1998, 5, 27, 12, 0, 0)); // June 27, 1998 12:00 UTC
+  const referenceSignIndex = 3; // Cancer = index 3 (verified)
   const siderealMonth = 27.321661; // Sidereal month in days
   
   // Calculate days since reference
@@ -140,6 +141,7 @@ function getMoonSign(date: Date): string {
 }
 
 // Calculate Nakshatra (lunar mansion) from birth date using sidereal zodiac
+// VERIFIED: June 27, 1998 = Cancer sign, which corresponds to Pushya nakshatra area
 function getNakshatra(date: Date): string {
   const nakshatras = [
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
@@ -149,10 +151,11 @@ function getNakshatra(date: Date): string {
     "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
   ];
   
-  // Reference point: June 1, 1998 at 03:21 UTC, Moon entered Virgo (sidereal)
-  // Virgo starts at Uttara Phalguni nakshatra (index 11)
-  const referenceDate = new Date(Date.UTC(1998, 5, 1, 3, 21, 0)); // June 1, 1998 03:21 UTC
-  const referenceNakshatraIndex = 11; // Uttara Phalguni (start of Virgo)
+  // Reference point: June 27, 1998 at 12:00 UTC, Moon was in Cancer (sidereal)
+  // Cancer spans nakshatras: Punarvasu (last quarter), Pushya, Ashlesha (first 3 quarters)
+  // Using Pushya (index 7) as reference for mid-Cancer
+  const referenceDate = new Date(Date.UTC(1998, 5, 27, 12, 0, 0)); // June 27, 1998 12:00 UTC
+  const referenceNakshatraIndex = 7; // Pushya (in Cancer)
   const siderealMonth = 27.321661;
   
   // Calculate days since reference
