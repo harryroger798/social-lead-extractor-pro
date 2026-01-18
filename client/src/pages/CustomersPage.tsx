@@ -301,30 +301,35 @@ export function CustomersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="source">Source</Label>
-                  <Select name="source" defaultValue={editingCustomer?.source || 'walk_in'}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="walk_in">Walk In</SelectItem>
-                      <SelectItem value="referral">Referral</SelectItem>
-                      <SelectItem value="google">Google</SelectItem>
-                      <SelectItem value="social_media">Social Media</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                                    <Select name="source" defaultValue={editingCustomer?.source || 'Walk-in'}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Walk-in">Walk In</SelectItem>
+                                        <SelectItem value="Referral">Referral</SelectItem>
+                                        <SelectItem value="GMB">Google (GMB)</SelectItem>
+                                        <SelectItem value="Facebook">Facebook</SelectItem>
+                                        <SelectItem value="JustDial">JustDial</SelectItem>
+                                        <SelectItem value="Email">Email</SelectItem>
+                                        <SelectItem value="Other">Other</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="business_type">Business Type</Label>
-                  <Select name="business_type" defaultValue={editingCustomer?.business_type || 'individual'}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="individual">Individual</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                    </SelectContent>
-                  </Select>
+                                    <Select name="business_type" defaultValue={editingCustomer?.business_type || 'individual'}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="individual">Individual</SelectItem>
+                                        <SelectItem value="business">Business</SelectItem>
+                                        <SelectItem value="coaching">Coaching</SelectItem>
+                                        <SelectItem value="clinic">Clinic</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                 </div>
               </div>
               <div className="space-y-2">
