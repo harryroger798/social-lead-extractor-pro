@@ -221,7 +221,7 @@ export default function SadeSatiCalculatorPage() {
                 {t('calculator.enterBirthDetails', 'Enter Birth Details')}
               </CardTitle>
               <CardDescription>
-                {t('calculator.sadeSati.moonSignNote', 'Your Moon Sign determines Sade Sati timing')}
+                {t('calculator.sadeSati.moonSignHelper', 'Your Moon Sign determines Sade Sati timing')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -251,7 +251,7 @@ export default function SadeSatiCalculatorPage() {
                   onChange={(e) => setBirthTime(e.target.value)}
                 />
                 <p className="text-xs text-gray-500">
-                  {t('calculator.sadeSati.accurateMoonSign', 'Helps determine accurate Moon Sign')}
+                  {t('calculator.sadeSati.timeHelper', 'Helps determine accurate Moon Sign')}
                 </p>
               </div>
               
@@ -288,9 +288,9 @@ export default function SadeSatiCalculatorPage() {
               </Button>
 
               <div className="mt-6 pt-6 border-t bg-blue-50 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-800 mb-2">{t('calculator.sadeSati.currentPosition', 'Current Saturn Position')}</h3>
+                <h3 className="font-semibold text-blue-800 mb-2">{t('calculator.sadeSati.currentSaturnPosition', 'Current Saturn Position')}</h3>
                 <p className="text-sm text-blue-700">
-                  {t('calculator.sadeSati.currentPositionDesc', 'Saturn is currently transiting Pisces (March 2025 - June 2028). Moon Signs Aquarius, Pisces, and Aries are under Sade Sati influence.')}
+                  {t('calculator.sadeSati.saturnTransitInfo', 'Saturn is currently transiting Pisces (March 2025 - June 2028). Moon Signs Aquarius, Pisces, and Aries are under Sade Sati influence.')}
                 </p>
               </div>
             </CardContent>
@@ -392,7 +392,7 @@ export default function SadeSatiCalculatorPage() {
                   <Moon className="w-12 h-12 text-blue-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('calculator.sadeSati.resultPlaceholder', 'Your Sade Sati Status Will Appear Here')}
+                  {t('calculator.sadeSati.resultPlaceholderTitle', 'Your Sade Sati Status Will Appear Here')}
                 </h3>
                 <p className="text-gray-600 text-center max-w-xs">
                   {t('calculator.sadeSati.resultPlaceholderDesc', 'Enter your birth details and click "Check Sade Sati Status" to analyze Saturn\'s influence on your Moon Sign.')}
@@ -406,7 +406,7 @@ export default function SadeSatiCalculatorPage() {
           <CardHeader>
             <CardTitle>{t('calculator.sadeSati.timelineTitle', 'Sade Sati Timeline by Moon Sign')}</CardTitle>
             <CardDescription>
-              {t('calculator.sadeSati.timelineDesc', "When each Moon Sign will experience Sade Sati based on Saturn's transit")}
+              {t('calculator.sadeSati.timelineSubtitle', "When each Moon Sign will experience Sade Sati based on Saturn's transit")}
             </CardDescription>
           </CardHeader>
           <CardContent>
