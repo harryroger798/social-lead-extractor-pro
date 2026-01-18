@@ -416,6 +416,7 @@ export default function SadeSatiCalculatorPage() {
                 const twelfthFromMoon = (index - 1 + 12) % 12;
                 const secondFromMoon = (index + 1) % 12;
                 const isActive = saturnIndex === twelfthFromMoon || saturnIndex === index || saturnIndex === secondFromMoon;
+                const signKey = sign.toLowerCase();
                 
                 return (
                   <div 
@@ -423,7 +424,7 @@ export default function SadeSatiCalculatorPage() {
                     className={`rounded-lg p-3 ${isActive ? "bg-blue-100 border border-blue-300" : "bg-gray-50"}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{sign}</span>
+                      <span className="font-medium">{t(`zodiac.${signKey}`, sign)}</span>
                       {isActive && <Badge className="bg-blue-500">{t('calculator.sadeSati.activeLabel', 'Active')}</Badge>}
                     </div>
                   </div>
