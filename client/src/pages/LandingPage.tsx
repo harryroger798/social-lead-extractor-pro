@@ -78,7 +78,7 @@ export function LandingPage() {
           >
             <Button size="lg" variant="secondary" className="gap-2">
               <Download className="h-5 w-5" />
-              Download for Windows (73 MB)
+              Download for Windows (83 MB)
             </Button>
           </a>
           <p className="text-primary-foreground/60 text-sm mt-4">

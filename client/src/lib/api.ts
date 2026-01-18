@@ -1,6 +1,22 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+declare global {
+  interface Window {
+    electronAPI?: {
+      getServerPort: () => Promise<number>
+      isElectron: boolean
+    }
+  }
+}
+
+function getApiUrl(): string {
+  if (typeof window !== 'undefined' && window.electronAPI?.isElectron) {
+    return 'http://127.0.0.1:3001/api'
+  }
+  return import.meta.env.VITE_API_URL || '/api'
+}
+
+const API_URL = getApiUrl()
 
 const api = axios.create({
   baseURL: API_URL,
