@@ -117,6 +117,88 @@ export default function BlockchainKundliPage() {
     setTimeout(() => setCopied(null), 2000);
   };
 
+  const downloadCertificate = () => {
+    if (!certificate) return;
+    
+    const certificateContent = `
+╔══════════════════════════════════════════════════════════════════╗
+║                    VEDICSTARASTRO                                 ║
+║              BLOCKCHAIN KUNDLI CERTIFICATE                        ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  Certificate ID: ${certificate.certificateId.padEnd(45)}║
+║                                                                   ║
+║  Name: ${certificate.birthDetails.name.padEnd(55)}║
+║  Date of Birth: ${certificate.birthDetails.date.padEnd(45)}║
+║  Time of Birth: ${certificate.birthDetails.time.padEnd(45)}║
+║  Place of Birth: ${certificate.birthDetails.place.padEnd(44)}║
+║                                                                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║  CHART SUMMARY                                                    ║
+╠══════════════════════════════════════════════════════════════════╣
+║  Ascendant: ${certificate.chartSummary.ascendant.padEnd(50)}║
+║  Moon Sign: ${certificate.chartSummary.moonSign.padEnd(50)}║
+║  Sun Sign: ${certificate.chartSummary.sunSign.padEnd(51)}║
+║  Nakshatra: ${certificate.chartSummary.nakshatra.padEnd(50)}║
+║                                                                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║  VERIFICATION DETAILS                                             ║
+╠══════════════════════════════════════════════════════════════════╣
+║  Cryptographic Hash:                                              ║
+║  ${certificate.hash.padEnd(62)}║
+║                                                                   ║
+║  IPFS Hash:                                                       ║
+║  ${certificate.ipfsHash.padEnd(62)}║
+║                                                                   ║
+║  Timestamp: ${new Date(certificate.timestamp).toLocaleString().padEnd(50)}║
+║                                                                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║  This certificate is cryptographically signed and can be          ║
+║  verified using the Certificate ID or IPFS hash.                  ║
+║                                                                   ║
+║  Verify at: https://vedicstarastro.com/verify                     ║
+╚══════════════════════════════════════════════════════════════════╝
+    `.trim();
+
+    const blob = new Blob([certificateContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kundli-certificate-${certificate.certificateId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const shareCertificate = async () => {
+    if (!certificate) return;
+    
+    const shareData = {
+      title: t("blockchainKundli.shareTitle", "My Verified Kundli Certificate"),
+      text: `${t("blockchainKundli.shareText", "Check out my verified Kundli certificate from VedicStarAstro!")}\n\nCertificate ID: ${certificate.certificateId}\nIPFS Hash: ${certificate.ipfsHash}`,
+      url: certificate.verificationUrl || window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        copyToClipboard(shareData.text + "\n" + shareData.url, "share");
+        alert(t("blockchainKundli.copiedToClipboard", "Certificate details copied to clipboard!"));
+      }
+    } else {
+      copyToClipboard(shareData.text + "\n" + shareData.url, "share");
+      alert(t("blockchainKundli.copiedToClipboard", "Certificate details copied to clipboard!"));
+    }
+  };
+
+  const viewOnIPFS = () => {
+    if (!certificate) return;
+    const ipfsGatewayUrl = `https://ipfs.io/ipfs/${certificate.ipfsHash}`;
+    window.open(ipfsGatewayUrl, "_blank");
+  };
+
   const features = [
     {
       icon: <Shield className="w-6 h-6 text-blue-600" />,
@@ -429,27 +511,27 @@ export default function BlockchainKundliPage() {
               </Card>
             </div>
 
-            <Card className="border-gray-200">
-              <CardContent className="pt-6">
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <Button className="gap-2">
-                    <Download className="w-4 h-4" />
-                    {t("blockchainKundli.downloadCertificate", "Download Certificate")}
-                  </Button>
-                  <Button variant="outline" className="gap-2">
-                    <Share2 className="w-4 h-4" />
-                    {t("blockchainKundli.shareCertificate", "Share Certificate")}
-                  </Button>
-                  <Button variant="outline" className="gap-2">
-                    <ExternalLink className="w-4 h-4" />
-                    {t("blockchainKundli.viewOnIPFS", "View on IPFS")}
-                  </Button>
-                  <Button variant="outline" onClick={() => setCertificate(null)}>
-                    {t("blockchainKundli.generateAnother", "Generate Another")}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                        <Card className="border-gray-200">
+                          <CardContent className="pt-6">
+                            <div className="flex flex-wrap gap-4 justify-center">
+                              <Button className="gap-2" onClick={downloadCertificate}>
+                                <Download className="w-4 h-4" />
+                                {t("blockchainKundli.downloadCertificate", "Download Certificate")}
+                              </Button>
+                              <Button variant="outline" className="gap-2" onClick={shareCertificate}>
+                                <Share2 className="w-4 h-4" />
+                                {t("blockchainKundli.shareCertificate", "Share Certificate")}
+                              </Button>
+                              <Button variant="outline" className="gap-2" onClick={viewOnIPFS}>
+                                <ExternalLink className="w-4 h-4" />
+                                {t("blockchainKundli.viewOnIPFS", "View on IPFS")}
+                              </Button>
+                              <Button variant="outline" onClick={() => setCertificate(null)}>
+                                {t("blockchainKundli.generateAnother", "Generate Another")}
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
 
             <Card className="border-blue-200">
               <CardHeader>

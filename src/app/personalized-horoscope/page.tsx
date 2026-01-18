@@ -156,13 +156,44 @@ export default function PersonalizedHoroscopePage() {
     );
   };
 
-  const categoryConfig = {
-    overall: { icon: Sun, color: "amber", label: t("horoscope.overall", "Overall") },
-    love: { icon: Heart, color: "pink", label: t("horoscope.love", "Love") },
-    career: { icon: Briefcase, color: "blue", label: t("horoscope.career", "Career") },
-    finance: { icon: TrendingUp, color: "green", label: t("horoscope.finance", "Finance") },
-    health: { icon: Activity, color: "red", label: t("horoscope.health", "Health") },
-  };
+    const categoryConfig = {
+      overall: { icon: Sun, color: "amber", label: t("horoscope.overall", "Overall") },
+      love: { icon: Heart, color: "pink", label: t("horoscope.love", "Love") },
+      career: { icon: Briefcase, color: "blue", label: t("horoscope.career", "Career") },
+      finance: { icon: TrendingUp, color: "green", label: t("horoscope.finance", "Finance") },
+      health: { icon: Activity, color: "red", label: t("horoscope.health", "Health") },
+    };
+
+    const shareHoroscope = async () => {
+      if (!horoscope) return;
+    
+      const shareText = `${t("personalizedHoroscope.shareTitle", "My Personalized Horoscope for Today")}
+
+  ${t("personalizedHoroscope.moonSign", "Moon Sign")}: ${language === "hi" ? horoscope.moonSignHindi : horoscope.moonSign}
+  ${t("personalizedHoroscope.ascendant", "Ascendant")}: ${language === "hi" ? horoscope.ascendantHindi : horoscope.ascendant}
+  ${t("personalizedHoroscope.luckyNumber", "Lucky Number")}: ${horoscope.luckyNumber}
+  ${t("personalizedHoroscope.luckyColor", "Lucky Color")}: ${language === "hi" ? horoscope.luckyColorHindi : horoscope.luckyColor}
+
+  ${t("personalizedHoroscope.getYours", "Get your personalized horoscope at VedicStarAstro!")}`;
+
+      const shareData = {
+        title: t("personalizedHoroscope.shareTitle", "My Personalized Horoscope"),
+        text: shareText,
+        url: window.location.href,
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          navigator.clipboard.writeText(shareText + "\n" + window.location.href);
+          alert(t("personalizedHoroscope.copiedToClipboard", "Horoscope details copied to clipboard!"));
+        }
+      } else {
+        navigator.clipboard.writeText(shareText + "\n" + window.location.href);
+        alert(t("personalizedHoroscope.copiedToClipboard", "Horoscope details copied to clipboard!"));
+      }
+    };
 
   return (
     <div className="py-12 lg:py-16">
@@ -299,10 +330,10 @@ export default function PersonalizedHoroscopePage() {
                       <RefreshCw className="w-4 h-4 mr-1" />
                       {t("personalizedHoroscope.refresh", "Refresh")}
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <Share2 className="w-4 h-4 mr-1" />
-                      {t("share.share", "Share")}
-                    </Button>
+                                        <Button variant="outline" size="sm" onClick={shareHoroscope}>
+                                          <Share2 className="w-4 h-4 mr-1" />
+                                          {t("share.share", "Share")}
+                                        </Button>
                   </div>
                 </div>
               </CardHeader>
