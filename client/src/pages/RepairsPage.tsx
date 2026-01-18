@@ -326,96 +326,84 @@ export function RepairsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="customer_id">Customer *</Label>
-                                  <Select name="customer_id" required>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select customer" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <div className="p-2">
-                                        <Input
-                                          placeholder="Search by name or phone..."
-                                          value={customerSearch}
-                                          onChange={(e) => setCustomerSearch(e.target.value)}
-                                          className="h-8"
-                                          onClick={(e) => e.stopPropagation()}
-                                          onKeyDown={(e) => e.stopPropagation()}
-                                        />
-                                      </div>
-                                      {filteredCustomers.length === 0 ? (
-                                        <div className="p-2 text-sm text-muted-foreground text-center">No customers found</div>
-                                      ) : (
-                                        filteredCustomers.map((c: { id: number; name: string; phone: string }) => (
-                                          <SelectItem key={c.id} value={String(c.id)}>
-                                            {c.name} - {c.phone}
-                                          </SelectItem>
-                                        ))
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="service_id">Service *</Label>
-                                  <Select name="service_id" required>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select service" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <div className="p-2">
-                                        <Input
-                                          placeholder="Search by name or category..."
-                                          value={serviceSearch}
-                                          onChange={(e) => setServiceSearch(e.target.value)}
-                                          className="h-8"
-                                          onClick={(e) => e.stopPropagation()}
-                                          onKeyDown={(e) => e.stopPropagation()}
-                                        />
-                                      </div>
-                                      {filteredServices.length === 0 ? (
-                                        <div className="p-2 text-sm text-muted-foreground text-center">No services found</div>
-                                      ) : (
-                                        filteredServices.map((s: { id: number; name: string; category: string }) => (
-                                          <SelectItem key={s.id} value={String(s.id)}>
-                                            {s.name} ({s.category})
-                                          </SelectItem>
-                                        ))
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="device_type">Device Type *</Label>
-                                  <Select name="device_type" required>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <div className="p-2">
-                                        <Input
-                                          placeholder="Search device type..."
-                                          value={deviceSearch}
-                                          onChange={(e) => setDeviceSearch(e.target.value)}
-                                          className="h-8"
-                                          onClick={(e) => e.stopPropagation()}
-                                          onKeyDown={(e) => e.stopPropagation()}
-                                        />
-                                      </div>
-                                      {filteredDeviceTypes.length === 0 ? (
-                                        <div className="p-2 text-sm text-muted-foreground text-center">No device types found</div>
-                                      ) : (
-                                        filteredDeviceTypes.map((d) => (
-                                          <SelectItem key={d.value} value={d.value}>
-                                            {d.label}
-                                          </SelectItem>
-                                        ))
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="customer_id">Customer *</Label>
+                                <Input
+                                  placeholder="Search customer by name or phone..."
+                                  value={customerSearch}
+                                  onChange={(e) => setCustomerSearch(e.target.value)}
+                                  className="h-8 mb-1"
+                                />
+                                <Select name="customer_id" required>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select customer" />
+                                  </SelectTrigger>
+                                  <SelectContent className="max-h-60">
+                                    {filteredCustomers.length === 0 ? (
+                                      <div className="p-2 text-sm text-muted-foreground text-center">No customers found</div>
+                                    ) : (
+                                      filteredCustomers.map((c: { id: number; name: string; phone: string }) => (
+                                        <SelectItem key={c.id} value={String(c.id)}>
+                                          {c.name} - {c.phone}
+                                        </SelectItem>
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="service_id">Service *</Label>
+                                <Input
+                                  placeholder="Search service by name or category..."
+                                  value={serviceSearch}
+                                  onChange={(e) => setServiceSearch(e.target.value)}
+                                  className="h-8 mb-1"
+                                />
+                                <Select name="service_id" required>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select service" />
+                                  </SelectTrigger>
+                                  <SelectContent className="max-h-60">
+                                    {filteredServices.length === 0 ? (
+                                      <div className="p-2 text-sm text-muted-foreground text-center">No services found</div>
+                                    ) : (
+                                      filteredServices.map((s: { id: number; name: string; category: string }) => (
+                                        <SelectItem key={s.id} value={String(s.id)}>
+                                          {s.name} ({s.category})
+                                        </SelectItem>
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="device_type">Device Type *</Label>
+                                <Input
+                                  placeholder="Search device type..."
+                                  value={deviceSearch}
+                                  onChange={(e) => setDeviceSearch(e.target.value)}
+                                  className="h-8 mb-1"
+                                />
+                                <Select name="device_type" required>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {filteredDeviceTypes.length === 0 ? (
+                                      <div className="p-2 text-sm text-muted-foreground text-center">No device types found</div>
+                                    ) : (
+                                      filteredDeviceTypes.map((d) => (
+                                        <SelectItem key={d.value} value={d.value}>
+                                          {d.label}
+                                        </SelectItem>
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                 <div className="space-y-2">
                   <Label htmlFor="brand">Brand *</Label>
                   <Input id="brand" name="brand" required />
