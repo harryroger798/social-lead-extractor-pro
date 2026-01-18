@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Plus, Search, MoreHorizontal, Pencil, Trash2, Settings, Sparkles, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,6 +50,7 @@ interface PhoneModel {
 const CATEGORIES = ['pc_repair', 'mobile_repair', 'digital_services']
 
 export function ServicesPage() {
+  const { i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false)
@@ -185,228 +188,302 @@ export function ServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Services</h1>
-        <p className="text-muted-foreground">Manage your service catalog and pricing</p>
-      </div>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center gap-3"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: 'spring' }}
+          className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/25"
+        >
+          <Settings className="h-6 w-6 text-white" />
+        </motion.div>
+        <div>
+          <h1 className="text-3xl font-bold dark:text-white">Services</h1>
+          <p className="text-muted-foreground flex items-center gap-2">
+            {i18n.language === 'hi' ? 'Service catalog aur pricing manage karein' :
+             i18n.language === 'bn' ? 'সার্ভিস ক্যাটালগ এবং মূল্য পরিচালনা করুন' :
+             'Manage your service catalog and pricing'}
+            <Sparkles className="h-4 w-4 text-primary" />
+          </p>
+        </div>
+      </motion.div>
 
-      <Tabs defaultValue="services">
-        <TabsList>
-          <TabsTrigger value="services">Services</TabsTrigger>
-          <TabsTrigger value="phone-models">Phone Models</TabsTrigger>
-        </TabsList>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Tabs defaultValue="services">
+          <TabsList className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-lg">
+            <TabsTrigger value="services" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white">Services</TabsTrigger>
+            <TabsTrigger value="phone-models" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white">Phone Models</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="services" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Service Catalog</CardTitle>
-                <Button onClick={() => setIsServiceDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Service
-                </Button>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 pt-4">
-                <div className="relative flex-1 min-w-64">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search services..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="pl-9"
-                  />
+          <TabsContent value="services" className="space-y-4">
+            <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+              <div className="h-1 bg-gradient-to-r from-orange-500 to-red-500" />
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="dark:text-white">Service Catalog</CardTitle>
+                  <Button 
+                    onClick={() => setIsServiceDialogOpen(true)}
+                    className="gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Service
+                  </Button>
                 </div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat.replace('_', ' ')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {servicesLoading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <div className="relative flex-1 min-w-64">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder={i18n.language === 'hi' ? 'Services khojein...' :
+                                  i18n.language === 'bn' ? 'সার্ভিস খুঁজুন...' :
+                                  'Search services...'}
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="pl-9 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                    />
+                  </div>
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat.replace('_', ' ')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Base Price</TableHead>
-                      <TableHead>Est. Time</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {services.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                          No services found
-                        </TableCell>
+              </CardHeader>
+              <CardContent>
+                {servicesLoading ? (
+                  <div className="flex h-32 items-center justify-center">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+                    />
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-50 dark:bg-slate-700/50">
+                        <TableHead className="font-semibold">Name</TableHead>
+                        <TableHead className="font-semibold">Category</TableHead>
+                        <TableHead className="font-semibold">Base Price</TableHead>
+                        <TableHead className="font-semibold">Est. Time</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
+                        <TableHead className="w-12"></TableHead>
                       </TableRow>
-                    ) : (
-                      services.map((service: Service) => (
-                        <TableRow key={service.id}>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{service.name}</p>
-                              {service.description && (
-                                <p className="text-sm text-muted-foreground truncate max-w-64">
-                                  {service.description}
-                                </p>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{service.category.replace('_', ' ')}</Badge>
-                          </TableCell>
-                          <TableCell>{formatCurrency(service.price || 0)}</TableCell>
-                          <TableCell>{service.estimated_hours || 0} min</TableCell>
-                          <TableCell>
-                            <Badge variant={service.is_active ? 'success' : 'secondary'}>
-                              {service.is_active ? 'Active' : 'Inactive'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setEditingService(service)
-                                    setIsServiceDialogOpen(true)
-                                  }}
-                                >
-                                  <Pencil className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => {
-                                    if (confirm('Are you sure you want to delete this service?')) {
-                                      deleteServiceMutation.mutate(service.id)
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                    </TableHeader>
+                    <TableBody>
+                      {services.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-12">
+                            <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
+                            <p className="text-muted-foreground">
+                              {i18n.language === 'hi' ? 'Koi service nahi mili' :
+                               i18n.language === 'bn' ? 'কোনো সার্ভিস পাওয়া যায়নি' :
+                               'No services found'}
+                            </p>
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                      ) : (
+                        services.map((service: Service, index: number) => (
+                          <motion.tr
+                            key={service.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="border-b transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                          >
+                            <TableCell>
+                              <div>
+                                <p className="font-medium dark:text-white">{service.name}</p>
+                                {service.description && (
+                                  <p className="text-sm text-muted-foreground truncate max-w-64">
+                                    {service.description}
+                                  </p>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-500/30">
+                                {service.category.replace('_', ' ')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-semibold text-green-600 dark:text-green-400">
+                              {formatCurrency(service.price || 0)}
+                            </TableCell>
+                            <TableCell>{service.estimated_hours || 0} min</TableCell>
+                            <TableCell>
+                              <Badge variant={service.is_active ? 'success' : 'secondary'}>
+                                {service.is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditingService(service)
+                                      setIsServiceDialogOpen(true)
+                                    }}
+                                  >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => {
+                                      if (confirm('Are you sure you want to delete this service?')) {
+                                        deleteServiceMutation.mutate(service.id)
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </motion.tr>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="phone-models" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Phone Model Pricing</CardTitle>
-                <Button onClick={() => setIsPhoneDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Phone Model
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {phonesLoading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <TabsContent value="phone-models" className="space-y-4">
+            <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+              <div className="h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Smartphone className="h-5 w-5 text-blue-500" />
+                    <CardTitle className="dark:text-white">Phone Model Pricing</CardTitle>
+                  </div>
+                  <Button 
+                    onClick={() => setIsPhoneDialogOpen(true)}
+                    className="gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-lg shadow-blue-500/25"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Phone Model
+                  </Button>
                 </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Brand</TableHead>
-                      <TableHead>Model</TableHead>
-                      <TableHead>Screen</TableHead>
-                      <TableHead>Battery</TableHead>
-                      <TableHead>Charging Port</TableHead>
-                      <TableHead>Back Panel</TableHead>
-                      <TableHead>Software</TableHead>
-                      <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {phoneModels.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center text-muted-foreground">
-                          No phone models found
-                        </TableCell>
+              </CardHeader>
+              <CardContent>
+                {phonesLoading ? (
+                  <div className="flex h-32 items-center justify-center">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+                    />
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-50 dark:bg-slate-700/50">
+                        <TableHead className="font-semibold">Brand</TableHead>
+                        <TableHead className="font-semibold">Model</TableHead>
+                        <TableHead className="font-semibold">Screen</TableHead>
+                        <TableHead className="font-semibold">Battery</TableHead>
+                        <TableHead className="font-semibold">Charging Port</TableHead>
+                        <TableHead className="font-semibold">Back Panel</TableHead>
+                        <TableHead className="font-semibold">Software</TableHead>
+                        <TableHead className="w-12"></TableHead>
                       </TableRow>
-                    ) : (
-                      phoneModels.map((phone: PhoneModel) => (
-                        <TableRow key={phone.id}>
-                          <TableCell className="font-medium">{phone.brand}</TableCell>
-                          <TableCell>{phone.model}</TableCell>
-                          <TableCell>{formatCurrency(phone.screen_price)}</TableCell>
-                          <TableCell>{formatCurrency(phone.battery_price)}</TableCell>
-                          <TableCell>{formatCurrency(phone.charging_port_price)}</TableCell>
-                          <TableCell>{formatCurrency(phone.back_panel_price)}</TableCell>
-                          <TableCell>{formatCurrency(phone.software_price)}</TableCell>
-                                                  <TableCell>
-                                                    <DropdownMenu>
-                                                      <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon">
-                                                          <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                      </DropdownMenuTrigger>
-                                                      <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                          onClick={() => {
-                                                            setEditingPhone(phone)
-                                                            setIsPhoneDialogOpen(true)
-                                                          }}
-                                                        >
-                                                          <Pencil className="mr-2 h-4 w-4" />
-                                                          Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                          className="text-destructive"
-                                                          onClick={() => {
-                                                            if (confirm('Are you sure you want to delete this phone model?')) {
-                                                              deletePhoneMutation.mutate(phone.id)
-                                                            }
-                                                          }}
-                                                        >
-                                                          <Trash2 className="mr-2 h-4 w-4" />
-                                                          Delete
-                                                        </DropdownMenuItem>
-                                                      </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                  </TableCell>
-                                                </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                    </TableHeader>
+                    <TableBody>
+                      {phoneModels.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-12">
+                            <Smartphone className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
+                            <p className="text-muted-foreground">
+                              {i18n.language === 'hi' ? 'Koi phone model nahi mila' :
+                               i18n.language === 'bn' ? 'কোনো ফোন মডেল পাওয়া যায়নি' :
+                               'No phone models found'}
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        phoneModels.map((phone: PhoneModel, index: number) => (
+                          <motion.tr
+                            key={phone.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="border-b transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                          >
+                            <TableCell className="font-medium dark:text-white">{phone.brand}</TableCell>
+                            <TableCell>{phone.model}</TableCell>
+                            <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(phone.screen_price)}</TableCell>
+                            <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(phone.battery_price)}</TableCell>
+                            <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(phone.charging_port_price)}</TableCell>
+                            <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(phone.back_panel_price)}</TableCell>
+                            <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(phone.software_price)}</TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditingPhone(phone)
+                                      setIsPhoneDialogOpen(true)
+                                    }}
+                                  >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => {
+                                      if (confirm('Are you sure you want to delete this phone model?')) {
+                                        deletePhoneMutation.mutate(phone.id)
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </motion.tr>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </motion.div>
 
       <Dialog open={isServiceDialogOpen} onOpenChange={(open) => {
         setIsServiceDialogOpen(open)

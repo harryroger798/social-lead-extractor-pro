@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, MoreHorizontal, Pencil, Eye, CheckCircle, Trash2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Plus, Search, MoreHorizontal, Pencil, Eye, CheckCircle, Trash2, Wrench, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -59,6 +61,7 @@ const DEVICE_TYPES = [
 ]
 
 export function RepairsPage() {
+  const { i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -170,165 +173,222 @@ export function RepairsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Repairs</h1>
-          <p className="text-muted-foreground">Manage repair tickets</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Repair
-        </Button>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative flex-1 min-w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search repairs..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                {STATUSES.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status.replace('_', ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+            className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25"
+          >
+            <Wrench className="h-6 w-6 text-white" />
+          </motion.div>
+          <div>
+            <h1 className="text-3xl font-bold dark:text-white">Repairs</h1>
+            <p className="text-muted-foreground flex items-center gap-2">
+              {i18n.language === 'hi' ? 'Repair tickets manage karein' :
+               i18n.language === 'bn' ? 'মেরামতের টিকিট পরিচালনা করুন' :
+               'Manage repair tickets'}
+              <Sparkles className="h-4 w-4 text-primary" />
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex h-32 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Button 
+            onClick={() => setIsDialogOpen(true)}
+            className="gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg shadow-purple-500/25"
+          >
+            <Plus className="h-4 w-4" />
+            New Repair
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      {/* Main Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+          <div className="h-1 bg-gradient-to-r from-purple-500 to-pink-500" />
+          <CardHeader>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex-1 min-w-64">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={i18n.language === 'hi' ? 'Repairs khojein...' :
+                              i18n.language === 'bn' ? 'মেরামত খুঁজুন...' :
+                              'Search repairs...'}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  {STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status.replace('_', ' ')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice #</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Device</TableHead>
-                  <TableHead>Issue</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {repairs.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground">
-                      No repairs found
-                    </TableCell>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex h-32 items-center justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+                />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 dark:bg-slate-700/50">
+                    <TableHead className="font-semibold">Invoice #</TableHead>
+                    <TableHead className="font-semibold">Customer</TableHead>
+                    <TableHead className="font-semibold">Device</TableHead>
+                    <TableHead className="font-semibold">Issue</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Amount</TableHead>
+                    <TableHead className="font-semibold">Date</TableHead>
+                    <TableHead className="w-12"></TableHead>
                   </TableRow>
-                ) : (
-                  repairs.map((repair: Repair) => (
-                    <TableRow key={repair.id}>
-                      <TableCell className="font-medium">{repair.invoice_number}</TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{repair.customer_name}</p>
-                          <p className="text-sm text-muted-foreground">{repair.customer_phone}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p>{repair.device_type}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {repair.brand} {repair.model}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-48 truncate">
-                        {repair.issue_description}
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          value={repair.status}
-                          onValueChange={(status) =>
-                            updateStatusMutation.mutate({ id: repair.id, status })
-                          }
-                        >
-                          <SelectTrigger className="w-32">
-                            <Badge className={getStatusColor(repair.status)}>
-                              {repair.status.replace('_', ' ')}
-                            </Badge>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {STATUSES.map((status) => (
-                              <SelectItem key={status} value={status}>
-                                {status.replace('_', ' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>{formatCurrency(repair.final_price)}</TableCell>
-                      <TableCell>{formatDate(repair.created_at)}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setViewingRepair(repair)}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditingRepair(repair)
-                                setIsDialogOpen(true)
-                              }}
-                            >
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                                                      {repair.status !== 'completed' && repair.status !== 'delivered' && (
-                                                        <DropdownMenuItem
-                                                          onClick={() => completeMutation.mutate(repair.id)}
-                                                        >
-                                                          <CheckCircle className="mr-2 h-4 w-4" />
-                                                          Mark Complete
-                                                        </DropdownMenuItem>
-                                                      )}
-                                                      <DropdownMenuItem
-                                                        className="text-destructive"
-                                                        onClick={() => {
-                                                          if (confirm('Are you sure you want to delete this repair?')) {
-                                                            deleteMutation.mutate(repair.id)
-                                                          }
-                                                        }}
-                                                      >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete
-                                                      </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                        </DropdownMenu>
+                </TableHeader>
+                <TableBody>
+                  {repairs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12">
+                        <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
+                        <p className="text-muted-foreground">
+                          {i18n.language === 'hi' ? 'Koi repair nahi mila' :
+                           i18n.language === 'bn' ? 'কোনো মেরামত পাওয়া যায়নি' :
+                           'No repairs found'}
+                        </p>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                  ) : (
+                    repairs.map((repair: Repair, index: number) => (
+                      <motion.tr
+                        key={repair.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="border-b transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <TableCell className="font-semibold text-primary">{repair.invoice_number}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium dark:text-white">{repair.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{repair.customer_phone}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="dark:text-white">{repair.device_type}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {repair.brand} {repair.model}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-48 truncate">
+                          {repair.issue_description}
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={repair.status}
+                            onValueChange={(status) =>
+                              updateStatusMutation.mutate({ id: repair.id, status })
+                            }
+                          >
+                            <SelectTrigger className="w-32 border-0 bg-transparent">
+                              <Badge className={getStatusColor(repair.status)}>
+                                {repair.status.replace('_', ' ')}
+                              </Badge>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {STATUSES.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {status.replace('_', ' ')}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="font-semibold text-green-600 dark:text-green-400">
+                          {formatCurrency(repair.final_price)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(repair.created_at)}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-700">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setViewingRepair(repair)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingRepair(repair)
+                                  setIsDialogOpen(true)
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              {repair.status !== 'completed' && repair.status !== 'delivered' && (
+                                <DropdownMenuItem
+                                  onClick={() => completeMutation.mutate(repair.id)}
+                                >
+                                  <CheckCircle className="mr-2 h-4 w-4" />
+                                  Mark Complete
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this repair?')) {
+                                    deleteMutation.mutate(repair.id)
+                                  }
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </motion.tr>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
                     <Dialog open={isDialogOpen} onOpenChange={(open) => {
                 setIsDialogOpen(open)

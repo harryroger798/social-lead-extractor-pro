@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Save, RefreshCw, Database, Cloud, Mail, Building2, CreditCard, Palette } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Save, RefreshCw, Database, Cloud, Mail, Building2, CreditCard, Palette, Settings, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +16,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useAuthStore } from '@/stores/authStore'
 
 export function SettingsPage() {
+  const { i18n } = useTranslation()
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -116,7 +119,11 @@ export function SettingsPage() {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+        />
       </div>
     )
   }
@@ -125,25 +132,54 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your shop settings and integrations</p>
-      </div>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center gap-3"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: 'spring' }}
+          className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center shadow-lg shadow-slate-500/25"
+        >
+          <Settings className="h-6 w-6 text-white" />
+        </motion.div>
+        <div>
+          <h1 className="text-3xl font-bold dark:text-white">Settings</h1>
+          <p className="text-muted-foreground flex items-center gap-2">
+            {i18n.language === 'hi' ? 'Shop settings aur integrations manage karein' :
+             i18n.language === 'bn' ? 'দোকানের সেটিংস এবং ইন্টিগ্রেশন পরিচালনা করুন' :
+             'Manage your shop settings and integrations'}
+            <Sparkles className="h-4 w-4 text-primary" />
+          </p>
+        </div>
+      </motion.div>
 
-      <Tabs defaultValue="business">
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="business">Business</TabsTrigger>
-                  <TabsTrigger value="payment">Payment</TabsTrigger>
-                  <TabsTrigger value="integrations" disabled={!isAdmin}>Integrations</TabsTrigger>
-                  <TabsTrigger value="gst">GST</TabsTrigger>
-                  <TabsTrigger value="backup" disabled={!isAdmin}>Backup</TabsTrigger>
-                </TabsList>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Tabs defaultValue="business">
+          <TabsList className="grid w-full grid-cols-5 bg-white/50 dark:bg-slate-800/50 backdrop-blur-lg">
+            <TabsTrigger value="business" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white">Business</TabsTrigger>
+            <TabsTrigger value="payment" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white">Payment</TabsTrigger>
+            <TabsTrigger value="integrations" disabled={!isAdmin} className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white">Integrations</TabsTrigger>
+            <TabsTrigger value="gst" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white">GST</TabsTrigger>
+            <TabsTrigger value="backup" disabled={!isAdmin} className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white">Backup</TabsTrigger>
+          </TabsList>
 
         <TabsContent value="business" className="space-y-4">
-          <Card>
+          <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+            <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500" />
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 dark:text-white">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <Building2 className="h-4 w-4 text-white" />
+                </div>
                 Business Information
               </CardTitle>
               <CardDescription>
@@ -159,6 +195,7 @@ export function SettingsPage() {
                       id="business_name"
                       name="business_name"
                       defaultValue={settings.business_name || 'ByteCare'}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                   <div className="space-y-2">
@@ -167,6 +204,7 @@ export function SettingsPage() {
                       id="owner_name"
                       name="owner_name"
                       defaultValue={settings.owner_name || 'Sayan Roy Chowdhury'}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                 </div>
@@ -177,6 +215,7 @@ export function SettingsPage() {
                       id="business_phone"
                       name="business_phone"
                       defaultValue={settings.business_phone}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                   <div className="space-y-2">
@@ -186,6 +225,7 @@ export function SettingsPage() {
                       name="business_email"
                       type="email"
                       defaultValue={settings.business_email || 'harryroger798@gmail.com'}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                 </div>
@@ -195,9 +235,14 @@ export function SettingsPage() {
                     id="business_address"
                     name="business_address"
                     defaultValue={settings.business_address}
+                    className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                   />
                 </div>
-                <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                <Button 
+                  type="submit" 
+                  disabled={updateSettingsMutation.isPending}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0 shadow-lg shadow-blue-500/25"
+                >
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
@@ -207,10 +252,13 @@ export function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="payment" className="space-y-4">
-          <Card>
+          <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+            <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-500" />
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 dark:text-white">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <CreditCard className="h-4 w-4 text-white" />
+                </div>
                 Payment Settings
               </CardTitle>
               <CardDescription>
@@ -226,10 +274,11 @@ export function SettingsPage() {
                     name="upi_id"
                     defaultValue={settings.upi_id || '7003888936@ptyes'}
                     placeholder="yourname@upi"
+                    className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                   />
                 </div>
                 <Separator />
-                <h4 className="font-medium">Bank Details</h4>
+                <h4 className="font-medium dark:text-white">Bank Details</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="bank_name">Bank Name</Label>
@@ -237,6 +286,7 @@ export function SettingsPage() {
                       id="bank_name"
                       name="bank_name"
                       defaultValue={settings.bank_name}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                   <div className="space-y-2">
@@ -245,6 +295,7 @@ export function SettingsPage() {
                       id="bank_account_name"
                       name="bank_account_name"
                       defaultValue={settings.bank_account_name}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                 </div>
@@ -255,6 +306,7 @@ export function SettingsPage() {
                       id="bank_account_number"
                       name="bank_account_number"
                       defaultValue={settings.bank_account_number}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                   <div className="space-y-2">
@@ -263,10 +315,15 @@ export function SettingsPage() {
                       id="bank_ifsc"
                       name="bank_ifsc"
                       defaultValue={settings.bank_ifsc}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                 </div>
-                <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                <Button 
+                  type="submit" 
+                  disabled={updateSettingsMutation.isPending}
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/25"
+                >
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
@@ -278,10 +335,13 @@ export function SettingsPage() {
         <TabsContent value="integrations" className="space-y-4">
           {isAdmin ? (
             <>
-              <Card>
+              <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+                <div className="h-1 bg-gradient-to-r from-purple-500 to-pink-500" />
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Cloud className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 dark:text-white">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Cloud className="h-4 w-4 text-white" />
+                    </div>
                     Airtable Integration
                   </CardTitle>
                   <CardDescription>
@@ -298,6 +358,7 @@ export function SettingsPage() {
                         type="password"
                         defaultValue={settings.airtable_api_key}
                         placeholder="pat..."
+                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                       />
                     </div>
                     <div className="space-y-2">
@@ -307,10 +368,15 @@ export function SettingsPage() {
                         name="airtable_base_id"
                         defaultValue={settings.airtable_base_id}
                         placeholder="app..."
+                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                       />
                     </div>
                     <div className="flex items-center gap-4">
-                      <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                      <Button 
+                        type="submit" 
+                        disabled={updateSettingsMutation.isPending}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg shadow-purple-500/25"
+                      >
                         <Save className="mr-2 h-4 w-4" />
                         Save
                       </Button>
@@ -328,10 +394,13 @@ export function SettingsPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+                <div className="h-1 bg-gradient-to-r from-orange-500 to-red-500" />
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2 dark:text-white">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                      <Mail className="h-4 w-4 text-white" />
+                    </div>
                     Omnisend Integration
                   </CardTitle>
                   <CardDescription>
@@ -348,9 +417,14 @@ export function SettingsPage() {
                         type="password"
                         defaultValue={settings.omnisend_api_key}
                         placeholder="Enter Omnisend API key"
+                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                       />
                     </div>
-                    <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                    <Button 
+                      type="submit" 
+                      disabled={updateSettingsMutation.isPending}
+                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25"
+                    >
                       <Save className="mr-2 h-4 w-4" />
                       Save
                     </Button>
@@ -359,7 +433,7 @@ export function SettingsPage() {
               </Card>
             </>
           ) : (
-            <Card>
+            <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground">
                   Only administrators can access integration settings
@@ -370,10 +444,13 @@ export function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="gst" className="space-y-4">
-          <Card>
+          <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+            <div className="h-1 bg-gradient-to-r from-amber-500 to-yellow-500" />
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 dark:text-white">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center">
+                  <Palette className="h-4 w-4 text-white" />
+                </div>
                 GST Settings
               </CardTitle>
               <CardDescription>
@@ -398,6 +475,7 @@ export function SettingsPage() {
                       name="gst_number"
                       defaultValue={settings.gst_number}
                       placeholder="22AAAAA0000A1Z5"
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                   <div className="space-y-2">
@@ -409,10 +487,15 @@ export function SettingsPage() {
                       min="0"
                       max="100"
                       defaultValue={settings.gst_rate || 18}
+                      className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
                     />
                   </div>
                 </div>
-                <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                <Button 
+                  type="submit" 
+                  disabled={updateSettingsMutation.isPending}
+                  className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white border-0 shadow-lg shadow-amber-500/25"
+                >
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
@@ -423,10 +506,13 @@ export function SettingsPage() {
 
         <TabsContent value="backup" className="space-y-4">
           {isAdmin ? (
-            <Card>
+            <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+              <div className="h-1 bg-gradient-to-r from-red-500 to-rose-500" />
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 dark:text-white">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center">
+                    <Database className="h-4 w-4 text-white" />
+                  </div>
                   Database Backup
                 </CardTitle>
                 <CardDescription>
@@ -434,7 +520,11 @@ export function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button onClick={handleBackup} disabled={isBackingUp}>
+                <Button 
+                  onClick={handleBackup} 
+                  disabled={isBackingUp}
+                  className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white border-0 shadow-lg shadow-red-500/25"
+                >
                   <Database className={`mr-2 h-4 w-4 ${isBackingUp ? 'animate-pulse' : ''}`} />
                   {isBackingUp ? 'Creating Backup...' : 'Create Backup Now'}
                 </Button>
@@ -445,7 +535,7 @@ export function SettingsPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card>
+            <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground">
                   Only administrators can access backup settings
@@ -455,7 +545,8 @@ export function SettingsPage() {
           )}
         </TabsContent>
 
-      </Tabs>
+        </Tabs>
+      </motion.div>
     </div>
   )
 }

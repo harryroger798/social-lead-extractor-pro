@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2, Plus, X } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2, Plus, X, FileText, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,6 +55,7 @@ interface Invoice {
 }
 
 export function InvoicesPage() {
+  const { i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
@@ -201,147 +204,202 @@ export function InvoicesPage() {
 
   return (
     <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">Invoices</h1>
-                <p className="text-muted-foreground">Manage invoices and payments</p>
-              </div>
-              <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Invoice
-              </Button>
-            </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative flex-1 min-w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search invoices..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="unpaid">Unpaid</SelectItem>
-                <SelectItem value="partial">Partial</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+            className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25"
+          >
+            <FileText className="h-6 w-6 text-white" />
+          </motion.div>
+          <div>
+            <h1 className="text-3xl font-bold dark:text-white">Invoices</h1>
+            <p className="text-muted-foreground flex items-center gap-2">
+              {i18n.language === 'hi' ? 'Invoices aur payments manage karein' :
+               i18n.language === 'bn' ? 'ইনভয়েস এবং পেমেন্ট পরিচালনা করুন' :
+               'Manage invoices and payments'}
+              <Sparkles className="h-4 w-4 text-primary" />
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex h-32 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Button 
+            onClick={() => setCreateDialogOpen(true)}
+            className="gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/25"
+          >
+            <Plus className="h-4 w-4" />
+            Create Invoice
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      {/* Main Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+          <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-500" />
+          <CardHeader>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex-1 min-w-64">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={i18n.language === 'hi' ? 'Invoices khojein...' :
+                              i18n.language === 'bn' ? 'ইনভয়েস খুঁজুন...' :
+                              'Search invoices...'}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="unpaid">Unpaid</SelectItem>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice #</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Paid</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground">
-                      No invoices found
-                    </TableCell>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex h-32 items-center justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+                />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 dark:bg-slate-700/50">
+                    <TableHead className="font-semibold">Invoice #</TableHead>
+                    <TableHead className="font-semibold">Customer</TableHead>
+                    <TableHead className="font-semibold">Amount</TableHead>
+                    <TableHead className="font-semibold">Paid</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Due Date</TableHead>
+                    <TableHead className="font-semibold">Created</TableHead>
+                    <TableHead className="w-12"></TableHead>
                   </TableRow>
-                ) : (
-                  invoices.map((invoice: Invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{invoice.customer_name}</p>
-                          <p className="text-sm text-muted-foreground">{invoice.customer_phone}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{formatCurrency(invoice.total_amount)}</TableCell>
-                      <TableCell>{formatCurrency(invoice.amount_paid || 0)}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(invoice.payment_status)}>
-                          {invoice.payment_status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                      <TableCell>{formatDate(invoice.created_at)}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setViewingInvoice(invoice)}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Details
-                            </DropdownMenuItem>
-                            {invoice.payment_status !== 'paid' && (
-                              <>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedInvoice(invoice)
-                                    setPaymentDialogOpen(true)
-                                  }}
-                                >
-                                  <CreditCard className="mr-2 h-4 w-4" />
-                                  Record Payment
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => showQRCode(invoice)}>
-                                  <QrCode className="mr-2 h-4 w-4" />
-                                  Show QR Code
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                                                      {invoice.customer_email && (
-                                                        <DropdownMenuItem
-                                                          onClick={() => sendEmailMutation.mutate(invoice.id)}
-                                                        >
-                                                          <Send className="mr-2 h-4 w-4" />
-                                                          Send Email
-                                                        </DropdownMenuItem>
-                                                      )}
-                                                      <DropdownMenuItem
-                                                        className="text-destructive"
-                                                        onClick={() => {
-                                                          if (confirm('Are you sure you want to delete this invoice?')) {
-                                                            deleteMutation.mutate(invoice.id)
-                                                          }
-                                                        }}
-                                                      >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete
-                                                      </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                        </DropdownMenu>
+                </TableHeader>
+                <TableBody>
+                  {invoices.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12">
+                        <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
+                        <p className="text-muted-foreground">
+                          {i18n.language === 'hi' ? 'Koi invoice nahi mila' :
+                           i18n.language === 'bn' ? 'কোনো ইনভয়েস পাওয়া যায়নি' :
+                           'No invoices found'}
+                        </p>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                  ) : (
+                    invoices.map((invoice: Invoice, index: number) => (
+                      <motion.tr
+                        key={invoice.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="border-b transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <TableCell className="font-semibold text-primary">{invoice.invoice_number}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium dark:text-white">{invoice.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{invoice.customer_phone}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-semibold">{formatCurrency(invoice.total_amount)}</TableCell>
+                        <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(invoice.amount_paid || 0)}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(invoice.payment_status)}>
+                            {invoice.payment_status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(invoice.due_date)}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(invoice.created_at)}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-700">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setViewingInvoice(invoice)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              {invoice.payment_status !== 'paid' && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedInvoice(invoice)
+                                      setPaymentDialogOpen(true)
+                                    }}
+                                  >
+                                    <CreditCard className="mr-2 h-4 w-4" />
+                                    Record Payment
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => showQRCode(invoice)}>
+                                    <QrCode className="mr-2 h-4 w-4" />
+                                    Show QR Code
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {invoice.customer_email && (
+                                <DropdownMenuItem
+                                  onClick={() => sendEmailMutation.mutate(invoice.id)}
+                                >
+                                  <Send className="mr-2 h-4 w-4" />
+                                  Send Email
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this invoice?')) {
+                                    deleteMutation.mutate(invoice.id)
+                                  }
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </motion.tr>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <Dialog open={!!viewingInvoice} onOpenChange={() => setViewingInvoice(null)}>
         <DialogContent className="max-w-2xl">
