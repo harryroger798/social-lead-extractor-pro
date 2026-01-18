@@ -264,6 +264,17 @@ ${t('aiAstrologer.welcomeClosing', 'How may I assist you on your spiritual journ
   const chatContainerRef = useRef<HTMLDivElement>(null);
   // Auto-scroll disabled - users can scroll manually
 
+  // Update welcome message when language changes
+  useEffect(() => {
+    setMessages((prev) => 
+      prev.map((msg) => 
+        msg.id === "welcome" 
+          ? { ...msg, content: welcomeMessage }
+          : msg
+      )
+    );
+  }, [welcomeMessage]);
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
