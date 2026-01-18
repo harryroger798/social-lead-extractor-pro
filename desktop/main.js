@@ -9,6 +9,20 @@ let serverPort = 3001
 
 const isDev = process.env.NODE_ENV === 'development'
 
+function getServerPath() {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'app.asar.unpacked', 'server')
+  }
+  return path.join(__dirname, 'server')
+}
+
+function getRendererPath() {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'app.asar', 'renderer')
+  }
+  return path.join(__dirname, 'renderer')
+}
+
 function getUserDataPath() {
   return app.getPath('userData')
 }
@@ -43,7 +57,10 @@ async function startEmbeddedServer() {
       const dbPath = setupDatabase()
       console.log('Database path:', dbPath)
       
-      const { setDatabasePath, initializeDatabase, getSetting } = require('./server/database/db')
+      const serverPath = getServerPath()
+      console.log('Server path:', serverPath)
+      
+      const { setDatabasePath, initializeDatabase, getSetting } = require(path.join(serverPath, 'database', 'db'))
       setDatabasePath(dbPath)
       initializeDatabase()
       
@@ -52,18 +69,18 @@ async function startEmbeddedServer() {
       const helmet = require('helmet')
       const compression = require('compression')
       
-      const authRoutes = require('./server/routes/auth')
-      const customerRoutes = require('./server/routes/customers')
-      const repairRoutes = require('./server/routes/repairs')
-      const serviceRoutes = require('./server/routes/services')
-      const invoiceRoutes = require('./server/routes/invoices')
-      const dashboardRoutes = require('./server/routes/dashboard')
-      const settingsRoutes = require('./server/routes/settings')
-      const digitalServiceRoutes = require('./server/routes/digitalServices')
-      const exportRoutes = require('./server/routes/exports')
-      const backupRoutes = require('./server/routes/backup')
+      const authRoutes = require(path.join(serverPath, 'routes', 'auth'))
+      const customerRoutes = require(path.join(serverPath, 'routes', 'customers'))
+      const repairRoutes = require(path.join(serverPath, 'routes', 'repairs'))
+      const serviceRoutes = require(path.join(serverPath, 'routes', 'services'))
+      const invoiceRoutes = require(path.join(serverPath, 'routes', 'invoices'))
+      const dashboardRoutes = require(path.join(serverPath, 'routes', 'dashboard'))
+      const settingsRoutes = require(path.join(serverPath, 'routes', 'settings'))
+      const digitalServiceRoutes = require(path.join(serverPath, 'routes', 'digitalServices'))
+      const exportRoutes = require(path.join(serverPath, 'routes', 'exports'))
+      const backupRoutes = require(path.join(serverPath, 'routes', 'backup'))
       
-      const { startAutoSync, getSyncStatus } = require('./server/services/syncService')
+      const { startAutoSync, getSyncStatus } = require(path.join(serverPath, 'services', 'syncService'))
       
       const serverApp = express()
       
@@ -178,7 +195,9 @@ function registerCustomProtocol() {
       url = 'index.html'
     }
     url = url.replace(/^\.\//, '')
-    const filePath = path.join(__dirname, 'renderer', url)
+    const rendererPath = getRendererPath()
+    const filePath = path.join(rendererPath, url)
+    console.log('Loading file:', filePath)
     return net.fetch('file://' + filePath)
   })
 }
