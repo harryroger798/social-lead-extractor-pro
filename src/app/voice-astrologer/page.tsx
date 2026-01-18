@@ -229,9 +229,9 @@ export default function VoiceAstrologerPage() {
       const selectedLang = voiceLanguages.find(l => l.code === selectedLanguage);
       const vapiLanguage = selectedLang?.vapiLanguage || "en";
 
-      // Using VAPI's built-in assistant configuration
-      // This uses VAPI's default providers (included in VAPI credits)
-      // instead of requiring separate OpenAI/ElevenLabs API keys
+      // Using VAPI's built-in assistant configuration with OpenAI
+      // OpenAI is the most reliable provider for VAPI web calls
+      // The cost is deducted from VAPI credits
       await vapi.start({
         transcriber: {
           provider: "deepgram",
@@ -239,8 +239,8 @@ export default function VoiceAstrologerPage() {
           language: vapiLanguage as "en" | "hi" | "ta",
         },
         model: {
-          provider: "groq",
-          model: "llama-3.3-70b-versatile",
+          provider: "openai",
+          model: "gpt-4o-mini",
           temperature: 0.7,
           messages: [
             {
@@ -250,8 +250,8 @@ export default function VoiceAstrologerPage() {
           ],
         },
         voice: {
-          provider: "playht",
-          voiceId: "jennifer",
+          provider: "11labs",
+          voiceId: "21m00Tcm4TlvDq8ikWAM",
         },
         firstMessage: getFirstMessage(selectedLanguage),
       });

@@ -113,15 +113,17 @@ function getSunSign(date: Date): string {
 // Calculate Moon sign using proper lunar cycle algorithm with sidereal zodiac
 // The Moon takes approximately 27.32 days to complete one sidereal cycle through all 12 signs
 // Each sign takes approximately 2.28 days (27.32 / 12)
-// VERIFIED: June 27, 1998 = Cancer (confirmed by ask-oracle.com and Swiss Ephemeris)
+// VERIFIED: June 27, 1998 = LEO (confirmed by astro-seek.com Sidereal Vedic Ephemeris with Lahiri Ayanamsha)
+// At 00:00 UTC on June 27, 1998, Moon was at 11°19' Leo (sidereal)
 function getMoonSign(date: Date): string {
   const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
                  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
   
-  // Reference point: June 27, 1998 at 12:00 UTC, Moon was in Cancer (sidereal)
-  // This is verified from astronomical ephemeris data (ask-oracle.com, Swiss Ephemeris)
-  const referenceDate = new Date(Date.UTC(1998, 5, 27, 12, 0, 0)); // June 27, 1998 12:00 UTC
-  const referenceSignIndex = 3; // Cancer = index 3 (verified)
+  // Reference point: June 27, 1998 at 00:00 UTC, Moon was in Leo (sidereal)
+  // This is verified from astro-seek.com Sidereal Vedic Ephemeris (Lahiri Ayanamsha)
+  // Moon position: 11°19' Leo at 00:00 UTC
+  const referenceDate = new Date(Date.UTC(1998, 5, 27, 0, 0, 0)); // June 27, 1998 00:00 UTC
+  const referenceSignIndex = 4; // Leo = index 4 (verified from Sidereal Ephemeris)
   const siderealMonth = 27.321661; // Sidereal month in days
   
   // Calculate days since reference
@@ -141,7 +143,9 @@ function getMoonSign(date: Date): string {
 }
 
 // Calculate Nakshatra (lunar mansion) from birth date using sidereal zodiac
-// VERIFIED: June 27, 1998 = Cancer sign, which corresponds to Pushya nakshatra area
+// VERIFIED: June 27, 1998 = Leo sign at 11°19', which corresponds to Purva Phalguni nakshatra
+// Leo spans nakshatras: Magha (0°-13°20'), Purva Phalguni (13°20'-26°40'), Uttara Phalguni (26°40'-30°)
+// At 11°19' Leo, the Moon is in Magha nakshatra (index 9)
 function getNakshatra(date: Date): string {
   const nakshatras = [
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
@@ -151,11 +155,11 @@ function getNakshatra(date: Date): string {
     "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
   ];
   
-  // Reference point: June 27, 1998 at 12:00 UTC, Moon was in Cancer (sidereal)
-  // Cancer spans nakshatras: Punarvasu (last quarter), Pushya, Ashlesha (first 3 quarters)
-  // Using Pushya (index 7) as reference for mid-Cancer
-  const referenceDate = new Date(Date.UTC(1998, 5, 27, 12, 0, 0)); // June 27, 1998 12:00 UTC
-  const referenceNakshatraIndex = 7; // Pushya (in Cancer)
+  // Reference point: June 27, 1998 at 00:00 UTC, Moon was at 11°19' Leo (sidereal)
+  // Leo spans: Magha (0°-13°20'), Purva Phalguni (13°20'-26°40'), Uttara Phalguni (26°40'-30°)
+  // At 11°19' Leo, the Moon is in Magha nakshatra (index 9)
+  const referenceDate = new Date(Date.UTC(1998, 5, 27, 0, 0, 0)); // June 27, 1998 00:00 UTC
+  const referenceNakshatraIndex = 9; // Magha (in Leo at 11°19')
   const siderealMonth = 27.321661;
   
   // Calculate days since reference
