@@ -21,7 +21,6 @@
     },
     "asar": true,
     "asarUnpack": [
-      "server/**/*",
       "node_modules/better-sqlite3/**/*"
     ],
     "files": [
@@ -29,14 +28,7 @@
       "preload.js",
       "renderer/**/*",
       "server/**/*",
-      "!server/node_modules",
       "assets/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "server/database/schema.sql",
-        "to": "schema.sql"
-      }
     ],
     "win": {
       "target": [
