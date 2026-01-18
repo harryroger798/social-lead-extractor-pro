@@ -426,46 +426,81 @@ router.patch('/:id/status', authenticate, isAdminOrTechnician, [
     updates.started_at = new Date().toISOString();
   }
   
-  if (status === REPAIR_STATUS.COMPLETED) {
-    updates.completed_at = new Date().toISOString();
-    const warrantyExpiry = new Date();
-    warrantyExpiry.setDate(warrantyExpiry.getDate() + (repair.warranty_days || DEFAULT_WARRANTY_DAYS));
-    updates.warranty_expiry = warrantyExpiry.toISOString();
+    if (status === REPAIR_STATUS.COMPLETED) {
+      updates.completed_at = new Date().toISOString();
+      const warrantyExpiry = new Date();
+      warrantyExpiry.setDate(warrantyExpiry.getDate() + (repair.warranty_days || DEFAULT_WARRANTY_DAYS));
+      updates.warranty_expiry = warrantyExpiry.toISOString();
     
-    db.prepare(`
-      UPDATE customers SET 
-        total_spent = total_spent + ?,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `).run(repair.final_price, repair.customer_id);
-  }
+      db.prepare(`
+        UPDATE customers SET 
+          total_spent = total_spent + ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(repair.final_price, repair.customer_id);
+    }
   
-  let setClause = Object.keys(updates).map(key => {
-    if (key === 'updated_at') return `${key} = CURRENT_TIMESTAMP`;
-    return `${key} = ?`;
-  }).join(', ');
+    let setClause = Object.keys(updates).map(key => {
+      if (key === 'updated_at') return `${key} = CURRENT_TIMESTAMP`;
+      return `${key} = ?`;
+    }).join(', ');
   
-  const params = Object.entries(updates)
-    .filter(([key]) => key !== 'updated_at')
-    .map(([, value]) => value);
-  params.push(id);
+    const params = Object.entries(updates)
+      .filter(([key]) => key !== 'updated_at')
+      .map(([, value]) => value);
+    params.push(id);
   
-  db.prepare(`UPDATE repairs SET ${setClause} WHERE id = ?`).run(...params);
+    db.prepare(`UPDATE repairs SET ${setClause} WHERE id = ?`).run(...params);
   
-  const updatedRepair = db.prepare(`
-    SELECT r.*, c.name as customer_name, c.phone as customer_phone
-    FROM repairs r
-    LEFT JOIN customers c ON r.customer_id = c.id
-    WHERE r.id = ?
-  `).get(id);
+    // Auto-generate invoice when status changes to completed
+    let invoice = null;
+    if (status === REPAIR_STATUS.COMPLETED) {
+      const existingInvoice = db.prepare('SELECT id FROM invoices WHERE repair_id = ?').get(id);
+    
+      if (!existingInvoice) {
+        const invoiceNumber = getNextInvoiceNumber();
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 7);
+      
+        const invoiceStmt = db.prepare(`
+          INSERT INTO invoices (
+            invoice_number, customer_id, repair_id, invoice_type,
+            subtotal, gst_rate, gst_amount, total_amount,
+            payment_status, due_date
+          ) VALUES (?, ?, ?, 'repair', ?, ?, ?, ?, 'unpaid', ?)
+        `);
+      
+        invoiceStmt.run(
+          invoiceNumber,
+          repair.customer_id,
+          id,
+          repair.total_cost,
+          DEFAULT_GST_RATE,
+          repair.gst_amount,
+          repair.final_price,
+          dueDate.toISOString()
+        );
+      
+        invoice = db.prepare('SELECT * FROM invoices WHERE invoice_number = ?').get(invoiceNumber);
+      }
+    }
   
-  logActivity(req.user.id, ACTIVITY_ACTIONS.UPDATE, 'repairs', id, { status: repair.status }, { status }, req);
+    const updatedRepair = db.prepare(`
+      SELECT r.*, c.name as customer_name, c.phone as customer_phone
+      FROM repairs r
+      LEFT JOIN customers c ON r.customer_id = c.id
+      WHERE r.id = ?
+    `).get(id);
   
-  res.json({
-    success: true,
-    message: `Repair status updated to ${status}`,
-    data: updatedRepair
-  });
+    logActivity(req.user.id, ACTIVITY_ACTIONS.UPDATE, 'repairs', id, { status: repair.status }, { status }, req);
+  
+    res.json({
+      success: true,
+      message: `Repair status updated to ${status}`,
+      data: updatedRepair,
+      invoice_generated: !!invoice,
+      invoice: invoice
+    });
 }));
 
 router.delete('/:id', authenticate, isAdminOrTechnician, asyncHandler(async (req, res) => {

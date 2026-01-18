@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2 } from 'lucide-react'
+import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,9 +18,21 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { invoicesApi } from '@/lib/api'
+import { invoicesApi, customersApi } from '@/lib/api'
 import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+
+interface Customer {
+  id: number
+  name: string
+  phone: string
+  email: string
+}
+
+interface LineItem {
+  description: string
+  amount: number
+}
 
 interface Invoice {
   id: number
@@ -48,12 +60,22 @@ export function InvoicesPage() {
   const [qrDialogOpen, setQrDialogOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('')
+  const [lineItems, setLineItems] = useState<LineItem[]>([{ description: '', amount: 0 }])
+  const [discount, setDiscount] = useState(0)
+  const [customerSearch, setCustomerSearch] = useState('')
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
   const { data, isLoading } = useQuery({
     queryKey: ['invoices', search, statusFilter],
     queryFn: () => invoicesApi.getAll({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 }),
+  })
+
+  const { data: customersData } = useQuery({
+    queryKey: ['customers', customerSearch],
+    queryFn: () => customersApi.getAll({ search: customerSearch, limit: 100 }),
   })
 
   const markPaidMutation = useMutation({
@@ -80,18 +102,79 @@ export function InvoicesPage() {
       },
     })
 
-    const deleteMutation = useMutation({
-      mutationFn: (id: number) => invoicesApi.delete(id),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['invoices'] })
-        toast({ title: 'Invoice deleted successfully' })
-      },
-      onError: () => {
-        toast({ variant: 'destructive', title: 'Failed to delete invoice' })
-      },
-    })
+        const deleteMutation = useMutation({
+          mutationFn: (id: number) => invoicesApi.delete(id),
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['invoices'] })
+            toast({ title: 'Invoice deleted successfully' })
+          },
+          onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete invoice' })
+          },
+        })
 
-    const invoices = data?.data?.data || []
+      const createMutation = useMutation({
+        mutationFn: (data: Record<string, unknown>) => invoicesApi.create(data),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['invoices'] })
+          setCreateDialogOpen(false)
+          resetCreateForm()
+          toast({ title: 'Invoice created successfully' })
+        },
+        onError: () => {
+          toast({ variant: 'destructive', title: 'Failed to create invoice' })
+        },
+      })
+
+        const invoices = data?.data?.data || []
+        const customers = customersData?.data?.data || []
+
+      const resetCreateForm = () => {
+        setSelectedCustomerId('')
+        setLineItems([{ description: '', amount: 0 }])
+        setDiscount(0)
+        setCustomerSearch('')
+      }
+
+      const addLineItem = () => {
+        setLineItems([...lineItems, { description: '', amount: 0 }])
+      }
+
+      const removeLineItem = (index: number) => {
+        if (lineItems.length > 1) {
+          setLineItems(lineItems.filter((_, i) => i !== index))
+        }
+      }
+
+      const updateLineItem = (index: number, field: keyof LineItem, value: string | number) => {
+        const updated = [...lineItems]
+        if (field === 'amount') {
+          updated[index][field] = Number(value)
+        } else {
+          updated[index][field] = value as string
+        }
+        setLineItems(updated)
+      }
+
+      const subtotal = lineItems.reduce((sum, item) => sum + (item.amount || 0), 0)
+      const gstAmount = (subtotal - discount) * 0.18
+      const totalAmount = subtotal - discount + gstAmount
+
+      const handleCreateInvoice = () => {
+        if (!selectedCustomerId) {
+          toast({ variant: 'destructive', title: 'Please select a customer' })
+          return
+        }
+        if (lineItems.some(item => !item.description || item.amount <= 0)) {
+          toast({ variant: 'destructive', title: 'Please fill all line items with valid amounts' })
+          return
+        }
+        createMutation.mutate({
+          customer_id: parseInt(selectedCustomerId),
+          items: lineItems,
+          discount_amount: discount,
+        })
+      }
 
   const handlePayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -118,12 +201,16 @@ export function InvoicesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Invoices</h1>
-          <p className="text-muted-foreground">Manage invoices and payments</p>
-        </div>
-      </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold">Invoices</h1>
+                <p className="text-muted-foreground">Manage invoices and payments</p>
+              </div>
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Invoice
+              </Button>
+            </div>
 
       <Card>
         <CardHeader>
@@ -393,6 +480,111 @@ export function InvoicesPage() {
               Invoice: {selectedInvoice?.invoice_number}
             </p>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={createDialogOpen} onOpenChange={(open) => {
+        setCreateDialogOpen(open)
+        if (!open) resetCreateForm()
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Invoice</DialogTitle>
+            <DialogDescription>
+              Create a new invoice for a customer
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Customer *</Label>
+              <Input
+                placeholder="Search customers..."
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+                className="mb-2"
+              />
+              <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {customers.map((customer: Customer) => (
+                    <SelectItem key={customer.id} value={customer.id.toString()}>
+                      {customer.name} - {customer.phone}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Line Items *</Label>
+              {lineItems.map((item, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input
+                    placeholder="Description"
+                    value={item.description}
+                    onChange={(e) => updateLineItem(index, 'description', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    value={item.amount || ''}
+                    onChange={(e) => updateLineItem(index, 'amount', e.target.value)}
+                    className="w-32"
+                    min="0"
+                  />
+                  {lineItems.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeLineItem(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button type="button" variant="outline" size="sm" onClick={addLineItem}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="discount">Discount</Label>
+              <Input
+                id="discount"
+                type="number"
+                value={discount || ''}
+                onChange={(e) => setDiscount(Number(e.target.value))}
+                min="0"
+              />
+            </div>
+
+            <div className="rounded-lg bg-muted p-4">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>Subtotal:</div>
+                <div className="text-right">{formatCurrency(subtotal)}</div>
+                <div>Discount:</div>
+                <div className="text-right">-{formatCurrency(discount)}</div>
+                <div>GST (18%):</div>
+                <div className="text-right">{formatCurrency(gstAmount)}</div>
+                <div className="font-bold">Total:</div>
+                <div className="text-right font-bold">{formatCurrency(totalAmount)}</div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateInvoice} disabled={createMutation.isPending}>
+              Create Invoice
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

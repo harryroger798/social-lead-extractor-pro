@@ -106,6 +106,7 @@ export const servicesApi = {
 export const invoicesApi = {
   getAll: (params?: Record<string, unknown>) => api.get('/invoices', { params }),
   getById: (id: number) => api.get(`/invoices/${id}`),
+  create: (data: Record<string, unknown>) => api.post('/invoices', data),
   generate: (repairId: number) => api.post(`/invoices/${repairId}/generate`),
   markPaid: (id: number, data: Record<string, unknown>) =>
     api.post(`/invoices/${id}/mark-paid`, data),

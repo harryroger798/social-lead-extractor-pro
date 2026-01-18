@@ -535,6 +535,76 @@ router.put('/:id', authenticate, isAdminOrTechnician, asyncHandler(async (req, r
   });
 }));
 
+// Manual invoice creation (without repair)
+router.post('/', authenticate, isAdminOrTechnician, [
+  body('customer_id').isInt().withMessage('Customer ID is required'),
+  body('items').isArray({ min: 1 }).withMessage('At least one item is required'),
+  body('items.*.description').notEmpty().withMessage('Item description is required'),
+  body('items.*.amount').isFloat({ min: 0 }).withMessage('Item amount must be a positive number')
+], asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new ValidationError('Validation failed', errors.array());
+  }
+  
+  const { customer_id, items, discount_amount = 0, notes, due_days = 7 } = req.body;
+  const db = getDatabase();
+  
+  const customer = db.prepare('SELECT * FROM customers WHERE id = ?').get(customer_id);
+  if (!customer) {
+    throw new NotFoundError('Customer');
+  }
+  
+  // Calculate totals
+  const subtotal = items.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+  const discountedSubtotal = subtotal - discount_amount;
+  const gstAmount = discountedSubtotal * (DEFAULT_GST_RATE / 100);
+  const totalAmount = discountedSubtotal + gstAmount;
+  
+  const invoiceNumber = getNextInvoiceNumber();
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + due_days);
+  
+  const stmt = db.prepare(`
+    INSERT INTO invoices (
+      invoice_number, customer_id, invoice_type,
+      subtotal, discount_amount, gst_rate, gst_amount, total_amount,
+      payment_status, due_date, notes
+    ) VALUES (?, ?, 'manual', ?, ?, ?, ?, ?, 'unpaid', ?, ?)
+  `);
+  
+  const result = stmt.run(
+    invoiceNumber,
+    customer_id,
+    subtotal,
+    discount_amount,
+    DEFAULT_GST_RATE,
+    gstAmount,
+    totalAmount,
+    dueDate.toISOString(),
+    notes || null
+  );
+  
+  // Store line items in notes field as JSON for now
+  const itemsJson = JSON.stringify(items);
+  db.prepare('UPDATE invoices SET notes = ? WHERE id = ?').run(itemsJson, result.lastInsertRowid);
+  
+  const invoice = db.prepare(`
+    SELECT i.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email
+    FROM invoices i
+    LEFT JOIN customers c ON i.customer_id = c.id
+    WHERE i.id = ?
+  `).get(result.lastInsertRowid);
+  
+  logActivity(req.user.id, ACTIVITY_ACTIONS.CREATE, 'invoices', invoice.id, null, invoice, req);
+  
+  res.status(201).json({
+    success: true,
+    message: 'Invoice created successfully',
+    data: invoice
+  });
+}));
+
 router.delete('/:id', authenticate, isAdminOrTechnician, asyncHandler(async (req, res) => {
   const { id } = req.params;
   const db = getDatabase();
