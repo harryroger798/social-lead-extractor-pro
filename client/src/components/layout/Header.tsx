@@ -11,6 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useAuthStore } from '@/stores/authStore'
+import { LanguageSelector } from '@/components/LanguageSelector'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { useTranslation } from 'react-i18next'
 
 interface HeaderProps {
   onMenuClick?: () => void
@@ -18,6 +21,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuthStore()
+  const { t } = useTranslation()
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -39,7 +43,9 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <LanguageSelector />
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
@@ -50,7 +56,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('common.notifications', 'Notifications')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <div className="flex flex-col gap-1">

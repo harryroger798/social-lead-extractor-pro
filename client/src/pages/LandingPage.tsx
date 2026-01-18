@@ -2,6 +2,9 @@ import { Link, Navigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/authStore'
+import { useTranslation } from 'react-i18next'
+import { LanguageSelector } from '@/components/LanguageSelector'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { 
   Wrench, 
   Smartphone, 
@@ -16,6 +19,7 @@ import {
 
 export function LandingPage() {
   const { isAuthenticated } = useAuthStore()
+  const { t } = useTranslation()
   
   const isElectron = typeof window !== 'undefined' && window.electronAPI?.isElectron
   
@@ -26,151 +30,155 @@ export function LandingPage() {
     return <Navigate to="/login" replace />
   }
   
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">BC</span>
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        {/* Header */}
+        <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                <span className="text-white font-bold text-lg">BC</span>
+              </div>
+              <span className="text-2xl font-bold text-primary">ByteCare</span>
             </div>
-            <span className="text-2xl font-bold text-primary">ByteCare</span>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.services')}</Link>
+              <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.about')}</Link>
+              <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.contact')}</Link>
+              <Link to="/blog" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.blog')}</Link>
+              <Link to="/booking" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.booking')}</Link>
+            </nav>
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <ThemeToggle />
+              <Link to="/login">
+                <Button>{t('nav.login')}</Button>
+              </Link>
+            </div>
           </div>
-                    <nav className="hidden md:flex items-center gap-6">
-                      <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">Services</a>
-                      <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
-                      <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">About</a>
-                      <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</a>
-                    </nav>
-          <Link to="/login">
-            <Button>Sign In</Button>
-          </Link>
-        </div>
-      </header>
+        </header>
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
-          Your Trusted Partner for
-          <span className="text-primary block mt-2">Device Repair & Digital Services</span>
+        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
+          {t('landing.hero.title')}
+          <span className="text-primary block mt-2">{t('landing.hero.subtitle')}</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Professional PC repair, mobile repair, and digital services in Barrackpore. 
-          Fast, reliable, and affordable solutions for all your tech needs.
+          {t('landing.hero.description')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/login">
+          <Link to="/booking">
             <Button size="lg" className="gap-2">
-              Get Started <ArrowRight className="h-4 w-4" />
+              {t('landing.hero.getStarted')} <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <a href="#services">
+          <Link to="/services">
             <Button size="lg" variant="outline">
-              View Services
+              {t('landing.hero.viewServices')}
             </Button>
-          </a>
+          </Link>
         </div>
       </section>
 
       {/* Services Section */}
       <section id="services" className="container mx-auto px-4 py-20">
-        <h2 className="text-3xl font-bold text-center mb-4">Our Services</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 dark:text-white">{t('landing.services.title')}</h2>
         <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-          We offer comprehensive repair and digital services to keep your devices running smoothly
+          {t('landing.services.subtitle')}
         </p>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow dark:bg-slate-800">
             <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <Monitor className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4">
+                <Monitor className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <CardTitle>PC Repair</CardTitle>
+              <CardTitle className="dark:text-white">{t('landing.services.pcRepair.title')}</CardTitle>
               <CardDescription>
-                Expert repair services for desktops and laptops
+                {t('landing.services.pcRepair.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Hardware diagnostics & repair
+                  {t('landing.services.pcRepair.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  OS installation & recovery
+                  {t('landing.services.pcRepair.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Virus removal & security
+                  {t('landing.services.pcRepair.feature3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Data backup & recovery
+                  {t('landing.services.pcRepair.feature4')}
                 </li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow dark:bg-slate-800">
             <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
-                <Smartphone className="h-6 w-6 text-green-600" />
+              <div className="h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
+                <Smartphone className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
-              <CardTitle>Mobile Repair</CardTitle>
+              <CardTitle className="dark:text-white">{t('landing.services.mobileRepair.title')}</CardTitle>
               <CardDescription>
-                Professional mobile phone repair services
+                {t('landing.services.mobileRepair.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Screen replacement
+                  {t('landing.services.mobileRepair.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Battery replacement
+                  {t('landing.services.mobileRepair.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Charging port repair
+                  {t('landing.services.mobileRepair.feature3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Software troubleshooting
+                  {t('landing.services.mobileRepair.feature4')}
                 </li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow dark:bg-slate-800">
             <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                <Globe className="h-6 w-6 text-purple-600" />
+              <div className="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center mb-4">
+                <Globe className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <CardTitle>Digital Services</CardTitle>
+              <CardTitle className="dark:text-white">{t('landing.services.digitalServices.title')}</CardTitle>
               <CardDescription>
-                Web development and digital marketing
+                {t('landing.services.digitalServices.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Website development
+                  {t('landing.services.digitalServices.feature1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Mobile app development
+                  {t('landing.services.digitalServices.feature2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  SEO & digital marketing
+                  {t('landing.services.digitalServices.feature3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Graphic design
+                  {t('landing.services.digitalServices.feature4')}
                 </li>
               </ul>
             </CardContent>
@@ -179,47 +187,47 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-white py-20">
+      <section id="features" className="bg-white dark:bg-slate-800 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Why Choose ByteCare?</h2>
+          <h2 className="text-3xl font-bold text-center mb-4 dark:text-white">{t('landing.features.title')}</h2>
           <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-            We combine expertise with excellent customer service to deliver the best repair experience
+            {t('landing.features.subtitle')}
           </p>
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Wrench className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">Expert Technicians</h3>
+              <h3 className="font-semibold mb-2 dark:text-white">{t('landing.features.expertTechnicians.title')}</h3>
               <p className="text-sm text-muted-foreground">
-                Skilled professionals with years of experience
+                {t('landing.features.expertTechnicians.description')}
               </p>
             </div>
             <div className="text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Clock className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">Quick Turnaround</h3>
+              <h3 className="font-semibold mb-2 dark:text-white">{t('landing.features.quickTurnaround.title')}</h3>
               <p className="text-sm text-muted-foreground">
-                Most repairs completed within 24-48 hours
+                {t('landing.features.quickTurnaround.description')}
               </p>
             </div>
             <div className="text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">Warranty Included</h3>
+              <h3 className="font-semibold mb-2 dark:text-white">{t('landing.features.warranty.title')}</h3>
               <p className="text-sm text-muted-foreground">
-                All repairs come with service warranty
+                {t('landing.features.warranty.description')}
               </p>
             </div>
             <div className="text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">Customer Support</h3>
+              <h3 className="font-semibold mb-2 dark:text-white">{t('landing.features.customerSupport.title')}</h3>
               <p className="text-sm text-muted-foreground">
-                Dedicated support for all your queries
+                {t('landing.features.customerSupport.description')}
               </p>
             </div>
           </div>
@@ -231,37 +239,33 @@ export function LandingPage() {
         <div className="grid md:grid-cols-4 gap-8 text-center">
           <div>
             <p className="text-4xl font-bold text-primary mb-2">500+</p>
-            <p className="text-muted-foreground">Devices Repaired</p>
+            <p className="text-muted-foreground">{t('landing.stats.devicesRepaired')}</p>
           </div>
           <div>
             <p className="text-4xl font-bold text-primary mb-2">200+</p>
-            <p className="text-muted-foreground">Happy Customers</p>
+            <p className="text-muted-foreground">{t('landing.stats.happyCustomers')}</p>
           </div>
           <div>
             <p className="text-4xl font-bold text-primary mb-2">50+</p>
-            <p className="text-muted-foreground">Digital Projects</p>
+            <p className="text-muted-foreground">{t('landing.stats.digitalProjects')}</p>
           </div>
           <div>
             <p className="text-4xl font-bold text-primary mb-2">98%</p>
-            <p className="text-muted-foreground">Satisfaction Rate</p>
+            <p className="text-muted-foreground">{t('landing.stats.satisfactionRate')}</p>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="bg-white py-20">
+      <section id="about" className="bg-white dark:bg-slate-800 py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">About ByteCare</h2>
+            <h2 className="text-3xl font-bold mb-4 dark:text-white">{t('landing.about.title')}</h2>
             <p className="text-muted-foreground mb-6">
-              ByteCare is a leading repair shop in Barrackpore, West Bengal, founded by Sayan Roy Chowdhury. 
-              We specialize in PC repair, mobile repair, and digital services, providing comprehensive 
-              solutions for all your technology needs.
+              {t('landing.about.description1')}
             </p>
             <p className="text-muted-foreground">
-              Our mission is to deliver high-quality, affordable repair services with a focus on 
-              customer satisfaction. Whether you need a quick screen replacement or a complete 
-              website development project, we've got you covered.
+              {t('landing.about.description2')}
             </p>
           </div>
         </div>
@@ -270,29 +274,29 @@ export function LandingPage() {
       {/* Contact Section */}
       <section id="contact" className="container mx-auto px-4 py-20">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Get In Touch</h2>
+          <h2 className="text-3xl font-bold mb-4 dark:text-white">{t('landing.contact.title')}</h2>
           <p className="text-muted-foreground mb-8">
-            Have a device that needs repair? Contact us today for a free diagnosis.
+            {t('landing.contact.subtitle')}
           </p>
-          <Card>
+          <Card className="dark:bg-slate-800">
             <CardContent className="pt-6">
               <div className="grid md:grid-cols-2 gap-6 text-left">
                 <div>
-                  <h3 className="font-semibold mb-2">Contact Information</h3>
+                  <h3 className="font-semibold mb-2 dark:text-white">{t('landing.contact.contactInfo')}</h3>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Email: harryroger798@gmail.com
+                    {t('landing.contact.email')}: harryroger798@gmail.com
                   </p>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Location: Barrackpore, West Bengal
+                    {t('landing.contact.location')}: Barrackpore, West Bengal
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Business Hours</h3>
+                  <h3 className="font-semibold mb-2 dark:text-white">{t('landing.contact.businessHours')}</h3>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Monday - Saturday: 10:00 AM - 8:00 PM
+                    {t('landing.contact.weekdays')}: 10:00 AM - 8:00 PM
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Sunday: Closed
+                    {t('landing.contact.sunday')}: {t('landing.contact.closed')}
                   </p>
                 </div>
               </div>
@@ -312,11 +316,11 @@ export function LandingPage() {
               <span className="text-xl font-bold">ByteCare</span>
             </div>
             <p className="text-slate-400 text-sm">
-              &copy; {new Date().getFullYear()} ByteCare. All rights reserved.
+              &copy; {new Date().getFullYear()} ByteCare. {t('landing.footer.rights')}
             </p>
             <div className="flex items-center gap-4">
               <Link to="/login" className="text-slate-400 hover:text-white transition-colors text-sm">
-                Admin Login
+                {t('landing.footer.adminLogin')}
               </Link>
             </div>
           </div>
