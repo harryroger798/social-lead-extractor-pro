@@ -60,9 +60,9 @@ const VAPI_PUBLIC_KEYS = [
 ];
 
 const VAPI_ASSISTANT_IDS: Record<string, string> = {
-  en: "33076df6-578d-4d20-a874-1295b5bb6a9b",
-  hi: "d2218eca-81a8-4792-a085-a6599418fc19",
-  default: "33076df6-578d-4d20-a874-1295b5bb6a9b",
+  en: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
+  hi: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
+  default: "7105cba3-2630-4fa4-8687-4cc8c1d73543",
 };
 
 const getLanguageSystemPrompt = (langCode: string): string => {
