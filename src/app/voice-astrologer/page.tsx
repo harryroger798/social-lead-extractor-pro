@@ -53,11 +53,13 @@ const voiceLanguages: VoiceLanguage[] = [
   { code: "gu", name: "Gujarati", nameNative: "ગુજરાતી", available: true, vapiLanguage: "gu" },
 ];
 
-const VAPI_PUBLIC_KEYS = [
-  "f31bac06-8fc3-4918-89a4-2f8ae64ffd36",
-  "ad721a2d-e6d9-4ab9-9684-32a446b2c4e6",
-  "79e3eede-bb04-4780-9f3e-f6ce67b190dd",
-];
+// VAPI Public Keys for different accounts
+// Account 3 (sister.herzog@btedu.tech) - has the permanent assistant configured
+const VAPI_PUBLIC_KEY = "f31bac06-8fc3-4918-89a4-2f8ae64ffd36";
+
+// Permanent VAPI Assistant ID created via API with Deepgram STT/TTS + Groq LLM
+// This uses VAPI's built-in providers - no external API keys required
+const VAPI_ASSISTANT_ID = "c9262e0b-71c7-4e4f-9e58-f0ac1ac1c2dd";
 
 // Supported Deepgram languages for transcription
 type DeepgramLanguage = "en" | "hi" | "ta" | "te" | "bn" | "mr" | "gu" | "kn" | "ml" | "pa" | "en-IN";
@@ -170,7 +172,6 @@ export default function VoiceAstrologerPage() {
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [dailyMinutesUsed, setDailyMinutesUsed] = useState(0);
-  const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
   const dailyLimit = 5;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const vapiRef = useRef<Vapi | null>(null);
@@ -228,8 +229,7 @@ export default function VoiceAstrologerPage() {
     });
 
     try {
-      const publicKey = VAPI_PUBLIC_KEYS[currentKeyIndex];
-      const vapi = new Vapi(publicKey);
+      const vapi = new Vapi(VAPI_PUBLIC_KEY);
       vapiRef.current = vapi;
 
       vapi.on("call-start", () => {
@@ -264,29 +264,17 @@ export default function VoiceAstrologerPage() {
 
       vapi.on("error", (error: Error) => {
         console.error("VAPI Error:", error);
-        if (currentKeyIndex < VAPI_PUBLIC_KEYS.length - 1) {
-          setCurrentKeyIndex((prev) => prev + 1);
-          setCallState((prev) => ({
-            ...prev,
-            status: "idle",
-            errorMessage: t("voiceAstrologer.retrying", "Retrying with backup connection..."),
-          }));
-        } else {
-          setCallState((prev) => ({
-            ...prev,
-            status: "error",
-            errorMessage: t("voiceAstrologer.connectionError", "Connection error. Please try again later."),
-          }));
-        }
+        setCallState((prev) => ({
+          ...prev,
+          status: "error",
+          errorMessage: t("voiceAstrologer.connectionError", "Connection error. Please try again later."),
+        }));
       });
 
-      // Use transient assistant configuration with VAPI's built-in providers
-      // This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
+      // Use permanent assistant ID created via VAPI API
+      // Assistant uses Deepgram STT/TTS + Groq LLM (VAPI built-in providers)
       // No external API keys required (OpenAI, ElevenLabs, etc.)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const assistantConfig = buildAssistantConfig(selectedLanguage) as any;
-      
-      await vapi.start(assistantConfig);
+      await vapi.start(VAPI_ASSISTANT_ID);
     } catch (error) {
       console.error("Failed to start call:", error);
       setCallState({
