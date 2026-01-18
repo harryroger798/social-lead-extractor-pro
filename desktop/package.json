@@ -19,10 +19,7 @@
     "directories": {
       "output": "dist"
     },
-    "asar": true,
-    "asarUnpack": [
-      "node_modules/better-sqlite3/**/*"
-    ],
+    "asar": false,
     "files": [
       "main.js",
       "preload.js",

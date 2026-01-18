@@ -44,12 +44,21 @@ function setupDatabase() {
 async function startEmbeddedServer() {
   return new Promise((resolve, reject) => {
     try {
+      console.log('Starting embedded server...')
+      console.log('__dirname:', __dirname)
+      console.log('app.isPackaged:', app.isPackaged)
+      
       const dbPath = setupDatabase()
       console.log('Database path:', dbPath)
       
+      console.log('Loading database module...')
       const { setDatabasePath, initializeDatabase, getSetting } = require('./server/database/db')
+      console.log('Database module loaded successfully')
+      
       setDatabasePath(dbPath)
+      console.log('Initializing database...')
       initializeDatabase()
+      console.log('Database initialized successfully')
       
       const express = require('express')
       const cors = require('cors')
@@ -170,12 +179,13 @@ async function startEmbeddedServer() {
       
     } catch (error) {
       console.error('Failed to start embedded server:', error)
+      console.error('Error stack:', error.stack)
       reject(error)
     }
   })
 }
 
-function registerCustomProtocol() {
+function registerCustomProtocol(){
   protocol.handle('bytecare', (request) => {
     let url = request.url.replace('bytecare://', '')
     if (url === '' || url === './') {
@@ -394,7 +404,7 @@ app.whenReady().then(async () => {
     console.log('Embedded server started successfully')
   } catch (error) {
     console.error('Failed to start embedded server:', error)
-    dialog.showErrorBox('Server Error', 'Failed to start the local server. The application may not work correctly.')
+    dialog.showErrorBox('Server Error', `Failed to start the local server.\n\nError: ${error.message}\n\nThe application may not work correctly.`)
   }
   
   createWindow()
