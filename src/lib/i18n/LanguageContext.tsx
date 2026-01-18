@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Language, translations } from "./translations";
+import { newFeatureTranslations, deepMerge } from "./newFeatureTranslations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
 
@@ -71,20 +72,32 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
+  // Merge base translations with new feature translations
+  const mergedTranslations = useMemo(() => {
+    const merged: Record<Language, Record<string, unknown>> = {} as Record<Language, Record<string, unknown>>;
+    for (const lang of VALID_LANGUAGES) {
+      merged[lang] = deepMerge(
+        translations[lang] as Record<string, unknown>,
+        newFeatureTranslations[lang] || {}
+      );
+    }
+    return merged;
+  }, []);
+
   const t: TranslateFunction = useCallback((key: string, fallback?: string): string => {
-    const currentTranslations = translations[language];
+    const currentTranslations = mergedTranslations[language];
     const value = getNestedValue(currentTranslations as Record<string, unknown>, key);
     if (value !== undefined) {
       return value;
     }
     // Try English fallback
-    const englishValue = getNestedValue(translations.en as Record<string, unknown>, key);
+    const englishValue = getNestedValue(mergedTranslations.en as Record<string, unknown>, key);
     if (englishValue !== undefined) {
       return englishValue;
     }
     // Return provided fallback or key
     return fallback || key;
-  }, [language]);
+  }, [language, mergedTranslations]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
