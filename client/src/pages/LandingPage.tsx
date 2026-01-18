@@ -636,7 +636,7 @@ export function LandingPage() {
                                       <img 
                                         src={image} 
                                         alt={`Customer Review ${index + 1}`}
-                                        className="w-full h-64 object-cover object-top"
+                                        className="w-full h-auto"
                                       />
                                     </motion.div>
                                   ))}
