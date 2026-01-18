@@ -7,6 +7,27 @@ type TranslationObject = Record<string, unknown>;
 
 export const newFeatureTranslations: Record<Language, TranslationObject> = {
   en: {
+    nav: {
+      aiFeatures: "AI & Pro",
+      aiAstrologerPro: "AI Astrologer Pro",
+      aiAstrologerProDesc: "Context-aware AI with birth chart",
+      voiceAstrologer: "Voice AI Astrologer",
+      voiceAstrologerDesc: "Talk to AI astrologer by voice",
+      aiChartInterpretation: "AI Chart Interpretation",
+      aiChartInterpretationDesc: "Detailed AI analysis of your chart",
+      habitTracker: "Habit Tracker",
+      habitTrackerDesc: "Track habits with astro timing",
+      lifeTimeline: "Life Timeline",
+      lifeTimelineDesc: "Predicted life events based on Dasha",
+      blockchainKundli: "Blockchain Kundli",
+      blockchainKundliDesc: "Verified tamper-proof certificate",
+      financialAstrology: "Financial Astrology",
+      financialAstrologyDesc: "Wealth timing predictions",
+      planetaryTracker: "Planetary Tracker",
+      planetaryTrackerDesc: "Live planetary positions & transits",
+      personalizedHoroscope: "Personalized Horoscope",
+      personalizedHoroscopeDesc: "AI-generated based on your chart"
+    },
     share: {
       generating: "Generating image...",
       download: "Download",
@@ -321,6 +342,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   hi: {
+    nav: {
+      aiFeatures: "AI और प्रो",
+      aiAstrologerPro: "AI ज्योतिषी प्रो",
+      aiAstrologerProDesc: "जन्म कुंडली के साथ संदर्भ-जागरूक AI",
+      voiceAstrologer: "वॉइस AI ज्योतिषी",
+      voiceAstrologerDesc: "आवाज से AI ज्योतिषी से बात करें",
+      aiChartInterpretation: "AI चार्ट व्याख्या",
+      aiChartInterpretationDesc: "आपके चार्ट का विस्तृत AI विश्लेषण",
+      habitTracker: "आदत ट्रैकर",
+      habitTrackerDesc: "ज्योतिष समय के साथ आदतें ट्रैक करें",
+      lifeTimeline: "जीवन समयरेखा",
+      lifeTimelineDesc: "दशा पर आधारित भविष्यवाणी की घटनाएं",
+      blockchainKundli: "ब्लॉकचेन कुंडली",
+      blockchainKundliDesc: "सत्यापित छेड़छाड़-प्रूफ प्रमाणपत्र",
+      financialAstrology: "वित्तीय ज्योतिष",
+      financialAstrologyDesc: "धन समय की भविष्यवाणियां",
+      planetaryTracker: "ग्रह ट्रैकर",
+      planetaryTrackerDesc: "लाइव ग्रह स्थितियां और गोचर",
+      personalizedHoroscope: "व्यक्तिगत राशिफल",
+      personalizedHoroscopeDesc: "आपके चार्ट पर आधारित AI-जनित"
+    },
     share: {
       generating: "छवि बना रहे हैं...",
       download: "डाउनलोड",
@@ -635,6 +677,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   ta: {
+    nav: {
+      aiFeatures: "AI & ப்ரோ",
+      aiAstrologerPro: "AI ஜோதிடர் ப்ரோ",
+      aiAstrologerProDesc: "ஜாதகத்துடன் சூழல்-விழிப்புணர்வு AI",
+      voiceAstrologer: "குரல் AI ஜோதிடர்",
+      voiceAstrologerDesc: "குரல் மூலம் AI ஜோதிடருடன் பேசுங்கள்",
+      aiChartInterpretation: "AI சார்ட் விளக்கம்",
+      aiChartInterpretationDesc: "உங்கள் சார்ட்டின் விரிவான AI பகுப்பாய்வு",
+      habitTracker: "பழக்க கண்காணிப்பான்",
+      habitTrackerDesc: "ஜோதிட நேரத்துடன் பழக்கங்களைக் கண்காணிக்கவும்",
+      lifeTimeline: "வாழ்க்கை காலவரிசை",
+      lifeTimelineDesc: "தசா அடிப்படையிலான கணிக்கப்பட்ட நிகழ்வுகள்",
+      blockchainKundli: "பிளாக்செயின் குண்டலி",
+      blockchainKundliDesc: "சரிபார்க்கப்பட்ட மாற்ற-ஆதார சான்றிதழ்",
+      financialAstrology: "நிதி ஜோதிடம்",
+      financialAstrologyDesc: "செல்வ நேர கணிப்புகள்",
+      planetaryTracker: "கிரக கண்காணிப்பான்",
+      planetaryTrackerDesc: "நேரடி கிரக நிலைகள் & கோசாரங்கள்",
+      personalizedHoroscope: "தனிப்பயனாக்கப்பட்ட ராசிபலன்",
+      personalizedHoroscopeDesc: "உங்கள் சார்ட்டின் அடிப்படையில் AI-உருவாக்கப்பட்டது"
+    },
     share: {
       generating: "படம் உருவாக்குகிறது...",
       download: "பதிவிறக்கம்",
@@ -692,6 +755,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   te: {
+    nav: {
+      aiFeatures: "AI & ప్రో",
+      aiAstrologerPro: "AI జ్యోతిష్కుడు ప్రో",
+      aiAstrologerProDesc: "జాతకంతో సందర్భ-అవగాహన AI",
+      voiceAstrologer: "వాయిస్ AI జ్యోతిష్కుడు",
+      voiceAstrologerDesc: "వాయిస్ ద్వారా AI జ్యోతిష్కుడితో మాట్లాడండి",
+      aiChartInterpretation: "AI చార్ట్ వివరణ",
+      aiChartInterpretationDesc: "మీ చార్ట్ యొక్క వివరమైన AI విశ్లేషణ",
+      habitTracker: "అలవాటు ట్రాకర్",
+      habitTrackerDesc: "జ్యోతిష సమయంతో అలవాట్లను ట్రాక్ చేయండి",
+      lifeTimeline: "జీవిత టైమ్‌లైన్",
+      lifeTimelineDesc: "దశ ఆధారిత అంచనా సంఘటనలు",
+      blockchainKundli: "బ్లాక్‌చెయిన్ కుండలి",
+      blockchainKundliDesc: "ధృవీకరించబడిన మార్పు-రుజువు ధృవపత్రం",
+      financialAstrology: "ఆర్థిక జ్యోతిషం",
+      financialAstrologyDesc: "సంపద సమయ అంచనాలు",
+      planetaryTracker: "గ్రహ ట్రాకర్",
+      planetaryTrackerDesc: "లైవ్ గ్రహ స్థానాలు & గోచారాలు",
+      personalizedHoroscope: "వ్యక్తిగతీకరించిన రాశిఫలం",
+      personalizedHoroscopeDesc: "మీ చార్ట్ ఆధారంగా AI-రూపొందించబడింది"
+    },
     share: {
       generating: "చిత్రం సృష్టిస్తోంది...",
       download: "డౌన్‌లోడ్",
@@ -749,6 +833,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   bn: {
+    nav: {
+      aiFeatures: "AI এবং প্রো",
+      aiAstrologerPro: "AI জ্যোতিষী প্রো",
+      aiAstrologerProDesc: "জন্ম কুণ্ডলীর সাথে প্রসঙ্গ-সচেতন AI",
+      voiceAstrologer: "ভয়েস AI জ্যোতিষী",
+      voiceAstrologerDesc: "ভয়েসের মাধ্যমে AI জ্যোতিষীর সাথে কথা বলুন",
+      aiChartInterpretation: "AI চার্ট ব্যাখ্যা",
+      aiChartInterpretationDesc: "আপনার চার্টের বিস্তারিত AI বিশ্লেষণ",
+      habitTracker: "অভ্যাস ট্র্যাকার",
+      habitTrackerDesc: "জ্যোতিষ সময়ের সাথে অভ্যাস ট্র্যাক করুন",
+      lifeTimeline: "জীবন টাইমলাইন",
+      lifeTimelineDesc: "দশা ভিত্তিক পূর্বাভাসিত ঘটনা",
+      blockchainKundli: "ব্লকচেইন কুণ্ডলী",
+      blockchainKundliDesc: "যাচাইকৃত টেম্পার-প্রুফ সার্টিফিকেট",
+      financialAstrology: "আর্থিক জ্যোতিষ",
+      financialAstrologyDesc: "সম্পদ সময় পূর্বাভাস",
+      planetaryTracker: "গ্রহ ট্র্যাকার",
+      planetaryTrackerDesc: "লাইভ গ্রহের অবস্থান এবং গোচর",
+      personalizedHoroscope: "ব্যক্তিগতকৃত রাশিফল",
+      personalizedHoroscopeDesc: "আপনার চার্টের উপর ভিত্তি করে AI-উৎপন্ন"
+    },
     share: {
       generating: "ছবি তৈরি হচ্ছে...",
       download: "ডাউনলোড",
@@ -806,6 +911,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   mr: {
+    nav: {
+      aiFeatures: "AI आणि प्रो",
+      aiAstrologerPro: "AI ज्योतिषी प्रो",
+      aiAstrologerProDesc: "जन्म कुंडलीसह संदर्भ-जागरूक AI",
+      voiceAstrologer: "व्हॉइस AI ज्योतिषी",
+      voiceAstrologerDesc: "आवाजाने AI ज्योतिषीशी बोला",
+      aiChartInterpretation: "AI चार्ट व्याख्या",
+      aiChartInterpretationDesc: "तुमच्या चार्टचे तपशीलवार AI विश्लेषण",
+      habitTracker: "सवय ट्रॅकर",
+      habitTrackerDesc: "ज्योतिष वेळेसह सवयी ट्रॅक करा",
+      lifeTimeline: "जीवन टाइमलाइन",
+      lifeTimelineDesc: "दशा आधारित अंदाजित घटना",
+      blockchainKundli: "ब्लॉकचेन कुंडली",
+      blockchainKundliDesc: "सत्यापित छेडछाड-प्रूफ प्रमाणपत्र",
+      financialAstrology: "आर्थिक ज्योतिष",
+      financialAstrologyDesc: "संपत्ती वेळ अंदाज",
+      planetaryTracker: "ग्रह ट्रॅकर",
+      planetaryTrackerDesc: "लाइव्ह ग्रह स्थिती आणि गोचर",
+      personalizedHoroscope: "वैयक्तिकृत राशिभविष्य",
+      personalizedHoroscopeDesc: "तुमच्या चार्टवर आधारित AI-निर्मित"
+    },
     share: {
       generating: "प्रतिमा तयार करत आहे...",
       download: "डाउनलोड",
@@ -863,6 +989,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   gu: {
+    nav: {
+      aiFeatures: "AI અને પ્રો",
+      aiAstrologerPro: "AI જ્યોતિષી પ્રો",
+      aiAstrologerProDesc: "જન્મ કુંડળી સાથે સંદર્ભ-જાગૃત AI",
+      voiceAstrologer: "વૉઇસ AI જ્યોતિષી",
+      voiceAstrologerDesc: "અવાજ દ્વારા AI જ્યોતિષી સાથે વાત કરો",
+      aiChartInterpretation: "AI ચાર્ટ અર્થઘટન",
+      aiChartInterpretationDesc: "તમારા ચાર્ટનું વિગતવાર AI વિશ્લેષણ",
+      habitTracker: "આદત ટ્રેકર",
+      habitTrackerDesc: "જ્યોતિષ સમય સાથે આદતો ટ્રેક કરો",
+      lifeTimeline: "જીવન સમયરેખા",
+      lifeTimelineDesc: "દશા આધારિત અનુમાનિત ઘટનાઓ",
+      blockchainKundli: "બ્લોકચેન કુંડળી",
+      blockchainKundliDesc: "ચકાસાયેલ છેડછાડ-પ્રૂફ પ્રમાણપત્ર",
+      financialAstrology: "નાણાકીય જ્યોતિષ",
+      financialAstrologyDesc: "સંપત્તિ સમય આગાહીઓ",
+      planetaryTracker: "ગ્રહ ટ્રેકર",
+      planetaryTrackerDesc: "લાઇવ ગ્રહ સ્થિતિઓ અને ગોચર",
+      personalizedHoroscope: "વ્યક્તિગત રાશિફળ",
+      personalizedHoroscopeDesc: "તમારા ચાર્ટ પર આધારિત AI-જનરેટેડ"
+    },
     share: {
       generating: "છબી બનાવી રહ્યા છીએ...",
       download: "ડાઉનલોડ",
@@ -920,6 +1067,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   kn: {
+    nav: {
+      aiFeatures: "AI ಮತ್ತು ಪ್ರೊ",
+      aiAstrologerPro: "AI ಜ್ಯೋತಿಷಿ ಪ್ರೊ",
+      aiAstrologerProDesc: "ಜನ್ಮ ಕುಂಡಲಿಯೊಂದಿಗೆ ಸಂದರ್ಭ-ಅರಿವಿನ AI",
+      voiceAstrologer: "ವಾಯ್ಸ್ AI ಜ್ಯೋತಿಷಿ",
+      voiceAstrologerDesc: "ಧ್ವನಿಯ ಮೂಲಕ AI ಜ್ಯೋತಿಷಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ",
+      aiChartInterpretation: "AI ಚಾರ್ಟ್ ವ್ಯಾಖ್ಯಾನ",
+      aiChartInterpretationDesc: "ನಿಮ್ಮ ಚಾರ್ಟ್‌ನ ವಿವರವಾದ AI ವಿಶ್ಲೇಷಣೆ",
+      habitTracker: "ಅಭ್ಯಾಸ ಟ್ರ್ಯಾಕರ್",
+      habitTrackerDesc: "ಜ್ಯೋತಿಷ್ಯ ಸಮಯದೊಂದಿಗೆ ಅಭ್ಯಾಸಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",
+      lifeTimeline: "ಜೀವನ ಟೈಮ್‌ಲೈನ್",
+      lifeTimelineDesc: "ದಶಾ ಆಧಾರಿತ ಊಹಿಸಿದ ಘಟನೆಗಳು",
+      blockchainKundli: "ಬ್ಲಾಕ್‌ಚೈನ್ ಕುಂಡಲಿ",
+      blockchainKundliDesc: "ಪರಿಶೀಲಿಸಿದ ಟ್ಯಾಂಪರ್-ಪ್ರೂಫ್ ಪ್ರಮಾಣಪತ್ರ",
+      financialAstrology: "ಆರ್ಥಿಕ ಜ್ಯೋತಿಷ್ಯ",
+      financialAstrologyDesc: "ಸಂಪತ್ತು ಸಮಯ ಭವಿಷ್ಯವಾಣಿಗಳು",
+      planetaryTracker: "ಗ್ರಹ ಟ್ರ್ಯಾಕರ್",
+      planetaryTrackerDesc: "ಲೈವ್ ಗ್ರಹ ಸ್ಥಾನಗಳು ಮತ್ತು ಗೋಚಾರಗಳು",
+      personalizedHoroscope: "ವೈಯಕ್ತಿಕ ರಾಶಿಫಲ",
+      personalizedHoroscopeDesc: "ನಿಮ್ಮ ಚಾರ್ಟ್ ಆಧಾರದ ಮೇಲೆ AI-ರಚಿತ"
+    },
     share: {
       generating: "ಚಿತ್ರ ರಚಿಸಲಾಗುತ್ತಿದೆ...",
       download: "ಡೌನ್‌ಲೋಡ್",
@@ -977,6 +1145,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   ml: {
+    nav: {
+      aiFeatures: "AI & പ്രോ",
+      aiAstrologerPro: "AI ജ്യോതിഷി പ്രോ",
+      aiAstrologerProDesc: "ജനന കുണ്ഡലിയുമായി സന്ദർഭ-ബോധമുള്ള AI",
+      voiceAstrologer: "വോയ്സ് AI ജ്യോതിഷി",
+      voiceAstrologerDesc: "ശബ്ദത്തിലൂടെ AI ജ്യോതിഷിയുമായി സംസാരിക്കുക",
+      aiChartInterpretation: "AI ചാർട്ട് വ്യാഖ്യാനം",
+      aiChartInterpretationDesc: "നിങ്ങളുടെ ചാർട്ടിന്റെ വിശദമായ AI വിശകലനം",
+      habitTracker: "ശീല ട്രാക്കർ",
+      habitTrackerDesc: "ജ്യോതിഷ സമയത്തോടെ ശീലങ്ങൾ ട്രാക്ക് ചെയ്യുക",
+      lifeTimeline: "ജീവിത ടൈംലൈൻ",
+      lifeTimelineDesc: "ദശ അടിസ്ഥാനമാക്കിയ പ്രവചിച്ച സംഭവങ്ങൾ",
+      blockchainKundli: "ബ്ലോക്ക്ചെയിൻ കുണ്ഡലി",
+      blockchainKundliDesc: "പരിശോധിച്ച ടാമ്പർ-പ്രൂഫ് സർട്ടിഫിക്കറ്റ്",
+      financialAstrology: "സാമ്പത്തിക ജ്യോതിഷം",
+      financialAstrologyDesc: "സമ്പത്ത് സമയ പ്രവചനങ്ങൾ",
+      planetaryTracker: "ഗ്രഹ ട്രാക്കർ",
+      planetaryTrackerDesc: "ലൈവ് ഗ്രഹ സ്ഥാനങ്ങളും ഗോചരങ്ങളും",
+      personalizedHoroscope: "വ്യക്തിഗതമാക്കിയ രാശിഫലം",
+      personalizedHoroscopeDesc: "നിങ്ങളുടെ ചാർട്ടിനെ അടിസ്ഥാനമാക്കി AI-ജനറേറ്റഡ്"
+    },
     share: {
       generating: "ചിത്രം സൃഷ്ടിക്കുന്നു...",
       download: "ഡൗൺലോഡ്",
@@ -1034,6 +1223,27 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
     }
   },
   pa: {
+    nav: {
+      aiFeatures: "AI ਅਤੇ ਪ੍ਰੋ",
+      aiAstrologerPro: "AI ਜੋਤਿਸ਼ੀ ਪ੍ਰੋ",
+      aiAstrologerProDesc: "ਜਨਮ ਕੁੰਡਲੀ ਨਾਲ ਸੰਦਰਭ-ਜਾਗਰੂਕ AI",
+      voiceAstrologer: "ਵੌਇਸ AI ਜੋਤਿਸ਼ੀ",
+      voiceAstrologerDesc: "ਆਵਾਜ਼ ਰਾਹੀਂ AI ਜੋਤਿਸ਼ੀ ਨਾਲ ਗੱਲ ਕਰੋ",
+      aiChartInterpretation: "AI ਚਾਰਟ ਵਿਆਖਿਆ",
+      aiChartInterpretationDesc: "ਤੁਹਾਡੇ ਚਾਰਟ ਦਾ ਵਿਸਤ੍ਰਿਤ AI ਵਿਸ਼ਲੇਸ਼ਣ",
+      habitTracker: "ਆਦਤ ਟ੍ਰੈਕਰ",
+      habitTrackerDesc: "ਜੋਤਿਸ਼ ਸਮੇਂ ਨਾਲ ਆਦਤਾਂ ਟ੍ਰੈਕ ਕਰੋ",
+      lifeTimeline: "ਜੀਵਨ ਟਾਈਮਲਾਈਨ",
+      lifeTimelineDesc: "ਦਸ਼ਾ ਅਧਾਰਿਤ ਅਨੁਮਾਨਿਤ ਘਟਨਾਵਾਂ",
+      blockchainKundli: "ਬਲਾਕਚੇਨ ਕੁੰਡਲੀ",
+      blockchainKundliDesc: "ਪ੍ਰਮਾਣਿਤ ਛੇੜਛਾੜ-ਪ੍ਰੂਫ ਸਰਟੀਫਿਕੇਟ",
+      financialAstrology: "ਵਿੱਤੀ ਜੋਤਿਸ਼",
+      financialAstrologyDesc: "ਦੌਲਤ ਸਮੇਂ ਦੀਆਂ ਭਵਿੱਖਬਾਣੀਆਂ",
+      planetaryTracker: "ਗ੍ਰਹਿ ਟ੍ਰੈਕਰ",
+      planetaryTrackerDesc: "ਲਾਈਵ ਗ੍ਰਹਿ ਸਥਿਤੀਆਂ ਅਤੇ ਗੋਚਰ",
+      personalizedHoroscope: "ਵਿਅਕਤੀਗਤ ਰਾਸ਼ੀਫਲ",
+      personalizedHoroscopeDesc: "ਤੁਹਾਡੇ ਚਾਰਟ ਦੇ ਅਧਾਰ ਤੇ AI-ਜਨਰੇਟਿਡ"
+    },
     share: {
       generating: "ਤਸਵੀਰ ਬਣਾ ਰਿਹਾ ਹੈ...",
       download: "ਡਾਊਨਲੋਡ",

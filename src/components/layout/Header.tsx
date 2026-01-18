@@ -16,7 +16,6 @@ export function Header() {
       name: t('nav.tools', 'Tools'),
       href: "#",
       children: [
-        { name: t('nav.aiAstrologer', 'AI Astrologer'), href: "/ai-astrologer", description: t('nav.aiAstrologerDesc', 'Chat with our AI for instant guidance') },
         { name: t('nav.freeKundli', 'Free Kundli'), href: "/tools/kundli-calculator", description: t('nav.freeKundliDesc', 'Generate your birth chart instantly') },
         { name: t('nav.nakshatraFinder', 'Nakshatra Finder'), href: "/tools/nakshatra-finder", description: t('nav.nakshatraFinderDesc', 'Discover your lunar constellation') },
         { name: t('nav.horoscopeMatching', 'Horoscope Matching'), href: "/tools/horoscope-matching", description: t('nav.horoscopeMatchingDesc', 'Check marriage compatibility') },
@@ -24,6 +23,17 @@ export function Header() {
         { name: t('nav.sunSignCalculator', 'Sun Sign Calculator'), href: "/tools/sun-sign-calculator", description: t('nav.sunSignCalculatorDesc', 'Discover your Sun sign') },
         { name: t('nav.ascendantCalculator', 'Ascendant Calculator'), href: "/tools/ascendant-calculator", description: t('nav.ascendantCalculatorDesc', 'Calculate your rising sign') },
         { name: t('nav.loveCompatibility', 'Love Compatibility'), href: "/tools/love-calculator", description: t('nav.loveCompatibilityDesc', 'Check zodiac compatibility') },
+        { name: t('nav.habitTracker', 'Habit Tracker'), href: "/habit-tracker", description: t('nav.habitTrackerDesc', 'Track habits with astro timing') },
+      ],
+    },
+    {
+      name: t('nav.aiFeatures', 'AI & Pro'),
+      href: "#",
+      children: [
+        { name: t('nav.aiAstrologer', 'AI Astrologer'), href: "/ai-astrologer", description: t('nav.aiAstrologerDesc', 'Chat with our AI for instant guidance') },
+        { name: t('nav.aiAstrologerPro', 'AI Astrologer Pro'), href: "/ai-astrologer-pro", description: t('nav.aiAstrologerProDesc', 'Context-aware AI with birth chart') },
+        { name: t('nav.voiceAstrologer', 'Voice AI Astrologer'), href: "/voice-astrologer", description: t('nav.voiceAstrologerDesc', 'Talk to AI astrologer by voice') },
+        { name: t('nav.aiChartInterpretation', 'AI Chart Interpretation'), href: "/ai-chart-interpretation", description: t('nav.aiChartInterpretationDesc', 'Detailed AI analysis of your chart') },
       ],
     },
     {
@@ -31,10 +41,13 @@ export function Header() {
       href: "#",
       children: [
         { name: t('nav.dashaCalculator', 'Dasha Calculator'), href: "/tools/dasha-calculator", description: t('nav.dashaCalculatorDesc', 'Vimshottari Dasha planetary periods') },
+        { name: t('nav.lifeTimeline', 'Life Timeline'), href: "/life-timeline", description: t('nav.lifeTimelineDesc', 'Predicted life events based on Dasha') },
         { name: t('nav.navamsaChart', 'Navamsa Chart'), href: "/tools/navamsa-chart", description: t('nav.navamsaChartDesc', 'D-9 & divisional charts') },
         { name: t('nav.yogaCalculator', 'Yoga Calculator'), href: "/tools/yoga-calculator", description: t('nav.yogaCalculatorDesc', 'Detect Raj Yoga, Dhana Yoga & more') },
         { name: t('nav.muhurtaCalculator', 'Muhurta Calculator'), href: "/tools/muhurta-calculator", description: t('nav.muhurtaCalculatorDesc', 'Find auspicious timing') },
         { name: t('nav.transitAnalysis', 'Transit Analysis'), href: "/tools/transit-calculator", description: t('nav.transitAnalysisDesc', 'Current planetary effects (Gochar)') },
+        { name: t('nav.blockchainKundli', 'Blockchain Kundli'), href: "/blockchain-kundli", description: t('nav.blockchainKundliDesc', 'Verified tamper-proof certificate') },
+        { name: t('nav.financialAstrology', 'Financial Astrology'), href: "/financial-astrology", description: t('nav.financialAstrologyDesc', 'Wealth timing predictions') },
       ],
     },
     {
@@ -42,6 +55,7 @@ export function Header() {
       href: "#",
       children: [
         { name: t('nav.dailyPanchang', 'Daily Panchang'), href: "/panchang", description: t('nav.dailyPanchangDesc', "Today's tithi, nakshatra & muhurat") },
+        { name: t('nav.planetaryTracker', 'Planetary Tracker'), href: "/planetary-tracker", description: t('nav.planetaryTrackerDesc', 'Live planetary positions & transits') },
         { name: t('nav.festivalCalendar2026', 'Festival Calendar 2026'), href: "/festival-calendar-2026", description: t('nav.festivalCalendar2026Desc', 'Hindu festivals & important dates') },
       ],
     },
@@ -49,6 +63,7 @@ export function Header() {
       name: t('nav.horoscope', 'Horoscope'),
       href: "#",
       children: [
+        { name: t('nav.personalizedHoroscope', 'Personalized Horoscope'), href: "/personalized-horoscope", description: t('nav.personalizedHoroscopeDesc', 'AI-generated based on your chart') },
         { name: t('nav.dailyHoroscope', 'Daily Horoscope'), href: "/daily-horoscope", description: t('nav.dailyHoroscopeDesc', "Today's predictions") },
         { name: t('nav.weeklyHoroscope', 'Weekly Horoscope'), href: "/horoscope/weekly", description: t('nav.weeklyHoroscopeDesc', "This week's forecast") },
         { name: t('nav.monthlyHoroscope', 'Monthly Horoscope'), href: "/horoscope/monthly", description: t('nav.monthlyHoroscopeDesc', 'Monthly predictions') },
