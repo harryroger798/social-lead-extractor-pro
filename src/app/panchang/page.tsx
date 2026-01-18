@@ -611,38 +611,27 @@ export default function PanchangPage() {
             </h2>
             <div className="prose prose-amber max-w-none">
               <p className="text-gray-700 mb-4">
-                Panchang, derived from Sanskrit words &quot;Pancha&quot; (five) and &quot;Anga&quot; (limbs), 
-                is the traditional Hindu calendar system that provides five essential elements for 
-                determining auspicious timings. These five elements are Tithi (lunar day), Nakshatra 
-                (lunar mansion), Yoga (luni-solar day), Karana (half of tithi), and Vara (weekday).
+                {t('panchang.understandingPara1', 'Panchang, derived from Sanskrit words "Pancha" (five) and "Anga" (limbs), is the traditional Hindu calendar system that provides five essential elements for determining auspicious timings. These five elements are Tithi (lunar day), Nakshatra (lunar mansion), Yoga (luni-solar day), Karana (half of tithi), and Vara (weekday).')}
               </p>
-              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">The Five Elements of Panchang</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">{t('panchang.fiveElementsTitle', 'The Five Elements of Panchang')}</h3>
               <p className="text-gray-700 mb-4">
-                <strong>Tithi:</strong> The lunar day calculated based on the angular distance between 
-                the Sun and Moon. There are 30 tithis in a lunar month, 15 in each paksha (fortnight).
+                {t('panchang.tithiElement', 'Tithi: The lunar day calculated based on the angular distance between the Sun and Moon. There are 30 tithis in a lunar month, 15 in each paksha (fortnight).')}
               </p>
               <p className="text-gray-700 mb-4">
-                <strong>Nakshatra:</strong> The 27 lunar mansions through which the Moon travels. 
-                Each nakshatra spans 13°20&apos; of the zodiac and has unique characteristics.
+                {t('panchang.nakshatraElement', "Nakshatra: The 27 lunar mansions through which the Moon travels. Each nakshatra spans 13°20' of the zodiac and has unique characteristics.")}
               </p>
               <p className="text-gray-700 mb-4">
-                <strong>Yoga:</strong> One of 27 yogas formed by the combined longitudes of Sun and Moon. 
-                Each yoga has specific qualities affecting the day&apos;s auspiciousness.
+                {t('panchang.yogaElement', "Yoga: One of 27 yogas formed by the combined longitudes of Sun and Moon. Each yoga has specific qualities affecting the day's auspiciousness.")}
               </p>
               <p className="text-gray-700 mb-4">
-                <strong>Karana:</strong> Half of a tithi, there are 11 karanas that repeat in a specific 
-                pattern. Karanas are important for determining muhurat timings.
+                {t('panchang.karanaElement', 'Karana: Half of a tithi, there are 11 karanas that repeat in a specific pattern. Karanas are important for determining muhurat timings.')}
               </p>
               <p className="text-gray-700 mb-4">
-                <strong>Vara:</strong> The weekday, each ruled by a specific planet and deity, 
-                influencing the nature of activities suitable for that day.
+                {t('panchang.varaElement', 'Vara: The weekday, each ruled by a specific planet and deity, influencing the nature of activities suitable for that day.')}
               </p>
-              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">Importance of Rahu Kaal</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">{t('panchang.rahuKaalTitle', 'Importance of Rahu Kaal')}</h3>
               <p className="text-gray-700">
-                Rahu Kaal is considered the most inauspicious period of the day, ruled by the shadow 
-                planet Rahu. It is calculated based on sunrise and varies for each day of the week. 
-                Starting new ventures, signing contracts, or beginning journeys during Rahu Kaal is 
-                traditionally avoided in Vedic astrology.
+                {t('panchang.rahuKaalPara', 'Rahu Kaal is considered the most inauspicious period of the day, ruled by the shadow planet Rahu. It is calculated based on sunrise and varies for each day of the week. Starting new ventures, signing contracts, or beginning journeys during Rahu Kaal is traditionally avoided in Vedic astrology.')}
               </p>
             </div>
           </CardContent>

@@ -1,0 +1,52 @@
+{
+  "en": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "Death Anniversary",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "Yearly",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "Perform Shraddha on the tithi of ancestor's death."
+  },
+  "hi": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "पुण्यतिथि",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "वार्षिक",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "पूर्वजों की मृत्यु तिथि पर श्राद्ध करें।"
+  },
+  "ta": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "நினைவு தினம்",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "ஆண்டுதோறும்",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "முன்னோர்களின் மரண திதியில் சிரார்த்தம் செய்யுங்கள்."
+  },
+  "te": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "వర్ధంతి",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "వార్షికంగా",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "పూర్వీకుల మరణ తిథిన శ్రాద్ధం చేయండి."
+  },
+  "bn": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "মৃত্যু বার্ষিকী",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "বার্ষিক",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "পূর্বপুরুষদের মৃত্যু তিথিতে শ্রাদ্ধ করুন।"
+  },
+  "mr": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "पुण्यतिथी",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "वार्षिक",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "पूर्वजांच्या मृत्यू तिथीला श्राद्ध करा."
+  },
+  "gu": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "પુણ્યતિથિ",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "વાર્ષિક",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "પૂર્વજોની મૃત્યુ તિથિ પર શ્રાદ્ધ કરો."
+  },
+  "kn": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "ಪುಣ್ಯತಿಥಿ",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "ವಾರ್ಷಿಕ",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "ಪೂರ್ವಜರ ಮರಣ ತಿಥಿಯಂದು ಶ್ರಾದ್ಧ ಮಾಡಿ."
+  },
+  "ml": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "ചരമദിനം",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "വാർഷികം",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "പൂർവ്വികരുടെ മരണ തിഥിയിൽ ശ്രാദ്ധം ചെയ്യുക."
+  },
+  "pa": {
+    "doshas.pitraDosh.importantDays.deathAnniversary.occasion": "ਬਰਸੀ",
+    "doshas.pitraDosh.importantDays.deathAnniversary.timing": "ਸਾਲਾਨਾ",
+    "doshas.pitraDosh.importantDays.deathAnniversary.description": "ਪੂਰਵਜਾਂ ਦੀ ਮੌਤ ਤਿਥੀ 'ਤੇ ਸ਼ਰਾਧ ਕਰੋ।"
+  }
+}

@@ -485,52 +485,45 @@ export default function SunSignCalculatorPage() {
             </h2>
             <div className="prose prose-orange max-w-none">
               <p className="text-gray-700 mb-4">
-                Your Sun Sign is the zodiac sign that the Sun was transiting at the time of 
-                your birth. In Western astrology, the Sun Sign is considered the most important 
-                factor in determining personality, as it represents your core identity, ego, 
-                and life purpose.
+                {t('calculator.sunSignCalc.understandingPara1', 'Your Sun Sign is the zodiac sign that the Sun was transiting at the time of your birth. In Western astrology, the Sun Sign is considered the most important factor in determining personality, as it represents your core identity, ego, and life purpose.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                The Four Elements
+                {t('calculator.sunSignCalc.fourElementsTitle', 'The Four Elements')}
               </h3>
               <p className="text-gray-700 mb-4">
-                The 12 zodiac signs are divided into four elements, each representing different 
-                temperaments and approaches to life:
+                {t('calculator.sunSignCalc.fourElementsPara', 'The 12 zodiac signs are divided into four elements, each representing different temperaments and approaches to life:')}
               </p>
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-red-50 rounded-lg p-4">
                   <h4 className="font-semibold text-red-800 flex items-center gap-2">
-                    <Flame className="w-4 h-4" /> Fire Signs
+                    <Flame className="w-4 h-4" /> {t('calculator.sunSignCalc.fireSigns', 'Fire Signs')}
                   </h4>
-                  <p className="text-sm text-red-700">Aries, Leo, Sagittarius - Passionate, dynamic, temperamental</p>
+                  <p className="text-sm text-red-700">{t('calculator.sunSignCalc.fireSignsDesc', 'Aries, Leo, Sagittarius - Passionate, dynamic, temperamental')}</p>
                 </div>
                 <div className="bg-green-50 rounded-lg p-4">
                   <h4 className="font-semibold text-green-800 flex items-center gap-2">
-                    <Mountain className="w-4 h-4" /> Earth Signs
+                    <Mountain className="w-4 h-4" /> {t('calculator.sunSignCalc.earthSigns', 'Earth Signs')}
                   </h4>
-                  <p className="text-sm text-green-700">Taurus, Virgo, Capricorn - Grounded, practical, reliable</p>
+                  <p className="text-sm text-green-700">{t('calculator.sunSignCalc.earthSignsDesc', 'Taurus, Virgo, Capricorn - Grounded, practical, reliable')}</p>
                 </div>
                 <div className="bg-cyan-50 rounded-lg p-4">
                   <h4 className="font-semibold text-cyan-800 flex items-center gap-2">
-                    <Wind className="w-4 h-4" /> Air Signs
+                    <Wind className="w-4 h-4" /> {t('calculator.sunSignCalc.airSigns', 'Air Signs')}
                   </h4>
-                  <p className="text-sm text-cyan-700">Gemini, Libra, Aquarius - Intellectual, social, communicative</p>
+                  <p className="text-sm text-cyan-700">{t('calculator.sunSignCalc.airSignsDesc', 'Gemini, Libra, Aquarius - Intellectual, social, communicative')}</p>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4">
                   <h4 className="font-semibold text-blue-800 flex items-center gap-2">
-                    <Droplets className="w-4 h-4" /> Water Signs
+                    <Droplets className="w-4 h-4" /> {t('calculator.sunSignCalc.waterSigns', 'Water Signs')}
                   </h4>
-                  <p className="text-sm text-blue-700">Cancer, Scorpio, Pisces - Emotional, intuitive, sensitive</p>
+                  <p className="text-sm text-blue-700">{t('calculator.sunSignCalc.waterSignsDesc', 'Cancer, Scorpio, Pisces - Emotional, intuitive, sensitive')}</p>
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Sun Sign vs Moon Sign in Vedic Astrology
+                {t('calculator.sunSignCalc.vsMoonTitle', 'Sun Sign vs Moon Sign in Vedic Astrology')}
               </h3>
               <p className="text-gray-700">
-                While Western astrology emphasizes the Sun Sign, Vedic astrology (Jyotish) 
-                places more importance on the Moon Sign (Rashi). For a complete understanding 
-                of your astrological profile, it&apos;s recommended to know both your Sun Sign 
-                and Moon Sign, as they represent different aspects of your personality.
+                {t('calculator.sunSignCalc.vsMoonPara', "While Western astrology emphasizes the Sun Sign, Vedic astrology (Jyotish) places more importance on the Moon Sign (Rashi). For a complete understanding of your astrological profile, it's recommended to know both your Sun Sign and Moon Sign, as they represent different aspects of your personality.")}
               </p>
             </div>
           </CardContent>

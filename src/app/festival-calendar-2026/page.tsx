@@ -148,28 +148,28 @@ export default function FestivalCalendar2026Page() {
             <CardContent className="pt-6 text-center">
               <Calendar className="w-12 h-12 mx-auto text-amber-600 mb-3" />
               <h3 className="text-3xl font-bold text-amber-700">100+</h3>
-              <p className="text-gray-600">Festivals & Holidays</p>
+              <p className="text-gray-600">{t('festivalCalendar.festivalsHolidays', 'Festivals & Holidays')}</p>
             </CardContent>
           </Card>
           <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
             <CardContent className="pt-6 text-center">
               <Moon className="w-12 h-12 mx-auto text-purple-600 mb-3" />
               <h3 className="text-3xl font-bold text-purple-700">4</h3>
-              <p className="text-gray-600">Eclipses in 2026</p>
+              <p className="text-gray-600">{t('festivalCalendar.eclipsesIn2026', 'Eclipses in 2026')}</p>
             </CardContent>
           </Card>
           <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50">
             <CardContent className="pt-6 text-center">
               <Star className="w-12 h-12 mx-auto text-blue-600 mb-3" />
               <h3 className="text-3xl font-bold text-blue-700">24</h3>
-              <p className="text-gray-600">Ekadashi Fasts</p>
+              <p className="text-gray-600">{t('festivalCalendar.ekadashiFasts', 'Ekadashi Fasts')}</p>
             </CardContent>
           </Card>
           <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
             <CardContent className="pt-6 text-center">
               <Sun className="w-12 h-12 mx-auto text-green-600 mb-3" />
               <h3 className="text-3xl font-bold text-green-700">12</h3>
-              <p className="text-gray-600">Purnima Days</p>
+              <p className="text-gray-600">{t('festivalCalendar.purnimaDays', 'Purnima Days')}</p>
             </CardContent>
           </Card>
         </div>
@@ -178,10 +178,10 @@ export default function FestivalCalendar2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Moon className="w-5 h-5 text-amber-600" />
-              Eclipses in 2026 (Grahan)
+              {t('festivalCalendar.eclipsesTitle', 'Eclipses in 2026 (Grahan)')}
             </CardTitle>
             <CardDescription>
-              Solar and Lunar eclipses with visibility in India
+              {t('festivalCalendar.eclipsesDesc', 'Solar and Lunar eclipses with visibility in India')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -261,13 +261,13 @@ export default function FestivalCalendar2026Page() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Panchang</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('festivalCalendar.dailyPanchang', 'Daily Panchang')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get daily Tithi, Nakshatra, Yoga, Karana, and auspicious timings.
+                {t('festivalCalendar.dailyPanchangDesc', 'Get daily Tithi, Nakshatra, Yoga, Karana, and auspicious timings.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/panchang">
-                  View Panchang <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('festivalCalendar.viewPanchang', 'View Panchang')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -275,13 +275,13 @@ export default function FestivalCalendar2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">2026 Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('festivalCalendar.horoscope2026', '2026 Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Read your yearly horoscope predictions for 2026.
+                {t('festivalCalendar.horoscope2026Desc', 'Read your yearly horoscope predictions for 2026.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/2026">
-                  Read Horoscope <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('festivalCalendar.readHoroscope', 'Read Horoscope')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -289,13 +289,13 @@ export default function FestivalCalendar2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Free Kundli</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('festivalCalendar.freeKundli', 'Free Kundli')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Generate your complete birth chart with planetary positions.
+                {t('festivalCalendar.freeKundliDesc', 'Generate your complete birth chart with planetary positions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/tools/kundli-calculator">
-                  Get Kundli <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('festivalCalendar.getKundli', 'Get Kundli')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -305,25 +305,17 @@ export default function FestivalCalendar2026Page() {
         <Card className="border-amber-200 bg-amber-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              About Hindu Festival Calendar
+              {t('festivalCalendar.aboutTitle', 'About Hindu Festival Calendar')}
             </h2>
             <div className="prose prose-amber max-w-none">
               <p className="text-gray-700 mb-4">
-                The Hindu festival calendar follows the lunisolar system, combining both lunar 
-                and solar movements to determine dates. Most Hindu festivals are based on the 
-                Panchang, which considers Tithi (lunar day), Nakshatra (lunar mansion), and 
-                other astronomical factors.
+                {t('festivalCalendar.aboutPara1', 'The Hindu festival calendar follows the lunisolar system, combining both lunar and solar movements to determine dates. Most Hindu festivals are based on the Panchang, which considers Tithi (lunar day), Nakshatra (lunar mansion), and other astronomical factors.')}
               </p>
               <p className="text-gray-700 mb-4">
-                Major festivals like Diwali, Holi, Navratri, and Ganesh Chaturthi are celebrated 
-                across India, while regional festivals like Pongal, Onam, and Baisakhi have 
-                special significance in specific states. The calendar also includes important 
-                fasting days (Vrat) like Ekadashi, Pradosh, and Karwa Chauth.
+                {t('festivalCalendar.aboutPara2', 'Major festivals like Diwali, Holi, Navratri, and Ganesh Chaturthi are celebrated across India, while regional festivals like Pongal, Onam, and Baisakhi have special significance in specific states. The calendar also includes important fasting days (Vrat) like Ekadashi, Pradosh, and Karwa Chauth.')}
               </p>
               <p className="text-gray-700">
-                Eclipses (Grahan) hold special significance in Hindu tradition. During eclipses, 
-                temples are closed, and specific rituals are performed. The Sutak period before 
-                and after eclipses is considered inauspicious for starting new activities.
+                {t('festivalCalendar.aboutPara3', 'Eclipses (Grahan) hold special significance in Hindu tradition. During eclipses, temples are closed, and specific rituals are performed. The Sutak period before and after eclipses is considered inauspicious for starting new activities.')}
               </p>
             </div>
           </CardContent>

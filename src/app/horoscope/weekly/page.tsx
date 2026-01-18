@@ -251,7 +251,7 @@ export default function WeeklyHoroscopePage() {
             <CardContent>
               <div className="space-y-6">
                 <div className="bg-white rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">Weekly Overview</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('horoscope.weeklyOverview', 'Weekly Overview')}</h3>
                   <p className="text-gray-700">{prediction.overview}</p>
                 </div>
 
@@ -289,7 +289,7 @@ export default function WeeklyHoroscopePage() {
                   <div className="bg-orange-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-orange-800 flex items-center gap-2">
-                        <Activity className="w-4 h-4" /> Health & Wellness
+                        <Activity className="w-4 h-4" /> {t('horoscope.healthWellness', 'Health & Wellness')}
                       </h3>
                       <RatingStars rating={prediction.ratings.health} />
                     </div>
@@ -306,10 +306,10 @@ export default function WeeklyHoroscopePage() {
                 <Star className="w-12 h-12 text-purple-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Select Your Zodiac Sign
+                {t('horoscope.selectYourSign', 'Select Your Zodiac Sign')}
               </h3>
               <p className="text-gray-600 text-center max-w-xs">
-                Click on your zodiac sign above to read your weekly horoscope predictions.
+                {t('horoscope.selectSignPrompt', 'Select a zodiac sign above to view your weekly horoscope')}
               </p>
             </CardContent>
           </Card>
@@ -318,13 +318,13 @@ export default function WeeklyHoroscopePage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.dailyHoroscope', 'Daily Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get your daily predictions and guidance.
+                {t('horoscope.dailyDesc', 'Get your daily predictions and guidance.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
-                  Read Daily <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readDaily', 'Read Daily')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -332,13 +332,13 @@ export default function WeeklyHoroscopePage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Monthly Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.monthlyHoroscope', 'Monthly Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Plan your month with detailed forecasts.
+                {t('horoscope.monthlyDesc', 'Plan your month with detailed forecasts.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/monthly">
-                  Read Monthly <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readMonthly', 'Read Monthly')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -346,13 +346,13 @@ export default function WeeklyHoroscopePage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">2026 Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.yearlyHoroscope', '2026 Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Your complete yearly predictions.
+                {t('horoscope.yearlyDesc', 'Your complete yearly predictions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/2026">
-                  Read Yearly <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readYearly', 'Read Yearly')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>

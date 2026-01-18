@@ -718,7 +718,7 @@ export default function NakshatraFinderPage() {
                       {nakshatra.name}
                     </CardTitle>
                     <CardDescription className="text-lg">
-                      {nakshatra.sanskrit} • Ruled by {nakshatra.lord}
+                      {nakshatra.sanskrit} • {t('calculator.nakshatraFinder.ruledBy', 'Ruled by')} {nakshatra.lord}
                     </CardDescription>
                   </div>
                 </div>

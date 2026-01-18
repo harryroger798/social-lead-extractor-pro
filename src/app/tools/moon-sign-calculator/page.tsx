@@ -428,39 +428,30 @@ export default function MoonSignCalculatorPage() {
         <Card className="border-purple-200 bg-purple-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Understanding Your Moon Sign in Vedic Astrology
+              {t('calculator.moonSignCalc.understandingTitle', 'Understanding Your Moon Sign in Vedic Astrology')}
             </h2>
             <div className="prose prose-purple max-w-none">
               <p className="text-gray-700 mb-4">
-                In Vedic astrology (Jyotish), the Moon Sign (Chandra Rashi) is considered more 
-                important than the Sun Sign. While Western astrology emphasizes the Sun Sign, 
-                Vedic astrology places primary importance on the Moon because it represents 
-                the mind, emotions, and inner self.
+                {t('calculator.moonSignCalc.understandingPara1', 'In Vedic astrology (Jyotish), the Moon Sign (Chandra Rashi) is considered more important than the Sun Sign. While Western astrology emphasizes the Sun Sign, Vedic astrology places primary importance on the Moon because it represents the mind, emotions, and inner self.')}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Why Moon Sign Matters
+                {t('calculator.moonSignCalc.whyMattersTitle', 'Why Moon Sign Matters')}
               </h3>
               <p className="text-gray-700 mb-4">
-                The Moon moves through all 12 zodiac signs in approximately 27-28 days, spending 
-                about 2.5 days in each sign. Your Moon Sign is determined by which zodiac sign 
-                the Moon was transiting at the exact time of your birth. This placement reveals:
+                {t('calculator.moonSignCalc.whyMattersPara', 'The Moon moves through all 12 zodiac signs in approximately 27-28 days, spending about 2.5 days in each sign. Your Moon Sign is determined by which zodiac sign the Moon was transiting at the exact time of your birth. This placement reveals:')}
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Your emotional nature and how you process feelings</li>
-                <li>Your instinctive reactions and subconscious patterns</li>
-                <li>Your relationship with your mother and nurturing style</li>
-                <li>Your comfort zone and what makes you feel secure</li>
-                <li>Your mental tendencies and thought patterns</li>
+                <li>{t('calculator.moonSignCalc.reveal1', 'Your emotional nature and how you process feelings')}</li>
+                <li>{t('calculator.moonSignCalc.reveal2', 'Your instinctive reactions and subconscious patterns')}</li>
+                <li>{t('calculator.moonSignCalc.reveal3', 'Your relationship with your mother and nurturing style')}</li>
+                <li>{t('calculator.moonSignCalc.reveal4', 'Your comfort zone and what makes you feel secure')}</li>
+                <li>{t('calculator.moonSignCalc.reveal5', 'Your mental tendencies and thought patterns')}</li>
               </ul>
               <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                Moon Sign vs Sun Sign
+                {t('calculator.moonSignCalc.vsTitle', 'Moon Sign vs Sun Sign')}
               </h3>
               <p className="text-gray-700">
-                While your Sun Sign represents your core identity and ego, your Moon Sign 
-                represents your emotional self and inner world. Many people find that Moon Sign 
-                descriptions resonate more deeply because they describe the private self that 
-                only close ones see. For accurate horoscope readings in Vedic astrology, 
-                always use your Moon Sign (Rashi).
+                {t('calculator.moonSignCalc.vsPara', 'While your Sun Sign represents your core identity and ego, your Moon Sign represents your emotional self and inner world. Many people find that Moon Sign descriptions resonate more deeply because they describe the private self that only close ones see. For accurate horoscope readings in Vedic astrology, always use your Moon Sign (Rashi).')}
               </p>
             </div>
           </CardContent>

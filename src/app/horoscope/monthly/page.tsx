@@ -318,7 +318,7 @@ export default function MonthlyHoroscopePage() {
                 <div className="flex items-center gap-4">
                   <span className="text-5xl">{signData.symbol}</span>
                   <div>
-                    <CardTitle className="text-2xl">{signData.name} Monthly Horoscope</CardTitle>
+                    <CardTitle className="text-2xl">{signData.name} {t('horoscope.monthlyHoroscope', 'Monthly Horoscope')}</CardTitle>
                     <CardDescription>{signData.dates} | {signData.hindi}</CardDescription>
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export default function MonthlyHoroscopePage() {
             <CardContent>
               <div className="space-y-6">
                 <div className="bg-white rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">Monthly Overview</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('horoscope.monthlyOverview', 'Monthly Overview')}</h3>
                   <p className="text-gray-700">{prediction.overview}</p>
                 </div>
 
@@ -339,7 +339,7 @@ export default function MonthlyHoroscopePage() {
                   <div className="bg-pink-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-pink-800 flex items-center gap-2">
-                        <Heart className="w-4 h-4" /> Love & Relationships
+                        <Heart className="w-4 h-4" /> {t('horoscope.loveRelationships', 'Love & Relationships')}
                       </h3>
                       <RatingStars rating={prediction.ratings.love} />
                     </div>
@@ -349,7 +349,7 @@ export default function MonthlyHoroscopePage() {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-blue-800 flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" /> Career & Work
+                        <Briefcase className="w-4 h-4" /> {t('horoscope.careerWork', 'Career & Work')}
                       </h3>
                       <RatingStars rating={prediction.ratings.career} />
                     </div>
@@ -359,7 +359,7 @@ export default function MonthlyHoroscopePage() {
                   <div className="bg-green-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-green-800 flex items-center gap-2">
-                        <Wallet className="w-4 h-4" /> Finance & Money
+                        <Wallet className="w-4 h-4" /> {t('horoscope.financeMoney', 'Finance & Money')}
                       </h3>
                       <RatingStars rating={prediction.ratings.finance} />
                     </div>
@@ -369,7 +369,7 @@ export default function MonthlyHoroscopePage() {
                   <div className="bg-orange-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-orange-800 flex items-center gap-2">
-                        <Activity className="w-4 h-4" /> Health & Wellness
+                        <Activity className="w-4 h-4" /> {t('horoscope.healthWellness', 'Health & Wellness')}
                       </h3>
                       <RatingStars rating={prediction.ratings.health} />
                     </div>
@@ -380,18 +380,18 @@ export default function MonthlyHoroscopePage() {
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="bg-white rounded-lg p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" /> Best Days
+                      <TrendingUp className="w-4 h-4 text-green-500" /> {t('horoscope.bestDays', 'Best Days')}
                     </h3>
                     <p className="text-green-700 font-medium">{prediction.bestDays}</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-red-500" /> Challenging Days
+                      <TrendingDown className="w-4 h-4 text-red-500" /> {t('horoscope.challengingDays', 'Challenging Days')}
                     </h3>
                     <p className="text-red-700 font-medium">{prediction.challengingDays}</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">Lucky Numbers</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('horoscope.luckyNumbers', 'Lucky Numbers')}</h3>
                     <div className="flex gap-2">
                       {prediction.luckyNumbers.map((num) => (
                         <Badge key={num} className="bg-indigo-500">{num}</Badge>
@@ -401,7 +401,7 @@ export default function MonthlyHoroscopePage() {
                 </div>
 
                 <div className="bg-white rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Key Dates This Month</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3">{t('horoscope.keyDates', 'Key Dates This Month')}</h3>
                   <div className="space-y-2">
                     {prediction.keyDates.map((item, i) => (
                       <div key={i} className="flex items-center gap-3 text-sm">
@@ -413,7 +413,7 @@ export default function MonthlyHoroscopePage() {
                 </div>
 
                 <div className="bg-indigo-100 rounded-lg p-4">
-                  <h3 className="font-semibold text-indigo-800 mb-2">Lucky Colors</h3>
+                  <h3 className="font-semibold text-indigo-800 mb-2">{t('horoscope.luckyColors', 'Lucky Colors')}</h3>
                   <div className="flex gap-2">
                     {prediction.luckyColors.map((color) => (
                       <Badge key={color} variant="secondary" className="bg-white text-indigo-700">
@@ -432,10 +432,10 @@ export default function MonthlyHoroscopePage() {
                 <Calendar className="w-12 h-12 text-indigo-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Select Your Zodiac Sign
+                {t('horoscope.selectYourSign', 'Select Your Zodiac Sign')}
               </h3>
               <p className="text-gray-600 text-center max-w-xs">
-                Click on your zodiac sign above to read your detailed monthly horoscope.
+                {t('horoscope.selectSignMonthly', 'Select a zodiac sign above to view your monthly horoscope')}
               </p>
             </CardContent>
           </Card>
@@ -444,13 +444,13 @@ export default function MonthlyHoroscopePage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Daily Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.dailyHoroscope', 'Daily Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Get your daily predictions and guidance.
+                {t('horoscope.dailyDesc', 'Get your daily predictions and guidance.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/daily-horoscope">
-                  Read Daily <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readDaily', 'Read Daily')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -458,13 +458,13 @@ export default function MonthlyHoroscopePage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Weekly Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.weekly.title', 'Weekly Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Your weekly astrological forecast.
+                {t('horoscope.weeklyDesc', 'Your weekly astrological forecast.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/weekly">
-                  Read Weekly <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readWeekly', 'Read Weekly')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -472,13 +472,13 @@ export default function MonthlyHoroscopePage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">2026 Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('horoscope.yearlyHoroscope', '2026 Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Your complete yearly predictions.
+                {t('horoscope.yearlyDesc', 'Your complete yearly predictions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/2026">
-                  Read Yearly <ArrowRight className="w-4 h-4 ml-2" />
+                  {t('horoscope.readYearly', 'Read Yearly')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
