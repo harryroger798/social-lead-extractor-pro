@@ -49,6 +49,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       in: "in",
       effect: { favorable: "Favorable", challenging: "Challenging", mixed: "Mixed" }
     },
+    dualZodiac: {
+      title: "Your Zodiac Signs",
+      subtitle: "Both Vedic (Sidereal) and Western (Tropical) systems",
+      vedic: "Vedic",
+      western: "Western",
+      explanation: "Vedic uses actual star positions (Sidereal). Western uses seasonal positions (Tropical). The ~24° difference is called Ayanamsha."
+    },
     planetaryTracker: {
       badge: "Live Cosmic Updates",
       title: "Real-Time Planetary Tracker",
@@ -388,6 +395,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       in: "में",
       effect: { favorable: "अनुकूल", challenging: "चुनौतीपूर्ण", mixed: "मिश्रित" }
     },
+    dualZodiac: {
+      title: "आपकी राशियां",
+      subtitle: "वैदिक (सायन) और पश्चिमी (निरयन) दोनों प्रणालियां",
+      vedic: "वैदिक",
+      western: "पश्चिमी",
+      explanation: "वैदिक वास्तविक तारा स्थितियों का उपयोग करता है (सायन)। पश्चिमी मौसमी स्थितियों का उपयोग करता है (निरयन)। ~24° का अंतर अयनांश कहलाता है।"
+    },
     planetaryTracker: {
       badge: "लाइव ब्रह्मांडीय अपडेट",
       title: "रीयल-टाइम ग्रह ट्रैकर",
@@ -716,6 +730,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       luckyNumber: "அதிர்ஷ்ட எண்",
       luckyColor: "அதிர்ஷ்ட நிறம்"
     },
+    dualZodiac: {
+      title: "உங்கள் ராசிகள்",
+      subtitle: "வேத (சித்தாந்த) மற்றும் மேற்கத்திய (வெப்பமண்டல) இரண்டு முறைகளும்",
+      vedic: "வேத",
+      western: "மேற்கத்திய",
+      explanation: "வேத உண்மையான நட்சத்திர நிலைகளைப் பயன்படுத்துகிறது (சித்தாந்த). மேற்கத்திய பருவகால நிலைகளைப் பயன்படுத்துகிறது (வெப்பமண்டல). ~24° வேறுபாடு அயனாம்சம் என்று அழைக்கப்படுகிறது."
+    },
     planetaryTracker: {
       badge: "நேரடி அண்ட புதுப்பிப்புகள்",
       title: "நிகழ்நேர கிரக கண்காணிப்பான்",
@@ -793,6 +814,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       authenticVedicAstrology: "ప్రామాణిక వేద జ్యోతిషం",
       luckyNumber: "అదృష్ట సంఖ్య",
       luckyColor: "అదృష్ట రంగు"
+    },
+    dualZodiac: {
+      title: "మీ రాశులు",
+      subtitle: "వేద (సిద్ధాంత) మరియు పాశ్చాత్య (ఉష్ణమండల) రెండు వ్యవస్థలు",
+      vedic: "వేద",
+      western: "పాశ్చాత్య",
+      explanation: "వేద వాస్తవ నక్షత్ర స్థానాలను ఉపయోగిస్తుంది (సిద్ధాంత). పాశ్చాత్య కాలానుగుణ స్థానాలను ఉపయోగిస్తుంది (ఉష్ణమండల). ~24° వ్యత్యాసాన్ని అయనాంశ అంటారు."
     },
     planetaryTracker: {
       badge: "లైవ్ విశ్వ నవీకరణలు",
@@ -872,6 +900,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       luckyNumber: "ভাগ্যবান সংখ্যা",
       luckyColor: "ভাগ্যবান রঙ"
     },
+    dualZodiac: {
+      title: "আপনার রাশিচক্র",
+      subtitle: "বৈদিক (সায়ন) এবং পাশ্চাত্য (ক্রান্তীয়) উভয় পদ্ধতি",
+      vedic: "বৈদিক",
+      western: "পাশ্চাত্য",
+      explanation: "বৈদিক প্রকৃত তারার অবস্থান ব্যবহার করে (সায়ন)। পাশ্চাত্য ঋতুগত অবস্থান ব্যবহার করে (ক্রান্তীয়)। ~24° পার্থক্যকে অয়নাংশ বলা হয়।"
+    },
     planetaryTracker: {
       badge: "লাইভ মহাজাগতিক আপডেট",
       title: "রিয়েল-টাইম গ্রহ ট্র্যাকার",
@@ -949,6 +984,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       authenticVedicAstrology: "प्रामाणिक वैदिक ज्योतिष",
       luckyNumber: "भाग्यशाली अंक",
       luckyColor: "भाग्यशाली रंग"
+    },
+    dualZodiac: {
+      title: "तुमच्या राशी",
+      subtitle: "वैदिक (सायन) आणि पाश्चात्य (उष्णकटिबंधीय) दोन्ही प्रणाली",
+      vedic: "वैदिक",
+      western: "पाश्चात्य",
+      explanation: "वैदिक वास्तविक तारा स्थिती वापरते (सायन). पाश्चात्य ऋतूनुसार स्थिती वापरते (उष्णकटिबंधीय). ~24° फरकाला अयनांश म्हणतात."
     },
     planetaryTracker: {
       badge: "लाइव्ह वैश्विक अपडेट्स",
@@ -1028,6 +1070,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       luckyNumber: "ભાગ્યશાળી અંક",
       luckyColor: "ભાગ્યશાળી રંગ"
     },
+    dualZodiac: {
+      title: "તમારી રાશિઓ",
+      subtitle: "વૈદિક (સાયન) અને પશ્ચિમી (ઉષ્ણકટિબંધીય) બંને પ્રણાલીઓ",
+      vedic: "વૈદિક",
+      western: "પશ્ચિમી",
+      explanation: "વૈદિક વાસ્તવિક તારાની સ્થિતિઓનો ઉપયોગ કરે છે (સાયન). પશ્ચિમી ઋતુ આધારિત સ્થિતિઓનો ઉપયોગ કરે છે (ઉષ્ણકટિબંધીય). ~24° તફાવતને અયનાંશ કહેવાય છે."
+    },
     planetaryTracker: {
       badge: "લાઇવ કોસ્મિક અપડેટ્સ",
       title: "રીઅલ-ટાઇમ ગ્રહ ટ્રેકર",
@@ -1105,6 +1154,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       authenticVedicAstrology: "ಅಧಿಕೃತ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ",
       luckyNumber: "ಅದೃಷ್ಟ ಸಂಖ್ಯೆ",
       luckyColor: "ಅದೃಷ್ಟ ಬಣ್ಣ"
+    },
+    dualZodiac: {
+      title: "ನಿಮ್ಮ ರಾಶಿಗಳು",
+      subtitle: "ವೈದಿಕ (ಸಾಯನ) ಮತ್ತು ಪಾಶ್ಚಾತ್ಯ (ಉಷ್ಣವಲಯ) ಎರಡೂ ವ್ಯವಸ್ಥೆಗಳು",
+      vedic: "ವೈದಿಕ",
+      western: "ಪಾಶ್ಚಾತ್ಯ",
+      explanation: "ವೈದಿಕ ನಿಜವಾದ ನಕ್ಷತ್ರ ಸ್ಥಾನಗಳನ್ನು ಬಳಸುತ್ತದೆ (ಸಾಯನ). ಪಾಶ್ಚಾತ್ಯ ಋತುಮಾನದ ಸ್ಥಾನಗಳನ್ನು ಬಳಸುತ್ತದೆ (ಉಷ್ಣವಲಯ). ~24° ವ್ಯತ್ಯಾಸವನ್ನು ಅಯನಾಂಶ ಎಂದು ಕರೆಯಲಾಗುತ್ತದೆ."
     },
     planetaryTracker: {
       badge: "ಲೈವ್ ಕಾಸ್ಮಿಕ್ ನವೀಕರಣಗಳು",
@@ -1184,6 +1240,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       luckyNumber: "ഭാഗ്യ സംഖ്യ",
       luckyColor: "ഭാഗ്യ നിറം"
     },
+    dualZodiac: {
+      title: "നിങ്ങളുടെ രാശികൾ",
+      subtitle: "വേദ (സായന) പാശ്ചാത്യ (ഉഷ്ണമേഖല) രണ്ട് സിസ്റ്റങ്ങളും",
+      vedic: "വേദ",
+      western: "പാശ്ചാത്യ",
+      explanation: "വേദ യഥാർത്ഥ നക്ഷത്ര സ്ഥാനങ്ങൾ ഉപയോഗിക്കുന്നു (സായന). പാശ്ചാത്യ ഋതുപരമായ സ്ഥാനങ്ങൾ ഉപയോഗിക്കുന്നു (ഉഷ്ണമേഖല). ~24° വ്യത്യാസത്തെ അയനാംശം എന്ന് വിളിക്കുന്നു."
+    },
     planetaryTracker: {
       badge: "ലൈവ് കോസ്മിക് അപ്‌ഡേറ്റുകൾ",
       title: "റിയൽ-ടൈം ഗ്രഹ ട്രാക്കർ",
@@ -1261,6 +1324,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       authenticVedicAstrology: "ਪ੍ਰਮਾਣਿਕ ਵੈਦਿਕ ਜੋਤਿਸ਼",
       luckyNumber: "ਭਾਗਸ਼ਾਲੀ ਅੰਕ",
       luckyColor: "ਭਾਗਸ਼ਾਲੀ ਰੰਗ"
+    },
+    dualZodiac: {
+      title: "ਤੁਹਾਡੀਆਂ ਰਾਸ਼ੀਆਂ",
+      subtitle: "ਵੈਦਿਕ (ਸਾਯਨ) ਅਤੇ ਪੱਛਮੀ (ਉਸ਼ਣਕਟਿਬੰਧੀ) ਦੋਵੇਂ ਪ੍ਰਣਾਲੀਆਂ",
+      vedic: "ਵੈਦਿਕ",
+      western: "ਪੱਛਮੀ",
+      explanation: "ਵੈਦਿਕ ਅਸਲ ਤਾਰਿਆਂ ਦੀਆਂ ਸਥਿਤੀਆਂ ਵਰਤਦਾ ਹੈ (ਸਾਯਨ)। ਪੱਛਮੀ ਮੌਸਮੀ ਸਥਿਤੀਆਂ ਵਰਤਦਾ ਹੈ (ਉਸ਼ਣਕਟਿਬੰਧੀ)। ~24° ਫਰਕ ਨੂੰ ਅਯਨਾਂਸ਼ ਕਿਹਾ ਜਾਂਦਾ ਹੈ।"
     },
     planetaryTracker: {
       badge: "ਲਾਈਵ ਬ੍ਰਹਿਮੰਡੀ ਅੱਪਡੇਟ",

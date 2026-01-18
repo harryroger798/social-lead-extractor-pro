@@ -38,6 +38,9 @@ interface ChartData {
   moonSign: string;
   sunSign: string;
   nakshatra: string;
+  // Tropical (Western) equivalents - calculated from sidereal + ayanamsa
+  tropicalMoonSign?: string;
+  tropicalSunSign?: string;
   planets: {
     name: string;
     sign: string;
@@ -51,6 +54,20 @@ interface ChartData {
     sign: string;
     planets: string[];
   }[];
+}
+
+// Helper function to calculate Tropical sign from Sidereal sign
+// Tropical is approximately one sign ahead of Sidereal (due to ~24° ayanamsa)
+function getTropicalFromSidereal(siderealSign: string): string {
+  const signs = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+  ];
+  const siderealIndex = signs.findIndex(s => s.toLowerCase() === siderealSign.toLowerCase());
+  if (siderealIndex === -1) return siderealSign;
+  // Tropical is approximately one sign ahead
+  const tropicalIndex = (siderealIndex + 1) % 12;
+  return signs[tropicalIndex];
 }
 
 const zodiacSigns = [
@@ -105,11 +122,19 @@ async function fetchChartFromBackend(details: BirthDetails): Promise<ChartData> 
       planets: planets.filter((p: { house: number }) => p.house === i + 1).map((p: { name: string }) => p.name),
     }));
 
+    // Calculate tropical equivalents from sidereal signs
+    const siderealMoonSign = chartData.moon_sign;
+    const siderealSunSign = chartData.sun_sign;
+    const tropicalMoonSign = getTropicalFromSidereal(siderealMoonSign);
+    const tropicalSunSign = getTropicalFromSidereal(siderealSunSign);
+
     return {
       ascendant: chartData.ascendant,
-      moonSign: chartData.moon_sign,
-      sunSign: chartData.sun_sign,
+      moonSign: siderealMoonSign,
+      sunSign: siderealSunSign,
       nakshatra: chartData.nakshatra,
+      tropicalMoonSign,
+      tropicalSunSign,
       planets,
       houses,
     };
@@ -486,16 +511,58 @@ export default function KundliCalculatorPage() {
                       <div className="font-semibold text-amber-700">{chartData.ascendant}</div>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">{t('calculator.moonSignRashi', 'Moon Sign (Rashi)')}</div>
-                      <div className="font-semibold text-amber-700">{chartData.moonSign}</div>
-                    </div>
-                    <div className="bg-amber-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">{t('calculator.sunSign', 'Sun Sign')}</div>
-                      <div className="font-semibold text-amber-700">{chartData.sunSign}</div>
-                    </div>
-                    <div className="bg-amber-50 rounded-lg p-3">
                       <div className="text-sm text-gray-600">{t('calculator.nakshatra', 'Nakshatra')}</div>
                       <div className="font-semibold text-amber-700">{chartData.nakshatra}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Dual Zodiac Display - Both Sidereal (Vedic) and Tropical (Western) */}
+                  <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+                    <div className="text-center mb-3">
+                      <h4 className="font-semibold text-gray-800">{t('calculator.dualZodiac.title', 'Your Zodiac Signs')}</h4>
+                      <p className="text-xs text-gray-500">{t('calculator.dualZodiac.subtitle', 'Both Vedic (Sidereal) and Western (Tropical) systems')}</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Moon Sign - Both Systems */}
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                          <Moon className="w-4 h-4" />
+                          {t('calculator.moonSign', 'Moon Sign')}
+                        </div>
+                        <div className="bg-white rounded-lg p-2 border border-amber-100">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-gray-500">{t('calculator.dualZodiac.vedic', 'Vedic')}</span>
+                            <span className="font-semibold text-amber-700">{chartData.moonSign}</span>
+                          </div>
+                          <div className="flex justify-between items-center mt-1 pt-1 border-t border-gray-100">
+                            <span className="text-xs text-gray-500">{t('calculator.dualZodiac.western', 'Western')}</span>
+                            <span className="font-semibold text-blue-600">{chartData.tropicalMoonSign}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Sun Sign - Both Systems */}
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                          <Sun className="w-4 h-4" />
+                          {t('calculator.sunSign', 'Sun Sign')}
+                        </div>
+                        <div className="bg-white rounded-lg p-2 border border-amber-100">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-gray-500">{t('calculator.dualZodiac.vedic', 'Vedic')}</span>
+                            <span className="font-semibold text-amber-700">{chartData.sunSign}</span>
+                          </div>
+                          <div className="flex justify-between items-center mt-1 pt-1 border-t border-gray-100">
+                            <span className="text-xs text-gray-500">{t('calculator.dualZodiac.western', 'Western')}</span>
+                            <span className="font-semibold text-blue-600">{chartData.tropicalSunSign}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 text-xs text-gray-500 text-center">
+                      <p>{t('calculator.dualZodiac.explanation', 'Vedic uses actual star positions (Sidereal). Western uses seasonal positions (Tropical). The ~24° difference is called Ayanamsha.')}</p>
                     </div>
                   </div>
                 </div>
