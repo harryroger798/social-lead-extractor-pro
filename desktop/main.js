@@ -30,7 +30,8 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'))
+    // Load from deployed web app for reliability
+    mainWindow.loadURL('http://167.71.237.250')
   }
 
   mainWindow.on('closed', () => {
