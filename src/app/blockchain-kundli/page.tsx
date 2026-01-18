@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { jsPDF } from "jspdf";
 import {
   Calendar,
   Clock,
@@ -120,55 +121,175 @@ export default function BlockchainKundliPage() {
   const downloadCertificate = () => {
     if (!certificate) return;
     
-    const certificateContent = `
-╔══════════════════════════════════════════════════════════════════╗
-║                    VEDICSTARASTRO                                 ║
-║              BLOCKCHAIN KUNDLI CERTIFICATE                        ║
-╠══════════════════════════════════════════════════════════════════╣
-║                                                                   ║
-║  Certificate ID: ${certificate.certificateId.padEnd(45)}║
-║                                                                   ║
-║  Name: ${certificate.birthDetails.name.padEnd(55)}║
-║  Date of Birth: ${certificate.birthDetails.date.padEnd(45)}║
-║  Time of Birth: ${certificate.birthDetails.time.padEnd(45)}║
-║  Place of Birth: ${certificate.birthDetails.place.padEnd(44)}║
-║                                                                   ║
-╠══════════════════════════════════════════════════════════════════╣
-║  CHART SUMMARY                                                    ║
-╠══════════════════════════════════════════════════════════════════╣
-║  Ascendant: ${certificate.chartSummary.ascendant.padEnd(50)}║
-║  Moon Sign: ${certificate.chartSummary.moonSign.padEnd(50)}║
-║  Sun Sign: ${certificate.chartSummary.sunSign.padEnd(51)}║
-║  Nakshatra: ${certificate.chartSummary.nakshatra.padEnd(50)}║
-║                                                                   ║
-╠══════════════════════════════════════════════════════════════════╣
-║  VERIFICATION DETAILS                                             ║
-╠══════════════════════════════════════════════════════════════════╣
-║  Cryptographic Hash:                                              ║
-║  ${certificate.hash.padEnd(62)}║
-║                                                                   ║
-║  IPFS Hash:                                                       ║
-║  ${certificate.ipfsHash.padEnd(62)}║
-║                                                                   ║
-║  Timestamp: ${new Date(certificate.timestamp).toLocaleString().padEnd(50)}║
-║                                                                   ║
-╠══════════════════════════════════════════════════════════════════╣
-║  This certificate is cryptographically signed and can be          ║
-║  verified using the Certificate ID or IPFS hash.                  ║
-║                                                                   ║
-║  Verify at: https://vedicstarastro.com/verify                     ║
-╚══════════════════════════════════════════════════════════════════╝
-    `.trim();
+    // Create PDF document
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-    const blob = new Blob([certificateContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `kundli-certificate-${certificate.certificateId}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+
+    // Background gradient effect (light orange to white)
+    doc.setFillColor(255, 248, 240);
+    doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+    // Decorative border
+    doc.setDrawColor(255, 140, 0);
+    doc.setLineWidth(2);
+    doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+    doc.setDrawColor(255, 180, 100);
+    doc.setLineWidth(0.5);
+    doc.rect(13, 13, pageWidth - 26, pageHeight - 26);
+
+    // Header section
+    doc.setFillColor(255, 140, 0);
+    doc.rect(10, 10, pageWidth - 20, 35, "F");
+
+    // Title
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("VEDICSTARASTRO", pageWidth / 2, 28, { align: "center" });
+    doc.setFontSize(14);
+    doc.text("BLOCKCHAIN KUNDLI CERTIFICATE", pageWidth / 2, 38, { align: "center" });
+
+    // Certificate ID badge
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(pageWidth / 2 - 35, 50, 70, 12, 3, 3, "F");
+    doc.setTextColor(255, 140, 0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text(certificate.certificateId, pageWidth / 2, 58, { align: "center" });
+
+    // Personal Details Section
+    let yPos = 75;
+    doc.setTextColor(255, 140, 0);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("PERSONAL DETAILS", margin, yPos);
+    doc.setDrawColor(255, 140, 0);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
+
+    yPos += 12;
+    doc.setTextColor(80, 80, 80);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    
+    const personalDetails = [
+      ["Name:", certificate.birthDetails.name || "N/A"],
+      ["Date of Birth:", certificate.birthDetails.date || "N/A"],
+      ["Time of Birth:", certificate.birthDetails.time || "N/A"],
+      ["Place of Birth:", certificate.birthDetails.place || "N/A"],
+    ];
+
+    personalDetails.forEach(([label, value]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(label, margin, yPos);
+      doc.setFont("helvetica", "normal");
+      doc.text(value, margin + 40, yPos);
+      yPos += 8;
+    });
+
+    // Chart Summary Section
+    yPos += 8;
+    doc.setTextColor(255, 140, 0);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("CHART SUMMARY", margin, yPos);
+    doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
+
+    yPos += 12;
+    doc.setTextColor(80, 80, 80);
+    doc.setFontSize(11);
+
+    const chartDetails = [
+      ["Ascendant:", certificate.chartSummary.ascendant],
+      ["Moon Sign:", certificate.chartSummary.moonSign],
+      ["Sun Sign:", certificate.chartSummary.sunSign],
+      ["Nakshatra:", certificate.chartSummary.nakshatra],
+    ];
+
+    chartDetails.forEach(([label, value]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(label, margin, yPos);
+      doc.setFont("helvetica", "normal");
+      doc.text(value, margin + 40, yPos);
+      yPos += 8;
+    });
+
+    // Verification Section
+    yPos += 8;
+    doc.setTextColor(255, 140, 0);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("VERIFICATION DETAILS", margin, yPos);
+    doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
+
+    yPos += 12;
+    doc.setTextColor(80, 80, 80);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("Cryptographic Hash:", margin, yPos);
+    yPos += 6;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.text(certificate.hash, margin, yPos);
+
+    yPos += 10;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("IPFS Hash:", margin, yPos);
+    yPos += 6;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(certificate.ipfsHash, margin, yPos);
+
+    yPos += 10;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("Timestamp:", margin, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.text(new Date(certificate.timestamp).toLocaleString(), margin + 30, yPos);
+
+    // Footer section
+    yPos = pageHeight - 45;
+    doc.setFillColor(255, 248, 240);
+    doc.rect(10, yPos - 5, pageWidth - 20, 35, "F");
+    doc.setDrawColor(255, 140, 0);
+    doc.line(margin, yPos - 5, pageWidth - margin, yPos - 5);
+
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      "This certificate is cryptographically signed and can be verified using the Certificate ID or IPFS hash.",
+      pageWidth / 2,
+      yPos + 5,
+      { align: "center" }
+    );
+    doc.text(
+      "Verify at: https://vedicstarastro.com/verify",
+      pageWidth / 2,
+      yPos + 12,
+      { align: "center" }
+    );
+
+    // Seal/stamp effect
+    doc.setDrawColor(255, 140, 0);
+    doc.setLineWidth(1);
+    doc.circle(pageWidth - 40, yPos + 10, 15);
+    doc.setFontSize(6);
+    doc.setTextColor(255, 140, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("VERIFIED", pageWidth - 40, yPos + 8, { align: "center" });
+    doc.text("AUTHENTIC", pageWidth - 40, yPos + 12, { align: "center" });
+
+    // Save the PDF
+    doc.save(`kundli-certificate-${certificate.certificateId}.pdf`);
   };
 
   const shareCertificate = async () => {
@@ -195,6 +316,14 @@ export default function BlockchainKundliPage() {
 
   const viewOnIPFS = () => {
     if (!certificate) return;
+    // Note: Currently using simulated IPFS hash for demo purposes
+    // Real IPFS integration requires Pinata API credentials
+    const message = t(
+      "blockchainKundli.ipfsDemoMessage",
+      "This is a demo certificate. The IPFS hash shown is for demonstration purposes. To enable real IPFS storage, please configure Pinata API credentials. Your certificate data is still cryptographically signed and verifiable."
+    );
+    alert(message);
+    // Still open the IPFS gateway URL so users can see what it would look like
     const ipfsGatewayUrl = `https://ipfs.io/ipfs/${certificate.ipfsHash}`;
     window.open(ipfsGatewayUrl, "_blank");
   };
