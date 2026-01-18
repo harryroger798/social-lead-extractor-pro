@@ -6,14 +6,14 @@ import { motion } from 'framer-motion'
 import { Smartphone, Laptop, Tablet, Monitor, Headphones, Watch, Cpu, HardDrive, Wrench, Shield, Clock, ArrowRight, Zap } from 'lucide-react'
 
 const services = [
-  { icon: Smartphone, key: 'smartphone', price: '₹500 - ₹5,000', color: 'from-green-500 to-emerald-500' },
-  { icon: Laptop, key: 'laptop', price: '₹1,000 - ₹15,000', color: 'from-blue-500 to-cyan-500' },
-  { icon: Tablet, key: 'tablet', price: '₹800 - ₹8,000', color: 'from-purple-500 to-pink-500' },
-  { icon: Monitor, key: 'desktop', price: '₹1,500 - ₹20,000', color: 'from-orange-500 to-red-500' },
-  { icon: Headphones, key: 'audio', price: '₹300 - ₹3,000', color: 'from-indigo-500 to-purple-500' },
-  { icon: Watch, key: 'smartwatch', price: '₹500 - ₹5,000', color: 'from-teal-500 to-cyan-500' },
-  { icon: Cpu, key: 'gaming', price: '₹2,000 - ₹25,000', color: 'from-red-500 to-pink-500' },
-  { icon: HardDrive, key: 'dataRecovery', price: '₹1,000 - ₹10,000', color: 'from-amber-500 to-orange-500' },
+  { icon: Smartphone, key: 'smartphone', price: '₹500 - ₹5,000', color: 'from-green-500 to-emerald-500', image: '/images/screen-replacement.png' },
+  { icon: Laptop, key: 'laptop', price: '₹1,000 - ₹15,000', color: 'from-blue-500 to-cyan-500', image: '/images/laptop-repair.png' },
+  { icon: Tablet, key: 'tablet', price: '₹800 - ₹8,000', color: 'from-purple-500 to-pink-500', image: '/images/screen-replacement.png' },
+  { icon: Monitor, key: 'desktop', price: '₹1,500 - ₹20,000', color: 'from-orange-500 to-red-500', image: '/images/hardware-upgrade.png' },
+  { icon: Headphones, key: 'audio', price: '₹300 - ₹3,000', color: 'from-indigo-500 to-purple-500', image: '/images/software-installation.png' },
+  { icon: Watch, key: 'smartwatch', price: '₹500 - ₹5,000', color: 'from-teal-500 to-cyan-500', image: '/images/screen-replacement.png' },
+  { icon: Cpu, key: 'gaming', price: '₹2,000 - ₹25,000', color: 'from-red-500 to-pink-500', image: '/images/hardware-upgrade.png' },
+  { icon: HardDrive, key: 'dataRecovery', price: '₹1,000 - ₹10,000', color: 'from-amber-500 to-orange-500', image: '/images/data-recovery.png' },
 ]
 
 const whyChooseUs = [
@@ -115,15 +115,15 @@ export function PublicServicesPage() {
                 className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl overflow-hidden group"
               >
                 <div className={`h-2 bg-gradient-to-r ${service.color}`} />
-                <div className="p-6 text-center">
-                  <motion.div
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.5 }}
-                    className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <service.icon className="h-8 w-8 text-white" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-2 dark:text-white">
+                                <div className="p-6 text-center">
+                                  <div className="relative mb-4">
+                                    <img 
+                                      src={service.image} 
+                                      alt={service.key}
+                                      className="w-full h-32 object-contain rounded-xl group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                  </div>
+                                  <h3 className="text-xl font-bold mb-2 dark:text-white">
                     {t(`public.services.${service.key}.title`)}
                   </h3>
                   <p className="text-sm text-primary font-medium italic mb-3">

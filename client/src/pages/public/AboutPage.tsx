@@ -91,64 +91,163 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Our Story Section */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-12 md:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl p-8"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-white" />
+            {/* Founder Section */}
+            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+              <div className="container mx-auto px-4">
+                <div className="grid gap-12 md:grid-cols-2 items-center">
+                  <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <img 
+                      src="/images/founder-portrait.png" 
+                      alt="Founder" 
+                      className="w-full max-w-md mx-auto rounded-2xl shadow-xl"
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl p-8"
+                  >
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 text-white" />
+                      </div>
+                      <h2 className="text-2xl font-bold dark:text-white">{t('public.about.ourStory')}</h2>
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      {t('public.about.storyPara1')}
+                    </p>
+                    <p className="text-muted-foreground mb-4">
+                      {t('public.about.storyPara2')}
+                    </p>
+                    <p className="text-primary font-medium italic">
+                      {i18n.language === 'hi' ? '"Ek chhoti si dukaan se shuru hua, ab poore Barrackpore mein naam hai!"' :
+                       i18n.language === 'bn' ? '"একটা ছোট্ট দোকান থেকে শুরু, এখন সারা ব্যারাকপুরে নাম!"' :
+                       '"Started from a small shop, now we\'re known all over Barrackpore!"'}
+                    </p>
+                  </motion.div>
                 </div>
-                <h2 className="text-2xl font-bold dark:text-white">{t('public.about.ourStory')}</h2>
               </div>
-              <p className="text-muted-foreground mb-4">
-                {t('public.about.storyPara1')}
-              </p>
-              <p className="text-muted-foreground mb-4">
-                {t('public.about.storyPara2')}
-              </p>
-              <p className="text-primary font-medium italic">
-                {i18n.language === 'hi' ? '"Ek chhoti si dukaan se shuru hua, ab poore Barrackpore mein naam hai!"' :
-                 i18n.language === 'bn' ? '"একটা ছোট্ট দোকান থেকে শুরু, এখন সারা ব্যারাকপুরে নাম!"' :
-                 '"Started from a small shop, now we\'re known all over Barrackpore!"'}
-              </p>
-            </motion.div>
+            </section>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl p-8"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <Target className="h-6 w-6 text-white" />
+            {/* Workshop Section */}
+            <section className="py-20 bg-white dark:bg-slate-800">
+              <div className="container mx-auto px-4">
+                <div className="grid gap-12 md:grid-cols-2 items-center">
+                  <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl p-8"
+                  >
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <Target className="h-6 w-6 text-white" />
+                      </div>
+                      <h2 className="text-2xl font-bold dark:text-white">{t('public.about.ourMission')}</h2>
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      {t('public.about.missionPara1')}
+                    </p>
+                    <p className="text-muted-foreground mb-4">
+                      {t('public.about.missionPara2')}
+                    </p>
+                    <p className="text-primary font-medium italic">
+                      {i18n.language === 'hi' ? '"Har device ko naya jaisa banana - yahi hamara mission hai!"' :
+                       i18n.language === 'bn' ? '"প্রতিটা ডিভাইসকে নতুনের মতো বানানো - এটাই আমাদের মিশন!"' :
+                       '"Making every device feel brand new - that\'s our mission!"'}
+                    </p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <img 
+                      src="/images/workshop-interior.png" 
+                      alt="Workshop" 
+                      className="w-full max-w-md mx-auto rounded-2xl shadow-xl"
+                    />
+                  </motion.div>
                 </div>
-                <h2 className="text-2xl font-bold dark:text-white">{t('public.about.ourMission')}</h2>
               </div>
-              <p className="text-muted-foreground mb-4">
-                {t('public.about.missionPara1')}
-              </p>
-              <p className="text-muted-foreground mb-4">
-                {t('public.about.missionPara2')}
-              </p>
-              <p className="text-primary font-medium italic">
-                {i18n.language === 'hi' ? '"Har device ko naya jaisa banana - yahi hamara mission hai!"' :
-                 i18n.language === 'bn' ? '"প্রতিটা ডিভাইসকে নতুনের মতো বানানো - এটাই আমাদের মিশন!"' :
-                 '"Making every device feel brand new - that\'s our mission!"'}
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+            </section>
+
+            {/* Mission Illustration Section */}
+            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+              <div className="container mx-auto px-4">
+                <div className="grid gap-12 md:grid-cols-2 items-center">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <img 
+                      src="/images/mission-illustration.png" 
+                      alt="Our Mission" 
+                      className="w-full max-w-md mx-auto"
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="text-center md:text-left"
+                  >
+                    <h2 className="text-3xl font-bold mb-4 dark:text-white">
+                      {i18n.language === 'hi' ? 'Aapki Care, Hamari Priority' :
+                       i18n.language === 'bn' ? 'আপনার যত্ন, আমাদের অগ্রাধিকার' :
+                       'Your Care, Our Priority'}
+                    </h2>
+                    <p className="text-muted-foreground mb-4">
+                      {i18n.language === 'hi' ? 'Hum sirf devices nahi, relationships bhi repair karte hain. Aapka trust hamari sabse badi achievement hai.' :
+                       i18n.language === 'bn' ? 'আমরা শুধু ডিভাইস নয়, সম্পর্কও মেরামত করি। আপনার বিশ্বাস আমাদের সবচেয়ে বড় অর্জন।' :
+                       "We don't just repair devices, we repair relationships. Your trust is our biggest achievement."}
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </section>
+
+            {/* Timeline Section */}
+            <section className="py-20 bg-white dark:bg-slate-800">
+              <div className="container mx-auto px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-12"
+                >
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">
+                    {i18n.language === 'hi' ? 'Hamara Safar' :
+                     i18n.language === 'bn' ? 'আমাদের যাত্রা' :
+                     'Our Journey'}
+                  </h2>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <img 
+                    src="/images/timeline-illustration.png" 
+                    alt="Our Journey" 
+                    className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl"
+                  />
+                </motion.div>
+              </div>
+            </section>
 
       {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600">

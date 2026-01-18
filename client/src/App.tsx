@@ -19,6 +19,7 @@ import { AboutPage } from '@/pages/public/AboutPage'
 import { ContactPage } from '@/pages/public/ContactPage'
 import { BlogPage } from '@/pages/public/BlogPage'
 import { BookingPage } from '@/pages/public/BookingPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -57,9 +58,10 @@ function App() {
           <Route path="digital-services" element={<DigitalServicesPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="reports" element={<ReportsPage />} />
-          <Route path="activity" element={<ActivityLogPage />} />
-        </Route>
-      </Routes>
+                <Route path="activity" element={<ActivityLogPage />} />
+              </Route>
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
       <Toaster />
     </ThemeProvider>
   )

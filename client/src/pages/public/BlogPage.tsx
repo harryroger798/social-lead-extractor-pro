@@ -11,7 +11,7 @@ const blogPosts = [
     excerptKey: 'post1Excerpt',
     date: '2024-01-15',
     author: 'Sayan Roy',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+    image: '/images/blog-tech-tips.png',
     icon: Lightbulb,
     color: 'from-blue-500 to-cyan-500'
   },
@@ -21,7 +21,7 @@ const blogPosts = [
     excerptKey: 'post2Excerpt',
     date: '2024-01-10',
     author: 'Rahul Kumar',
-    image: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=400',
+    image: '/images/blog-repair-guide.png',
     icon: Wrench,
     color: 'from-green-500 to-emerald-500'
   },
@@ -31,7 +31,7 @@ const blogPosts = [
     excerptKey: 'post3Excerpt',
     date: '2024-01-05',
     author: 'Priya Sharma',
-    image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400',
+    image: '/images/blog-industry-news.png',
     icon: Shield,
     color: 'from-purple-500 to-pink-500'
   },
@@ -41,7 +41,7 @@ const blogPosts = [
     excerptKey: 'post4Excerpt',
     date: '2024-01-01',
     author: 'Amit Das',
-    image: 'https://images.unsplash.com/photo-1580910051074-3eb694886f8b?w=400',
+    image: '/images/blog-tech-tips.png',
     icon: Lightbulb,
     color: 'from-orange-500 to-red-500'
   },

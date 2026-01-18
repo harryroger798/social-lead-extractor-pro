@@ -35,13 +35,11 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       <header className="border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-white font-bold text-lg">BC</span>
-              </div>
-              <span className="text-2xl font-bold text-primary">ByteCare</span>
-            </Link>
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center gap-2">
+                          <img src="/images/logo.png" alt="ByteCare" className="h-10 w-10 rounded-full object-cover" />
+                          <span className="text-2xl font-bold text-primary">ByteCare</span>
+                        </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
@@ -124,12 +122,10 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="grid gap-8 md:grid-cols-4">
             {/* Company Info */}
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
-                  <span className="text-primary font-bold text-lg">BC</span>
-                </div>
-                <span className="text-xl font-bold">ByteCare</span>
-              </div>
+                            <div className="flex items-center gap-2 mb-4">
+                              <img src="/images/logo.png" alt="ByteCare" className="h-10 w-10 rounded-full object-cover bg-white" />
+                              <span className="text-xl font-bold">ByteCare</span>
+                            </div>
               <p className="text-slate-400 text-sm mb-4">
                 {t('footer.description')}
               </p>

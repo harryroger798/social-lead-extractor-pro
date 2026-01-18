@@ -175,77 +175,83 @@ export function LandingPage() {
   const currentLang = i18n.language as keyof typeof quirkyTaglines
   const taglines = quirkyTaglines[currentLang] || quirkyTaglines.en
 
-  const testimonials = [
-    {
-      name: 'Rahul Sharma',
-      location: 'Barrackpore',
-      text: i18n.language === 'hi' ? 'Bahut acchi service! Phone 2 ghante mein theek ho gaya.' : 
-            i18n.language === 'bn' ? 'অসাধারণ সার্ভিস! ফোন ২ ঘণ্টায় ঠিক হয়ে গেল।' :
-            'Amazing service! Phone fixed in 2 hours.',
-      rating: 5
-    },
-    {
-      name: 'Priya Das',
-      location: 'Kolkata',
-      text: i18n.language === 'hi' ? 'Laptop ki battery change karvayi, ekdum naya jaisa chal raha hai!' :
-            i18n.language === 'bn' ? 'ল্যাপটপের ব্যাটারি বদলালাম, একদম নতুনের মতো চলছে!' :
-            'Got laptop battery replaced, running like new!',
-      rating: 5
-    },
-    {
-      name: 'Amit Roy',
-      location: 'Barrackpore',
-      text: i18n.language === 'hi' ? 'Data recovery mein experts hain ye log. Sab kuch wapas mil gaya!' :
-            i18n.language === 'bn' ? 'ডেটা রিকভারিতে এক্সপার্ট। সব কিছু ফিরে পেলাম!' :
-            'Data recovery experts! Got everything back.',
-      rating: 5
-    }
-  ]
+    const testimonials = [
+      {
+        name: 'Rahul Sharma',
+        location: 'Barrackpore',
+        text: i18n.language === 'hi' ? 'Bahut acchi service! Phone 2 ghante mein theek ho gaya.' : 
+              i18n.language === 'bn' ? 'অসাধারণ সার্ভিস! ফোন ২ ঘণ্টায় ঠিক হয়ে গেল।' :
+              'Amazing service! Phone fixed in 2 hours.',
+        rating: 5,
+        avatar: '/images/testimonial-avatar-1.png'
+      },
+      {
+        name: 'Priya Das',
+        location: 'Kolkata',
+        text: i18n.language === 'hi' ? 'Laptop ki battery change karvayi, ekdum naya jaisa chal raha hai!' :
+              i18n.language === 'bn' ? 'ল্যাপটপের ব্যাটারি বদলালাম, একদম নতুনের মতো চলছে!' :
+              'Got laptop battery replaced, running like new!',
+        rating: 5,
+        avatar: '/images/testimonial-avatar-2.png'
+      },
+      {
+        name: 'Amit Roy',
+        location: 'Barrackpore',
+        text: i18n.language === 'hi' ? 'Data recovery mein experts hain ye log. Sab kuch wapas mil gaya!' :
+              i18n.language === 'bn' ? 'ডেটা রিকভারিতে এক্সপার্ট। সব কিছু ফিরে পেলাম!' :
+              'Data recovery experts! Got everything back.',
+        rating: 5,
+        avatar: '/images/testimonial-avatar-3.png'
+      }
+    ]
 
-  const services = [
-    {
-      icon: Monitor,
-      title: t('landing.services.pcRepair.title'),
-      description: i18n.language === 'hi' ? 'PC slow? Hum karenge fast!' : 
-                   i18n.language === 'bn' ? 'পিসি স্লো? আমরা করব ফাস্ট!' :
-                   "PC slow? We'll make it fast!",
-      color: 'from-blue-500 to-cyan-500',
-      features: [
-        t('landing.services.pcRepair.feature1'),
-        t('landing.services.pcRepair.feature2'),
-        t('landing.services.pcRepair.feature3'),
-        t('landing.services.pcRepair.feature4')
-      ]
-    },
-    {
-      icon: Smartphone,
-      title: t('landing.services.mobileRepair.title'),
-      description: i18n.language === 'hi' ? "Screen crack? No panic, we'll make it fantastic!" :
-                   i18n.language === 'bn' ? 'স্ক্রিন ক্র্যাক? প্যানিক নয়, ফ্যান্টাস্টিক করব!' :
-                   "Screen crack? No panic, we'll make it fantastic!",
-      color: 'from-green-500 to-emerald-500',
-      features: [
-        t('landing.services.mobileRepair.feature1'),
-        t('landing.services.mobileRepair.feature2'),
-        t('landing.services.mobileRepair.feature3'),
-        t('landing.services.mobileRepair.feature4')
-      ]
-    },
-    {
-      icon: Globe,
-      title: t('landing.services.digitalServices.title'),
-      description: i18n.language === 'hi' ? 'Website chahiye? Hum banayenge!' :
-                   i18n.language === 'bn' ? 'ওয়েবসাইট চাই? আমরা বানাব!' :
-                   "Need a website? We'll build it!",
-      color: 'from-purple-500 to-pink-500',
-      features: [
-        t('landing.services.digitalServices.feature1'),
-        t('landing.services.digitalServices.feature2'),
-        t('landing.services.digitalServices.feature3'),
-        t('landing.services.digitalServices.feature4')
-      ]
-    }
-  ]
+    const services = [
+      {
+        icon: Monitor,
+        title: t('landing.services.pcRepair.title'),
+        description: i18n.language === 'hi' ? 'PC slow? Hum karenge fast!' : 
+                     i18n.language === 'bn' ? 'পিসি স্লো? আমরা করব ফাস্ট!' :
+                     "PC slow? We'll make it fast!",
+        color: 'from-blue-500 to-cyan-500',
+        image: '/images/pc-repair-card.png',
+        features: [
+          t('landing.services.pcRepair.feature1'),
+          t('landing.services.pcRepair.feature2'),
+          t('landing.services.pcRepair.feature3'),
+          t('landing.services.pcRepair.feature4')
+        ]
+      },
+      {
+        icon: Smartphone,
+        title: t('landing.services.mobileRepair.title'),
+        description: i18n.language === 'hi' ? "Screen crack? No panic, we'll make it fantastic!" :
+                     i18n.language === 'bn' ? 'স্ক্রিন ক্র্যাক? প্যানিক নয়, ফ্যান্টাস্টিক করব!' :
+                     "Screen crack? No panic, we'll make it fantastic!",
+        color: 'from-green-500 to-emerald-500',
+        image: '/images/mobile-repair-card.png',
+        features: [
+          t('landing.services.mobileRepair.feature1'),
+          t('landing.services.mobileRepair.feature2'),
+          t('landing.services.mobileRepair.feature3'),
+          t('landing.services.mobileRepair.feature4')
+        ]
+      },
+      {
+        icon: Globe,
+        title: t('landing.services.digitalServices.title'),
+        description: i18n.language === 'hi' ? 'Website chahiye? Hum banayenge!' :
+                     i18n.language === 'bn' ? 'ওয়েবসাইট চাই? আমরা বানাব!' :
+                     "Need a website? We'll build it!",
+        color: 'from-purple-500 to-pink-500',
+        image: '/images/digital-services-card.png',
+        features: [
+          t('landing.services.digitalServices.feature1'),
+          t('landing.services.digitalServices.feature2'),
+          t('landing.services.digitalServices.feature3'),
+          t('landing.services.digitalServices.feature4')
+        ]
+      }
+    ]
 
   const features = [
     {
@@ -407,25 +413,29 @@ export function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <GlassCard key={index} delay={index * 0.2} className="p-8 group">
-                <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <service.icon className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-2 dark:text-white">{service.title}</h3>
-                <p className="text-primary font-medium mb-4 italic">"{service.description}"</p>
-                <ul className="space-y-2">
-                  {service.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-muted-foreground">
-                      <Zap className="h-4 w-4 text-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </GlassCard>
-            ))}
-          </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                      {services.map((service, index) => (
+                        <GlassCard key={index} delay={index * 0.2} className="p-8 group overflow-hidden">
+                          <div className="relative mb-6">
+                            <img 
+                              src={service.image} 
+                              alt={service.title} 
+                              className="w-full h-48 object-contain rounded-xl group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <h3 className="text-2xl font-bold mb-2 dark:text-white">{service.title}</h3>
+                          <p className="text-primary font-medium mb-4 italic">"{service.description}"</p>
+                          <ul className="space-y-2">
+                            {service.features.map((feature, i) => (
+                              <li key={i} className="flex items-center gap-2 text-muted-foreground">
+                                <Zap className="h-4 w-4 text-primary" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </GlassCard>
+                      ))}
+                    </div>
         </div>
       </section>
 
@@ -558,26 +568,78 @@ export function LandingPage() {
                   ))}
                 </div>
                 <p className="text-lg mb-6 dark:text-white">"{testimonial.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold">
-                    {testimonial.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-semibold dark:text-white">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> {testimonial.location}
-                    </p>
-                  </div>
-                </div>
+                                <div className="flex items-center gap-3">
+                                  <img 
+                                    src={testimonial.avatar} 
+                                    alt={testimonial.name}
+                                    className="h-12 w-12 rounded-full object-cover"
+                                  />
+                                  <div>
+                                    <p className="font-semibold dark:text-white">{testimonial.name}</p>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" /> {testimonial.location}
+                                    </p>
+                                  </div>
+                                </div>
               </GlassCard>
             ))}
-          </div>
-        </div>
-      </section>
+                </div>
+              </div>
+            </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-        <FloatingIcons />
+            {/* WhatsApp Reviews Section */}
+            <section className="py-24 bg-white dark:bg-slate-900">
+              <div className="container mx-auto px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-16"
+                >
+                  <h2 className="text-4xl md:text-5xl font-bold mb-4 dark:text-white">
+                    {i18n.language === 'hi' ? 'Real Reviews, Real Customers' :
+                     i18n.language === 'bn' ? 'আসল রিভিউ, আসল গ্রাহক' :
+                     'Real Reviews, Real Customers'}
+                  </h2>
+                  <p className="text-xl text-muted-foreground">
+                    {i18n.language === 'hi' ? 'WhatsApp pe jo bola, wahi dikha rahe hain!' :
+                     i18n.language === 'bn' ? 'WhatsApp-এ যা বলেছে, তাই দেখাচ্ছি!' :
+                     'Straight from WhatsApp - no filters!'}
+                  </p>
+                </motion.div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[
+                    '/images/review-whatsapp-1.png',
+                    '/images/review-whatsapp-3.png',
+                    '/images/review-whatsapp-4.png',
+                    '/images/review-whatsapp-5.png',
+                    '/images/review-whatsapp-7.png',
+                    '/images/review-google.png',
+                  ].map((image, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                      className="rounded-2xl overflow-hidden shadow-xl"
+                    >
+                      <img 
+                        src={image} 
+                        alt={`Customer Review ${index + 1}`}
+                        className="w-full h-auto object-cover"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-24 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+              <FloatingIcons />
         <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

@@ -70,10 +70,48 @@ export function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Form & Info Section */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-12 lg:grid-cols-2">
+            {/* Contact Illustration Section */}
+            <section className="py-12 bg-white dark:bg-slate-800">
+              <div className="container mx-auto px-4">
+                <div className="grid gap-12 md:grid-cols-2 items-center">
+                  <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <img 
+                      src="/images/contact-illustration.png" 
+                      alt="Contact Us" 
+                      className="w-full max-w-md mx-auto"
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="text-center md:text-left"
+                  >
+                    <h2 className="text-3xl font-bold mb-4 dark:text-white">
+                      {i18n.language === 'hi' ? 'Hum Yahan Hain Aapke Liye' :
+                       i18n.language === 'bn' ? 'আমরা এখানে আপনার জন্য' :
+                       "We're Here For You"}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {i18n.language === 'hi' ? 'Koi bhi sawal ho, koi bhi problem ho - hum hamesha ready hain help karne ke liye!' :
+                       i18n.language === 'bn' ? 'যেকোনো প্রশ্ন, যেকোনো সমস্যা - আমরা সবসময় সাহায্য করতে প্রস্তুত!' :
+                       'Any question, any problem - we are always ready to help!'}
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </section>
+
+            {/* Contact Form & Info Section */}
+            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+              <div className="container mx-auto px-4">
+                <div className="grid gap-12 lg:grid-cols-2">
             {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -234,6 +272,37 @@ export function ContactPage() {
               </motion.div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Location Map Section */}
+      <section className="py-12 bg-white dark:bg-slate-800">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <h2 className="text-3xl font-bold mb-4 dark:text-white">
+              {i18n.language === 'hi' ? 'Humein Dhundhein' :
+               i18n.language === 'bn' ? 'আমাদের খুঁজুন' :
+               'Find Us'}
+            </h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl overflow-hidden shadow-xl"
+          >
+            <img 
+              src="/images/location-map.png" 
+              alt="Our Location" 
+              className="w-full h-auto"
+            />
+          </motion.div>
         </div>
       </section>
     </PublicLayout>

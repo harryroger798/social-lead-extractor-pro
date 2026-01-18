@@ -49,38 +49,44 @@ export function BookingPage() {
 
   return (
     <PublicLayout>
-      {/* Hero Section */}
-      <section className="relative py-16 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="h-20 w-20 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center mx-auto mb-6"
-            >
-              <Smartphone className="h-10 w-10 text-white" />
-            </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {t('public.booking.title')}
-            </h1>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto mb-4">
-              {t('public.booking.subtitle')}
-            </p>
-            <p className="text-lg text-primary font-medium italic">
-              {i18n.language === 'hi' ? '"Book karo, relax karo, baaki hum dekh lenge!"' :
-               i18n.language === 'bn' ? '"বুক করুন, রিল্যাক্স করুন, বাকিটা আমরা দেখব!"' :
-               '"Book it, relax, we\'ll handle the rest!"'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+            {/* Hero Section */}
+            <section className="relative py-16 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+              <div className="container mx-auto px-4 relative z-10">
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center md:text-left"
+                  >
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                      {t('public.booking.title')}
+                    </h1>
+                    <p className="text-xl text-white/80 max-w-2xl mb-4">
+                      {t('public.booking.subtitle')}
+                    </p>
+                    <p className="text-lg text-primary font-medium italic">
+                      {i18n.language === 'hi' ? '"Book karo, relax karo, baaki hum dekh lenge!"' :
+                       i18n.language === 'bn' ? '"বুক করুন, রিল্যাক্স করুন, বাকিটা আমরা দেখব!"' :
+                       '"Book it, relax, we\'ll handle the rest!"'}
+                    </p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="hidden md:block"
+                  >
+                    <img 
+                      src="/images/booking-illustration.png" 
+                      alt="Book a Repair" 
+                      className="w-full max-w-md mx-auto"
+                    />
+                  </motion.div>
+                </div>
+              </div>
+            </section>
 
       {/* Booking Form Section */}
       <section className="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
@@ -333,14 +339,18 @@ export function BookingPage() {
                 transition={{ duration: 0.5 }}
                 className="backdrop-blur-lg bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-xl p-8 text-center"
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="h-24 w-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mx-auto mb-6"
-                >
-                  <CheckCircle className="h-12 w-12 text-white" />
-                </motion.div>
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                                  className="mb-6"
+                                >
+                                  <img 
+                                    src="/images/booking-success.png" 
+                                    alt="Booking Success" 
+                                    className="w-48 h-48 mx-auto object-contain"
+                                  />
+                                </motion.div>
                 <h2 className="text-2xl font-bold mb-2 dark:text-white">{t('public.booking.thankYou')}</h2>
                 <p className="text-muted-foreground mb-2">
                   {t('public.booking.confirmationMessage')}

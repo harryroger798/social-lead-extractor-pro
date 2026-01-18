@@ -139,33 +139,47 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center gap-3 mb-2">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring' }}
-            className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center"
-          >
-            <Activity className="h-6 w-6 text-white" />
-          </motion.div>
-          <div>
-            <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
-            <p className="text-muted-foreground flex items-center gap-2">
-              {getGreeting()} 
-              <Sparkles className="h-4 w-4 text-primary" />
-              {i18n.language === 'hi' ? 'Aaj ka business kaisa chal raha hai?' :
-               i18n.language === 'bn' ? 'আজকের ব্যবসা কেমন চলছে?' :
-               "Here's what's happening with your shop today."}
-            </p>
-          </div>
-        </div>
-      </motion.div>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: 'spring' }}
+                    className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center"
+                  >
+                    <Activity className="h-6 w-6 text-white" />
+                  </motion.div>
+                  <div>
+                    <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
+                    <p className="text-muted-foreground flex items-center gap-2">
+                      {getGreeting()} 
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      {i18n.language === 'hi' ? 'Aaj ka business kaisa chal raha hai?' :
+                       i18n.language === 'bn' ? 'আজকের ব্যবসা কেমন চলছে?' :
+                       "Here's what's happening with your shop today."}
+                    </p>
+                  </div>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="hidden md:block"
+                >
+                  <img 
+                    src="/images/dashboard-welcome.png" 
+                    alt="Welcome" 
+                    className="h-24 w-auto object-contain"
+                  />
+                </motion.div>
+              </div>
+            </motion.div>
 
       {/* Stat Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -329,13 +343,20 @@ export function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {repairs.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    {i18n.language === 'hi' ? 'Koi recent repairs nahi' :
-                     i18n.language === 'bn' ? 'কোনো সাম্প্রতিক মেরামত নেই' :
-                     'No recent repairs'}
-                  </p>
-                ) : (
+                                {repairs.length === 0 ? (
+                                  <div className="text-center py-8">
+                                    <img 
+                                      src="/images/empty-state.png" 
+                                      alt="No repairs" 
+                                      className="w-32 h-32 mx-auto mb-4 object-contain opacity-70"
+                                    />
+                                    <p className="text-muted-foreground">
+                                      {i18n.language === 'hi' ? 'Koi recent repairs nahi' :
+                                       i18n.language === 'bn' ? 'কোনো সাম্প্রতিক মেরামত নেই' :
+                                       'No recent repairs'}
+                                    </p>
+                                  </div>
+                                ) : (
                   repairs.map((repair: {
                     id: number
                     invoice_number: string
