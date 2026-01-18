@@ -236,22 +236,25 @@ export default function AIAstrologerPage() {
     t('aiAstrologer.questions.financialLuck', 'How can I improve my financial luck through astrology?'),
   ];
   
+  // Build welcome message using translations
+  const welcomeMessage = `${t('aiAstrologer.welcomeGreeting', 'Namaste! I am your AI Astrologer, here to guide you through the cosmic wisdom of Vedic astrology.')}
+
+${t('aiAstrologer.welcomeHelp', 'I can help you understand planetary influences, doshas, transits, and provide remedies based on ancient Jyotish Shastra principles.')}
+
+**${t('aiAstrologer.askMeAbout', 'Ask me about:')}**
+- ${t('aiAstrologer.topic1', 'Your Moon sign and emotional nature')}
+- ${t('aiAstrologer.topic2', 'Saturn transit effects for 2026')}
+- ${t('aiAstrologer.topic3', 'Mangal Dosha and marriage compatibility')}
+- ${t('aiAstrologer.topic4', 'Career and financial astrology')}
+- ${t('aiAstrologer.topic5', 'Remedies for planetary afflictions')}
+
+${t('aiAstrologer.welcomeClosing', 'How may I assist you on your spiritual journey today?')}`;
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: `Namaste! I am your AI Astrologer, here to guide you through the cosmic wisdom of Vedic astrology.
-
-I can help you understand planetary influences, doshas, transits, and provide remedies based on ancient Jyotish Shastra principles.
-
-**Ask me about:**
-- Your Moon sign and emotional nature
-- Saturn transit effects for 2026
-- Mangal Dosha and marriage compatibility
-- Career and financial astrology
-- Remedies for planetary afflictions
-
-How may I assist you on your spiritual journey today?`,
+      content: welcomeMessage,
       timestamp: new Date(),
     },
   ]);
