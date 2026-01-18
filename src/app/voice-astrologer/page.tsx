@@ -57,9 +57,10 @@ const voiceLanguages: VoiceLanguage[] = [
 // Account 3 (sister.herzog@btedu.tech) - has the permanent assistant configured
 const VAPI_PUBLIC_KEY = "f31bac06-8fc3-4918-89a4-2f8ae64ffd36";
 
-// Permanent VAPI Assistant ID created via API with Deepgram STT/TTS + Groq LLM
-// This uses VAPI's built-in providers - no external API keys required
-const VAPI_ASSISTANT_ID = "c9262e0b-71c7-4e4f-9e58-f0ac1ac1c2dd";
+// Permanent VAPI Assistant ID created via API with VAPI's default providers
+// Uses VAPI's built-in providers (gpt-4o-mini) - no external API keys required
+// All costs charged through VAPI credits
+const VAPI_ASSISTANT_ID = "8d49d046-1f51-4452-aded-2c6220c295e6";
 
 // Supported Deepgram languages for transcription
 type DeepgramLanguage = "en" | "hi" | "ta" | "te" | "bn" | "mr" | "gu" | "kn" | "ml" | "pa" | "en-IN";
