@@ -148,8 +148,15 @@ async function startEmbeddedServer() {
       const userDataPath = getUserDataPath()
       serverApp.use('/generated', express.static(path.join(userDataPath, 'generated')))
       
-      serverApp.use((req, res) => {
-        res.status(404).json({ success: false, error: 'Not found' })
+      const rendererPath = path.join(__dirname, 'renderer')
+      console.log('Serving frontend from:', rendererPath)
+      serverApp.use(express.static(rendererPath))
+      
+      serverApp.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api/')) {
+          return res.status(404).json({ success: false, error: 'Not found' })
+        }
+        res.sendFile(path.join(rendererPath, 'index.html'))
       })
       
       serverApp.use((err, req, res, next) => {
@@ -223,12 +230,14 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadURL('bytecare://./index.html')
+    mainWindow.loadURL(`http://127.0.0.1:${serverPort}`)
   }
 
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
     console.error('Failed to load:', errorCode, errorDescription)
-    mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'))
+    setTimeout(() => {
+      mainWindow.loadURL(`http://127.0.0.1:${serverPort}`)
+    }, 1000)
   })
 
   mainWindow.on('closed', () => {

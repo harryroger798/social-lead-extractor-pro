@@ -11,7 +11,7 @@ declare global {
 
 function getApiUrl(): string {
   if (typeof window !== 'undefined' && window.electronAPI?.isElectron) {
-    return 'http://127.0.0.1:3001/api'
+    return '/api'
   }
   return import.meta.env.VITE_API_URL || '/api'
 }
