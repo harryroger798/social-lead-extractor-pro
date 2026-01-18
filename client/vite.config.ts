@@ -2,12 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
+const isElectron = process.env.ELECTRON_BUILD === 'true'
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  define: {
+    'import.meta.env.ELECTRON': JSON.stringify(isElectron),
   },
   server: {
     port: 5173,
@@ -23,6 +28,5 @@ export default defineConfig({
     sourcemap: false,
   },
   // For Electron builds, use relative paths
-  // Set ELECTRON_BUILD=true to use relative base
-  base: process.env.ELECTRON_BUILD === 'true' ? './' : '/',
+  base: isElectron ? './' : '/',
 })
