@@ -612,35 +612,36 @@ export function LandingPage() {
                   </p>
                 </motion.div>
 
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                  {[
-                                    '/images/review-whatsapp-1.png',
-                                    '/images/review-whatsapp-3.png',
-                                    '/images/review-whatsapp-4.png',
-                                    '/images/review-whatsapp-5.png',
-                                    '/images/review-whatsapp-7.png',
-                                    '/images/review-google.png',
-                                  ].map((image, index) => (
-                                    <motion.div
-                                      key={index}
-                                      initial={{ opacity: 0, y: 30 }}
-                                      whileInView={{ opacity: 1, y: 0 }}
-                                      viewport={{ once: true }}
-                                      transition={{ delay: index * 0.1 }}
-                                      whileHover={{ scale: 1.05, y: -10 }}
-                                      className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-700 bg-white dark:bg-slate-800 transform perspective-1000"
-                                      style={{ 
-                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 20px -5px rgba(0, 0, 0, 0.1)',
-                                      }}
-                                    >
-                                      <img 
-                                        src={image} 
-                                        alt={`Customer Review ${index + 1}`}
-                                        className="w-full h-auto"
-                                      />
-                                    </motion.div>
-                                  ))}
-                                </div>
+                                                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                                                                  {[
+                                                                    '/images/review-whatsapp-1.png',
+                                                                    '/images/review-whatsapp-3.png',
+                                                                    '/images/review-whatsapp-4.png',
+                                                                    '/images/review-whatsapp-5.png',
+                                                                    '/images/review-whatsapp-7.png',
+                                                                    '/images/review-google.png',
+                                                                  ].map((image, index) => (
+                                                                    <motion.div
+                                                                      key={index}
+                                                                      initial={{ opacity: 0, y: 30 }}
+                                                                      whileInView={{ opacity: 1, y: 0 }}
+                                                                      viewport={{ once: true }}
+                                                                      transition={{ delay: index * 0.1 }}
+                                                                      whileHover={{ scale: 1.05, y: -8 }}
+                                                                      className="rounded-xl overflow-hidden bg-white dark:bg-slate-800"
+                                                                      style={{ 
+                                                                        boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 8px 16px -4px rgba(0, 0, 0, 0.2), 0 0 0 4px white',
+                                                                        border: '4px solid white',
+                                                                      }}
+                                                                    >
+                                                                      <img 
+                                                                        src={image} 
+                                                                        alt={`Customer Review ${index + 1}`}
+                                                                        className="w-full h-auto"
+                                                                      />
+                                                                    </motion.div>
+                                                                  ))}
+                                                                </div>
               </div>
             </section>
 
