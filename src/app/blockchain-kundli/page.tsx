@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { uploadToIPFS, getIPFSGatewayUrl } from "@/lib/pinata";
+import { uploadToIPFS, getPublicIPFSUrl } from "@/lib/pinata";
 import { jsPDF } from "jspdf";
 import {
   Calendar,
@@ -221,10 +221,13 @@ export default function BlockchainKundliPage() {
     doc.setFillColor(139, 105, 20);
     doc.rect(12, 55, pageWidth - 24, 2, "F");
 
-    // Om symbol
-    doc.setTextColor(139, 105, 20);
-    doc.setFontSize(28);
-    doc.text("\u0950", centerX, 28, { align: "center" });
+    // Decorative star/sun symbol instead of Om (Unicode not supported)
+    doc.setFillColor(139, 105, 20);
+    doc.circle(centerX, 24, 8, "F");
+    doc.setFillColor(212, 168, 83);
+    doc.circle(centerX, 24, 5, "F");
+    doc.setFillColor(139, 105, 20);
+    doc.circle(centerX, 24, 2, "F");
 
     // Main title
     doc.setTextColor(26, 26, 46);
@@ -248,11 +251,12 @@ export default function BlockchainKundliPage() {
     doc.setLineWidth(0.5);
     doc.line(centerX - 60, 74, centerX + 60, 74);
     
-    // Zodiac symbols row
-    doc.setFontSize(12);
-    doc.setTextColor(212, 168, 83);
-    const zodiacSymbols = "\u2648 \u2649 \u264A \u264B \u264C \u264D \u264E \u264F \u2650 \u2651 \u2652 \u2653";
-    doc.text(zodiacSymbols, centerX, 82, { align: "center" });
+    // Decorative dots row instead of zodiac symbols (Unicode not supported)
+    doc.setFillColor(212, 168, 83);
+    for (let i = 0; i < 12; i++) {
+      const dotX = centerX - 55 + (i * 10);
+      doc.circle(dotX, 82, 2, "F");
+    }
 
     // Certificate ID badge
     doc.setFillColor(255, 248, 230);
@@ -273,11 +277,13 @@ export default function BlockchainKundliPage() {
     doc.setLineWidth(0.5);
     doc.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 45, 3, 3, "FD");
     
-    // Section title with icon
+    // Section title with decorative bullet
     doc.setTextColor(139, 105, 20);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("\u2609 PERSONAL DETAILS", margin + 5, yPos + 3);
+    doc.setFillColor(212, 168, 83);
+    doc.circle(margin + 7, yPos + 1, 2, "F");
+    doc.text("PERSONAL DETAILS", margin + 12, yPos + 3);
     
     // Divider line
     doc.setDrawColor(212, 168, 83);
@@ -329,7 +335,9 @@ export default function BlockchainKundliPage() {
     doc.setTextColor(139, 105, 20);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("\u2609 ASTROLOGICAL SUMMARY", margin + 5, yPos + 3);
+    doc.setFillColor(212, 168, 83);
+    doc.circle(margin + 7, yPos + 1, 2, "F");
+    doc.text("ASTROLOGICAL SUMMARY", margin + 12, yPos + 3);
     doc.line(margin + 5, yPos + 6, pageWidth - margin - 5, yPos + 6);
 
     yPos += 14;
@@ -363,7 +371,13 @@ export default function BlockchainKundliPage() {
     doc.setTextColor(212, 168, 83);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("\uD83D\uDD10 BLOCKCHAIN VERIFICATION", margin + 5, yPos + 3);
+    // Draw a small lock icon using shapes
+    doc.setFillColor(212, 168, 83);
+    doc.roundedRect(margin + 5, yPos - 1, 6, 5, 1, 1, "F");
+    doc.setDrawColor(212, 168, 83);
+    doc.setLineWidth(1);
+    doc.circle(margin + 8, yPos - 2, 2);
+    doc.text("BLOCKCHAIN VERIFICATION", margin + 14, yPos + 3);
     
     doc.setDrawColor(212, 168, 83);
     doc.line(margin + 5, yPos + 6, pageWidth - margin - 5, yPos + 6);
@@ -461,8 +475,8 @@ export default function BlockchainKundliPage() {
 
   const viewOnIPFS = () => {
     if (!certificate) return;
-    // Use Pinata gateway for faster access to the uploaded content
-    const ipfsGatewayUrl = getIPFSGatewayUrl(certificate.ipfsHash);
+    // Use ipfs.io gateway which allows HTML content (Pinata public gateway blocks HTML)
+    const ipfsGatewayUrl = getPublicIPFSUrl(certificate.ipfsHash);
     window.open(ipfsGatewayUrl, "_blank");
   };
 
