@@ -37,7 +37,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
                         <Link to="/" className="flex items-center gap-2">
-                          <img src="/images/logo.png" alt="ByteCare" className="h-10 w-10 rounded-full object-cover" />
+                          <img src="/images/favicon.png" alt="ByteCare" className="h-10 w-10 object-contain" />
                           <span className="text-2xl font-bold text-primary">ByteCare</span>
                         </Link>
 
@@ -123,7 +123,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             {/* Company Info */}
             <div className="md:col-span-1">
                             <div className="flex items-center gap-2 mb-4">
-                              <img src="/images/logo.png" alt="ByteCare" className="h-10 w-10 rounded-full object-cover bg-white" />
+                              <img src="/images/favicon.png" alt="ByteCare" className="h-10 w-10 object-contain" />
                               <span className="text-xl font-bold">ByteCare</span>
                             </div>
               <p className="text-slate-400 text-sm mb-4">

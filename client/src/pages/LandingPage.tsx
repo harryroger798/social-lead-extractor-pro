@@ -290,12 +290,16 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      <section 
-        ref={heroRef}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
-        <FloatingIcons />
+            <section 
+              ref={heroRef}
+              className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+            >
+              <div 
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+                style={{ backgroundImage: 'url(/images/hero-background.png)' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+              <FloatingIcons />
         
         <motion.div 
           style={{ y: heroY, opacity: heroOpacity }}
