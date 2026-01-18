@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, MoreHorizontal, Pencil, Eye, CheckCircle } from 'lucide-react'
+import { Plus, Search, MoreHorizontal, Pencil, Eye, CheckCircle, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -109,16 +109,27 @@ export function RepairsPage() {
     },
   })
 
-  const completeMutation = useMutation({
-    mutationFn: (id: number) => repairsApi.complete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['repairs'] })
-      toast({ title: 'Repair marked as completed' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to complete repair' })
-    },
-  })
+    const completeMutation = useMutation({
+      mutationFn: (id: number) => repairsApi.complete(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['repairs'] })
+        toast({ title: 'Repair marked as completed' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to complete repair' })
+      },
+    })
+
+    const deleteMutation = useMutation({
+      mutationFn: (id: number) => repairsApi.delete(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['repairs'] })
+        toast({ title: 'Repair deleted successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to delete repair' })
+      },
+    })
 
         const repairs = data?.data?.data || []
       const customers = customersData?.data?.data || []
@@ -288,15 +299,26 @@ export function RepairsPage() {
                               <Pencil className="mr-2 h-4 w-4" />
                               Edit
                             </DropdownMenuItem>
-                            {repair.status !== 'completed' && repair.status !== 'delivered' && (
-                              <DropdownMenuItem
-                                onClick={() => completeMutation.mutate(repair.id)}
-                              >
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Mark Complete
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
+                                                      {repair.status !== 'completed' && repair.status !== 'delivered' && (
+                                                        <DropdownMenuItem
+                                                          onClick={() => completeMutation.mutate(repair.id)}
+                                                        >
+                                                          <CheckCircle className="mr-2 h-4 w-4" />
+                                                          Mark Complete
+                                                        </DropdownMenuItem>
+                                                      )}
+                                                      <DropdownMenuItem
+                                                        className="text-destructive"
+                                                        onClick={() => {
+                                                          if (confirm('Are you sure you want to delete this repair?')) {
+                                                            deleteMutation.mutate(repair.id)
+                                                          }
+                                                        }}
+                                                      >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                      </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>

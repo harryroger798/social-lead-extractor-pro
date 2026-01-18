@@ -385,4 +385,21 @@ router.put('/phone-models/:id', authenticate, isAdmin, asyncHandler(async (req, 
   });
 }));
 
+router.delete('/phone-models/:id', authenticate, isAdmin, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const db = getDatabase();
+  
+  const phoneModel = db.prepare('SELECT * FROM phone_models WHERE id = ?').get(id);
+  if (!phoneModel) {
+    throw new NotFoundError('Phone model');
+  }
+  
+  db.prepare('DELETE FROM phone_models WHERE id = ?').run(id);
+  
+  res.json({
+    success: true,
+    message: 'Phone model deleted successfully'
+  });
+}));
+
 module.exports = router;

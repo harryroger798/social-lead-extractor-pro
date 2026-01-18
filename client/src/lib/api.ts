@@ -99,6 +99,7 @@ export const servicesApi = {
     api.post('/services/phone-models', data),
   updatePhoneModel: (id: number, data: Record<string, unknown>) =>
     api.put(`/services/phone-models/${id}`, data),
+  deletePhoneModel: (id: number) => api.delete(`/services/phone-models/${id}`),
   getPhoneQuote: (id: number) => api.get(`/services/phone-models/${id}/quote`),
 }
 

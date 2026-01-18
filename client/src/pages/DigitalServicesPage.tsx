@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, MoreHorizontal, Pencil, Eye } from 'lucide-react'
+import { Plus, Search, MoreHorizontal, Pencil, Eye, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -94,19 +94,30 @@ export function DigitalServicesPage() {
     },
   })
 
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) =>
-      digitalServicesApi.updateStatus(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['digital-services'] })
-      toast({ title: 'Status updated successfully' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to update status' })
-    },
-  })
+    const updateStatusMutation = useMutation({
+      mutationFn: ({ id, status }: { id: number; status: string }) =>
+        digitalServicesApi.updateStatus(id, status),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['digital-services'] })
+        toast({ title: 'Status updated successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to update status' })
+      },
+    })
 
-  const projects = data?.data?.data || []
+    const deleteMutation = useMutation({
+      mutationFn: (id: number) => digitalServicesApi.delete(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['digital-services'] })
+        toast({ title: 'Project deleted successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to delete project' })
+      },
+    })
+
+    const projects = data?.data?.data || []
   const customers = customersData?.data?.data || []
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -262,17 +273,28 @@ export function DigitalServicesPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditingProject(project)
-                                setIsRetainer(project.is_retainer)
-                                setIsDialogOpen(true)
-                              }}
-                            >
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
+                                                      <DropdownMenuItem
+                                                        onClick={() => {
+                                                          setEditingProject(project)
+                                                          setIsRetainer(project.is_retainer)
+                                                          setIsDialogOpen(true)
+                                                        }}
+                                                      >
+                                                        <Pencil className="mr-2 h-4 w-4" />
+                                                        Edit
+                                                      </DropdownMenuItem>
+                                                      <DropdownMenuItem
+                                                        className="text-destructive"
+                                                        onClick={() => {
+                                                          if (confirm('Are you sure you want to delete this project?')) {
+                                                            deleteMutation.mutate(project.id)
+                                                          }
+                                                        }}
+                                                      >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                      </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>

@@ -116,21 +116,32 @@ export function ServicesPage() {
     },
   })
 
-  const updatePhoneMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
-      servicesApi.updatePhoneModel(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['phone-models'] })
-      setIsPhoneDialogOpen(false)
-      setEditingPhone(null)
-      toast({ title: 'Phone model updated successfully' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to update phone model' })
-    },
-  })
+    const updatePhoneMutation = useMutation({
+      mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
+        servicesApi.updatePhoneModel(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['phone-models'] })
+        setIsPhoneDialogOpen(false)
+        setEditingPhone(null)
+        toast({ title: 'Phone model updated successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to update phone model' })
+      },
+    })
 
-  const services = servicesData?.data?.data || []
+    const deletePhoneMutation = useMutation({
+      mutationFn: (id: number) => servicesApi.deletePhoneModel(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['phone-models'] })
+        toast({ title: 'Phone model deleted successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to delete phone model' })
+      },
+    })
+
+    const services = servicesData?.data?.data || []
   const phoneModels = phoneModelsData?.data?.data || []
 
   const handleServiceSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -355,19 +366,38 @@ export function ServicesPage() {
                           <TableCell>{formatCurrency(phone.charging_port_price)}</TableCell>
                           <TableCell>{formatCurrency(phone.back_panel_price)}</TableCell>
                           <TableCell>{formatCurrency(phone.software_price)}</TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setEditingPhone(phone)
-                                setIsPhoneDialogOpen(true)
-                              }}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
+                                                  <TableCell>
+                                                    <DropdownMenu>
+                                                      <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon">
+                                                          <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                      </DropdownMenuTrigger>
+                                                      <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                          onClick={() => {
+                                                            setEditingPhone(phone)
+                                                            setIsPhoneDialogOpen(true)
+                                                          }}
+                                                        >
+                                                          <Pencil className="mr-2 h-4 w-4" />
+                                                          Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                          className="text-destructive"
+                                                          onClick={() => {
+                                                            if (confirm('Are you sure you want to delete this phone model?')) {
+                                                              deletePhoneMutation.mutate(phone.id)
+                                                            }
+                                                          }}
+                                                        >
+                                                          <Trash2 className="mr-2 h-4 w-4" />
+                                                          Delete
+                                                        </DropdownMenuItem>
+                                                      </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                  </TableCell>
+                                                </TableRow>
                       ))
                     )}
                   </TableBody>

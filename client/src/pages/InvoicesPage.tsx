@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard } from 'lucide-react'
+import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -70,17 +70,28 @@ export function InvoicesPage() {
     },
   })
 
-  const sendEmailMutation = useMutation({
-    mutationFn: (id: number) => invoicesApi.sendEmail(id),
-    onSuccess: () => {
-      toast({ title: 'Invoice sent via email' })
-    },
-    onError: () => {
-      toast({ variant: 'destructive', title: 'Failed to send email' })
-    },
-  })
+    const sendEmailMutation = useMutation({
+      mutationFn: (id: number) => invoicesApi.sendEmail(id),
+      onSuccess: () => {
+        toast({ title: 'Invoice sent via email' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to send email' })
+      },
+    })
 
-  const invoices = data?.data?.data || []
+    const deleteMutation = useMutation({
+      mutationFn: (id: number) => invoicesApi.delete(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['invoices'] })
+        toast({ title: 'Invoice deleted successfully' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to delete invoice' })
+      },
+    })
+
+    const invoices = data?.data?.data || []
 
   const handlePayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -214,15 +225,26 @@ export function InvoicesPage() {
                                 </DropdownMenuItem>
                               </>
                             )}
-                            {invoice.customer_email && (
-                              <DropdownMenuItem
-                                onClick={() => sendEmailMutation.mutate(invoice.id)}
-                              >
-                                <Send className="mr-2 h-4 w-4" />
-                                Send Email
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
+                                                      {invoice.customer_email && (
+                                                        <DropdownMenuItem
+                                                          onClick={() => sendEmailMutation.mutate(invoice.id)}
+                                                        >
+                                                          <Send className="mr-2 h-4 w-4" />
+                                                          Send Email
+                                                        </DropdownMenuItem>
+                                                      )}
+                                                      <DropdownMenuItem
+                                                        className="text-destructive"
+                                                        onClick={() => {
+                                                          if (confirm('Are you sure you want to delete this invoice?')) {
+                                                            deleteMutation.mutate(invoice.id)
+                                                          }
+                                                        }}
+                                                      >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                      </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
