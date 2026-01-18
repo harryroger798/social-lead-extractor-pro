@@ -54,10 +54,16 @@ const voiceLanguages: VoiceLanguage[] = [
 ];
 
 const VAPI_PUBLIC_KEYS = [
+  "f31bac06-8fc3-4918-89a4-2f8ae64ffd36",
   "ad721a2d-e6d9-4ab9-9684-32a446b2c4e6",
   "79e3eede-bb04-4780-9f3e-f6ce67b190dd",
-  "f31bac06-8fc3-4918-89a4-2f8ae64ffd36",
 ];
+
+const VAPI_ASSISTANT_IDS: Record<string, string> = {
+  en: "33076df6-578d-4d20-a874-1295b5bb6a9b",
+  hi: "d2218eca-81a8-4792-a085-a6599418fc19",
+  default: "33076df6-578d-4d20-a874-1295b5bb6a9b",
+};
 
 const getLanguageSystemPrompt = (langCode: string): string => {
   const languageNames: Record<string, string> = {
@@ -226,35 +232,12 @@ export default function VoiceAstrologerPage() {
         }
       });
 
-      const selectedLang = voiceLanguages.find(l => l.code === selectedLanguage);
-      const vapiLanguage = selectedLang?.vapiLanguage || "en";
-
-      // Using VAPI's built-in assistant configuration with OpenAI
-      // OpenAI is the most reliable provider for VAPI web calls
-      // The cost is deducted from VAPI credits
-      await vapi.start({
-        transcriber: {
-          provider: "deepgram",
-          model: "nova-2",
-          language: vapiLanguage as "en" | "hi" | "ta",
-        },
-        model: {
-          provider: "openai",
-          model: "gpt-4o-mini",
-          temperature: 0.7,
-          messages: [
-            {
-              role: "system",
-              content: getLanguageSystemPrompt(selectedLanguage),
-            },
-          ],
-        },
-        voice: {
-          provider: "11labs",
-          voiceId: "21m00Tcm4TlvDq8ikWAM",
-        },
-        firstMessage: getFirstMessage(selectedLanguage),
-      });
+      // Use permanent assistant ID for reliable call creation
+      // This avoids the "daily-call-object-creation-error" that occurs with transient configurations
+      // Assistants are pre-configured in VAPI dashboard with OpenAI + ElevenLabs + Deepgram
+      const assistantId = VAPI_ASSISTANT_IDS[selectedLanguage] || VAPI_ASSISTANT_IDS.default;
+      
+      await vapi.start(assistantId);
     } catch (error) {
       console.error("Failed to start call:", error);
       setCallState({
