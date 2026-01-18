@@ -351,7 +351,7 @@ export function LandingPage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg backdrop-blur-sm"
+                className="gap-2 bg-transparent border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg backdrop-blur-sm"
               >
                 {t('landing.hero.viewServices')}
               </Button>
@@ -610,7 +610,7 @@ export function LandingPage() {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
+                  className="gap-2 bg-transparent border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
                 >
                   <Phone className="h-5 w-5" />
                   {t('nav.contact')}
