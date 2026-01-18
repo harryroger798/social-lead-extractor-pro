@@ -15,6 +15,14 @@ const customerValidation = [
     .withMessage('Name must be between 2 and 100 characters'),
   body('phone')
     .trim()
+    .customSanitizer(value => {
+      if (!value) return value;
+      let cleaned = value.replace(/[^0-9]/g, '');
+      if (cleaned.startsWith('91') && cleaned.length === 12) {
+        cleaned = cleaned.substring(2);
+      }
+      return cleaned;
+    })
     .matches(/^[0-9]{10}$/)
     .withMessage('Phone must be a valid 10-digit number'),
   body('email')

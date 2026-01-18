@@ -30,6 +30,8 @@ const airtableSync = require('./services/airtableSync');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+app.set('trust proxy', 1);
+
 const logsDir = path.join(__dirname, 'logs');
 const backupsDir = path.join(__dirname, 'backups');
 const generatedDir = path.join(__dirname, 'generated');
