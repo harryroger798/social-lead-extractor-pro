@@ -4,7 +4,7 @@ import { getAIResponse, ChatMessage } from "@/lib/ai/ai-service";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, conversationHistory } = body;
+    const { message, conversationHistory, language } = body;
 
     if (!message || typeof message !== "string") {
       return NextResponse.json(
@@ -35,11 +35,15 @@ export async function POST(request: NextRequest) {
         }))
       : [];
 
+    // Use provided language or default to English
+    const userLanguage = typeof language === "string" ? language : "en";
+
     const response = await getAIResponse(
       message,
       history,
       groqApiKey,
-      geminiApiKey
+      geminiApiKey,
+      userLanguage
     );
 
     if (response.success) {

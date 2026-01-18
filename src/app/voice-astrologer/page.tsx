@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import Vapi from "@vapi-ai/web";
 import {
   Phone,
   PhoneOff,
@@ -28,9 +29,10 @@ import {
 } from "lucide-react";
 
 interface CallState {
-  status: "idle" | "connecting" | "connected" | "ended";
+  status: "idle" | "connecting" | "connected" | "ended" | "error";
   duration: number;
   transcript: string[];
+  errorMessage?: string;
 }
 
 interface VoiceLanguage {
@@ -38,17 +40,62 @@ interface VoiceLanguage {
   name: string;
   nameNative: string;
   available: boolean;
+  vapiLanguage: string;
 }
 
 const voiceLanguages: VoiceLanguage[] = [
-  { code: "en", name: "English", nameNative: "English", available: true },
-  { code: "hi", name: "Hindi", nameNative: "हिंदी", available: true },
-  { code: "ta", name: "Tamil", nameNative: "தமிழ்", available: true },
-  { code: "te", name: "Telugu", nameNative: "తెలుగు", available: true },
-  { code: "bn", name: "Bengali", nameNative: "বাংলা", available: true },
-  { code: "mr", name: "Marathi", nameNative: "मराठी", available: false },
-  { code: "gu", name: "Gujarati", nameNative: "ગુજરાતી", available: false },
+  { code: "en", name: "English", nameNative: "English", available: true, vapiLanguage: "en" },
+  { code: "hi", name: "Hindi", nameNative: "हिंदी", available: true, vapiLanguage: "hi" },
+  { code: "ta", name: "Tamil", nameNative: "தமிழ்", available: true, vapiLanguage: "ta" },
+  { code: "te", name: "Telugu", nameNative: "తెలుగు", available: true, vapiLanguage: "te" },
+  { code: "bn", name: "Bengali", nameNative: "বাংলা", available: true, vapiLanguage: "bn" },
+  { code: "mr", name: "Marathi", nameNative: "मराठी", available: true, vapiLanguage: "mr" },
+  { code: "gu", name: "Gujarati", nameNative: "ગુજરાતી", available: true, vapiLanguage: "gu" },
 ];
+
+const VAPI_PUBLIC_KEYS = [
+  "ad721a2d-e6d9-4ab9-9684-32a446b2c4e6",
+  "79e3eede-bb04-4780-9f3e-f6ce67b190dd",
+  "f31bac06-8fc3-4918-89a4-2f8ae64ffd36",
+];
+
+const getLanguageSystemPrompt = (langCode: string): string => {
+  const languageNames: Record<string, string> = {
+    en: "English",
+    hi: "Hindi",
+    ta: "Tamil",
+    te: "Telugu",
+    bn: "Bengali",
+    mr: "Marathi",
+    gu: "Gujarati",
+  };
+  
+  const langName = languageNames[langCode] || "English";
+  const languageInstruction = langCode === "en" 
+    ? "Respond in English. You may use Hindi terms with English explanations when appropriate."
+    : `IMPORTANT: You MUST respond entirely in ${langName}. All your responses must be in ${langName}. Do not respond in English unless the user specifically asks for it.`;
+
+  return `You are an expert Vedic astrologer with deep knowledge of Jyotish Shastra. You provide guidance based on Vedic astrology principles, planetary positions, Nakshatras, Doshas and their remedies, Kundli interpretation, and Muhurat guidance.
+
+Be compassionate and supportive. Provide practical remedies when discussing challenges. Keep responses concise (2-3 sentences for voice). 
+
+${languageInstruction}
+
+You are representing VedicStarAstro, a trusted platform for authentic Vedic astrology services.`;
+};
+
+const getFirstMessage = (langCode: string): string => {
+  const messages: Record<string, string> = {
+    en: "Namaste! I am your AI Astrologer from VedicStarAstro. How may I guide you today with the wisdom of Vedic astrology?",
+    hi: "नमस्ते! मैं वेदिकस्टार एस्ट्रो से आपका AI ज्योतिषी हूं। वैदिक ज्योतिष के ज्ञान से आज मैं आपकी कैसे मदद कर सकता हूं?",
+    ta: "வணக்கம்! நான் வேதிக்ஸ்டார் ஆஸ்ட்ரோவின் AI ஜோதிடர். வேத ஜோதிடத்தின் ஞானத்துடன் இன்று நான் உங்களுக்கு எவ்வாறு வழிகாட்ட முடியும்?",
+    te: "నమస్కారం! నేను వేదిక్‌స్టార్ ఆస్ట్రో నుండి మీ AI జ్యోతిష్యుడిని. వేద జ్యోతిషశాస్త్ర జ్ఞానంతో ఈ రోజు నేను మీకు ఎలా మార్గదర్శకత్వం చేయగలను?",
+    bn: "নমস্কার! আমি বেদিকস্টার অ্যাস্ট্রো থেকে আপনার AI জ্যোতিষী। বৈদিক জ্যোতিষের জ্ঞান দিয়ে আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
+    mr: "नमस्कार! मी वेदिकस्टार अॅस्ट्रो मधून तुमचा AI ज्योतिषी आहे. वैदिक ज्योतिषाच्या ज्ञानाने आज मी तुम्हाला कसे मार्गदर्शन करू शकतो?",
+    gu: "નમસ્તે! હું વેદિકસ્ટાર એસ્ટ્રોમાંથી તમારો AI જ્યોતિષી છું. વૈદિક જ્યોતિષના જ્ઞાન સાથે આજે હું તમને કેવી રીતે માર્ગદર્શન આપી શકું?",
+  };
+  return messages[langCode] || messages.en;
+};
 
 const sampleQuestions = [
   { en: "What does my birth chart say about my career?", hi: "मेरी जन्म कुंडली मेरे करियर के बारे में क्या कहती है?" },
@@ -68,9 +115,24 @@ export default function VoiceAstrologerPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [dailyMinutesUsed, setDailyMinutesUsed] = useState(2);
+  const [dailyMinutesUsed, setDailyMinutesUsed] = useState(0);
+  const [currentKeyIndex, setCurrentKeyIndex] = useState(0);
   const dailyLimit = 5;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const vapiRef = useRef<Vapi | null>(null);
+
+  useEffect(() => {
+    const storedMinutes = localStorage.getItem("vapiDailyMinutes");
+    const storedDate = localStorage.getItem("vapiDailyDate");
+    const today = new Date().toDateString();
+    
+    if (storedDate === today && storedMinutes) {
+      setDailyMinutesUsed(parseInt(storedMinutes, 10));
+    } else {
+      localStorage.setItem("vapiDailyDate", today);
+      localStorage.setItem("vapiDailyMinutes", "0");
+    }
+  }, []);
 
   useEffect(() => {
     if (callState.status === "connected") {
@@ -111,36 +173,124 @@ export default function VoiceAstrologerPage() {
       transcript: [],
     });
 
-    // Simulate connection delay
-    setTimeout(() => {
-      setCallState((prev) => ({
-        ...prev,
-        status: "connected",
-        transcript: [
-          language === "hi" 
-            ? "नमस्ते! मैं आपका AI ज्योतिषी हूं। आज मैं आपकी कैसे मदद कर सकता हूं?"
-            : "Namaste! I am your AI Astrologer. How can I help you today?",
-        ],
-      }));
-    }, 2000);
+    try {
+      const publicKey = VAPI_PUBLIC_KEYS[currentKeyIndex];
+      const vapi = new Vapi(publicKey);
+      vapiRef.current = vapi;
+
+      vapi.on("call-start", () => {
+        setCallState((prev) => ({
+          ...prev,
+          status: "connected",
+          transcript: [getFirstMessage(selectedLanguage)],
+        }));
+      });
+
+      vapi.on("call-end", () => {
+        const minutesUsed = Math.ceil(callState.duration / 60) || 1;
+        const newTotal = dailyMinutesUsed + minutesUsed;
+        setDailyMinutesUsed(newTotal);
+        localStorage.setItem("vapiDailyMinutes", newTotal.toString());
+        
+        setCallState((prev) => ({
+          ...prev,
+          status: "ended",
+        }));
+      });
+
+      vapi.on("message", (message: { type: string; transcriptType?: string; role?: string; transcript?: string }) => {
+        if (message.type === "transcript" && message.transcriptType === "final") {
+          const role = message.role === "assistant" ? "AI" : "You";
+          setCallState((prev) => ({
+            ...prev,
+            transcript: [...prev.transcript, `${role}: ${message.transcript}`],
+          }));
+        }
+      });
+
+      vapi.on("error", (error: Error) => {
+        console.error("VAPI Error:", error);
+        if (currentKeyIndex < VAPI_PUBLIC_KEYS.length - 1) {
+          setCurrentKeyIndex((prev) => prev + 1);
+          setCallState((prev) => ({
+            ...prev,
+            status: "idle",
+            errorMessage: t("voiceAstrologer.retrying", "Retrying with backup connection..."),
+          }));
+        } else {
+          setCallState((prev) => ({
+            ...prev,
+            status: "error",
+            errorMessage: t("voiceAstrologer.connectionError", "Connection error. Please try again later."),
+          }));
+        }
+      });
+
+      const selectedLang = voiceLanguages.find(l => l.code === selectedLanguage);
+      const vapiLanguage = selectedLang?.vapiLanguage || "en";
+
+      await vapi.start({
+        model: {
+          provider: "openai",
+          model: "gpt-4-turbo",
+          temperature: 0.7,
+          messages: [
+            {
+              role: "system",
+              content: getLanguageSystemPrompt(selectedLanguage),
+            },
+          ],
+        },
+        voice: {
+          provider: "11labs",
+          voiceId: "pNInz6obpgDQGcFmaJgB",
+        },
+        firstMessage: getFirstMessage(selectedLanguage),
+        transcriber: {
+          provider: "deepgram",
+          language: vapiLanguage as "en" | "hi" | "ta",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to start call:", error);
+      setCallState({
+        status: "error",
+        duration: 0,
+        transcript: [],
+        errorMessage: t("voiceAstrologer.startError", "Failed to start call. Please check your microphone permissions and try again."),
+      });
+    }
   };
 
   const endCall = () => {
-    const minutesUsed = Math.ceil(callState.duration / 60);
-    setDailyMinutesUsed((prev) => prev + minutesUsed);
-    setCallState({
+    if (vapiRef.current) {
+      vapiRef.current.stop();
+    }
+    const minutesUsed = Math.ceil(callState.duration / 60) || 1;
+    const newTotal = dailyMinutesUsed + minutesUsed;
+    setDailyMinutesUsed(newTotal);
+    localStorage.setItem("vapiDailyMinutes", newTotal.toString());
+    
+    setCallState((prev) => ({
+      ...prev,
       status: "ended",
-      duration: callState.duration,
-      transcript: callState.transcript,
-    });
+    }));
   };
 
   const resetCall = () => {
+    vapiRef.current = null;
     setCallState({
       status: "idle",
       duration: 0,
       transcript: [],
     });
+  };
+
+  const toggleMute = () => {
+    if (vapiRef.current) {
+      vapiRef.current.setMuted(!isMuted);
+      setIsMuted(!isMuted);
+    }
   };
 
   const remainingMinutes = dailyLimit - dailyMinutesUsed;
@@ -209,6 +359,9 @@ export default function VoiceAstrologerPage() {
                       {callState.status === "ended" && (
                         <CheckCircle className="w-16 h-16 text-green-400" />
                       )}
+                      {callState.status === "error" && (
+                        <AlertCircle className="w-16 h-16 text-red-400" />
+                      )}
                     </div>
 
                     <h3 className="text-xl font-semibold mb-1">
@@ -216,6 +369,7 @@ export default function VoiceAstrologerPage() {
                       {callState.status === "connecting" && t("voiceAstrologer.connecting", "Connecting...")}
                       {callState.status === "connected" && t("voiceAstrologer.inCall", "In Call")}
                       {callState.status === "ended" && t("voiceAstrologer.callEnded", "Call Ended")}
+                      {callState.status === "error" && t("voiceAstrologer.error", "Error")}
                     </h3>
 
                     {callState.status === "connected" && (
@@ -227,6 +381,12 @@ export default function VoiceAstrologerPage() {
                     {callState.status === "ended" && (
                       <p className="text-violet-300">
                         {t("voiceAstrologer.duration", "Duration")}: {formatDuration(callState.duration)}
+                      </p>
+                    )}
+
+                    {callState.status === "error" && callState.errorMessage && (
+                      <p className="text-red-300 text-sm mt-2">
+                        {callState.errorMessage}
                       </p>
                     )}
                   </div>
@@ -243,7 +403,7 @@ export default function VoiceAstrologerPage() {
                   )}
 
                   <div className="flex items-center justify-center gap-4">
-                    {callState.status === "idle" && (
+                    {(callState.status === "idle" || callState.status === "error") && (
                       <Button
                         size="lg"
                         className="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16"
@@ -258,7 +418,12 @@ export default function VoiceAstrologerPage() {
                       <Button
                         size="lg"
                         className="bg-red-500 hover:bg-red-600 text-white rounded-full w-16 h-16"
-                        onClick={() => setCallState({ status: "idle", duration: 0, transcript: [] })}
+                        onClick={() => {
+                          if (vapiRef.current) {
+                            vapiRef.current.stop();
+                          }
+                          setCallState({ status: "idle", duration: 0, transcript: [] });
+                        }}
                       >
                         <PhoneOff className="w-6 h-6" />
                       </Button>
@@ -270,7 +435,7 @@ export default function VoiceAstrologerPage() {
                           size="lg"
                           variant="outline"
                           className={`rounded-full w-12 h-12 ${isMuted ? "bg-red-500/20 border-red-500" : "bg-white/10 border-white/30"}`}
-                          onClick={() => setIsMuted(!isMuted)}
+                          onClick={toggleMute}
                         >
                           {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                         </Button>

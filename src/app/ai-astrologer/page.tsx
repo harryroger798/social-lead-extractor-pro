@@ -224,7 +224,7 @@ function getAstrologyResponse(question: string): string {
 }
 
 export default function AIAstrologerPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   // Suggested questions using t() function
   const suggestedQuestions = [
@@ -302,6 +302,7 @@ ${t('aiAstrologer.welcomeClosing', 'How may I assist you on your spiritual journ
         body: JSON.stringify({
           message: currentInput,
           conversationHistory,
+          language,
         }),
       });
 

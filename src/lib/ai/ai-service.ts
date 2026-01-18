@@ -1,4 +1,25 @@
-const ASTROLOGY_SYSTEM_PROMPT = `You are an expert Vedic astrologer with deep knowledge of Jyotish Shastra, the ancient Indian system of astrology. You provide guidance based on:
+// Language names for system prompt
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi (हिंदी)",
+  ta: "Tamil (தமிழ்)",
+  te: "Telugu (తెలుగు)",
+  bn: "Bengali (বাংলা)",
+  mr: "Marathi (मराठी)",
+  gu: "Gujarati (ગુજરાતી)",
+  kn: "Kannada (ಕನ್ನಡ)",
+  ml: "Malayalam (മലയാളം)",
+  pa: "Punjabi (ਪੰਜਾਬੀ)",
+};
+
+// Generate system prompt with language instruction
+function getAstrologySystemPrompt(language: string = "en"): string {
+  const languageName = LANGUAGE_NAMES[language] || "English";
+  const languageInstruction = language === "en" 
+    ? "Respond in English. You may use Hindi terms with English explanations when appropriate."
+    : `IMPORTANT: You MUST respond entirely in ${languageName}. All your responses, explanations, and guidance must be written in ${languageName}. Do not respond in English or Hindi unless the user specifically asks for it. This is critical - the user has selected ${languageName} as their preferred language.`;
+
+  return `You are an expert Vedic astrologer with deep knowledge of Jyotish Shastra, the ancient Indian system of astrology. You provide guidance based on:
 
 - Vedic astrology principles (Parashari and Jaimini systems)
 - Planetary positions, transits, and their effects
@@ -13,11 +34,13 @@ Guidelines:
 - Provide practical remedies when discussing doshas or challenges
 - Explain astrological concepts in simple terms
 - Keep responses concise but informative (2-4 paragraphs)
-- Use Hindi terms with English explanations when appropriate
 - IMPORTANT: When a user provides their birth date, you MUST calculate and provide their Moon sign, Sun sign, and basic astrological insights based on that date
 - For birth dates, use Western zodiac date ranges to determine Sun sign, and provide Moon sign based on the lunar cycle approximation
 
+LANGUAGE INSTRUCTION: ${languageInstruction}
+
 You are representing VedicStarAstro, a trusted platform for authentic Vedic astrology services.`;
+}
 
 // Helper function to parse birth date from user message
 function parseBirthDate(message: string): Date | null {
@@ -130,8 +153,9 @@ interface ChatMessage {
   content: string;
 }
 
-async function callGroq(messages: ChatMessage[], apiKey: string): Promise<AIResponse> {
+async function callGroq(messages: ChatMessage[], apiKey: string, language: string = "en"): Promise<AIResponse> {
   try {
+    const systemPrompt = getAstrologySystemPrompt(language);
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -141,7 +165,7 @@ async function callGroq(messages: ChatMessage[], apiKey: string): Promise<AIResp
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [
-          { role: "system", content: ASTROLOGY_SYSTEM_PROMPT },
+          { role: "system", content: systemPrompt },
           ...messages,
         ],
         temperature: 0.7,
@@ -169,8 +193,9 @@ async function callGroq(messages: ChatMessage[], apiKey: string): Promise<AIResp
   }
 }
 
-async function callGemini(messages: ChatMessage[], apiKey: string): Promise<AIResponse> {
+async function callGemini(messages: ChatMessage[], apiKey: string, language: string = "en"): Promise<AIResponse> {
   try {
+    const systemPrompt = getAstrologySystemPrompt(language);
     const conversationHistory = messages.map((msg) => ({
       role: msg.role === "assistant" ? "model" : "user",
       parts: [{ text: msg.content }],
@@ -185,7 +210,7 @@ async function callGemini(messages: ChatMessage[], apiKey: string): Promise<AIRe
         },
         body: JSON.stringify({
           systemInstruction: {
-            parts: [{ text: ASTROLOGY_SYSTEM_PROMPT }],
+            parts: [{ text: systemPrompt }],
           },
           contents: conversationHistory,
           generationConfig: {
@@ -226,7 +251,8 @@ export async function getAIResponse(
   userMessage: string,
   conversationHistory: ChatMessage[] = [],
   groqApiKey?: string,
-  geminiApiKey?: string
+  geminiApiKey?: string,
+  language: string = "en"
 ): Promise<AIResponse> {
   // Enhance message with birth date information if detected
   const enhancedMessage = enhanceMessageWithBirthInfo(userMessage);
@@ -238,7 +264,7 @@ export async function getAIResponse(
 
   // Try Groq first (primary)
   if (groqApiKey) {
-    const groqResponse = await callGroq(messages, groqApiKey);
+    const groqResponse = await callGroq(messages, groqApiKey, language);
     if (groqResponse.success) {
       return groqResponse;
     }
@@ -247,7 +273,7 @@ export async function getAIResponse(
 
   // Fallback to Gemini
   if (geminiApiKey) {
-    const geminiResponse = await callGemini(messages, geminiApiKey);
+    const geminiResponse = await callGemini(messages, geminiApiKey, language);
     if (geminiResponse.success) {
       return geminiResponse;
     }
