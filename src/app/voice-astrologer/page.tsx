@@ -223,6 +223,39 @@ export default function VoiceAstrologerPage() {
       return;
     }
 
+    // Check if we're in a secure context (HTTPS or localhost)
+    // Microphone access requires HTTPS in modern browsers
+    const isSecureContext = window.isSecureContext || 
+      window.location.hostname === 'localhost' || 
+      window.location.hostname === '127.0.0.1';
+    
+    if (!isSecureContext) {
+      setCallState({
+        status: "error",
+        duration: 0,
+        transcript: [],
+        errorMessage: t("voiceAstrologer.httpsRequired", "Voice calls require a secure connection (HTTPS). Please access this site via HTTPS to use the Voice AI Astrologer."),
+      });
+      return;
+    }
+
+    // Check for microphone permission before starting
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+      if (permissionStatus.state === 'denied') {
+        setCallState({
+          status: "error",
+          duration: 0,
+          transcript: [],
+          errorMessage: t("voiceAstrologer.microphoneDenied", "Microphone access was denied. Please allow microphone access in your browser settings and try again."),
+        });
+        return;
+      }
+    } catch {
+      // Permission API not supported, continue anyway
+      console.log("Permission API not supported, continuing...");
+    }
+
     setCallState({
       status: "connecting",
       duration: 0,

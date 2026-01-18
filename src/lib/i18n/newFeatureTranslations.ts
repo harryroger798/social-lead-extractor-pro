@@ -171,7 +171,11 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       endCall: "End Call",
       mute: "Mute",
       unmute: "Unmute",
-      speaker: "Speaker"
+      speaker: "Speaker",
+      httpsRequired: "Voice calls require a secure connection (HTTPS). Please access this site via HTTPS to use the Voice AI Astrologer.",
+      microphoneDenied: "Microphone access was denied. Please allow microphone access in your browser settings and try again.",
+      connectionError: "Connection error. Please try again later.",
+      startError: "Failed to start call. Please check your microphone permissions and try again."
     },
     blockchainKundli: {
       badge: "Verified & Immutable",
@@ -506,7 +510,11 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       endCall: "कॉल समाप्त करें",
       mute: "म्यूट",
       unmute: "अनम्यूट",
-      speaker: "स्पीकर"
+      speaker: "स्पीकर",
+      httpsRequired: "वॉयस कॉल के लिए सुरक्षित कनेक्शन (HTTPS) आवश्यक है। कृपया वॉयस AI ज्योतिषी का उपयोग करने के लिए HTTPS के माध्यम से इस साइट तक पहुंचें।",
+      microphoneDenied: "माइक्रोफोन एक्सेस अस्वीकार कर दी गई। कृपया अपनी ब्राउज़र सेटिंग्स में माइक्रोफोन एक्सेस की अनुमति दें और पुनः प्रयास करें।",
+      connectionError: "कनेक्शन त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+      startError: "कॉल शुरू करने में विफल। कृपया अपनी माइक्रोफोन अनुमतियां जांचें और पुनः प्रयास करें।"
     },
     blockchainKundli: {
       badge: "सत्यापित और अपरिवर्तनीय",
