@@ -51,11 +51,11 @@ interface Repair {
 const STATUSES = ['pending', 'diagnosed', 'waiting_parts', 'in_progress', 'completed', 'delivered', 'cancelled']
 
 const DEVICE_TYPES = [
-  { value: 'laptop', label: 'Laptop' },
-  { value: 'desktop', label: 'Desktop' },
-  { value: 'mobile', label: 'Mobile' },
-  { value: 'tablet', label: 'Tablet' },
-  { value: 'other', label: 'Other' },
+  { value: 'LAPTOP', label: 'Laptop' },
+  { value: 'PC', label: 'Desktop/PC' },
+  { value: 'MOBILE', label: 'Mobile' },
+  { value: 'TABLET', label: 'Tablet' },
+  { value: 'OTHER', label: 'Other' },
 ]
 
 export function RepairsPage() {
