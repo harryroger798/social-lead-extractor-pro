@@ -59,6 +59,26 @@ const VAPI_PUBLIC_KEYS = [
   "79e3eede-bb04-4780-9f3e-f6ce67b190dd",
 ];
 
+// Supported Deepgram languages for transcription
+type DeepgramLanguage = "en" | "hi" | "ta" | "te" | "bn" | "mr" | "gu" | "kn" | "ml" | "pa" | "en-IN";
+
+// Map our language codes to Deepgram supported languages
+const getDeepgramLanguage = (langCode: string): DeepgramLanguage => {
+  const langMap: Record<string, DeepgramLanguage> = {
+    en: "en",
+    hi: "hi",
+    ta: "ta",
+    te: "te",
+    bn: "bn",
+    mr: "mr",
+    gu: "gu",
+    kn: "kn",
+    ml: "ml",
+    pa: "pa",
+  };
+  return langMap[langCode] || "en";
+};
+
 // Build transient assistant configuration using VAPI's built-in providers
 // This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
 // No external API keys required (OpenAI, ElevenLabs, etc.)
@@ -66,16 +86,16 @@ const buildAssistantConfig = (langCode: string) => ({
   name: "VedicStarAstro AI Astrologer",
   firstMessage: getFirstMessage(langCode),
   transcriber: {
-    provider: "deepgram",
-    model: "nova-2",
-    language: langCode === "en" ? "en" : langCode,
+    provider: "deepgram" as const,
+    model: "nova-2" as const,
+    language: getDeepgramLanguage(langCode),
   },
   model: {
-    provider: "groq",
-    model: "llama-3.1-8b-instant",
+    provider: "groq" as const,
+    model: "llama-3.1-8b-instant" as const,
     messages: [
       {
-        role: "system",
+        role: "system" as const,
         content: getLanguageSystemPrompt(langCode),
       },
     ],
@@ -83,12 +103,12 @@ const buildAssistantConfig = (langCode: string) => ({
     maxTokens: 250,
   },
   voice: {
-    provider: "deepgram",
+    provider: "deepgram" as const,
     voiceId: "aura-asteria-en",
   },
   silenceTimeoutSeconds: 30,
   maxDurationSeconds: 300,
-  backgroundSound: "off",
+  backgroundSound: "off" as const,
   backchannelingEnabled: false,
   backgroundDenoisingEnabled: true,
 });
@@ -263,7 +283,8 @@ export default function VoiceAstrologerPage() {
       // Use transient assistant configuration with VAPI's built-in providers
       // This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
       // No external API keys required (OpenAI, ElevenLabs, etc.)
-      const assistantConfig = buildAssistantConfig(selectedLanguage);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const assistantConfig = buildAssistantConfig(selectedLanguage) as any;
       
       await vapi.start(assistantConfig);
     } catch (error) {
