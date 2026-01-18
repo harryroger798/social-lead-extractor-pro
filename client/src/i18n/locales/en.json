@@ -525,6 +525,19 @@
       "rights": "All rights reserved."
     }
   },
+  "footer": {
+    "description": "Your trusted partner for all device repairs and digital services in Barrackpore and surrounding areas.",
+    "quickLinks": "Quick Links",
+    "services": "Our Services",
+    "contactUs": "Contact Us",
+    "pcRepair": "PC Repair",
+    "mobileRepair": "Mobile Repair",
+    "laptopRepair": "Laptop Repair",
+    "dataRecovery": "Data Recovery",
+    "webDevelopment": "Web Development",
+    "rights": "All rights reserved.",
+    "adminLogin": "Admin Login"
+  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Invalid email address",

@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { LanguageSelector } from '@/components/LanguageSelector'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { Calendar, Clock, CheckCircle } from 'lucide-react'
 
@@ -43,43 +42,8 @@ export function BookingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            ByteCare
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium hover:text-primary">
-              {t('nav.home')}
-            </Link>
-            <Link to="/services" className="text-sm font-medium hover:text-primary">
-              {t('nav.services')}
-            </Link>
-            <Link to="/about" className="text-sm font-medium hover:text-primary">
-              {t('nav.about')}
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-primary">
-              {t('nav.contact')}
-            </Link>
-            <Link to="/blog" className="text-sm font-medium hover:text-primary">
-              {t('nav.blog')}
-            </Link>
-            <Link to="/booking" className="text-sm font-medium text-primary">
-              {t('nav.booking')}
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <LanguageSelector />
-            <ThemeToggle />
-            <Link to="/login">
-              <Button>{t('nav.login')}</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-12">
+    <PublicLayout>
+      <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">{t('public.booking.title')}</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -281,13 +245,7 @@ export function BookingPage() {
             </Card>
           )}
         </div>
-      </main>
-
-      <footer className="border-t bg-card py-8 mt-12">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>&copy; 2024 ByteCare. {t('public.footer.rights')}</p>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </PublicLayout>
   )
 }

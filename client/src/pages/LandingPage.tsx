@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/authStore'
 import { useTranslation } from 'react-i18next'
-import { LanguageSelector } from '@/components/LanguageSelector'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { PublicLayout } from '@/components/layout/PublicLayout'
 import { 
   Wrench, 
   Smartphone, 
@@ -31,32 +30,7 @@ export function LandingPage() {
   }
   
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-        {/* Header */}
-        <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-white font-bold text-lg">BC</span>
-              </div>
-              <span className="text-2xl font-bold text-primary">ByteCare</span>
-            </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.services')}</Link>
-              <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.about')}</Link>
-              <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.contact')}</Link>
-              <Link to="/blog" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.blog')}</Link>
-              <Link to="/booking" className="text-muted-foreground hover:text-primary transition-colors">{t('nav.booking')}</Link>
-            </nav>
-            <div className="flex items-center gap-2">
-              <LanguageSelector />
-              <ThemeToggle />
-              <Link to="/login">
-                <Button>{t('nav.login')}</Button>
-              </Link>
-            </div>
-          </div>
-        </header>
+      <PublicLayout>
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
@@ -305,27 +279,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center">
-                <span className="text-primary font-bold text-sm">BC</span>
-              </div>
-              <span className="text-xl font-bold">ByteCare</span>
-            </div>
-            <p className="text-slate-400 text-sm">
-              &copy; {new Date().getFullYear()} ByteCare. {t('landing.footer.rights')}
-            </p>
-            <div className="flex items-center gap-4">
-              <Link to="/login" className="text-slate-400 hover:text-white transition-colors text-sm">
-                {t('landing.footer.adminLogin')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </PublicLayout>
   )
 }
