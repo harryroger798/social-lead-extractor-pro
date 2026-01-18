@@ -167,7 +167,7 @@ export default function BlockchainKundliPage() {
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
+    const margin = 18;
     const centerX = pageWidth / 2;
 
     // Premium cream/gold background
@@ -176,276 +176,236 @@ export default function BlockchainKundliPage() {
 
     // Outer decorative border (gold)
     doc.setDrawColor(212, 168, 83);
-    doc.setLineWidth(3);
+    doc.setLineWidth(2);
     doc.rect(8, 8, pageWidth - 16, pageHeight - 16);
     
     // Inner decorative border
     doc.setDrawColor(212, 168, 83);
-    doc.setLineWidth(1);
-    doc.rect(12, 12, pageWidth - 24, pageHeight - 24);
-    
-    // Corner ornaments (decorative L-shapes)
-    const drawCornerOrnament = (x: number, y: number, rotation: number) => {
-      doc.setFillColor(212, 168, 83);
-      const size = 15;
-      const thickness = 3;
-      
-      doc.saveGraphicsState();
-      // Draw L-shape corner ornament
-      if (rotation === 0) { // top-left
-        doc.rect(x, y, size, thickness, "F");
-        doc.rect(x, y, thickness, size, "F");
-      } else if (rotation === 90) { // top-right
-        doc.rect(x - size, y, size, thickness, "F");
-        doc.rect(x - thickness, y, thickness, size, "F");
-      } else if (rotation === 180) { // bottom-right
-        doc.rect(x - size, y - thickness, size, thickness, "F");
-        doc.rect(x - thickness, y - size, thickness, size, "F");
-      } else { // bottom-left
-        doc.rect(x, y - thickness, size, thickness, "F");
-        doc.rect(x, y - size, thickness, size, "F");
-      }
-      doc.restoreGraphicsState();
-    };
-    
-    drawCornerOrnament(16, 16, 0);
-    drawCornerOrnament(pageWidth - 16, 16, 90);
-    drawCornerOrnament(pageWidth - 16, pageHeight - 16, 180);
-    drawCornerOrnament(16, pageHeight - 16, 270);
+    doc.setLineWidth(0.5);
+    doc.rect(11, 11, pageWidth - 22, pageHeight - 22);
 
-    // Header background with gradient effect
+    // Header background (smaller)
     doc.setFillColor(212, 168, 83);
-    doc.rect(12, 12, pageWidth - 24, 45, "F");
+    doc.rect(11, 11, pageWidth - 22, 35, "F");
     
     // Darker gold accent line
     doc.setFillColor(139, 105, 20);
-    doc.rect(12, 55, pageWidth - 24, 2, "F");
+    doc.rect(11, 44, pageWidth - 22, 2, "F");
 
-    // Decorative star/sun symbol instead of Om (Unicode not supported)
+    // Decorative star/sun symbol
     doc.setFillColor(139, 105, 20);
-    doc.circle(centerX, 24, 8, "F");
+    doc.circle(centerX, 22, 6, "F");
     doc.setFillColor(212, 168, 83);
-    doc.circle(centerX, 24, 5, "F");
+    doc.circle(centerX, 22, 4, "F");
     doc.setFillColor(139, 105, 20);
-    doc.circle(centerX, 24, 2, "F");
+    doc.circle(centerX, 22, 1.5, "F");
 
     // Main title
     doc.setTextColor(26, 26, 46);
-    doc.setFontSize(22);
-    doc.setFont("helvetica", "bold");
-    doc.text("VEDICSTARASTRO", centerX, 40, { align: "center" });
-    
-    // Subtitle
-    doc.setFontSize(10);
-    doc.setTextColor(90, 74, 26);
-    doc.text("AUTHENTIC VEDIC ASTROLOGY", centerX, 48, { align: "center" });
-
-    // Certificate title with decorative elements
-    doc.setTextColor(26, 26, 46);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("BLOCKCHAIN KUNDLI CERTIFICATE", centerX, 70, { align: "center" });
+    doc.text("VEDICSTARASTRO", centerX, 34, { align: "center" });
+    
+    // Subtitle
+    doc.setFontSize(8);
+    doc.setTextColor(90, 74, 26);
+    doc.text("AUTHENTIC VEDIC ASTROLOGY", centerX, 40, { align: "center" });
+
+    // Certificate title
+    doc.setTextColor(26, 26, 46);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("BLOCKCHAIN KUNDLI CERTIFICATE", centerX, 56, { align: "center" });
     
     // Decorative line under title
     doc.setDrawColor(212, 168, 83);
     doc.setLineWidth(0.5);
-    doc.line(centerX - 60, 74, centerX + 60, 74);
+    doc.line(centerX - 50, 59, centerX + 50, 59);
     
-    // Decorative dots row instead of zodiac symbols (Unicode not supported)
+    // Decorative dots row (12 dots for zodiac)
     doc.setFillColor(212, 168, 83);
     for (let i = 0; i < 12; i++) {
-      const dotX = centerX - 55 + (i * 10);
-      doc.circle(dotX, 82, 2, "F");
+      const dotX = centerX - 44 + (i * 8);
+      doc.circle(dotX, 65, 1.5, "F");
     }
 
     // Certificate ID badge
     doc.setFillColor(255, 248, 230);
     doc.setDrawColor(212, 168, 83);
-    doc.setLineWidth(1);
-    doc.roundedRect(centerX - 40, 86, 80, 14, 4, 4, "FD");
+    doc.setLineWidth(0.5);
+    doc.roundedRect(centerX - 35, 70, 70, 10, 3, 3, "FD");
     doc.setTextColor(139, 105, 20);
-    doc.setFontSize(11);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text(certificate.certificateId, centerX, 95, { align: "center" });
+    doc.text(certificate.certificateId, centerX, 77, { align: "center" });
 
     // Personal Details Section
-    let yPos = 110;
+    let yPos = 88;
+    const col1X = margin + 5;
+    const col2X = centerX + 5;
     
     // Section background
     doc.setFillColor(255, 250, 240);
     doc.setDrawColor(212, 168, 83);
     doc.setLineWidth(0.5);
-    doc.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 45, 3, 3, "FD");
+    doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 38, 2, 2, "FD");
     
-    // Section title with decorative bullet
+    // Section title
     doc.setTextColor(139, 105, 20);
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setFillColor(212, 168, 83);
-    doc.circle(margin + 7, yPos + 1, 2, "F");
-    doc.text("PERSONAL DETAILS", margin + 12, yPos + 3);
+    doc.circle(margin + 5, yPos + 6, 1.5, "F");
+    doc.text("PERSONAL DETAILS", margin + 9, yPos + 8);
     
     // Divider line
     doc.setDrawColor(212, 168, 83);
-    doc.line(margin + 5, yPos + 6, pageWidth - margin - 5, yPos + 6);
+    doc.line(margin + 3, yPos + 11, pageWidth - margin - 3, yPos + 11);
 
-    yPos += 14;
-    doc.setTextColor(60, 60, 60);
-    doc.setFontSize(10);
-    
-    // Two-column layout for personal details
-    const col1X = margin + 8;
-    const col2X = centerX + 5;
-    
+    // Personal details content
+    yPos += 17;
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(139, 105, 20);
     doc.text("Full Name:", col1X, yPos);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(26, 26, 46);
-    doc.setFontSize(12);
-    doc.text(certificate.birthDetails.name || "N/A", col1X, yPos + 6);
+    doc.text(certificate.birthDetails.name || "N/A", col1X + 22, yPos);
     
-    yPos += 16;
-    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(139, 105, 20);
+    doc.text("Place:", col2X, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(26, 26, 46);
+    doc.text(certificate.birthDetails.place || "N/A", col2X + 14, yPos);
+    
+    yPos += 8;
     doc.setFont("helvetica", "bold");
     doc.setTextColor(139, 105, 20);
     doc.text("Date of Birth:", col1X, yPos);
-    doc.text("Time of Birth:", col2X, yPos);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(26, 26, 46);
-    doc.text(certificate.birthDetails.date || "N/A", col1X, yPos + 6);
-    doc.text(certificate.birthDetails.time || "N/A", col2X, yPos + 6);
+    doc.text(certificate.birthDetails.date || "N/A", col1X + 28, yPos);
     
-    yPos += 14;
     doc.setFont("helvetica", "bold");
     doc.setTextColor(139, 105, 20);
-    doc.text("Place of Birth:", col1X, yPos);
+    doc.text("Time:", col2X, yPos);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(26, 26, 46);
-    doc.text(certificate.birthDetails.place || "N/A", col1X, yPos + 6);
+    doc.text(certificate.birthDetails.time || "N/A", col2X + 14, yPos);
 
-    // Chart Summary Section
-    yPos = 165;
+    // Astrological Summary Section
+    yPos = 132;
     
     // Section background
     doc.setFillColor(255, 250, 240);
     doc.setDrawColor(212, 168, 83);
-    doc.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 40, 3, 3, "FD");
+    doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 35, 2, 2, "FD");
     
     doc.setTextColor(139, 105, 20);
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setFillColor(212, 168, 83);
-    doc.circle(margin + 7, yPos + 1, 2, "F");
-    doc.text("ASTROLOGICAL SUMMARY", margin + 12, yPos + 3);
-    doc.line(margin + 5, yPos + 6, pageWidth - margin - 5, yPos + 6);
+    doc.circle(margin + 5, yPos + 6, 1.5, "F");
+    doc.text("ASTROLOGICAL SUMMARY", margin + 9, yPos + 8);
+    doc.line(margin + 3, yPos + 11, pageWidth - margin - 3, yPos + 11);
 
-    yPos += 14;
-    doc.setFontSize(10);
+    // Chart details in 2x2 grid
+    yPos += 17;
+    doc.setFontSize(9);
     
-    // Grid layout for chart details
     const chartItems = [
-      { label: "Ascendant (Lagna)", value: certificate.chartSummary.ascendant },
-      { label: "Moon Sign (Rashi)", value: certificate.chartSummary.moonSign },
-      { label: "Sun Sign", value: certificate.chartSummary.sunSign },
-      { label: "Birth Nakshatra", value: certificate.chartSummary.nakshatra },
+      { label: "Ascendant:", value: certificate.chartSummary.ascendant },
+      { label: "Moon Sign:", value: certificate.chartSummary.moonSign },
+      { label: "Sun Sign:", value: certificate.chartSummary.sunSign },
+      { label: "Nakshatra:", value: certificate.chartSummary.nakshatra },
     ];
     
     chartItems.forEach((item, index) => {
       const x = index % 2 === 0 ? col1X : col2X;
-      const y = yPos + Math.floor(index / 2) * 12;
+      const y = yPos + Math.floor(index / 2) * 8;
       doc.setFont("helvetica", "bold");
       doc.setTextColor(139, 105, 20);
-      doc.text(item.label + ":", x, y);
+      doc.text(item.label, x, y);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(26, 26, 46);
-      doc.text(item.value, x + 35, y);
+      doc.text(item.value, x + 24, y);
     });
 
     // Verification Section (dark background)
-    yPos = 215;
+    yPos = 173;
     
     doc.setFillColor(26, 26, 46);
-    doc.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 45, 3, 3, "F");
+    doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 42, 2, 2, "F");
     
     doc.setTextColor(212, 168, 83);
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    // Draw a small lock icon using shapes
     doc.setFillColor(212, 168, 83);
-    doc.roundedRect(margin + 5, yPos - 1, 6, 5, 1, 1, "F");
+    doc.roundedRect(margin + 4, yPos + 4, 5, 4, 1, 1, "F");
     doc.setDrawColor(212, 168, 83);
-    doc.setLineWidth(1);
-    doc.circle(margin + 8, yPos - 2, 2);
-    doc.text("BLOCKCHAIN VERIFICATION", margin + 14, yPos + 3);
+    doc.setLineWidth(0.8);
+    doc.circle(margin + 6.5, yPos + 3, 1.5);
+    doc.text("BLOCKCHAIN VERIFICATION", margin + 12, yPos + 8);
     
     doc.setDrawColor(212, 168, 83);
-    doc.line(margin + 5, yPos + 6, pageWidth - margin - 5, yPos + 6);
+    doc.setLineWidth(0.3);
+    doc.line(margin + 3, yPos + 11, pageWidth - margin - 3, yPos + 11);
 
-    yPos += 14;
-    doc.setFontSize(8);
-    doc.setTextColor(212, 168, 83);
-    doc.text("CRYPTOGRAPHIC HASH (SHA-256)", margin + 5, yPos);
-    yPos += 5;
+    yPos += 17;
     doc.setFontSize(7);
-    doc.setTextColor(160, 210, 219);
-    doc.setFont("courier", "normal");
-    doc.text(certificate.hash, margin + 5, yPos);
-
-    yPos += 10;
-    doc.setFontSize(8);
     doc.setTextColor(212, 168, 83);
     doc.setFont("helvetica", "bold");
-    doc.text("IPFS HASH", margin + 5, yPos);
-    yPos += 5;
-    doc.setFontSize(7);
+    doc.text("CRYPTOGRAPHIC HASH (SHA-256)", margin + 4, yPos);
+    yPos += 4;
+    doc.setFontSize(6);
     doc.setTextColor(160, 210, 219);
     doc.setFont("courier", "normal");
-    doc.text(certificate.ipfsHash, margin + 5, yPos);
+    doc.text(certificate.hash, margin + 4, yPos);
 
-    // Footer section
-    yPos = pageHeight - 50;
+    yPos += 7;
+    doc.setFontSize(7);
+    doc.setTextColor(212, 168, 83);
+    doc.setFont("helvetica", "bold");
+    doc.text("IPFS HASH", margin + 4, yPos);
+    yPos += 4;
+    doc.setFontSize(6);
+    doc.setTextColor(160, 210, 219);
+    doc.setFont("courier", "normal");
+    doc.text(certificate.ipfsHash, margin + 4, yPos);
+
+    // Footer section with seal
+    yPos = 222;
     
-    // Seal/stamp
+    // Seal/stamp on right
     doc.setDrawColor(212, 168, 83);
-    doc.setLineWidth(2);
-    doc.circle(pageWidth - 45, yPos + 15, 18);
-    doc.setLineWidth(1);
-    doc.circle(pageWidth - 45, yPos + 15, 15);
-    doc.setFontSize(8);
+    doc.setLineWidth(1.5);
+    doc.circle(pageWidth - 38, yPos + 12, 14);
+    doc.setLineWidth(0.5);
+    doc.circle(pageWidth - 38, yPos + 12, 11);
+    doc.setFontSize(7);
     doc.setTextColor(139, 105, 20);
     doc.setFont("helvetica", "bold");
-    doc.text("VERIFIED", pageWidth - 45, yPos + 12, { align: "center" });
-    doc.setFontSize(14);
-    doc.text("\u2713", pageWidth - 45, yPos + 18, { align: "center" });
-    doc.setFontSize(8);
-    doc.text("AUTHENTIC", pageWidth - 45, yPos + 23, { align: "center" });
+    doc.text("VERIFIED", pageWidth - 38, yPos + 9, { align: "center" });
+    doc.setFontSize(12);
+    doc.text("*", pageWidth - 38, yPos + 14, { align: "center" });
+    doc.setFontSize(7);
+    doc.text("AUTHENTIC", pageWidth - 38, yPos + 18, { align: "center" });
 
-    // Footer text
+    // Footer text on left
     doc.setTextColor(90, 74, 26);
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setFont("helvetica", "italic");
-    doc.text(
-      "This certificate is cryptographically signed and permanently stored on IPFS.",
-      margin,
-      yPos + 5
-    );
-    doc.text(
-      "It can be independently verified using the certificate ID or hash.",
-      margin,
-      yPos + 11
-    );
+    doc.text("This certificate is cryptographically signed and stored on IPFS.", margin, yPos + 5);
+    doc.text("Verify using the certificate ID or hash.", margin, yPos + 10);
     doc.setFont("helvetica", "normal");
-    doc.text("www.vedicstarastro.com", margin, yPos + 20);
+    doc.setFontSize(8);
+    doc.text("www.vedicstarastro.com", margin, yPos + 18);
     
     // Timestamp
-    doc.setFontSize(7);
+    doc.setFontSize(6);
     doc.setTextColor(120, 120, 120);
-    doc.text(
-      "Generated: " + new Date(certificate.timestamp).toLocaleString(),
-      margin,
-      yPos + 28
-    );
+    doc.text("Generated: " + new Date(certificate.timestamp).toLocaleString(), margin, yPos + 24);
 
     // Save the PDF
     doc.save(`kundli-certificate-${certificate.certificateId}.pdf`);
