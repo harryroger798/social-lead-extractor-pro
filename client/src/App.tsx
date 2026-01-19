@@ -18,6 +18,7 @@ import { PublicServicesPage } from '@/pages/public/ServicesPage'
 import { AboutPage } from '@/pages/public/AboutPage'
 import { ContactPage } from '@/pages/public/ContactPage'
 import { BlogPage } from '@/pages/public/BlogPage'
+import { BlogPostPage } from '@/pages/public/BlogPostPage'
 import { BookingPage } from '@/pages/public/BookingPage'
 import { PricingPage } from '@/pages/public/PricingPage'
 import { HelpCenterPage } from '@/pages/public/HelpCenterPage'
@@ -43,6 +44,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/booking" element={<BookingPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                                 <Route path="/help" element={<HelpCenterPage />} />
