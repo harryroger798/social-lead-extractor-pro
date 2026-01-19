@@ -323,6 +323,7 @@ export default function PalmistryPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<PalmAnalysisResult | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [handedness, setHandedness] = useState<"right" | "left">("right");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file upload
@@ -443,6 +444,48 @@ export default function PalmistryPage() {
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-6">
+                            {/* Handedness Selection */}
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                              <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <Hand className="w-4 h-4 text-amber-600" />
+                                {t("palmistry.analyze.whichHand", "Which hand should you photograph?")}
+                              </h4>
+                              <p className="text-sm text-gray-600 mb-4">
+                                {t("palmistry.analyze.handExplanation", "In Vedic palmistry, your dominant hand (the one you write with) shows your current life path and future, while your non-dominant hand shows inherited traits and potential.")}
+                              </p>
+                              <div className="flex flex-col sm:flex-row gap-3">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    name="handedness"
+                                    value="right"
+                                    checked={handedness === "right"}
+                                    onChange={() => setHandedness("right")}
+                                    className="w-4 h-4 text-amber-600 focus:ring-amber-500"
+                                  />
+                                  <span className="text-gray-700">
+                                    {t("palmistry.analyze.rightHanded", "I am right-handed")} → {t("palmistry.analyze.useRightPalm", "Upload RIGHT palm")}
+                                  </span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    name="handedness"
+                                    value="left"
+                                    checked={handedness === "left"}
+                                    onChange={() => setHandedness("left")}
+                                    className="w-4 h-4 text-amber-600 focus:ring-amber-500"
+                                  />
+                                  <span className="text-gray-700">
+                                    {t("palmistry.analyze.leftHanded", "I am left-handed")} → {t("palmistry.analyze.useLeftPalm", "Upload LEFT palm")}
+                                  </span>
+                                </label>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-3 italic">
+                                {t("palmistry.analyze.genderNote", "Note: This applies to both men and women. The dominant hand is read for current life circumstances regardless of gender.")}
+                              </p>
+                            </div>
+
                             {/* Upload Section */}
                             {!uploadedImage ? (
                               <div className="border-2 border-dashed border-amber-300 rounded-lg p-8 text-center bg-amber-50/50">
@@ -484,7 +527,7 @@ export default function PalmistryPage() {
                                   <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
                                     <li>{t("palmistry.analyze.tip1", "Use good lighting - natural daylight works best")}</li>
                                     <li>{t("palmistry.analyze.tip2", "Keep your palm flat and fingers slightly spread")}</li>
-                                    <li>{t("palmistry.analyze.tip3", "Capture your dominant hand (right if right-handed)")}</li>
+                                    <li>{t("palmistry.analyze.tip3", "Capture the hand selected above based on your handedness")}</li>
                                     <li>{t("palmistry.analyze.tip4", "Ensure all major lines are visible in the frame")}</li>
                                     <li>{t("palmistry.analyze.tip5", "Avoid shadows across your palm")}</li>
                                   </ul>
