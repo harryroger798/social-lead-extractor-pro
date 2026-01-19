@@ -24,7 +24,11 @@ import {
   HardDrive,
   Battery,
   Wifi,
-  ChevronDown
+  ChevronDown,
+  Play,
+  Award,
+  MessageCircle,
+  CreditCard
 } from 'lucide-react'
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
@@ -368,6 +372,28 @@ export function LandingPage() {
             </Link>
           </motion.div>
 
+          {/* Watch Demo Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-8"
+          >
+            <button 
+              onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all group"
+            >
+              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Play className="h-5 w-5 fill-white" />
+              </div>
+              <span className="font-medium">
+                {i18n.language === 'hi' ? 'Demo Dekhein' :
+                 i18n.language === 'bn' ? 'ডেমো দেখুন' :
+                 'Watch Demo'}
+              </span>
+            </button>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -384,6 +410,31 @@ export function LandingPage() {
           </motion.div>
         </motion.div>
 
+        {/* Dashboard Mockup */}
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 w-[500px]"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl blur-3xl" />
+            <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 shadow-2xl">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-3 w-3 rounded-full bg-red-400" />
+                <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                <div className="h-3 w-3 rounded-full bg-green-400" />
+                <span className="ml-2 text-white/60 text-sm">ByteCare Dashboard</span>
+              </div>
+              <img 
+                src="/images/dashboard-welcome.png" 
+                alt="ByteCare Dashboard" 
+                className="w-full rounded-lg opacity-90"
+              />
+            </div>
+          </div>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -398,6 +449,105 @@ export function LandingPage() {
             <ChevronDown className="h-8 w-8" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* Trust Signals Section */}
+      <section className="py-12 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-2">
+              {i18n.language === 'hi' ? 'Bharosa Karo' :
+               i18n.language === 'bn' ? 'বিশ্বাস করুন' :
+               'Trusted By'}
+            </p>
+            <h3 className="text-2xl font-bold dark:text-white">
+              {i18n.language === 'hi' ? '500+ Khush Customers' :
+               i18n.language === 'bn' ? '৫০০+ সন্তুষ্ট গ্রাহক' :
+               '500+ Happy Customers'}
+            </h3>
+          </motion.div>
+
+          {/* Review Badges */}
+          <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg"
+            >
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <span className="font-semibold dark:text-white">4.9/5</span>
+              <span className="text-sm text-muted-foreground">Google Reviews</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg"
+            >
+              <Award className="h-5 w-5 text-primary" />
+              <span className="font-semibold dark:text-white">
+                {i18n.language === 'hi' ? 'Certified Technicians' :
+                 i18n.language === 'bn' ? 'সার্টিফাইড টেকনিশিয়ান' :
+                 'Certified Technicians'}
+              </span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg"
+            >
+              <Shield className="h-5 w-5 text-green-500" />
+              <span className="font-semibold dark:text-white">
+                {i18n.language === 'hi' ? '90 Din Warranty' :
+                 i18n.language === 'bn' ? '৯০ দিন ওয়ারেন্টি' :
+                 '90-Day Warranty'}
+              </span>
+            </motion.div>
+          </div>
+
+          {/* Integration Logos */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap justify-center items-center gap-8 opacity-60"
+          >
+            <span className="text-sm text-muted-foreground">
+              {i18n.language === 'hi' ? 'Powered by:' :
+               i18n.language === 'bn' ? 'পাওয়ার্ড বাই:' :
+               'Powered by:'}
+            </span>
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              <span className="font-medium">Google Pay</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              <span className="font-medium">Airtable</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              <span className="font-medium">Omnisend</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5" />
+              <span className="font-medium">WhatsApp</span>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Services Section */}
