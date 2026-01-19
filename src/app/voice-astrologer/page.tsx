@@ -62,22 +62,23 @@ const VAPI_PUBLIC_KEY = "f31bac06-8fc3-4918-89a4-2f8ae64ffd36";
 // All costs charged through VAPI credits
 const VAPI_ASSISTANT_ID = "8d49d046-1f51-4452-aded-2c6220c295e6";
 
-// Supported Deepgram languages for transcription
-type DeepgramLanguage = "en" | "hi" | "ta" | "te" | "bn" | "mr" | "gu" | "kn" | "ml" | "pa" | "en-IN";
+// Supported Deepgram languages for transcription (VAPI SDK types)
+// Only use languages that VAPI SDK officially supports
+type VapiDeepgramLanguage = "en" | "hi" | "ta" | "kn" | "en-US" | "en-IN";
 
-// Map our language codes to Deepgram supported languages
-const getDeepgramLanguage = (langCode: string): DeepgramLanguage => {
-  const langMap: Record<string, DeepgramLanguage> = {
+// Map our language codes to VAPI-supported Deepgram languages
+const getDeepgramLanguage = (langCode: string): VapiDeepgramLanguage => {
+  const langMap: Record<string, VapiDeepgramLanguage> = {
     en: "en",
     hi: "hi",
     ta: "ta",
-    te: "te",
-    bn: "bn",
-    mr: "mr",
-    gu: "gu",
+    te: "en-IN", // Telugu not directly supported, fallback to en-IN
+    bn: "en-IN", // Bengali not directly supported, fallback to en-IN
+    mr: "hi",    // Marathi fallback to Hindi (similar script)
+    gu: "hi",    // Gujarati fallback to Hindi
     kn: "kn",
-    ml: "ml",
-    pa: "pa",
+    ml: "en-IN", // Malayalam not directly supported, fallback to en-IN
+    pa: "hi",    // Punjabi fallback to Hindi
   };
   return langMap[langCode] || "en";
 };
