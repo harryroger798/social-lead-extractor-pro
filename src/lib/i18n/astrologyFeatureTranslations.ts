@@ -160,7 +160,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Tarot Reading",
       aboutText1: "Tarot is a form of divination using 78 cards divided into Major and Minor Arcana.",
       aboutText2: "Each card has imagery, symbolism, and story. Reversed cards modify meanings.",
-      aboutText3: "Tarot is a tool for reflection and guidance, not definitive answers."
+      aboutText3: "Tarot is a tool for reflection and guidance, not definitive answers.",
+      cardNames: {
+        "The Fool": "The Fool",
+        "The Magician": "The Magician",
+        "The High Priestess": "The High Priestess",
+        "The Empress": "The Empress",
+        "The Emperor": "The Emperor",
+        "The Hierophant": "The Hierophant",
+        "The Lovers": "The Lovers",
+        "The Chariot": "The Chariot",
+        "Strength": "Strength",
+        "The Hermit": "The Hermit",
+        "Wheel of Fortune": "Wheel of Fortune",
+        "Justice": "Justice",
+        "The Hanged Man": "The Hanged Man",
+        "Death": "Death",
+        "Temperance": "Temperance",
+        "The Devil": "The Devil",
+        "The Tower": "The Tower",
+        "The Star": "The Star",
+        "The Moon": "The Moon",
+        "The Sun": "The Sun",
+        "Judgement": "Judgement",
+        "The World": "The World"
+      },
+      yesNoAnswers: {
+        Yes: "Yes", No: "No", Maybe: "Maybe", Unlikely: "Unlikely",
+        Strong: "Strong", Moderate: "Moderate", Uncertain: "Uncertain"
+      }
     },
     // Vastu
     vastu: {
@@ -189,7 +217,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Vastu Shastra",
       aboutText1: "Vastu Shastra is ancient Indian science of architecture dating back 5,000 years.",
       aboutText2: "Based on five elements and eight directions for positive energy flow.",
-      aboutText3: "Simple remedies can help balance energy in modern spaces."
+      aboutText3: "Simple remedies can help balance energy in modern spaces.",
+      directionNames: {
+        North: "North", South: "South", East: "East", West: "West",
+        "North-East": "North-East", "South-East": "South-East",
+        "South-West": "South-West", "North-West": "North-West"
+      },
+      elementNames: {
+        Water: "Water", Fire: "Fire", Air: "Air", Space: "Space", Earth: "Earth"
+      },
+      deityNames: {
+        "Kubera (Wealth)": "Kubera (Wealth)", "Yama (Dharma)": "Yama (Dharma)",
+        "Indra (King of Gods)": "Indra (King of Gods)", "Varuna (Rain God)": "Varuna (Rain God)",
+        "Ishanya (Shiva)": "Ishanya (Shiva)", "Agni (Fire God)": "Agni (Fire God)",
+        "Nairuti (Demon)": "Nairuti (Demon)", "Vayu (Wind God)": "Vayu (Wind God)"
+      },
+      roomNames: {
+        bedroom: "Bedroom", kitchen: "Kitchen", bathroom: "Bathroom",
+        livingRoom: "Living Room", puja: "Puja Room", entrance: "Entrance"
+      },
+      problemNames: {
+        "Financial Problems": "Financial Problems", "Health Issues": "Health Issues",
+        "Relationship Problems": "Relationship Problems", "Career Obstacles": "Career Obstacles",
+        "Negative Energy": "Negative Energy"
+      }
     },
     // Chinese Astrology
     chinese: {
@@ -223,7 +274,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Chinese Astrology",
       aboutText1: "Chinese astrology is based on a 12-year cycle with animal signs.",
       aboutText2: "Your sign is determined by birth year according to lunar calendar.",
-      aboutText3: "2026 is the Year of the Snake, favoring careful planning."
+      aboutText3: "2026 is the Year of the Snake, favoring careful planning.",
+      animalNames: {
+        Rat: "Rat", Ox: "Ox", Tiger: "Tiger", Rabbit: "Rabbit", Dragon: "Dragon", Snake: "Snake",
+        Horse: "Horse", Goat: "Goat", Monkey: "Monkey", Rooster: "Rooster", Dog: "Dog", Pig: "Pig"
+      },
+      elementNames: {
+        Wood: "Wood", Fire: "Fire", Earth: "Earth", Metal: "Metal", Water: "Water"
+      },
+      yinYangNames: {
+        Yin: "Yin", Yang: "Yang"
+      }
     },
     // KP System
     kp: {
@@ -261,7 +322,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About KP System",
       aboutText1: "KP System was developed by Prof. K.S. Krishnamurti in the 1960s.",
       aboutText2: "The key innovation is sub-lords determining results.",
-      aboutText3: "Effective for specific questions and timing events."
+      aboutText3: "Effective for specific questions and timing events.",
+      nakshatraNames: {
+        Ashwini: "Ashwini", Bharani: "Bharani", Krittika: "Krittika", Rohini: "Rohini",
+        Mrigashira: "Mrigashira", Ardra: "Ardra", Punarvasu: "Punarvasu", Pushya: "Pushya",
+        Ashlesha: "Ashlesha", Magha: "Magha", "Purva Phalguni": "Purva Phalguni",
+        "Uttara Phalguni": "Uttara Phalguni", Hasta: "Hasta", Chitra: "Chitra", Swati: "Swati",
+        Vishakha: "Vishakha", Anuradha: "Anuradha", Jyeshtha: "Jyeshtha", Mula: "Mula",
+        "Purva Ashadha": "Purva Ashadha", "Uttara Ashadha": "Uttara Ashadha", Shravana: "Shravana",
+        Dhanishta: "Dhanishta", Shatabhisha: "Shatabhisha", "Purva Bhadrapada": "Purva Bhadrapada",
+        "Uttara Bhadrapada": "Uttara Bhadrapada", Revati: "Revati"
+      },
+      zodiacNames: {
+        Aries: "Aries", Taurus: "Taurus", Gemini: "Gemini", Cancer: "Cancer",
+        Leo: "Leo", Virgo: "Virgo", Libra: "Libra", Scorpio: "Scorpio",
+        Sagittarius: "Sagittarius", Capricorn: "Capricorn", Aquarius: "Aquarius", Pisces: "Pisces"
+      },
+      planetNames: {
+        Sun: "Sun", Moon: "Moon", Mars: "Mars", Mercury: "Mercury",
+        Jupiter: "Jupiter", Venus: "Venus", Saturn: "Saturn", Rahu: "Rahu", Ketu: "Ketu"
+      },
+      houseSignifications: {
+        1: ["Self", "Personality", "Physical body", "Health", "Character"],
+        2: ["Wealth", "Family", "Speech", "Food", "Right eye"],
+        3: ["Siblings", "Courage", "Short journeys", "Communication", "Skills"],
+        4: ["Mother", "Home", "Property", "Vehicles", "Education"],
+        5: ["Children", "Intelligence", "Romance", "Speculation", "Creativity"],
+        6: ["Enemies", "Diseases", "Debts", "Service", "Obstacles"],
+        7: ["Marriage", "Partnership", "Business", "Foreign travel", "Public dealings"],
+        8: ["Longevity", "Inheritance", "Occult", "Sudden events", "Transformation"],
+        9: ["Father", "Fortune", "Higher education", "Long journeys", "Dharma"],
+        10: ["Career", "Profession", "Fame", "Authority", "Government"],
+        11: ["Gains", "Income", "Friends", "Aspirations", "Elder siblings"],
+        12: ["Losses", "Expenses", "Foreign lands", "Moksha", "Hospitalization"]
+      }
     },
     // Prashna Kundli
     prashna: {
@@ -297,7 +391,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Prashna Kundli",
       aboutText1: "Prashna Kundli provides answers based on the moment a question is asked.",
       aboutText2: "The ascendant represents the querent, other houses provide information.",
-      aboutText3: "Ask one clear question at a time for best results."
+      aboutText3: "Ask one clear question at a time for best results.",
+      questionCategories: {
+        career: "Career & Business",
+        love: "Love & Relationships",
+        health: "Health & Wellness",
+        finance: "Money & Finance",
+        travel: "Travel & Relocation",
+        education: "Education & Learning",
+        legal: "Legal Matters",
+        general: "General Question"
+      },
+      zodiacNames: {
+        Aries: "Aries", Taurus: "Taurus", Gemini: "Gemini", Cancer: "Cancer",
+        Leo: "Leo", Virgo: "Virgo", Libra: "Libra", Scorpio: "Scorpio",
+        Sagittarius: "Sagittarius", Capricorn: "Capricorn", Aquarius: "Aquarius", Pisces: "Pisces"
+      },
+      planetNames: {
+        Sun: "Sun", Moon: "Moon", Mars: "Mars", Mercury: "Mercury",
+        Jupiter: "Jupiter", Venus: "Venus", Saturn: "Saturn", Rahu: "Rahu", Ketu: "Ketu"
+      }
     },
     // Baby Names
     babyNames: {
@@ -325,7 +438,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Nakshatra-Based Naming",
       aboutText1: "Names are chosen based on birth Nakshatra in Vedic tradition.",
       aboutText2: "The Nakshatra is determined by Moon's position at birth.",
-      aboutText3: "Use this as a guide while honoring personal preferences."
+      aboutText3: "Use this as a guide while honoring personal preferences.",
+      nakshatraNames: {
+        Ashwini: "Ashwini", Bharani: "Bharani", Krittika: "Krittika", Rohini: "Rohini",
+        Mrigashira: "Mrigashira", Ardra: "Ardra", Punarvasu: "Punarvasu", Pushya: "Pushya",
+        Ashlesha: "Ashlesha", Magha: "Magha", "Purva Phalguni": "Purva Phalguni",
+        "Uttara Phalguni": "Uttara Phalguni", Hasta: "Hasta", Chitra: "Chitra", Swati: "Swati",
+        Vishakha: "Vishakha", Anuradha: "Anuradha", Jyeshtha: "Jyeshtha", Mula: "Mula",
+        "Purva Ashadha": "Purva Ashadha", "Uttara Ashadha": "Uttara Ashadha", Shravana: "Shravana",
+        Dhanishta: "Dhanishta", Shatabhisha: "Shatabhisha", "Purva Bhadrapada": "Purva Bhadrapada",
+        "Uttara Bhadrapada": "Uttara Bhadrapada", Revati: "Revati"
+      },
+      deityNames: {
+        "Ashwini Kumaras": "Ashwini Kumaras", Yama: "Yama", Agni: "Agni", Brahma: "Brahma",
+        Soma: "Soma", Rudra: "Rudra", Aditi: "Aditi", Brihaspati: "Brihaspati",
+        Nagas: "Nagas", Pitris: "Pitris", Bhaga: "Bhaga", Aryaman: "Aryaman",
+        Savitar: "Savitar", Vishwakarma: "Vishwakarma", Vayu: "Vayu", "Indra-Agni": "Indra-Agni",
+        Mitra: "Mitra", Indra: "Indra", Nirriti: "Nirriti", Apas: "Apas",
+        Vishvadevas: "Vishvadevas", Vishnu: "Vishnu", Vasus: "Vasus", Varuna: "Varuna",
+        "Aja Ekapada": "Aja Ekapada", "Ahir Budhnya": "Ahir Budhnya", Pushan: "Pushan"
+      },
+      colors: {
+        Red: "Red", "Blood Red": "Blood Red", White: "White", "Silver Grey": "Silver Grey",
+        Green: "Green", Yellow: "Yellow", "Black-Red": "Black-Red", Ivory: "Ivory",
+        "Light Brown": "Light Brown", "Bright Blue": "Bright Blue", "Deep Green": "Deep Green",
+        Black: "Black", Golden: "Golden", "Reddish Brown": "Reddish Brown", Cream: "Cream",
+        "Brown Yellow": "Brown Yellow", Copper: "Copper", "Light Blue": "Light Blue",
+        "Blue Green": "Blue Green", Purple: "Purple", Brown: "Brown"
+      },
+      characteristics: {
+        Quick: "Quick", Energetic: "Energetic", Healing: "Healing", Creative: "Creative",
+        Nurturing: "Nurturing", Transformative: "Transformative", Sharp: "Sharp", Determined: "Determined",
+        Purifying: "Purifying", Beautiful: "Beautiful", Artistic: "Artistic", Fertile: "Fertile",
+        Curious: "Curious", Gentle: "Gentle", Searching: "Searching", Intense: "Intense",
+        Emotional: "Emotional", Optimistic: "Optimistic", Renewing: "Renewing", Nourishing: "Nourishing",
+        Spiritual: "Spiritual", Prosperous: "Prosperous", Intuitive: "Intuitive", Mystical: "Mystical",
+        Penetrating: "Penetrating", Royal: "Royal", Ancestral: "Ancestral", Authoritative: "Authoritative",
+        Romantic: "Romantic", Relaxing: "Relaxing", Generous: "Generous", Friendly: "Friendly",
+        Helpful: "Helpful", Skillful: "Skillful", Clever: "Clever", Independent: "Independent",
+        Flexible: "Flexible", Diplomatic: "Diplomatic", Ambitious: "Ambitious", Focused: "Focused",
+        Devoted: "Devoted", Successful: "Successful", Protective: "Protective", Courageous: "Courageous",
+        Senior: "Senior", Investigative: "Investigative", Destructive: "Destructive", Invincible: "Invincible",
+        Energizing: "Energizing", Universal: "Universal", Victorious: "Victorious", Righteous: "Righteous",
+        Listening: "Listening", Learning: "Learning", Connected: "Connected", Wealthy: "Wealthy",
+        Musical: "Musical", Adaptable: "Adaptable", Fiery: "Fiery", Deep: "Deep",
+        Wise: "Wise", Controlled: "Controlled", Safe: "Safe"
+      }
     },
     // Gemstones
     gemstones: {
@@ -438,7 +596,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Palmistry",
       aboutText1: "Palmistry interprets lines, shapes, and mounts on the palm.",
       aboutText2: "In Vedic tradition, palmistry is Hasta Samudrika Shastra.",
-      aboutText3: "Use as a tool for self-reflection, not absolute prediction."
+      aboutText3: "Use as a tool for self-reflection, not absolute prediction.",
+      lineNames: {
+        "Heart Line": "Heart Line", "Head Line": "Head Line", "Life Line": "Life Line",
+        "Fate Line": "Fate Line", "Sun Line": "Sun Line", "Marriage Line": "Marriage Line"
+      },
+      lineHindi: {
+        "Heart Line": "हृदय रेखा", "Head Line": "मस्तिष्क रेखा", "Life Line": "जीवन रेखा",
+        "Fate Line": "भाग्य रेखा", "Sun Line": "सूर्य रेखा", "Marriage Line": "विवाह रेखा"
+      },
+      mountNames: {
+        "Mount of Jupiter": "Mount of Jupiter", "Mount of Saturn": "Mount of Saturn",
+        "Mount of Apollo (Sun)": "Mount of Apollo (Sun)", "Mount of Mercury": "Mount of Mercury",
+        "Mount of Venus": "Mount of Venus", "Mount of Moon": "Mount of Moon",
+        "Mount of Mars (Upper)": "Mount of Mars (Upper)", "Mount of Mars (Lower)": "Mount of Mars (Lower)"
+      },
+      fingerTypeNames: {
+        "Long Fingers": "Long Fingers", "Short Fingers": "Short Fingers",
+        "Pointed Fingertips": "Pointed Fingertips", "Square Fingertips": "Square Fingertips",
+        "Spatulate Fingertips": "Spatulate Fingertips", "Conic Fingertips": "Conic Fingertips"
+      },
+      handShapeNames: {
+        "Earth Hand": "Earth Hand", "Air Hand": "Air Hand",
+        "Water Hand": "Water Hand", "Fire Hand": "Fire Hand"
+      }
     },
     // Common
     common: {
@@ -628,7 +809,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "टैरो रीडिंग के बारे में",
         aboutText1: "टैरो 78 कार्डों का उपयोग करके भविष्यवाणी का एक रूप है।",
         aboutText2: "प्रत्येक कार्ड में कल्पना, प्रतीकवाद और कहानी है।",
-        aboutText3: "टैरो प्रतिबिंब और मार्गदर्शन के लिए एक उपकरण है।"
+        aboutText3: "टैरो प्रतिबिंब और मार्गदर्शन के लिए एक उपकरण है।",
+        cardNames: {
+          "The Fool": "मूर्ख",
+          "The Magician": "जादूगर",
+          "The High Priestess": "उच्च पुजारिन",
+          "The Empress": "महारानी",
+          "The Emperor": "सम्राट",
+          "The Hierophant": "धर्मगुरु",
+          "The Lovers": "प्रेमी",
+          "The Chariot": "रथ",
+          "Strength": "शक्ति",
+          "The Hermit": "साधु",
+          "Wheel of Fortune": "भाग्य चक्र",
+          "Justice": "न्याय",
+          "The Hanged Man": "लटकता हुआ आदमी",
+          "Death": "मृत्यु",
+          "Temperance": "संयम",
+          "The Devil": "शैतान",
+          "The Tower": "मीनार",
+          "The Star": "तारा",
+          "The Moon": "चंद्रमा",
+          "The Sun": "सूर्य",
+          "Judgement": "निर्णय",
+          "The World": "विश्व"
+        },
+        yesNoAnswers: {
+          Yes: "हां", No: "नहीं", Maybe: "शायद", Unlikely: "संभावना नहीं",
+          Strong: "मजबूत", Moderate: "मध्यम", Uncertain: "अनिश्चित"
+        }
       },
       vastu: {
         badge: "वास्तु शास्त्र",
@@ -656,7 +865,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "वास्तु शास्त्र के बारे में",
         aboutText1: "वास्तु शास्त्र 5,000 वर्ष पुराना प्राचीन भारतीय वास्तुकला विज्ञान है।",
         aboutText2: "सकारात्मक ऊर्जा प्रवाह के लिए पांच तत्वों और आठ दिशाओं पर आधारित।",
-        aboutText3: "सरल उपाय आधुनिक स्थानों में ऊर्जा संतुलन में मदद कर सकते हैं।"
+        aboutText3: "सरल उपाय आधुनिक स्थानों में ऊर्जा संतुलन में मदद कर सकते हैं।",
+        directionNames: {
+          North: "उत्तर", South: "दक्षिण", East: "पूर्व", West: "पश्चिम",
+          "North-East": "ईशान", "South-East": "आग्नेय",
+          "South-West": "नैऋत्य", "North-West": "वायव्य"
+        },
+        elementNames: {
+          Water: "जल", Fire: "अग्नि", Air: "वायु", Space: "आकाश", Earth: "पृथ्वी"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "कुबेर (धन)", "Yama (Dharma)": "यम (धर्म)",
+          "Indra (King of Gods)": "इंद्र (देवराज)", "Varuna (Rain God)": "वरुण (जल देव)",
+          "Ishanya (Shiva)": "ईशान (शिव)", "Agni (Fire God)": "अग्नि (अग्नि देव)",
+          "Nairuti (Demon)": "नैऋति (राक्षस)", "Vayu (Wind God)": "वायु (पवन देव)"
+        },
+        roomNames: {
+          bedroom: "शयनकक्ष", kitchen: "रसोई", bathroom: "स्नानघर",
+          livingRoom: "बैठक कक्ष", puja: "पूजा कक्ष", entrance: "प्रवेश द्वार"
+        },
+        problemNames: {
+          "Financial Problems": "आर्थिक समस्याएं", "Health Issues": "स्वास्थ्य समस्याएं",
+          "Relationship Problems": "संबंध समस्याएं", "Career Obstacles": "करियर बाधाएं",
+          "Negative Energy": "नकारात्मक ऊर्जा"
+        }
       },
       chinese: {
         badge: "चीनी ज्योतिष",
@@ -689,7 +921,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "चीनी ज्योतिष के बारे में",
         aboutText1: "चीनी ज्योतिष पशु चिह्नों के साथ 12-वर्षीय चक्र पर आधारित है।",
         aboutText2: "आपकी राशि चंद्र कैलेंडर के अनुसार जन्म वर्ष से निर्धारित होती है।",
-        aboutText3: "2026 सांप का वर्ष है, सावधानीपूर्ण योजना के लिए अनुकूल।"
+        aboutText3: "2026 सांप का वर्ष है, सावधानीपूर्ण योजना के लिए अनुकूल।",
+        animalNames: {
+          Rat: "चूहा", Ox: "बैल", Tiger: "बाघ", Rabbit: "खरगोश", Dragon: "ड्रैगन", Snake: "सांप",
+          Horse: "घोड़ा", Goat: "बकरी", Monkey: "बंदर", Rooster: "मुर्गा", Dog: "कुत्ता", Pig: "सुअर"
+        },
+        elementNames: {
+          Wood: "लकड़ी", Fire: "अग्नि", Earth: "पृथ्वी", Metal: "धातु", Water: "जल"
+        },
+        yinYangNames: {
+          Yin: "यिन", Yang: "यांग"
+        }
       },
       kp: {
         badge: "केपी प्रणाली",
@@ -726,7 +968,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "केपी प्रणाली के बारे में",
         aboutText1: "केपी प्रणाली प्रो. के.एस. कृष्णमूर्ति द्वारा 1960 के दशक में विकसित की गई थी।",
         aboutText2: "मुख्य नवाचार परिणाम निर्धारित करने वाले उप-स्वामी हैं।",
-        aboutText3: "विशिष्ट प्रश्नों और घटनाओं के समय के लिए प्रभावी।"
+        aboutText3: "विशिष्ट प्रश्नों और घटनाओं के समय के लिए प्रभावी।",
+        nakshatraNames: {
+          Ashwini: "अश्विनी", Bharani: "भरणी", Krittika: "कृत्तिका", Rohini: "रोहिणी",
+          Mrigashira: "मृगशिरा", Ardra: "आर्द्रा", Punarvasu: "पुनर्वसु", Pushya: "पुष्य",
+          Ashlesha: "आश्लेषा", Magha: "मघा", "Purva Phalguni": "पूर्व फाल्गुनी",
+          "Uttara Phalguni": "उत्तर फाल्गुनी", Hasta: "हस्त", Chitra: "चित्रा", Swati: "स्वाति",
+          Vishakha: "विशाखा", Anuradha: "अनुराधा", Jyeshtha: "ज्येष्ठा", Mula: "मूल",
+          "Purva Ashadha": "पूर्वाषाढ़ा", "Uttara Ashadha": "उत्तराषाढ़ा", Shravana: "श्रवण",
+          Dhanishta: "धनिष्ठा", Shatabhisha: "शतभिषा", "Purva Bhadrapada": "पूर्व भाद्रपद",
+          "Uttara Bhadrapada": "उत्तर भाद्रपद", Revati: "रेवती"
+        },
+        zodiacNames: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तुला", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planetNames: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगल", Mercury: "बुध",
+          Jupiter: "गुरु", Venus: "शुक्र", Saturn: "शनि", Rahu: "राहु", Ketu: "केतु"
+        },
+        houseSignifications: {
+          1: ["स्वयं", "व्यक्तित्व", "शारीरिक शरीर", "स्वास्थ्य", "चरित्र"],
+          2: ["धन", "परिवार", "वाणी", "भोजन", "दाहिनी आंख"],
+          3: ["भाई-बहन", "साहस", "छोटी यात्राएं", "संचार", "कौशल"],
+          4: ["माता", "घर", "संपत्ति", "वाहन", "शिक्षा"],
+          5: ["संतान", "बुद्धि", "प्रेम", "सट्टा", "रचनात्मकता"],
+          6: ["शत्रु", "रोग", "ऋण", "सेवा", "बाधाएं"],
+          7: ["विवाह", "साझेदारी", "व्यापार", "विदेश यात्रा", "सार्वजनिक व्यवहार"],
+          8: ["आयु", "विरासत", "गुप्त विद्या", "अचानक घटनाएं", "परिवर्तन"],
+          9: ["पिता", "भाग्य", "उच्च शिक्षा", "लंबी यात्राएं", "धर्म"],
+          10: ["करियर", "पेशा", "प्रसिद्धि", "अधिकार", "सरकार"],
+          11: ["लाभ", "आय", "मित्र", "आकांक्षाएं", "बड़े भाई-बहन"],
+          12: ["हानि", "खर्च", "विदेश", "मोक्ष", "अस्पताल"]
+        }
       },
       prashna: {
         badge: "प्रश्न कुंडली",
@@ -761,7 +1036,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "प्रश्न कुंडली के बारे में",
         aboutText1: "प्रश्न कुंडली प्रश्न पूछे जाने के क्षण के आधार पर उत्तर प्रदान करती है।",
         aboutText2: "लग्न प्रश्नकर्ता का प्रतिनिधित्व करता है, अन्य भाव जानकारी प्रदान करते हैं।",
-        aboutText3: "सर्वोत्तम परिणामों के लिए एक समय में एक स्पष्ट प्रश्न पूछें।"
+        aboutText3: "सर्वोत्तम परिणामों के लिए एक समय में एक स्पष्ट प्रश्न पूछें।",
+        questionCategories: {
+          career: "करियर और व्यापार",
+          love: "प्रेम और संबंध",
+          health: "स्वास्थ्य और कल्याण",
+          finance: "धन और वित्त",
+          travel: "यात्रा और स्थानांतरण",
+          education: "शिक्षा और सीखना",
+          legal: "कानूनी मामले",
+          general: "सामान्य प्रश्न"
+        },
+        zodiacNames: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तुला", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planetNames: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगल", Mercury: "बुध",
+          Jupiter: "गुरु", Venus: "शुक्र", Saturn: "शनि", Rahu: "राहु", Ketu: "केतु"
+        }
       },
       babyNames: {
         badge: "शिशु नाम",
@@ -788,7 +1082,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "नक्षत्र-आधारित नामकरण के बारे में",
         aboutText1: "वैदिक परंपरा में जन्म नक्षत्र के आधार पर नाम चुने जाते हैं।",
         aboutText2: "नक्षत्र जन्म के समय चंद्रमा की स्थिति से निर्धारित होता है।",
-        aboutText3: "व्यक्तिगत प्राथमिकताओं का सम्मान करते हुए इसे एक गाइड के रूप में उपयोग करें।"
+        aboutText3: "व्यक्तिगत प्राथमिकताओं का सम्मान करते हुए इसे एक गाइड के रूप में उपयोग करें।",
+        nakshatraNames: {
+          Ashwini: "अश्विनी", Bharani: "भरणी", Krittika: "कृत्तिका", Rohini: "रोहिणी",
+          Mrigashira: "मृगशिरा", Ardra: "आर्द्रा", Punarvasu: "पुनर्वसु", Pushya: "पुष्य",
+          Ashlesha: "आश्लेषा", Magha: "मघा", "Purva Phalguni": "पूर्व फाल्गुनी",
+          "Uttara Phalguni": "उत्तर फाल्गुनी", Hasta: "हस्त", Chitra: "चित्रा", Swati: "स्वाति",
+          Vishakha: "विशाखा", Anuradha: "अनुराधा", Jyeshtha: "ज्येष्ठा", Mula: "मूल",
+          "Purva Ashadha": "पूर्वाषाढ़ा", "Uttara Ashadha": "उत्तराषाढ़ा", Shravana: "श्रवण",
+          Dhanishta: "धनिष्ठा", Shatabhisha: "शतभिषा", "Purva Bhadrapada": "पूर्व भाद्रपद",
+          "Uttara Bhadrapada": "उत्तर भाद्रपद", Revati: "रेवती"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "अश्विनी कुमार", Yama: "यम", Agni: "अग्नि", Brahma: "ब्रह्मा",
+          Soma: "सोम", Rudra: "रुद्र", Aditi: "अदिति", Brihaspati: "बृहस्पति",
+          Nagas: "नाग", Pitris: "पितृ", Bhaga: "भग", Aryaman: "अर्यमन",
+          Savitar: "सवितार", Vishwakarma: "विश्वकर्मा", Vayu: "वायु", "Indra-Agni": "इंद्र-अग्नि",
+          Mitra: "मित्र", Indra: "इंद्र", Nirriti: "निर्ऋति", Apas: "आपस",
+          Vishvadevas: "विश्वदेव", Vishnu: "विष्णु", Vasus: "वसु", Varuna: "वरुण",
+          "Aja Ekapada": "अज एकपाद", "Ahir Budhnya": "अहिर्बुध्न्य", Pushan: "पूषन"
+        },
+        colors: {
+          Red: "लाल", "Blood Red": "रक्त लाल", White: "सफेद", "Silver Grey": "चांदी धूसर",
+          Green: "हरा", Yellow: "पीला", "Black-Red": "काला-लाल", Ivory: "हाथीदांत",
+          "Light Brown": "हल्का भूरा", "Bright Blue": "चमकीला नीला", "Deep Green": "गहरा हरा",
+          Black: "काला", Golden: "सुनहरा", "Reddish Brown": "लालिमा भूरा", Cream: "क्रीम",
+          "Brown Yellow": "भूरा पीला", Copper: "तांबा", "Light Blue": "हल्का नीला",
+          "Blue Green": "नीला हरा", Purple: "बैंगनी", Brown: "भूरा"
+        },
+        characteristics: {
+          Quick: "तेज", Energetic: "ऊर्जावान", Healing: "उपचारक", Creative: "रचनात्मक",
+          Nurturing: "पोषणकारी", Transformative: "परिवर्तनकारी", Sharp: "तीक्ष्ण", Determined: "दृढ़",
+          Purifying: "शुद्धिकारक", Beautiful: "सुंदर", Artistic: "कलात्मक", Fertile: "उर्वर",
+          Curious: "जिज्ञासु", Gentle: "कोमल", Searching: "खोजी", Intense: "तीव्र",
+          Emotional: "भावनात्मक", Optimistic: "आशावादी", Renewing: "नवीकरणकारी", Nourishing: "पौष्टिक",
+          Spiritual: "आध्यात्मिक", Prosperous: "समृद्ध", Intuitive: "सहज ज्ञानी", Mystical: "रहस्यमय",
+          Penetrating: "भेदक", Royal: "राजसी", Ancestral: "पैतृक", Authoritative: "प्रभावशाली",
+          Romantic: "रोमांटिक", Relaxing: "आरामदायक", Generous: "उदार", Friendly: "मित्रवत",
+          Helpful: "सहायक", Skillful: "कुशल", Clever: "चतुर", Independent: "स्वतंत्र",
+          Flexible: "लचीला", Diplomatic: "कूटनीतिक", Ambitious: "महत्वाकांक्षी", Focused: "केंद्रित",
+          Devoted: "समर्पित", Successful: "सफल", Protective: "रक्षात्मक", Courageous: "साहसी",
+          Senior: "वरिष्ठ", Investigative: "खोजी", Destructive: "विनाशकारी", Invincible: "अजेय",
+          Energizing: "ऊर्जादायक", Universal: "सार्वभौमिक", Victorious: "विजयी", Righteous: "धार्मिक",
+          Listening: "श्रवणशील", Learning: "सीखने वाला", Connected: "जुड़ा हुआ", Wealthy: "धनवान",
+          Musical: "संगीतमय", Adaptable: "अनुकूलनीय", Fiery: "अग्निमय", Deep: "गहरा",
+          Wise: "बुद्धिमान", Controlled: "नियंत्रित", Safe: "सुरक्षित"
+        }
       },
       gemstones: {
         badge: "रत्न सिफारिशें",
@@ -894,7 +1233,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "हस्तरेखा के बारे में",
         aboutText1: "हस्तरेखा हथेली पर रेखाओं, आकृतियों और पर्वतों की व्याख्या करती है।",
         aboutText2: "वैदिक परंपरा में, हस्तरेखा को हस्त सामुद्रिक शास्त्र कहा जाता है।",
-        aboutText3: "आत्म-चिंतन के लिए एक उपकरण के रूप में उपयोग करें, पूर्ण भविष्यवाणी नहीं।"
+        aboutText3: "आत्म-चिंतन के लिए एक उपकरण के रूप में उपयोग करें, पूर्ण भविष्यवाणी नहीं।",
+        lineNames: {
+          "Heart Line": "हृदय रेखा", "Head Line": "मस्तिष्क रेखा", "Life Line": "जीवन रेखा",
+          "Fate Line": "भाग्य रेखा", "Sun Line": "सूर्य रेखा", "Marriage Line": "विवाह रेखा"
+        },
+        mountNames: {
+          "Mount of Jupiter": "बृहस्पति पर्वत", "Mount of Saturn": "शनि पर्वत",
+          "Mount of Apollo (Sun)": "सूर्य पर्वत", "Mount of Mercury": "बुध पर्वत",
+          "Mount of Venus": "शुक्र पर्वत", "Mount of Moon": "चंद्र पर्वत",
+          "Mount of Mars (Upper)": "मंगल पर्वत (ऊपरी)", "Mount of Mars (Lower)": "मंगल पर्वत (निचला)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "लंबी उंगलियां", "Short Fingers": "छोटी उंगलियां",
+          "Pointed Fingertips": "नुकीली उंगलियां", "Square Fingertips": "चौकोर उंगलियां",
+          "Spatulate Fingertips": "स्पैटुलेट उंगलियां", "Conic Fingertips": "शंक्वाकार उंगलियां"
+        },
+        handShapeNames: {
+          "Earth Hand": "पृथ्वी हाथ", "Air Hand": "वायु हाथ",
+          "Water Hand": "जल हाथ", "Fire Hand": "अग्नि हाथ"
+        }
       },
       common: {
         name: "नाम",
@@ -1088,7 +1446,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "டாரட் வாசிப்பு பற்றி",
         aboutText1: "டாரட் என்பது 78 கார்டுகளைப் பயன்படுத்தும் ஒரு குறிசொல்லல் வடிவம்.",
         aboutText2: "ஒவ்வொரு கார்டிலும் படங்கள், குறியீடுகள் மற்றும் கதை உள்ளது.",
-        aboutText3: "டாரட் என்பது பிரதிபலிப்பு மற்றும் வழிகாட்டுதலுக்கான ஒரு கருவி."
+        aboutText3: "டாரட் என்பது பிரதிபலிப்பு மற்றும் வழிகாட்டுதலுக்கான ஒரு கருவி.",
+        cardNames: {
+          "The Fool": "முட்டாள்",
+          "The Magician": "மந்திரவாதி",
+          "The High Priestess": "உயர் பூசாரி",
+          "The Empress": "பேரரசி",
+          "The Emperor": "பேரரசர்",
+          "The Hierophant": "மதகுரு",
+          "The Lovers": "காதலர்கள்",
+          "The Chariot": "தேர்",
+          "Strength": "வலிமை",
+          "The Hermit": "துறவி",
+          "Wheel of Fortune": "அதிர்ஷ்ட சக்கரம்",
+          "Justice": "நீதி",
+          "The Hanged Man": "தொங்கும் மனிதன்",
+          "Death": "மரணம்",
+          "Temperance": "மிதம்",
+          "The Devil": "பிசாசு",
+          "The Tower": "கோபுரம்",
+          "The Star": "நட்சத்திரம்",
+          "The Moon": "சந்திரன்",
+          "The Sun": "சூரியன்",
+          "Judgement": "தீர்ப்பு",
+          "The World": "உலகம்"
+        },
+        yesNoAnswers: {
+          Yes: "ஆம்", No: "இல்லை", Maybe: "ஒருவேளை", Unlikely: "சாத்தியமில்லை",
+          Strong: "வலுவான", Moderate: "மிதமான", Uncertain: "நிச்சயமற்ற"
+        }
       },
       vastu: {
         badge: "வாஸ்து சாஸ்திரம்",
@@ -1116,7 +1502,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "வாஸ்து சாஸ்திரம் பற்றி",
         aboutText1: "வாஸ்து சாஸ்திரம் 5,000 ஆண்டுகள் பழமையான பண்டைய இந்திய கட்டிடக்கலை அறிவியல்.",
         aboutText2: "நேர்மறை ஆற்றல் ஓட்டத்திற்கு ஐந்து தனிமங்கள் மற்றும் எட்டு திசைகளை அடிப்படையாகக் கொண்டது.",
-        aboutText3: "எளிய பரிகாரங்கள் நவீன இடங்களில் ஆற்றல் சமநிலைக்கு உதவும்."
+        aboutText3: "எளிய பரிகாரங்கள் நவீன இடங்களில் ஆற்றல் சமநிலைக்கு உதவும்.",
+        directionNames: {
+          North: "வடக்கு", South: "தெற்கு", East: "கிழக்கு", West: "மேற்கு",
+          "North-East": "ஈசான்யம்", "South-East": "அக்னி",
+          "South-West": "நைருதி", "North-West": "வாயுவ்யம்"
+        },
+        elementNames: {
+          Water: "நீர்", Fire: "நெருப்பு", Air: "காற்று", Space: "ஆகாயம்", Earth: "நிலம்"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "குபேரன் (செல்வம்)", "Yama (Dharma)": "யமன் (தர்மம்)",
+          "Indra (King of Gods)": "இந்திரன் (தேவர் அரசன்)", "Varuna (Rain God)": "வருணன் (மழை கடவுள்)",
+          "Ishanya (Shiva)": "ஈசான்யன் (சிவன்)", "Agni (Fire God)": "அக்னி (நெருப்பு கடவுள்)",
+          "Nairuti (Demon)": "நைருதி (அசுரன்)", "Vayu (Wind God)": "வாயு (காற்று கடவுள்)"
+        },
+        roomNames: {
+          bedroom: "படுக்கையறை", kitchen: "சமையலறை", bathroom: "குளியலறை",
+          livingRoom: "வரவேற்பறை", puja: "பூஜை அறை", entrance: "நுழைவாயில்"
+        },
+        problemNames: {
+          "Financial Problems": "நிதி பிரச்சனைகள்", "Health Issues": "உடல்நல பிரச்சனைகள்",
+          "Relationship Problems": "உறவு பிரச்சனைகள்", "Career Obstacles": "தொழில் தடைகள்",
+          "Negative Energy": "எதிர்மறை ஆற்றல்"
+        }
       },
       chinese: {
         badge: "சீன ஜோதிடம்",
@@ -1149,7 +1558,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "சீன ஜோதிடம் பற்றி",
         aboutText1: "சீன ஜோதிடம் விலங்கு அடையாளங்களுடன் 12 ஆண்டு சுழற்சியை அடிப்படையாகக் கொண்டது.",
         aboutText2: "உங்கள் ராசி சந்திர நாட்காட்டியின் படி பிறந்த ஆண்டால் தீர்மானிக்கப்படுகிறது.",
-        aboutText3: "2026 பாம்பின் ஆண்டு, கவனமான திட்டமிடலுக்கு சாதகமானது."
+        aboutText3: "2026 பாம்பின் ஆண்டு, கவனமான திட்டமிடலுக்கு சாதகமானது.",
+        animalNames: {
+          Rat: "எலி", Ox: "எருது", Tiger: "புலி", Rabbit: "முயல்", Dragon: "டிராகன்", Snake: "பாம்பு",
+          Horse: "குதிரை", Goat: "ஆடு", Monkey: "குரங்கு", Rooster: "சேவல்", Dog: "நாய்", Pig: "பன்றி"
+        },
+        elementNames: {
+          Wood: "மரம்", Fire: "நெருப்பு", Earth: "பூமி", Metal: "உலோகம்", Water: "நீர்"
+        },
+        yinYangNames: {
+          Yin: "யின்", Yang: "யாங்"
+        }
       },
       kp: {
         badge: "கேபி முறை",
@@ -1186,7 +1605,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "கேபி முறை பற்றி",
         aboutText1: "கேபி முறை 1960களில் பேராசிரியர் கே.எஸ். கிருஷ்ணமூர்த்தியால் உருவாக்கப்பட்டது.",
         aboutText2: "முக்கிய கண்டுபிடிப்பு முடிவுகளை தீர்மானிக்கும் துணை-அதிபதிகள்.",
-        aboutText3: "குறிப்பிட்ட கேள்விகள் மற்றும் நிகழ்வுகளின் நேரத்திற்கு பயனுள்ளது."
+        aboutText3: "குறிப்பிட்ட கேள்விகள் மற்றும் நிகழ்வுகளின் நேரத்திற்கு பயனுள்ளது.",
+        nakshatraNames: {
+          Ashwini: "அஸ்வினி", Bharani: "பரணி", Krittika: "கிருத்திகை", Rohini: "ரோகிணி",
+          Mrigashira: "மிருகசீரிடம்", Ardra: "திருவாதிரை", Punarvasu: "புனர்பூசம்", Pushya: "பூசம்",
+          Ashlesha: "ஆயில்யம்", Magha: "மகம்", "Purva Phalguni": "பூரம்",
+          "Uttara Phalguni": "உத்திரம்", Hasta: "ஹஸ்தம்", Chitra: "சித்திரை", Swati: "சுவாதி",
+          Vishakha: "விசாகம்", Anuradha: "அனுஷம்", Jyeshtha: "கேட்டை", Mula: "மூலம்",
+          "Purva Ashadha": "பூராடம்", "Uttara Ashadha": "உத்திராடம்", Shravana: "திருவோணம்",
+          Dhanishta: "அவிட்டம்", Shatabhisha: "சதயம்", "Purva Bhadrapada": "பூரட்டாதி",
+          "Uttara Bhadrapada": "உத்திரட்டாதி", Revati: "ரேவதி"
+        },
+        zodiacNames: {
+          Aries: "மேஷம்", Taurus: "ரிஷபம்", Gemini: "மிதுனம்", Cancer: "கடகம்",
+          Leo: "சிம்மம்", Virgo: "கன்னி", Libra: "துலாம்", Scorpio: "விருச்சிகம்",
+          Sagittarius: "தனுசு", Capricorn: "மகரம்", Aquarius: "கும்பம்", Pisces: "மீனம்"
+        },
+        planetNames: {
+          Sun: "சூரியன்", Moon: "சந்திரன்", Mars: "செவ்வாய்", Mercury: "புதன்",
+          Jupiter: "குரு", Venus: "சுக்கிரன்", Saturn: "சனி", Rahu: "ராகு", Ketu: "கேது"
+        },
+        houseSignifications: {
+          1: ["சுயம்", "ஆளுமை", "உடல்", "ஆரோக்கியம்", "குணம்"],
+          2: ["செல்வம்", "குடும்பம்", "பேச்சு", "உணவு", "வலது கண்"],
+          3: ["உடன்பிறப்புகள்", "தைரியம்", "குறுகிய பயணங்கள்", "தொடர்பு", "திறன்கள்"],
+          4: ["தாய்", "வீடு", "சொத்து", "வாகனங்கள்", "கல்வி"],
+          5: ["குழந்தைகள்", "புத்திசாலித்தனம்", "காதல்", "ஊகம்", "படைப்பாற்றல்"],
+          6: ["எதிரிகள்", "நோய்கள்", "கடன்கள்", "சேவை", "தடைகள்"],
+          7: ["திருமணம்", "கூட்டாண்மை", "வணிகம்", "வெளிநாட்டு பயணம்", "பொது விவகாரங்கள்"],
+          8: ["ஆயுள்", "பரம்பரை", "மறைந்த அறிவு", "திடீர் நிகழ்வுகள்", "மாற்றம்"],
+          9: ["தந்தை", "அதிர்ஷ்டம்", "உயர் கல்வி", "நீண்ட பயணங்கள்", "தர்மம்"],
+          10: ["தொழில்", "பணி", "புகழ்", "அதிகாரம்", "அரசாங்கம்"],
+          11: ["லாபங்கள்", "வருமானம்", "நண்பர்கள்", "ஆசைகள்", "மூத்த உடன்பிறப்புகள்"],
+          12: ["இழப்புகள்", "செலவுகள்", "வெளிநாடுகள்", "மோட்சம்", "மருத்துவமனை"]
+        }
       },
       prashna: {
         badge: "பிரஷ்ன குண்டலி",
@@ -1221,7 +1673,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "பிரஷ்ன குண்டலி பற்றி",
         aboutText1: "பிரஷ்ன குண்டலி கேள்வி கேட்கப்படும் தருணத்தின் அடிப்படையில் பதில்களை வழங்குகிறது.",
         aboutText2: "லக்னம் கேள்வி கேட்பவரைக் குறிக்கிறது, மற்ற வீடுகள் தகவல்களை வழங்குகின்றன.",
-        aboutText3: "சிறந்த முடிவுகளுக்கு ஒரு நேரத்தில் ஒரு தெளிவான கேள்வி கேளுங்கள்."
+        aboutText3: "சிறந்த முடிவுகளுக்கு ஒரு நேரத்தில் ஒரு தெளிவான கேள்வி கேளுங்கள்.",
+        questionCategories: {
+          career: "தொழில் மற்றும் வணிகம்",
+          love: "காதல் மற்றும் உறவுகள்",
+          health: "ஆரோக்கியம் மற்றும் நலம்",
+          finance: "பணம் மற்றும் நிதி",
+          travel: "பயணம் மற்றும் இடமாற்றம்",
+          education: "கல்வி மற்றும் கற்றல்",
+          legal: "சட்ட விவகாரங்கள்",
+          general: "பொது கேள்வி"
+        },
+        zodiacNames: {
+          Aries: "மேஷம்", Taurus: "ரிஷபம்", Gemini: "மிதுனம்", Cancer: "கடகம்",
+          Leo: "சிம்மம்", Virgo: "கன்னி", Libra: "துலாம்", Scorpio: "விருச்சிகம்",
+          Sagittarius: "தனுசு", Capricorn: "மகரம்", Aquarius: "கும்பம்", Pisces: "மீனம்"
+        },
+        planetNames: {
+          Sun: "சூரியன்", Moon: "சந்திரன்", Mars: "செவ்வாய்", Mercury: "புதன்",
+          Jupiter: "குரு", Venus: "சுக்கிரன்", Saturn: "சனி", Rahu: "ராகு", Ketu: "கேது"
+        }
       },
       babyNames: {
         badge: "குழந்தை பெயர்கள்",
@@ -1248,7 +1719,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "நட்சத்திர அடிப்படையிலான பெயரிடுதல் பற்றி",
         aboutText1: "வேத மரபில் பிறப்பு நட்சத்திரத்தின் அடிப்படையில் பெயர்கள் தேர்ந்தெடுக்கப்படுகின்றன.",
         aboutText2: "நட்சத்திரம் பிறப்பின் போது சந்திரனின் நிலையால் தீர்மானிக்கப்படுகிறது.",
-        aboutText3: "தனிப்பட்ட விருப்பங்களை மதிக்கும் போது இதை ஒரு வழிகாட்டியாகப் பயன்படுத்துங்கள்."
+        aboutText3: "தனிப்பட்ட விருப்பங்களை மதிக்கும் போது இதை ஒரு வழிகாட்டியாகப் பயன்படுத்துங்கள்.",
+        nakshatraNames: {
+          Ashwini: "அஸ்வினி", Bharani: "பரணி", Krittika: "கிருத்திகை", Rohini: "ரோகிணி",
+          Mrigashira: "மிருகசீரிடம்", Ardra: "திருவாதிரை", Punarvasu: "புனர்பூசம்", Pushya: "பூசம்",
+          Ashlesha: "ஆயில்யம்", Magha: "மகம்", "Purva Phalguni": "பூரம்",
+          "Uttara Phalguni": "உத்திரம்", Hasta: "ஹஸ்தம்", Chitra: "சித்திரை", Swati: "சுவாதி",
+          Vishakha: "விசாகம்", Anuradha: "அனுஷம்", Jyeshtha: "கேட்டை", Mula: "மூலம்",
+          "Purva Ashadha": "பூராடம்", "Uttara Ashadha": "உத்திராடம்", Shravana: "திருவோணம்",
+          Dhanishta: "அவிட்டம்", Shatabhisha: "சதயம்", "Purva Bhadrapada": "பூரட்டாதி",
+          "Uttara Bhadrapada": "உத்திரட்டாதி", Revati: "ரேவதி"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "அஸ்வினி குமாரர்கள்", Yama: "யமன்", Agni: "அக்னி", Brahma: "பிரம்மா",
+          Soma: "சோமன்", Rudra: "ருத்ரன்", Aditi: "அதிதி", Brihaspati: "பிருஹஸ்பதி",
+          Nagas: "நாகர்கள்", Pitris: "பித்ருக்கள்", Bhaga: "பகன்", Aryaman: "அர்யமன்",
+          Savitar: "சவிதார்", Vishwakarma: "விஸ்வகர்மா", Vayu: "வாயு", "Indra-Agni": "இந்திர-அக்னி",
+          Mitra: "மித்ரன்", Indra: "இந்திரன்", Nirriti: "நிர்ருதி", Apas: "ஆபஸ்",
+          Vishvadevas: "விஸ்வதேவர்கள்", Vishnu: "விஷ்ணு", Vasus: "வசுக்கள்", Varuna: "வருணன்",
+          "Aja Ekapada": "அஜ ஏகபாதன்", "Ahir Budhnya": "அஹிர்புத்னியன்", Pushan: "பூஷன்"
+        },
+        colors: {
+          Red: "சிவப்பு", "Blood Red": "இரத்த சிவப்பு", White: "வெள்ளை", "Silver Grey": "வெள்ளி சாம்பல்",
+          Green: "பச்சை", Yellow: "மஞ்சள்", "Black-Red": "கருப்பு-சிவப்பு", Ivory: "தந்தம்",
+          "Light Brown": "வெளிர் பழுப்பு", "Bright Blue": "பிரகாசமான நீலம்", "Deep Green": "அடர் பச்சை",
+          Black: "கருப்பு", Golden: "தங்கம்", "Reddish Brown": "சிவப்பு பழுப்பு", Cream: "கிரீம்",
+          "Brown Yellow": "பழுப்பு மஞ்சள்", Copper: "செம்பு", "Light Blue": "வெளிர் நீலம்",
+          "Blue Green": "நீல பச்சை", Purple: "ஊதா", Brown: "பழுப்பு"
+        },
+        characteristics: {
+          Quick: "விரைவான", Energetic: "ஆற்றல்மிக்க", Healing: "குணப்படுத்தும்", Creative: "படைப்பாற்றல்",
+          Nurturing: "வளர்க்கும்", Transformative: "மாற்றும்", Sharp: "கூர்மையான", Determined: "உறுதியான",
+          Purifying: "சுத்திகரிக்கும்", Beautiful: "அழகான", Artistic: "கலைத்திறன்", Fertile: "வளமான",
+          Curious: "ஆர்வமுள்ள", Gentle: "மென்மையான", Searching: "தேடும்", Intense: "தீவிரமான",
+          Emotional: "உணர்ச்சிகரமான", Optimistic: "நம்பிக்கையான", Renewing: "புதுப்பிக்கும்", Nourishing: "ஊட்டமளிக்கும்",
+          Spiritual: "ஆன்மீக", Prosperous: "செழிப்பான", Intuitive: "உள்ளுணர்வு", Mystical: "மர்மமான",
+          Penetrating: "ஊடுருவும்", Royal: "அரச", Ancestral: "மூதாதையர்", Authoritative: "அதிகாரமுள்ள",
+          Romantic: "காதல்", Relaxing: "தளர்வான", Generous: "தாராளமான", Friendly: "நட்பான",
+          Helpful: "உதவிகரமான", Skillful: "திறமையான", Clever: "புத்திசாலி", Independent: "சுதந்திரமான",
+          Flexible: "நெகிழ்வான", Diplomatic: "இராஜதந்திர", Ambitious: "லட்சியமுள்ள", Focused: "கவனமான",
+          Devoted: "அர்ப்பணிப்புள்ள", Successful: "வெற்றிகரமான", Protective: "பாதுகாக்கும்", Courageous: "தைரியமான",
+          Senior: "மூத்த", Investigative: "ஆராய்ச்சி", Destructive: "அழிக்கும்", Invincible: "வெல்ல முடியாத",
+          Energizing: "ஆற்றலூட்டும்", Universal: "உலகளாவிய", Victorious: "வெற்றிகரமான", Righteous: "நீதியான",
+          Listening: "கேட்கும்", Learning: "கற்கும்", Connected: "இணைந்த", Wealthy: "செல்வந்த",
+          Musical: "இசை", Adaptable: "தகவமைக்கும்", Fiery: "தீயான", Deep: "ஆழமான",
+          Wise: "ஞானமுள்ள", Controlled: "கட்டுப்படுத்தப்பட்ட", Safe: "பாதுகாப்பான"
+        }
       },
       gemstones: {
         badge: "ரத்தின பரிந்துரைகள்",
@@ -1354,7 +1870,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "கைரேகை பற்றி",
         aboutText1: "கைரேகை உள்ளங்கையில் உள்ள ரேகைகள், வடிவங்கள் மற்றும் மேடுகளை விளக்குகிறது.",
         aboutText2: "வேத மரபில், கைரேகை ஹஸ்த சாமுத்ரிக சாஸ்திரம் என்று அழைக்கப்படுகிறது.",
-        aboutText3: "சுய-பிரதிபலிப்புக்கான ஒரு கருவியாகப் பயன்படுத்துங்கள், முழுமையான கணிப்பு அல்ல."
+        aboutText3: "சுய-பிரதிபலிப்புக்கான ஒரு கருவியாகப் பயன்படுத்துங்கள், முழுமையான கணிப்பு அல்ல.",
+        lineNames: {
+          "Heart Line": "இதய ரேகை", "Head Line": "தலை ரேகை", "Life Line": "ஆயுள் ரேகை",
+          "Fate Line": "விதி ரேகை", "Sun Line": "சூரிய ரேகை", "Marriage Line": "திருமண ரேகை"
+        },
+        mountNames: {
+          "Mount of Jupiter": "குரு மேடு", "Mount of Saturn": "சனி மேடு",
+          "Mount of Apollo (Sun)": "சூரிய மேடு", "Mount of Mercury": "புதன் மேடு",
+          "Mount of Venus": "சுக்கிர மேடு", "Mount of Moon": "சந்திர மேடு",
+          "Mount of Mars (Upper)": "செவ்வாய் மேடு (மேல்)", "Mount of Mars (Lower)": "செவ்வாய் மேடு (கீழ்)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "நீண்ட விரல்கள்", "Short Fingers": "குறுகிய விரல்கள்",
+          "Pointed Fingertips": "கூர்மையான விரல் நுனிகள்", "Square Fingertips": "சதுர விரல் நுனிகள்",
+          "Spatulate Fingertips": "ஸ்பாட்டுலேட் விரல் நுனிகள்", "Conic Fingertips": "கூம்பு விரல் நுனிகள்"
+        },
+        handShapeNames: {
+          "Earth Hand": "பூமி கை", "Air Hand": "காற்று கை",
+          "Water Hand": "நீர் கை", "Fire Hand": "நெருப்பு கை"
+        }
       },
       common: {
         name: "பெயர்",
@@ -1548,7 +2083,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "టారో రీడింగ్ గురించి",
         aboutText1: "టారో అనేది 78 కార్డ్‌లను ఉపయోగించే ఒక దివ్యదృష్టి రూపం.",
         aboutText2: "ప్రతి కార్డ్‌లో చిత్రాలు, చిహ్నాలు మరియు కథ ఉంటుంది.",
-        aboutText3: "టారో అనేది ప్రతిబింబం మరియు మార్గదర్శకత్వం కోసం ఒక సాధనం."
+        aboutText3: "టారో అనేది ప్రతిబింబం మరియు మార్గదర్శకత్వం కోసం ఒక సాధనం.",
+        cardNames: {
+          "The Fool": "మూర్ఖుడు",
+          "The Magician": "మాంత్రికుడు",
+          "The High Priestess": "ఉన్నత పూజారిణి",
+          "The Empress": "మహారాణి",
+          "The Emperor": "చక్రవర్తి",
+          "The Hierophant": "మతగురువు",
+          "The Lovers": "ప్రేమికులు",
+          "The Chariot": "రథం",
+          "Strength": "బలం",
+          "The Hermit": "సన్యాసి",
+          "Wheel of Fortune": "అదృష్ట చక్రం",
+          "Justice": "న్యాయం",
+          "The Hanged Man": "వేలాడే మనిషి",
+          "Death": "మరణం",
+          "Temperance": "సంయమం",
+          "The Devil": "దెయ్యం",
+          "The Tower": "గోపురం",
+          "The Star": "నక్షత్రం",
+          "The Moon": "చంద్రుడు",
+          "The Sun": "సూర్యుడు",
+          "Judgement": "తీర్పు",
+          "The World": "ప్రపంచం"
+        },
+        yesNoAnswers: {
+          Yes: "అవును", No: "కాదు", Maybe: "బహుశా", Unlikely: "అసంభవం",
+          Strong: "బలమైన", Moderate: "మధ్యస్థం", Uncertain: "అనిశ్చితం"
+        }
       },
       vastu: {
         badge: "వాస్తు శాస్త్రం",
@@ -1576,7 +2139,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "వాస్తు శాస్త్రం గురించి",
         aboutText1: "వాస్తు శాస్త్రం 5,000 సంవత్సరాల పురాతన భారతీయ వాస్తుకళా శాస్త్రం.",
         aboutText2: "సానుకూల శక్తి ప్రవాహం కోసం ఐదు మూలకాలు మరియు ఎనిమిది దిశలపై ఆధారపడింది.",
-        aboutText3: "సులభమైన పరిహారాలు ఆధునిక స్థలాలలో శక్తి సమతుల్యతకు సహాయపడతాయి."
+        aboutText3: "సులభమైన పరిహారాలు ఆధునిక స్థలాలలో శక్తి సమతుల్యతకు సహాయపడతాయి.",
+        directionNames: {
+          North: "ఉత్తరం", South: "దక్షిణం", East: "తూర్పు", West: "పడమర",
+          "North-East": "ఈశాన్యం", "South-East": "ఆగ్నేయం",
+          "South-West": "నైరుతి", "North-West": "వాయువ్యం"
+        },
+        elementNames: {
+          Water: "నీరు", Fire: "అగ్ని", Air: "వాయువు", Space: "ఆకాశం", Earth: "భూమి"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "కుబేరుడు (సంపద)", "Yama (Dharma)": "యముడు (ధర్మం)",
+          "Indra (King of Gods)": "ఇంద్రుడు (దేవతల రాజు)", "Varuna (Rain God)": "వరుణుడు (వర్షం దేవుడు)",
+          "Ishanya (Shiva)": "ఈశాన్యుడు (శివుడు)", "Agni (Fire God)": "అగ్ని (అగ్ని దేవుడు)",
+          "Nairuti (Demon)": "నైరుతి (రాక్షసుడు)", "Vayu (Wind God)": "వాయువు (గాలి దేవుడు)"
+        },
+        roomNames: {
+          bedroom: "పడకగది", kitchen: "వంటగది", bathroom: "స్నానాల గది",
+          livingRoom: "లివింగ్ రూమ్", puja: "పూజ గది", entrance: "ప్రవేశ ద్వారం"
+        },
+        problemNames: {
+          "Financial Problems": "ఆర్థిక సమస్యలు", "Health Issues": "ఆరోగ్య సమస్యలు",
+          "Relationship Problems": "సంబంధ సమస్యలు", "Career Obstacles": "వృత్తి అడ్డంకులు",
+          "Negative Energy": "ప్రతికూల శక్తి"
+        }
       },
       chinese: {
         badge: "చైనీస్ జ్యోతిషం",
@@ -1609,7 +2195,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "చైనీస్ జ్యోతిషం గురించి",
         aboutText1: "చైనీస్ జ్యోతిషం జంతు చిహ్నాలతో 12 సంవత్సరాల చక్రంపై ఆధారపడింది.",
         aboutText2: "మీ రాశి చంద్ర క్యాలెండర్ ప్రకారం పుట్టిన సంవత్సరంచే నిర్ణయించబడుతుంది.",
-        aboutText3: "2026 పాము సంవత్సరం, జాగ్రత్తగా ప్రణాళికకు అనుకూలం."
+        aboutText3: "2026 పాము సంవత్సరం, జాగ్రత్తగా ప్రణాళికకు అనుకూలం.",
+        animalNames: {
+          Rat: "ఎలుక", Ox: "ఎద్దు", Tiger: "పులి", Rabbit: "కుందేలు", Dragon: "డ్రాగన్", Snake: "పాము",
+          Horse: "గుర్రం", Goat: "మేక", Monkey: "కోతి", Rooster: "కోడి", Dog: "కుక్క", Pig: "పంది"
+        },
+        elementNames: {
+          Wood: "చెక్క", Fire: "అగ్ని", Earth: "భూమి", Metal: "లోహం", Water: "నీరు"
+        },
+        yinYangNames: {
+          Yin: "యిన్", Yang: "యాంగ్"
+        }
       },
       kp: {
         badge: "కేపీ సిస్టమ్",
@@ -1646,7 +2242,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "కేపీ సిస్టమ్ గురించి",
         aboutText1: "కేపీ సిస్టమ్ 1960లలో ప్రొఫెసర్ కె.ఎస్. కృష్ణమూర్తిచే అభివృద్ధి చేయబడింది.",
         aboutText2: "ప్రధాన ఆవిష్కరణ ఫలితాలను నిర్ణయించే సబ్-లార్డ్‌లు.",
-        aboutText3: "నిర్దిష్ట ప్రశ్నలు మరియు సంఘటనల సమయానికి ఉపయోగకరం."
+        aboutText3: "నిర్దిష్ట ప్రశ్నలు మరియు సంఘటనల సమయానికి ఉపయోగకరం.",
+        nakshatraNames: {
+          Ashwini: "అశ్విని", Bharani: "భరణి", Krittika: "కృత్తిక", Rohini: "రోహిణి",
+          Mrigashira: "మృగశిర", Ardra: "ఆర్ద్ర", Punarvasu: "పునర్వసు", Pushya: "పుష్య",
+          Ashlesha: "ఆశ్లేష", Magha: "మఘ", "Purva Phalguni": "పూర్వ ఫల్గుణి",
+          "Uttara Phalguni": "ఉత్తర ఫల్గుణి", Hasta: "హస్త", Chitra: "చిత్ర", Swati: "స్వాతి",
+          Vishakha: "విశాఖ", Anuradha: "అనురాధ", Jyeshtha: "జ్యేష్ఠ", Mula: "మూల",
+          "Purva Ashadha": "పూర్వాషాఢ", "Uttara Ashadha": "ఉత్తరాషాఢ", Shravana: "శ్రవణ",
+          Dhanishta: "ధనిష్ఠ", Shatabhisha: "శతభిష", "Purva Bhadrapada": "పూర్వ భాద్రపద",
+          "Uttara Bhadrapada": "ఉత్తర భాద్రపద", Revati: "రేవతి"
+        },
+        zodiacNames: {
+          Aries: "మేషం", Taurus: "వృషభం", Gemini: "మిథునం", Cancer: "కర్కాటకం",
+          Leo: "సింహం", Virgo: "కన్య", Libra: "తుల", Scorpio: "వృశ్చికం",
+          Sagittarius: "ధనుస్సు", Capricorn: "మకరం", Aquarius: "కుంభం", Pisces: "మీనం"
+        },
+        planetNames: {
+          Sun: "సూర్యుడు", Moon: "చంద్రుడు", Mars: "కుజుడు", Mercury: "బుధుడు",
+          Jupiter: "గురుడు", Venus: "శుక్రుడు", Saturn: "శని", Rahu: "రాహు", Ketu: "కేతు"
+        },
+        houseSignifications: {
+          1: ["స్వయం", "వ్యక్తిత్వం", "శరీరం", "ఆరోగ్యం", "స్వభావం"],
+          2: ["సంపద", "కుటుంబం", "వాక్కు", "ఆహారం", "కుడి కన్ను"],
+          3: ["తోబుట్టువులు", "ధైర్యం", "చిన్న ప్రయాణాలు", "సంభాషణ", "నైపుణ్యాలు"],
+          4: ["తల్లి", "ఇల్లు", "ఆస్తి", "వాహనాలు", "విద్య"],
+          5: ["పిల్లలు", "తెలివి", "ప్రేమ", "ఊహాగానం", "సృజనాత్మకత"],
+          6: ["శత్రువులు", "వ్యాధులు", "అప్పులు", "సేవ", "అడ్డంకులు"],
+          7: ["వివాహం", "భాగస్వామ్యం", "వ్యాపారం", "విదేశీ ప్రయాణం", "ప్రజా వ్యవహారాలు"],
+          8: ["ఆయుష్షు", "వారసత్వం", "రహస్య విద్య", "ఆకస్మిక సంఘటనలు", "మార్పు"],
+          9: ["తండ్రి", "అదృష్టం", "ఉన్నత విద్య", "దీర్ఘ ప్రయాణాలు", "ధర్మం"],
+          10: ["వృత్తి", "పేరు", "ఖ్యాతి", "అధికారం", "ప్రభుత్వం"],
+          11: ["లాభాలు", "ఆదాయం", "స్నేహితులు", "ఆకాంక్షలు", "పెద్ద తోబుట్టువులు"],
+          12: ["నష్టాలు", "ఖర్చులు", "విదేశాలు", "మోక్షం", "ఆసుపత్రి"]
+        }
       },
       prashna: {
         badge: "ప్రశ్న కుండలి",
@@ -1681,7 +2310,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ప్రశ్న కుండలి గురించి",
         aboutText1: "ప్రశ్న కుండలి ప్రశ్న అడిగిన క్షణం ఆధారంగా సమాధానాలను అందిస్తుంది.",
         aboutText2: "లగ్నం ప్రశ్నకర్తను సూచిస్తుంది, ఇతర భావాలు సమాచారాన్ని అందిస్తాయి.",
-        aboutText3: "మెరుగైన ఫలితాల కోసం ఒక సమయంలో ఒక స్పష్టమైన ప్రశ్న అడగండి."
+        aboutText3: "మెరుగైన ఫలితాల కోసం ఒక సమయంలో ఒక స్పష్టమైన ప్రశ్న అడగండి.",
+        questionCategories: {
+          career: "వృత్తి మరియు వ్యాపారం",
+          love: "ప్రేమ మరియు సంబంధాలు",
+          health: "ఆరోగ్యం మరియు శ్రేయస్సు",
+          finance: "డబ్బు మరియు ఆర్థికం",
+          travel: "ప్రయాణం మరియు స్థలాంతరం",
+          education: "విద్య మరియు అభ్యసనం",
+          legal: "న్యాయ విషయాలు",
+          general: "సాధారణ ప్రశ్న"
+        },
+        zodiacNames: {
+          Aries: "మేషం", Taurus: "వృషభం", Gemini: "మిథునం", Cancer: "కర్కాటకం",
+          Leo: "సింహం", Virgo: "కన్య", Libra: "తులా", Scorpio: "వృశ్చికం",
+          Sagittarius: "ధనుస్సు", Capricorn: "మకరం", Aquarius: "కుంభం", Pisces: "మీనం"
+        },
+        planetNames: {
+          Sun: "సూర్యుడు", Moon: "చంద్రుడు", Mars: "కుజుడు", Mercury: "బుధుడు",
+          Jupiter: "గురుడు", Venus: "శుక్రుడు", Saturn: "శని", Rahu: "రాహువు", Ketu: "కేతువు"
+        }
       },
       babyNames: {
         badge: "శిశువు పేర్లు",
@@ -1708,7 +2356,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "నక్షత్ర ఆధారిత నామకరణం గురించి",
         aboutText1: "వేద సంప్రదాయంలో జన్మ నక్షత్రం ఆధారంగా పేర్లు ఎంపిక చేయబడతాయి.",
         aboutText2: "నక్షత్రం జన్మ సమయంలో చంద్రుని స్థానంచే నిర్ణయించబడుతుంది.",
-        aboutText3: "వ్యక్తిగత ప్రాధాన్యతలను గౌరవిస్తూ దీన్ని గైడ్‌గా ఉపయోగించండి."
+        aboutText3: "వ్యక్తిగత ప్రాధాన్యతలను గౌరవిస్తూ దీన్ని గైడ్‌గా ఉపయోగించండి.",
+        nakshatraNames: {
+          Ashwini: "అశ్విని", Bharani: "భరణి", Krittika: "కృత్తిక", Rohini: "రోహిణి",
+          Mrigashira: "మృగశిర", Ardra: "ఆర్ద్ర", Punarvasu: "పునర్వసు", Pushya: "పుష్య",
+          Ashlesha: "ఆశ్లేష", Magha: "మఘ", "Purva Phalguni": "పూర్వ ఫల్గుణి",
+          "Uttara Phalguni": "ఉత్తర ఫల్గుణి", Hasta: "హస్త", Chitra: "చిత్ర", Swati: "స్వాతి",
+          Vishakha: "విశాఖ", Anuradha: "అనురాధ", Jyeshtha: "జ్యేష్ఠ", Mula: "మూల",
+          "Purva Ashadha": "పూర్వాషాఢ", "Uttara Ashadha": "ఉత్తరాషాఢ", Shravana: "శ్రవణ",
+          Dhanishta: "ధనిష్ఠ", Shatabhisha: "శతభిష", "Purva Bhadrapada": "పూర్వ భాద్రపద",
+          "Uttara Bhadrapada": "ఉత్తర భాద్రపద", Revati: "రేవతి"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "అశ్విని కుమారులు", Yama: "యముడు", Agni: "అగ్ని", Brahma: "బ్రహ్మ",
+          Soma: "సోముడు", Rudra: "రుద్రుడు", Aditi: "అదితి", Brihaspati: "బృహస్పతి",
+          Nagas: "నాగులు", Pitris: "పితృదేవతలు", Bhaga: "భగుడు", Aryaman: "అర్యమన్",
+          Savitar: "సవితార్", Vishwakarma: "విశ్వకర్మ", Vayu: "వాయువు", "Indra-Agni": "ఇంద్ర-అగ్ని",
+          Mitra: "మిత్రుడు", Indra: "ఇంద్రుడు", Nirriti: "నిర్ఋతి", Apas: "ఆపస్",
+          Vishvadevas: "విశ్వదేవతలు", Vishnu: "విష్ణువు", Vasus: "వసువులు", Varuna: "వరుణుడు",
+          "Aja Ekapada": "అజ ఏకపాద", "Ahir Budhnya": "అహిర్బుధ్న్య", Pushan: "పూషన్"
+        },
+        colors: {
+          Red: "ఎరుపు", "Blood Red": "రక్త ఎరుపు", White: "తెలుపు", "Silver Grey": "వెండి బూడిద",
+          Green: "ఆకుపచ్చ", Yellow: "పసుపు", "Black-Red": "నలుపు-ఎరుపు", Ivory: "దంతపు రంగు",
+          "Light Brown": "లేత గోధుమ", "Bright Blue": "ప్రకాశవంతమైన నీలం", "Deep Green": "ముదురు ఆకుపచ్చ",
+          Black: "నలుపు", Golden: "బంగారు", "Reddish Brown": "ఎర్రటి గోధుమ", Cream: "క్రీమ్",
+          "Brown Yellow": "గోధుమ పసుపు", Copper: "రాగి", "Light Blue": "లేత నీలం",
+          "Blue Green": "నీలం ఆకుపచ్చ", Purple: "ఊదా", Brown: "గోధుమ"
+        },
+        characteristics: {
+          Quick: "వేగవంతమైన", Energetic: "శక్తివంతమైన", Healing: "వైద్యం", Creative: "సృజనాత్మక",
+          Nurturing: "పోషించే", Transformative: "మార్పు చేసే", Sharp: "పదునైన", Determined: "నిశ్చయించుకున్న",
+          Purifying: "శుద్ధి చేసే", Beautiful: "అందమైన", Artistic: "కళాత్మక", Fertile: "సారవంతమైన",
+          Curious: "ఆసక్తిగల", Gentle: "సున్నితమైన", Searching: "వెతుకుతున్న", Intense: "తీవ్రమైన",
+          Emotional: "భావోద్వేగ", Optimistic: "ఆశావాద", Renewing: "పునరుద్ధరించే", Nourishing: "పోషకమైన",
+          Spiritual: "ఆధ్యాత్మిక", Prosperous: "సంపన్నమైన", Intuitive: "అంతర్ దృష్టి", Mystical: "రహస్యమైన",
+          Penetrating: "చొచ్చుకుపోయే", Royal: "రాజ", Ancestral: "పూర్వీకుల", Authoritative: "అధికారిక",
+          Romantic: "ప్రేమ", Relaxing: "విశ్రాంతి", Generous: "ఉదారమైన", Friendly: "స్నేహపూర్వక",
+          Helpful: "సహాయకరమైన", Skillful: "నైపుణ్యం", Clever: "తెలివైన", Independent: "స్వతంత్ర",
+          Flexible: "అనువైన", Diplomatic: "దౌత్య", Ambitious: "ఆశయం", Focused: "కేంద్రీకృత",
+          Devoted: "అంకితమైన", Successful: "విజయవంతమైన", Protective: "రక్షణాత్మక", Courageous: "ధైర్యవంతమైన",
+          Senior: "సీనియర్", Investigative: "పరిశోధన", Destructive: "విధ్వంసకర", Invincible: "అజేయమైన",
+          Energizing: "శక్తినిచ్చే", Universal: "సార్వత్రిక", Victorious: "విజయవంతమైన", Righteous: "ధర్మబద్ధమైన",
+          Listening: "వినే", Learning: "నేర్చుకునే", Connected: "అనుసంధానమైన", Wealthy: "సంపన్నమైన",
+          Musical: "సంగీత", Adaptable: "అనుకూలమైన", Fiery: "అగ్ని", Deep: "లోతైన",
+          Wise: "జ్ఞానవంతమైన", Controlled: "నియంత్రిత", Safe: "సురక్షితమైన"
+        }
       },
       gemstones: {
         badge: "రత్న సిఫార్సులు",
@@ -1814,7 +2507,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "హస్తరేఖ గురించి",
         aboutText1: "హస్తరేఖ అరచేతిలోని రేఖలు, ఆకారాలు మరియు పర్వతాలను వివరిస్తుంది.",
         aboutText2: "వేద సంప్రదాయంలో, హస్తరేఖను హస్త సాముద్రిక శాస్త్రం అంటారు.",
-        aboutText3: "స్వీయ-ప్రతిబింబం కోసం ఒక సాధనంగా ఉపయోగించండి, సంపూర్ణ అంచనా కాదు."
+        aboutText3: "స్వీయ-ప్రతిబింబం కోసం ఒక సాధనంగా ఉపయోగించండి, సంపూర్ణ అంచనా కాదు.",
+        lineNames: {
+          "Heart Line": "హృదయ రేఖ", "Head Line": "శిరస్సు రేఖ", "Life Line": "జీవిత రేఖ",
+          "Fate Line": "భాగ్య రేఖ", "Sun Line": "సూర్య రేఖ", "Marriage Line": "వివాహ రేఖ"
+        },
+        mountNames: {
+          "Mount of Jupiter": "గురు పర్వతం", "Mount of Saturn": "శని పర్వతం",
+          "Mount of Apollo (Sun)": "సూర్య పర్వతం", "Mount of Mercury": "బుధ పర్వతం",
+          "Mount of Venus": "శుక్ర పర్వతం", "Mount of Moon": "చంద్ర పర్వతం",
+          "Mount of Mars (Upper)": "కుజ పర్వతం (పై)", "Mount of Mars (Lower)": "కుజ పర్వతం (క్రింద)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "పొడవైన వేళ్లు", "Short Fingers": "చిన్న వేళ్లు",
+          "Pointed Fingertips": "మొనదేలిన వేలు చివరలు", "Square Fingertips": "చతురస్ర వేలు చివరలు",
+          "Spatulate Fingertips": "స్పాట్యులేట్ వేలు చివరలు", "Conic Fingertips": "శంకు వేలు చివరలు"
+        },
+        handShapeNames: {
+          "Earth Hand": "భూమి చేయి", "Air Hand": "వాయు చేయి",
+          "Water Hand": "జల చేయి", "Fire Hand": "అగ్ని చేయి"
+        }
       },
       common: {
         name: "పేరు",
@@ -2008,7 +2720,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ট্যারো রিডিং সম্পর্কে",
         aboutText1: "ট্যারো হল 78টি কার্ড ব্যবহার করে ভবিষ্যদ্বাণীর একটি রূপ।",
         aboutText2: "প্রতিটি কার্ডে চিত্র, প্রতীক এবং গল্প রয়েছে।",
-        aboutText3: "ট্যারো প্রতিফলন এবং নির্দেশনার জন্য একটি সরঞ্জাম।"
+        aboutText3: "ট্যারো প্রতিফলন এবং নির্দেশনার জন্য একটি সরঞ্জাম।",
+        cardNames: {
+          "The Fool": "বোকা",
+          "The Magician": "জাদুকর",
+          "The High Priestess": "মহা পুরোহিত",
+          "The Empress": "সম্রাজ্ঞী",
+          "The Emperor": "সম্রাট",
+          "The Hierophant": "ধর্মগুরু",
+          "The Lovers": "প্রেমিক",
+          "The Chariot": "রথ",
+          "Strength": "শক্তি",
+          "The Hermit": "সন্ন্যাসী",
+          "Wheel of Fortune": "ভাগ্যচক্র",
+          "Justice": "ন্যায়বিচার",
+          "The Hanged Man": "ঝুলন্ত মানুষ",
+          "Death": "মৃত্যু",
+          "Temperance": "সংযম",
+          "The Devil": "শয়তান",
+          "The Tower": "মিনার",
+          "The Star": "তারা",
+          "The Moon": "চাঁদ",
+          "The Sun": "সূর্য",
+          "Judgement": "বিচার",
+          "The World": "বিশ্ব"
+        },
+        yesNoAnswers: {
+          Yes: "হ্যাঁ", No: "না", Maybe: "হয়তো", Unlikely: "অসম্ভাব্য",
+          Strong: "শক্তিশালী", Moderate: "মাঝারি", Uncertain: "অনিশ্চিত"
+        }
       },
       vastu: {
         badge: "বাস্তু শাস্ত্র",
@@ -2036,7 +2776,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "বাস্তু শাস্ত্র সম্পর্কে",
         aboutText1: "বাস্তু শাস্ত্র 5,000 বছরের পুরানো ভারতীয় স্থাপত্য বিজ্ঞান।",
         aboutText2: "ইতিবাচক শক্তি প্রবাহের জন্য পাঁচটি উপাদান এবং আটটি দিকের উপর ভিত্তি করে।",
-        aboutText3: "সহজ প্রতিকার আধুনিক স্থানগুলিতে শক্তি ভারসাম্য রাখতে সাহায্য করে।"
+        aboutText3: "সহজ প্রতিকার আধুনিক স্থানগুলিতে শক্তি ভারসাম্য রাখতে সাহায্য করে।",
+        directionNames: {
+          North: "উত্তর", South: "দক্ষিণ", East: "পূর্ব", West: "পশ্চিম",
+          "North-East": "ঈশান", "South-East": "অগ্নি",
+          "South-West": "নৈঋত্য", "North-West": "বায়ু"
+        },
+        elementNames: {
+          Water: "জল", Fire: "অগ্নি", Air: "বায়ু", Space: "আকাশ", Earth: "পৃথিবী"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "কুবের (সম্পদ)", "Yama (Dharma)": "যম (ধর্ম)",
+          "Indra (King of Gods)": "ইন্দ্র (দেবরাজ)", "Varuna (Rain God)": "বরুণ (বৃষ্টির দেবতা)",
+          "Ishanya (Shiva)": "ঈশান (শিব)", "Agni (Fire God)": "অগ্নি (অগ্নি দেবতা)",
+          "Nairuti (Demon)": "নৈঋতি (রাক্ষস)", "Vayu (Wind God)": "বায়ু (বায়ু দেবতা)"
+        },
+        roomNames: {
+          bedroom: "শয়নকক্ষ", kitchen: "রান্নাঘর", bathroom: "স্নানঘর",
+          livingRoom: "বসার ঘর", puja: "পূজার ঘর", entrance: "প্রবেশদ্বার"
+        },
+        problemNames: {
+          "Financial Problems": "আর্থিক সমস্যা", "Health Issues": "স্বাস্থ্য সমস্যা",
+          "Relationship Problems": "সম্পর্কের সমস্যা", "Career Obstacles": "কর্মজীবনের বাধা",
+          "Negative Energy": "নেতিবাচক শক্তি"
+        }
       },
       chinese: {
         badge: "চীনা জ্যোতিষ",
@@ -2069,7 +2832,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "চীনা জ্যোতিষ সম্পর্কে",
         aboutText1: "চীনা জ্যোতিষ প্রাণী চিহ্ন সহ 12 বছরের চক্রের উপর ভিত্তি করে।",
         aboutText2: "আপনার রাশি চন্দ্র ক্যালেন্ডার অনুযায়ী জন্ম বছর দ্বারা নির্ধারিত হয়।",
-        aboutText3: "2026 হল সাপ বছর, সতর্ক পরিকল্পনার জন্য অনুকূল।"
+        aboutText3: "2026 হল সাপ বছর, সতর্ক পরিকল্পনার জন্য অনুকূল।",
+        animalNames: {
+          Rat: "ইঁদুর", Ox: "গরু", Tiger: "বাঘ", Rabbit: "খরগোশ", Dragon: "ড্রাগন", Snake: "সাপ",
+          Horse: "ঘোড়া", Goat: "ছাগল", Monkey: "বানর", Rooster: "মোরগ", Dog: "কুকুর", Pig: "শূকর"
+        },
+        elementNames: {
+          Wood: "কাঠ", Fire: "আগুন", Earth: "পৃথিবী", Metal: "ধাতু", Water: "জল"
+        },
+        yinYangNames: {
+          Yin: "ইয়িন", Yang: "ইয়াং"
+        }
       },
       kp: {
         badge: "কেপি সিস্টেম",
@@ -2106,7 +2879,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "কেপি সিস্টেম সম্পর্কে",
         aboutText1: "কেপি সিস্টেম 1960-এর দশকে অধ্যাপক কে.এস. কৃষ্ণমূর্তি দ্বারা বিকশিত হয়েছিল।",
         aboutText2: "মূল উদ্ভাবন হল ফলাফল নির্ধারণকারী সাব-লর্ড।",
-        aboutText3: "নির্দিষ্ট প্রশ্ন এবং ঘটনার সময় নির্ধারণের জন্য দরকারী।"
+        aboutText3: "নির্দিষ্ট প্রশ্ন এবং ঘটনার সময় নির্ধারণের জন্য দরকারী।",
+        nakshatraNames: {
+          Ashwini: "অশ্বিনী", Bharani: "ভরণী", Krittika: "কৃত্তিকা", Rohini: "রোহিণী",
+          Mrigashira: "মৃগশিরা", Ardra: "আর্দ্রা", Punarvasu: "পুনর্বসু", Pushya: "পুষ্য",
+          Ashlesha: "আশ্লেষা", Magha: "মঘা", "Purva Phalguni": "পূর্ব ফাল্গুনী",
+          "Uttara Phalguni": "উত্তর ফাল্গুনী", Hasta: "হস্ত", Chitra: "চিত্রা", Swati: "স্বাতী",
+          Vishakha: "বিশাখা", Anuradha: "অনুরাধা", Jyeshtha: "জ্যেষ্ঠা", Mula: "মূল",
+          "Purva Ashadha": "পূর্বাষাঢ়া", "Uttara Ashadha": "উত্তরাষাঢ়া", Shravana: "শ্রবণা",
+          Dhanishta: "ধনিষ্ঠা", Shatabhisha: "শতভিষা", "Purva Bhadrapada": "পূর্ব ভাদ্রপদ",
+          "Uttara Bhadrapada": "উত্তর ভাদ্রপদ", Revati: "রেবতী"
+        },
+        zodiacNames: {
+          Aries: "মেষ", Taurus: "বৃষ", Gemini: "মিথুন", Cancer: "কর্কট",
+          Leo: "সিংহ", Virgo: "কন্যা", Libra: "তুলা", Scorpio: "বৃশ্চিক",
+          Sagittarius: "ধনু", Capricorn: "মকর", Aquarius: "কুম্ভ", Pisces: "মীন"
+        },
+        planetNames: {
+          Sun: "সূর্য", Moon: "চন্দ্র", Mars: "মঙ্গল", Mercury: "বুধ",
+          Jupiter: "বৃহস্পতি", Venus: "শুক্র", Saturn: "শনি", Rahu: "রাহু", Ketu: "কেতু"
+        },
+        houseSignifications: {
+          1: ["স্বয়ং", "ব্যক্তিত্ব", "শরীর", "স্বাস্থ্য", "চরিত্র"],
+          2: ["সম্পদ", "পরিবার", "বাক্য", "খাদ্য", "ডান চোখ"],
+          3: ["ভাইবোন", "সাহস", "ছোট যাত্রা", "যোগাযোগ", "দক্ষতা"],
+          4: ["মা", "বাড়ি", "সম্পত্তি", "যানবাহন", "শিক্ষা"],
+          5: ["সন্তান", "বুদ্ধি", "প্রেম", "জুয়া", "সৃজনশীলতা"],
+          6: ["শত্রু", "রোগ", "ঋণ", "সেবা", "বাধা"],
+          7: ["বিবাহ", "অংশীদারিত্ব", "ব্যবসা", "বিদেশ ভ্রমণ", "জনসম্পর্ক"],
+          8: ["আয়ু", "উত্তরাধিকার", "গুপ্ত বিদ্যা", "আকস্মিক ঘটনা", "রূপান্তর"],
+          9: ["পিতা", "ভাগ্য", "উচ্চ শিক্ষা", "দীর্ঘ যাত্রা", "ধর্ম"],
+          10: ["কর্মজীবন", "পেশা", "খ্যাতি", "কর্তৃত্ব", "সরকার"],
+          11: ["লাভ", "আয়", "বন্ধু", "আকাঙ্ক্ষা", "বড় ভাইবোন"],
+          12: ["ক্ষতি", "ব্যয়", "বিদেশ", "মোক্ষ", "হাসপাতাল"]
+        }
       },
       prashna: {
         badge: "প্রশ্ন কুণ্ডলী",
@@ -2141,7 +2947,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "প্রশ্ন কুণ্ডলী সম্পর্কে",
         aboutText1: "প্রশ্ন কুণ্ডলী প্রশ্ন জিজ্ঞাসার মুহূর্তের উপর ভিত্তি করে উত্তর প্রদান করে।",
         aboutText2: "লগ্ন প্রশ্নকারীকে প্রতিনিধিত্ব করে, অন্যান্য ভাব তথ্য প্রদান করে।",
-        aboutText3: "ভাল ফলাফলের জন্য একবারে একটি স্পষ্ট প্রশ্ন জিজ্ঞাসা করুন।"
+        aboutText3: "ভাল ফলাফলের জন্য একবারে একটি স্পষ্ট প্রশ্ন জিজ্ঞাসা করুন।",
+        questionCategories: {
+          career: "কর্মজীবন ও ব্যবসা",
+          love: "প্রেম ও সম্পর্ক",
+          health: "স্বাস্থ্য ও সুস্থতা",
+          finance: "অর্থ ও আর্থিক",
+          travel: "ভ্রমণ ও স্থানান্তর",
+          education: "শিক্ষা ও শেখা",
+          legal: "আইনি বিষয়",
+          general: "সাধারণ প্রশ্ন"
+        },
+        zodiacNames: {
+          Aries: "মেষ", Taurus: "বৃষ", Gemini: "মিথুন", Cancer: "কর্কট",
+          Leo: "সিংহ", Virgo: "কন্যা", Libra: "তুলা", Scorpio: "বৃশ্চিক",
+          Sagittarius: "ধনু", Capricorn: "মকর", Aquarius: "কুম্ভ", Pisces: "মীন"
+        },
+        planetNames: {
+          Sun: "সূর্য", Moon: "চন্দ্র", Mars: "মঙ্গল", Mercury: "বুধ",
+          Jupiter: "বৃহস্পতি", Venus: "শুক্র", Saturn: "শনি", Rahu: "রাহু", Ketu: "কেতু"
+        }
       },
       babyNames: {
         badge: "শিশুর নাম",
@@ -2168,7 +2993,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "নক্ষত্র-ভিত্তিক নামকরণ সম্পর্কে",
         aboutText1: "বৈদিক ঐতিহ্যে জন্ম নক্ষত্রের উপর ভিত্তি করে নাম নির্বাচন করা হয়।",
         aboutText2: "নক্ষত্র জন্মের সময় চন্দ্রের অবস্থান দ্বারা নির্ধারিত হয়।",
-        aboutText3: "ব্যক্তিগত পছন্দকে সম্মান করে এটি একটি গাইড হিসাবে ব্যবহার করুন।"
+        aboutText3: "ব্যক্তিগত পছন্দকে সম্মান করে এটি একটি গাইড হিসাবে ব্যবহার করুন।",
+        nakshatraNames: {
+          Ashwini: "অশ্বিনী", Bharani: "ভরণী", Krittika: "কৃত্তিকা", Rohini: "রোহিণী",
+          Mrigashira: "মৃগশিরা", Ardra: "আর্দ্রা", Punarvasu: "পুনর্বসু", Pushya: "পুষ্য",
+          Ashlesha: "আশ্লেষা", Magha: "মঘা", "Purva Phalguni": "পূর্ব ফাল্গুনী",
+          "Uttara Phalguni": "উত্তর ফাল্গুনী", Hasta: "হস্ত", Chitra: "চিত্রা", Swati: "স্বাতী",
+          Vishakha: "বিশাখা", Anuradha: "অনুরাধা", Jyeshtha: "জ্যেষ্ঠা", Mula: "মূল",
+          "Purva Ashadha": "পূর্বাষাঢ়া", "Uttara Ashadha": "উত্তরাষাঢ়া", Shravana: "শ্রবণ",
+          Dhanishta: "ধনিষ্ঠা", Shatabhisha: "শতভিষা", "Purva Bhadrapada": "পূর্ব ভাদ্রপদ",
+          "Uttara Bhadrapada": "উত্তর ভাদ্রপদ", Revati: "রেবতী"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "অশ্বিনী কুমার", Yama: "যম", Agni: "অগ্নি", Brahma: "ব্রহ্মা",
+          Soma: "সোম", Rudra: "রুদ্র", Aditi: "অদিতি", Brihaspati: "বৃহস্পতি",
+          Nagas: "নাগ", Pitris: "পিতৃ", Bhaga: "ভগ", Aryaman: "অর্যমন",
+          Savitar: "সবিতার", Vishwakarma: "বিশ্বকর্মা", Vayu: "বায়ু", "Indra-Agni": "ইন্দ্র-অগ্নি",
+          Mitra: "মিত্র", Indra: "ইন্দ্র", Nirriti: "নির্ঋতি", Apas: "আপস",
+          Vishvadevas: "বিশ্বদেব", Vishnu: "বিষ্ণু", Vasus: "বসু", Varuna: "বরুণ",
+          "Aja Ekapada": "অজ একপাদ", "Ahir Budhnya": "অহির্বুধ্ন্য", Pushan: "পূষন"
+        },
+        colors: {
+          Red: "লাল", "Blood Red": "রক্ত লাল", White: "সাদা", "Silver Grey": "রূপালী ধূসর",
+          Green: "সবুজ", Yellow: "হলুদ", "Black-Red": "কালো-লাল", Ivory: "হাতির দাঁত",
+          "Light Brown": "হালকা বাদামী", "Bright Blue": "উজ্জ্বল নীল", "Deep Green": "গাঢ় সবুজ",
+          Black: "কালো", Golden: "সোনালী", "Reddish Brown": "লালচে বাদামী", Cream: "ক্রিম",
+          "Brown Yellow": "বাদামী হলুদ", Copper: "তামা", "Light Blue": "হালকা নীল",
+          "Blue Green": "নীল সবুজ", Purple: "বেগুনি", Brown: "বাদামী"
+        },
+        characteristics: {
+          Quick: "দ্রুত", Energetic: "শক্তিশালী", Healing: "নিরাময়কারী", Creative: "সৃজনশীল",
+          Nurturing: "লালনপালনকারী", Transformative: "রূপান্তরকারী", Sharp: "তীক্ষ্ণ", Determined: "দৃঢ়প্রতিজ্ঞ",
+          Purifying: "শুদ্ধিকারক", Beautiful: "সুন্দর", Artistic: "শৈল্পিক", Fertile: "উর্বর",
+          Curious: "কৌতূহলী", Gentle: "কোমল", Searching: "অনুসন্ধানী", Intense: "তীব্র",
+          Emotional: "আবেগপ্রবণ", Optimistic: "আশাবাদী", Renewing: "নবায়নকারী", Nourishing: "পুষ্টিকর",
+          Spiritual: "আধ্যাত্মিক", Prosperous: "সমৃদ্ধ", Intuitive: "স্বজ্ঞাত", Mystical: "রহস্যময়",
+          Penetrating: "ভেদকারী", Royal: "রাজকীয়", Ancestral: "পৈতৃক", Authoritative: "কর্তৃত্বপূর্ণ",
+          Romantic: "রোমান্টিক", Relaxing: "শিথিলকারী", Generous: "উদার", Friendly: "বন্ধুত্বপূর্ণ",
+          Helpful: "সহায়ক", Skillful: "দক্ষ", Clever: "চতুর", Independent: "স্বাধীন",
+          Flexible: "নমনীয়", Diplomatic: "কূটনৈতিক", Ambitious: "উচ্চাকাঙ্ক্ষী", Focused: "মনোযোগী",
+          Devoted: "নিবেদিত", Successful: "সফল", Protective: "রক্ষাকারী", Courageous: "সাহসী",
+          Senior: "জ্যেষ্ঠ", Investigative: "অনুসন্ধানী", Destructive: "ধ্বংসাত্মক", Invincible: "অজেয়",
+          Energizing: "শক্তিদায়ক", Universal: "সার্বজনীন", Victorious: "বিজয়ী", Righteous: "ধার্মিক",
+          Listening: "শ্রবণকারী", Learning: "শিক্ষার্থী", Connected: "সংযুক্ত", Wealthy: "ধনী",
+          Musical: "সংগীতময়", Adaptable: "অভিযোজনযোগ্য", Fiery: "অগ্নিময়", Deep: "গভীর",
+          Wise: "জ্ঞানী", Controlled: "নিয়ন্ত্রিত", Safe: "নিরাপদ"
+        }
       },
       gemstones: {
         badge: "রত্ন সুপারিশ",
@@ -2274,7 +3144,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "হস্তরেখা সম্পর্কে",
         aboutText1: "হস্তরেখা হাতের তালুতে রেখা, আকার এবং পর্বত ব্যাখ্যা করে।",
         aboutText2: "বৈদিক ঐতিহ্যে, হস্তরেখাকে হস্ত সামুদ্রিক শাস্ত্র বলা হয়।",
-        aboutText3: "আত্ম-প্রতিফলনের জন্য একটি সরঞ্জাম হিসাবে ব্যবহার করুন, সম্পূর্ণ ভবিষ্যদ্বাণী নয়।"
+        aboutText3: "আত্ম-প্রতিফলনের জন্য একটি সরঞ্জাম হিসাবে ব্যবহার করুন, সম্পূর্ণ ভবিষ্যদ্বাণী নয়।",
+        lineNames: {
+          "Heart Line": "হৃদয় রেখা", "Head Line": "মস্তিষ্ক রেখা", "Life Line": "জীবন রেখা",
+          "Fate Line": "ভাগ্য রেখা", "Sun Line": "সূর্য রেখা", "Marriage Line": "বিবাহ রেখা"
+        },
+        mountNames: {
+          "Mount of Jupiter": "বৃহস্পতি পর্বত", "Mount of Saturn": "শনি পর্বত",
+          "Mount of Apollo (Sun)": "সূর্য পর্বত", "Mount of Mercury": "বুধ পর্বত",
+          "Mount of Venus": "শুক্র পর্বত", "Mount of Moon": "চন্দ্র পর্বত",
+          "Mount of Mars (Upper)": "মঙ্গল পর্বত (উপরের)", "Mount of Mars (Lower)": "মঙ্গল পর্বত (নিচের)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "লম্বা আঙুল", "Short Fingers": "ছোট আঙুল",
+          "Pointed Fingertips": "সূচালো আঙুলের ডগা", "Square Fingertips": "চতুষ্কোণ আঙুলের ডগা",
+          "Spatulate Fingertips": "স্প্যাটুলেট আঙুলের ডগা", "Conic Fingertips": "শঙ্কু আঙুলের ডগা"
+        },
+        handShapeNames: {
+          "Earth Hand": "পৃথিবী হাত", "Air Hand": "বায়ু হাত",
+          "Water Hand": "জল হাত", "Fire Hand": "অগ্নি হাত"
+        }
       },
       common: {
         name: "নাম",
@@ -2468,7 +3357,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "टॅरो वाचन बद्दल",
         aboutText1: "टॅरो हे 78 कार्ड वापरून भविष्य सांगण्याचे एक स्वरूप आहे।",
         aboutText2: "प्रत्येक कार्डमध्ये चित्रे, प्रतीके आणि कथा आहेत।",
-        aboutText3: "टॅरो हे चिंतन आणि मार्गदर्शनासाठी एक साधन आहे।"
+        aboutText3: "टॅरो हे चिंतन आणि मार्गदर्शनासाठी एक साधन आहे।",
+        cardNames: {
+          "The Fool": "मूर्ख",
+          "The Magician": "जादूगार",
+          "The High Priestess": "उच्च पुजारीण",
+          "The Empress": "सम्राज्ञी",
+          "The Emperor": "सम्राट",
+          "The Hierophant": "धर्मगुरू",
+          "The Lovers": "प्रेमी",
+          "The Chariot": "रथ",
+          "Strength": "शक्ती",
+          "The Hermit": "साधू",
+          "Wheel of Fortune": "भाग्यचक्र",
+          "Justice": "न्याय",
+          "The Hanged Man": "लटकलेला माणूस",
+          "Death": "मृत्यू",
+          "Temperance": "संयम",
+          "The Devil": "सैतान",
+          "The Tower": "मनोरा",
+          "The Star": "तारा",
+          "The Moon": "चंद्र",
+          "The Sun": "सूर्य",
+          "Judgement": "निवाडा",
+          "The World": "जग"
+        },
+        yesNoAnswers: {
+          Yes: "हो", No: "नाही", Maybe: "कदाचित", Unlikely: "अशक्य",
+          Strong: "मजबूत", Moderate: "मध्यम", Uncertain: "अनिश्चित"
+        }
       },
       vastu: {
         badge: "वास्तु शास्त्र",
@@ -2496,7 +3413,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "वास्तु शास्त्र बद्दल",
         aboutText1: "वास्तु शास्त्र 5,000 वर्षे जुने भारतीय वास्तुकला विज्ञान आहे।",
         aboutText2: "सकारात्मक ऊर्जा प्रवाहासाठी पाच तत्त्वे आणि आठ दिशांवर आधारित।",
-        aboutText3: "सोपे उपाय आधुनिक जागांमध्ये ऊर्जा संतुलित करण्यास मदत करतात।"
+        aboutText3: "सोपे उपाय आधुनिक जागांमध्ये ऊर्जा संतुलित करण्यास मदत करतात।",
+        directionNames: {
+          North: "उत्तर", South: "दक्षिण", East: "पूर्व", West: "पश्चिम",
+          "North-East": "ईशान्य", "South-East": "आग्नेय",
+          "South-West": "नैऋत्य", "North-West": "वायव्य"
+        },
+        elementNames: {
+          Water: "जल", Fire: "अग्नी", Air: "वायू", Space: "आकाश", Earth: "पृथ्वी"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "कुबेर (संपत्ती)", "Yama (Dharma)": "यम (धर्म)",
+          "Indra (King of Gods)": "इंद्र (देवांचा राजा)", "Varuna (Rain God)": "वरुण (पावसाचा देव)",
+          "Ishanya (Shiva)": "ईशान्य (शिव)", "Agni (Fire God)": "अग्नी (अग्नी देव)",
+          "Nairuti (Demon)": "नैऋती (राक्षस)", "Vayu (Wind God)": "वायू (वारा देव)"
+        },
+        roomNames: {
+          bedroom: "शयनकक्ष", kitchen: "स्वयंपाकघर", bathroom: "स्नानगृह",
+          livingRoom: "बैठकीची खोली", puja: "पूजा खोली", entrance: "प्रवेशद्वार"
+        },
+        problemNames: {
+          "Financial Problems": "आर्थिक समस्या", "Health Issues": "आरोग्य समस्या",
+          "Relationship Problems": "नातेसंबंध समस्या", "Career Obstacles": "करिअर अडथळे",
+          "Negative Energy": "नकारात्मक ऊर्जा"
+        }
       },
       chinese: {
         badge: "चीनी ज्योतिष",
@@ -2529,7 +3469,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "चीनी ज्योतिष बद्दल",
         aboutText1: "चीनी ज्योतिष प्राणी चिन्हांसह 12 वर्षांच्या चक्रावर आधारित आहे।",
         aboutText2: "आपली राशी चंद्र कॅलेंडरनुसार जन्म वर्षाद्वारे निर्धारित केली जाते।",
-        aboutText3: "2026 हे साप वर्ष आहे, सावध नियोजनासाठी अनुकूल।"
+        aboutText3: "2026 हे साप वर्ष आहे, सावध नियोजनासाठी अनुकूल।",
+        animalNames: {
+          Rat: "उंदीर", Ox: "बैल", Tiger: "वाघ", Rabbit: "ससा", Dragon: "ड्रॅगन", Snake: "साप",
+          Horse: "घोडा", Goat: "बकरी", Monkey: "माकड", Rooster: "कोंबडा", Dog: "कुत्रा", Pig: "डुक्कर"
+        },
+        elementNames: {
+          Wood: "लाकूड", Fire: "अग्नी", Earth: "पृथ्वी", Metal: "धातू", Water: "पाणी"
+        },
+        yinYangNames: {
+          Yin: "यिन", Yang: "यांग"
+        }
       },
       kp: {
         badge: "केपी प्रणाली",
@@ -2566,7 +3516,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "केपी प्रणाली बद्दल",
         aboutText1: "केपी प्रणाली 1960 च्या दशकात प्रोफेसर के.एस. कृष्णमूर्ती यांनी विकसित केली।",
         aboutText2: "मुख्य नवकल्पना म्हणजे परिणाम निर्धारित करणारा सब-लॉर्ड।",
-        aboutText3: "विशिष्ट प्रश्न आणि घटनांच्या वेळेसाठी उपयुक्त।"
+        aboutText3: "विशिष्ट प्रश्न आणि घटनांच्या वेळेसाठी उपयुक्त।",
+        nakshatraNames: {
+          Ashwini: "अश्विनी", Bharani: "भरणी", Krittika: "कृत्तिका", Rohini: "रोहिणी",
+          Mrigashira: "मृगशीर्ष", Ardra: "आर्द्रा", Punarvasu: "पुनर्वसू", Pushya: "पुष्य",
+          Ashlesha: "आश्लेषा", Magha: "मघा", "Purva Phalguni": "पूर्वा फाल्गुनी",
+          "Uttara Phalguni": "उत्तरा फाल्गुनी", Hasta: "हस्त", Chitra: "चित्रा", Swati: "स्वाती",
+          Vishakha: "विशाखा", Anuradha: "अनुराधा", Jyeshtha: "ज्येष्ठा", Mula: "मूळ",
+          "Purva Ashadha": "पूर्वाषाढा", "Uttara Ashadha": "उत्तराषाढा", Shravana: "श्रवण",
+          Dhanishta: "धनिष्ठा", Shatabhisha: "शतभिषा", "Purva Bhadrapada": "पूर्व भाद्रपद",
+          "Uttara Bhadrapada": "उत्तर भाद्रपद", Revati: "रेवती"
+        },
+        zodiacNames: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तूळ", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planetNames: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगळ", Mercury: "बुध",
+          Jupiter: "गुरू", Venus: "शुक्र", Saturn: "शनी", Rahu: "राहू", Ketu: "केतू"
+        },
+        houseSignifications: {
+          1: ["स्वतः", "व्यक्तिमत्व", "शरीर", "आरोग्य", "स्वभाव"],
+          2: ["संपत्ती", "कुटुंब", "वाणी", "अन्न", "उजवा डोळा"],
+          3: ["भावंडे", "धाडस", "लहान प्रवास", "संवाद", "कौशल्ये"],
+          4: ["आई", "घर", "मालमत्ता", "वाहने", "शिक्षण"],
+          5: ["मुले", "बुद्धी", "प्रेम", "सट्टा", "सर्जनशीलता"],
+          6: ["शत्रू", "रोग", "कर्ज", "सेवा", "अडथळे"],
+          7: ["विवाह", "भागीदारी", "व्यापार", "परदेश प्रवास", "सार्वजनिक व्यवहार"],
+          8: ["आयुष्य", "वारसा", "गुप्त विद्या", "अचानक घटना", "परिवर्तन"],
+          9: ["वडील", "भाग्य", "उच्च शिक्षण", "लांब प्रवास", "धर्म"],
+          10: ["करिअर", "व्यवसाय", "कीर्ती", "अधिकार", "सरकार"],
+          11: ["लाभ", "उत्पन्न", "मित्र", "आकांक्षा", "मोठी भावंडे"],
+          12: ["हानी", "खर्च", "परदेश", "मोक्ष", "रुग्णालय"]
+        }
       },
       prashna: {
         badge: "प्रश्न कुंडली",
@@ -2601,7 +3584,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "प्रश्न कुंडली बद्दल",
         aboutText1: "प्रश्न कुंडली प्रश्न विचारण्याच्या क्षणावर आधारित उत्तरे देते।",
         aboutText2: "लग्न प्रश्नकर्त्याचे प्रतिनिधित्व करते, इतर भाव माहिती देतात।",
-        aboutText3: "चांगल्या परिणामांसाठी एकावेळी एक स्पष्ट प्रश्न विचारा।"
+        aboutText3: "चांगल्या परिणामांसाठी एकावेळी एक स्पष्ट प्रश्न विचारा।",
+        questionCategories: {
+          career: "करिअर आणि व्यवसाय",
+          love: "प्रेम आणि नातेसंबंध",
+          health: "आरोग्य आणि कल्याण",
+          finance: "पैसा आणि वित्त",
+          travel: "प्रवास आणि स्थलांतर",
+          education: "शिक्षण आणि शिकणे",
+          legal: "कायदेशीर बाबी",
+          general: "सामान्य प्रश्न"
+        },
+        zodiacNames: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तूळ", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planetNames: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगळ", Mercury: "बुध",
+          Jupiter: "गुरु", Venus: "शुक्र", Saturn: "शनि", Rahu: "राहू", Ketu: "केतू"
+        }
       },
       babyNames: {
         badge: "बाळाची नावे",
@@ -2628,7 +3630,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "नक्षत्र-आधारित नामकरण बद्दल",
         aboutText1: "वैदिक परंपरेत जन्म नक्षत्रावर आधारित नाव निवडले जाते।",
         aboutText2: "नक्षत्र जन्माच्या वेळी चंद्राच्या स्थितीद्वारे निर्धारित केले जाते।",
-        aboutText3: "वैयक्तिक पसंतीचा आदर करून हे मार्गदर्शक म्हणून वापरा।"
+        aboutText3: "वैयक्तिक पसंतीचा आदर करून हे मार्गदर्शक म्हणून वापरा।",
+        nakshatraNames: {
+          Ashwini: "अश्विनी", Bharani: "भरणी", Krittika: "कृत्तिका", Rohini: "रोहिणी",
+          Mrigashira: "मृगशीर्ष", Ardra: "आर्द्रा", Punarvasu: "पुनर्वसु", Pushya: "पुष्य",
+          Ashlesha: "आश्लेषा", Magha: "मघा", "Purva Phalguni": "पूर्वा फाल्गुनी",
+          "Uttara Phalguni": "उत्तरा फाल्गुनी", Hasta: "हस्त", Chitra: "चित्रा", Swati: "स्वाती",
+          Vishakha: "विशाखा", Anuradha: "अनुराधा", Jyeshtha: "ज्येष्ठा", Mula: "मूळ",
+          "Purva Ashadha": "पूर्वाषाढा", "Uttara Ashadha": "उत्तराषाढा", Shravana: "श्रवण",
+          Dhanishta: "धनिष्ठा", Shatabhisha: "शतभिषा", "Purva Bhadrapada": "पूर्व भाद्रपद",
+          "Uttara Bhadrapada": "उत्तर भाद्रपद", Revati: "रेवती"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "अश्विनी कुमार", Yama: "यम", Agni: "अग्नी", Brahma: "ब्रह्मा",
+          Soma: "सोम", Rudra: "रुद्र", Aditi: "अदिती", Brihaspati: "बृहस्पती",
+          Nagas: "नाग", Pitris: "पितृ", Bhaga: "भग", Aryaman: "अर्यमन",
+          Savitar: "सवितार", Vishwakarma: "विश्वकर्मा", Vayu: "वायू", "Indra-Agni": "इंद्र-अग्नी",
+          Mitra: "मित्र", Indra: "इंद्र", Nirriti: "निर्ऋती", Apas: "आपस",
+          Vishvadevas: "विश्वदेव", Vishnu: "विष्णू", Vasus: "वसू", Varuna: "वरुण",
+          "Aja Ekapada": "अज एकपाद", "Ahir Budhnya": "अहिर्बुध्न्य", Pushan: "पूषन"
+        },
+        colors: {
+          Red: "लाल", "Blood Red": "रक्त लाल", White: "पांढरा", "Silver Grey": "चांदी राखाडी",
+          Green: "हिरवा", Yellow: "पिवळा", "Black-Red": "काळा-लाल", Ivory: "हस्तिदंत",
+          "Light Brown": "हलका तपकिरी", "Bright Blue": "चमकदार निळा", "Deep Green": "गडद हिरवा",
+          Black: "काळा", Golden: "सोनेरी", "Reddish Brown": "लालसर तपकिरी", Cream: "क्रीम",
+          "Brown Yellow": "तपकिरी पिवळा", Copper: "तांबे", "Light Blue": "हलका निळा",
+          "Blue Green": "निळा हिरवा", Purple: "जांभळा", Brown: "तपकिरी"
+        },
+        characteristics: {
+          Quick: "जलद", Energetic: "ऊर्जावान", Healing: "उपचारात्मक", Creative: "सर्जनशील",
+          Nurturing: "पोषणकारी", Transformative: "परिवर्तनकारी", Sharp: "तीक्ष्ण", Determined: "दृढनिश्चयी",
+          Purifying: "शुद्धीकारक", Beautiful: "सुंदर", Artistic: "कलात्मक", Fertile: "सुपीक",
+          Curious: "जिज्ञासू", Gentle: "सौम्य", Searching: "शोधक", Intense: "तीव्र",
+          Emotional: "भावनिक", Optimistic: "आशावादी", Renewing: "नूतनीकरण", Nourishing: "पोषक",
+          Spiritual: "आध्यात्मिक", Prosperous: "समृद्ध", Intuitive: "अंतर्ज्ञानी", Mystical: "रहस्यमय",
+          Penetrating: "भेदक", Royal: "राजेशाही", Ancestral: "पूर्वज", Authoritative: "अधिकारी",
+          Romantic: "रोमँटिक", Relaxing: "आरामदायी", Generous: "उदार", Friendly: "मैत्रीपूर्ण",
+          Helpful: "मदतगार", Skillful: "कुशल", Clever: "हुशार", Independent: "स्वतंत्र",
+          Flexible: "लवचिक", Diplomatic: "मुत्सद्दी", Ambitious: "महत्त्वाकांक्षी", Focused: "केंद्रित",
+          Devoted: "समर्पित", Successful: "यशस्वी", Protective: "संरक्षणात्मक", Courageous: "धाडसी",
+          Senior: "ज्येष्ठ", Investigative: "तपासात्मक", Destructive: "विनाशकारी", Invincible: "अजिंक्य",
+          Energizing: "ऊर्जादायी", Universal: "सार्वत्रिक", Victorious: "विजयी", Righteous: "धार्मिक",
+          Listening: "ऐकणारा", Learning: "शिकणारा", Connected: "जोडलेला", Wealthy: "श्रीमंत",
+          Musical: "संगीतमय", Adaptable: "अनुकूलनीय", Fiery: "अग्निमय", Deep: "खोल",
+          Wise: "शहाणा", Controlled: "नियंत्रित", Safe: "सुरक्षित"
+        }
       },
       gemstones: {
         badge: "रत्न शिफारसी",
@@ -2734,7 +3781,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "हस्तरेखा बद्दल",
         aboutText1: "हस्तरेखा हाताच्या तळव्यावरील रेषा, आकार आणि पर्वतांचा अर्थ लावते।",
         aboutText2: "वैदिक परंपरेत, हस्तरेखाला हस्त सामुद्रिक शास्त्र म्हणतात।",
-        aboutText3: "आत्म-चिंतनासाठी एक साधन म्हणून वापरा, संपूर्ण भविष्यवाणी नाही।"
+        aboutText3: "आत्म-चिंतनासाठी एक साधन म्हणून वापरा, संपूर्ण भविष्यवाणी नाही।",
+        lineNames: {
+          "Heart Line": "हृदय रेषा", "Head Line": "मस्तिष्क रेषा", "Life Line": "जीवन रेषा",
+          "Fate Line": "भाग्य रेषा", "Sun Line": "सूर्य रेषा", "Marriage Line": "विवाह रेषा"
+        },
+        mountNames: {
+          "Mount of Jupiter": "गुरु पर्वत", "Mount of Saturn": "शनि पर्वत",
+          "Mount of Apollo (Sun)": "सूर्य पर्वत", "Mount of Mercury": "बुध पर्वत",
+          "Mount of Venus": "शुक्र पर्वत", "Mount of Moon": "चंद्र पर्वत",
+          "Mount of Mars (Upper)": "मंगळ पर्वत (वरचा)", "Mount of Mars (Lower)": "मंगळ पर्वत (खालचा)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "लांब बोटे", "Short Fingers": "लहान बोटे",
+          "Pointed Fingertips": "टोकदार बोटांचे टोक", "Square Fingertips": "चौकोनी बोटांचे टोक",
+          "Spatulate Fingertips": "स्पॅट्युलेट बोटांचे टोक", "Conic Fingertips": "शंकू बोटांचे टोक"
+        },
+        handShapeNames: {
+          "Earth Hand": "पृथ्वी हात", "Air Hand": "वायू हात",
+          "Water Hand": "जल हात", "Fire Hand": "अग्नि हात"
+        }
       },
       common: {
         name: "नाव",
@@ -2928,7 +3994,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ટેરો રીડિંગ વિશે",
         aboutText1: "ટેરો એ 78 કાર્ડનો ઉપયોગ કરીને ભવિષ્ય કહેવાનું એક સ્વરૂપ છે।",
         aboutText2: "દરેક કાર્ડમાં ચિત્રો, પ્રતીકો અને વાર્તાઓ છે।",
-        aboutText3: "ટેરો એ ચિંતન અને માર્ગદર્શન માટેનું એક સાધન છે।"
+        aboutText3: "ટેરો એ ચિંતન અને માર્ગદર્શન માટેનું એક સાધન છે।",
+        cardNames: {
+          "The Fool": "મૂર્ખ",
+          "The Magician": "જાદુગર",
+          "The High Priestess": "ઉચ્ચ પુજારણ",
+          "The Empress": "મહારાણી",
+          "The Emperor": "સમ્રાટ",
+          "The Hierophant": "ધર્મગુરુ",
+          "The Lovers": "પ્રેમીઓ",
+          "The Chariot": "રથ",
+          "Strength": "શક્તિ",
+          "The Hermit": "સાધુ",
+          "Wheel of Fortune": "ભાગ્યચક્ર",
+          "Justice": "ન્યાય",
+          "The Hanged Man": "લટકતો માણસ",
+          "Death": "મૃત્યુ",
+          "Temperance": "સંયમ",
+          "The Devil": "શેતાન",
+          "The Tower": "મિનારો",
+          "The Star": "તારો",
+          "The Moon": "ચંદ્ર",
+          "The Sun": "સૂર્ય",
+          "Judgement": "ચુકાદો",
+          "The World": "વિશ્વ"
+        },
+        yesNoAnswers: {
+          Yes: "હા", No: "ના", Maybe: "કદાચ", Unlikely: "અસંભવ",
+          Strong: "મજબૂત", Moderate: "મધ્યમ", Uncertain: "અનિશ્ચિત"
+        }
       },
       vastu: {
         badge: "વાસ્તુ શાસ્ત્ર",
@@ -2956,7 +4050,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "વાસ્તુ શાસ્ત્ર વિશે",
         aboutText1: "વાસ્તુ શાસ્ત્ર 5,000 વર્ષ જૂનું ભારતીય સ્થાપત્ય વિજ્ઞાન છે।",
         aboutText2: "સકારાત્મક ઊર્જા પ્રવાહ માટે પાંચ તત્વો અને આઠ દિશાઓ પર આધારિત।",
-        aboutText3: "સરળ ઉપાય આધુનિક જગ્યાઓમાં ઊર્જા સંતુલિત કરવામાં મદદ કરે છે।"
+        aboutText3: "સરળ ઉપાય આધુનિક જગ્યાઓમાં ઊર્જા સંતુલિત કરવામાં મદદ કરે છે।",
+        directionNames: {
+          North: "ઉત્તર", South: "દક્ષિણ", East: "પૂર્વ", West: "પશ્ચિમ",
+          "North-East": "ઈશાન", "South-East": "અગ્નિ",
+          "South-West": "નૈઋત્ય", "North-West": "વાયવ્ય"
+        },
+        elementNames: {
+          Water: "જળ", Fire: "અગ્નિ", Air: "વાયુ", Space: "આકાશ", Earth: "પૃથ્વી"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "કુબેર (સંપત્તિ)", "Yama (Dharma)": "યમ (ધર્મ)",
+          "Indra (King of Gods)": "ઇન્દ્ર (દેવોના રાજા)", "Varuna (Rain God)": "વરુણ (વરસાદના દેવ)",
+          "Ishanya (Shiva)": "ઈશાન્ય (શિવ)", "Agni (Fire God)": "અગ્નિ (અગ્નિ દેવ)",
+          "Nairuti (Demon)": "નૈઋતિ (રાક્ષસ)", "Vayu (Wind God)": "વાયુ (પવન દેવ)"
+        },
+        roomNames: {
+          bedroom: "શયનખંડ", kitchen: "રસોડું", bathroom: "સ્નાનગૃહ",
+          livingRoom: "બેઠક ખંડ", puja: "પૂજા ખંડ", entrance: "પ્રવેશદ્વાર"
+        },
+        problemNames: {
+          "Financial Problems": "આર્થિક સમસ્યાઓ", "Health Issues": "આરોગ્ય સમસ્યાઓ",
+          "Relationship Problems": "સંબંધ સમસ્યાઓ", "Career Obstacles": "કારકિર્દી અવરોધો",
+          "Negative Energy": "નકારાત્મક ઊર્જા"
+        }
       },
       chinese: {
         badge: "ચાઇનીઝ જ્યોતિષ",
@@ -2989,7 +4106,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ચાઇનીઝ જ્યોતિષ વિશે",
         aboutText1: "ચાઇનીઝ જ્યોતિષ પ્રાણી ચિહ્નો સાથે 12 વર્ષના ચક્ર પર આધારિત છે।",
         aboutText2: "તમારી રાશિ ચંદ્ર કેલેન્ડર મુજબ જન્મ વર્ષ દ્વારા નક્કી થાય છે।",
-        aboutText3: "2026 એ સાપ વર્ષ છે, સાવચેત આયોજન માટે અનુકૂળ।"
+        aboutText3: "2026 એ સાપ વર્ષ છે, સાવચેત આયોજન માટે અનુકૂળ।",
+        animalNames: {
+          Rat: "ઉંદર", Ox: "બળદ", Tiger: "વાઘ", Rabbit: "સસલું", Dragon: "ડ્રેગન", Snake: "સાપ",
+          Horse: "ઘોડો", Goat: "બકરી", Monkey: "વાંદરો", Rooster: "મરઘો", Dog: "કૂતરો", Pig: "ડુક્કર"
+        },
+        elementNames: {
+          Wood: "લાકડું", Fire: "અગ્નિ", Earth: "પૃથ્વી", Metal: "ધાતુ", Water: "પાણી"
+        },
+        yinYangNames: {
+          Yin: "યિન", Yang: "યાંગ"
+        }
       },
       kp: {
         badge: "કેપી સિસ્ટમ",
@@ -3026,7 +4153,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "કેપી સિસ્ટમ વિશે",
         aboutText1: "કેપી સિસ્ટમ 1960ના દાયકામાં પ્રોફેસર કે.એસ. કૃષ્ણમૂર્તિ દ્વારા વિકસાવવામાં આવી।",
         aboutText2: "મુખ્ય નવીનતા એ પરિણામ નક્કી કરતો સબ-લોર્ડ છે।",
-        aboutText3: "ચોક્કસ પ્રશ્નો અને ઘટનાઓના સમય માટે ઉપયોગી।"
+        aboutText3: "ચોક્કસ પ્રશ્નો અને ઘટનાઓના સમય માટે ઉપયોગી।",
+        nakshatraNames: {
+          Ashwini: "અશ્વિની", Bharani: "ભરણી", Krittika: "કૃત્તિકા", Rohini: "રોહિણી",
+          Mrigashira: "મૃગશીર્ષ", Ardra: "આર્દ્રા", Punarvasu: "પુનર્વસુ", Pushya: "પુષ્ય",
+          Ashlesha: "આશ્લેષા", Magha: "મઘા", "Purva Phalguni": "પૂર્વા ફાલ્ગુની",
+          "Uttara Phalguni": "ઉત્તરા ફાલ્ગુની", Hasta: "હસ્ત", Chitra: "ચિત્રા", Swati: "સ્વાતી",
+          Vishakha: "વિશાખા", Anuradha: "અનુરાધા", Jyeshtha: "જ્યેષ્ઠા", Mula: "મૂળ",
+          "Purva Ashadha": "પૂર્વાષાઢા", "Uttara Ashadha": "ઉત્તરાષાઢા", Shravana: "શ્રવણ",
+          Dhanishta: "ધનિષ્ઠા", Shatabhisha: "શતભિષા", "Purva Bhadrapada": "પૂર્વ ભાદ્રપદ",
+          "Uttara Bhadrapada": "ઉત્તર ભાદ્રપદ", Revati: "રેવતી"
+        },
+        zodiacNames: {
+          Aries: "મેષ", Taurus: "વૃષભ", Gemini: "મિથુન", Cancer: "કર્ક",
+          Leo: "સિંહ", Virgo: "કન્યા", Libra: "તુલા", Scorpio: "વૃશ્ચિક",
+          Sagittarius: "ધનુ", Capricorn: "મકર", Aquarius: "કુંભ", Pisces: "મીન"
+        },
+        planetNames: {
+          Sun: "સૂર્ય", Moon: "ચંદ્ર", Mars: "મંગળ", Mercury: "બુધ",
+          Jupiter: "ગુરુ", Venus: "શુક્ર", Saturn: "શનિ", Rahu: "રાહુ", Ketu: "કેતુ"
+        },
+        houseSignifications: {
+          1: ["સ્વયં", "વ્યક્તિત્વ", "શરીર", "આરોગ્ય", "સ્વભાવ"],
+          2: ["સંપત્તિ", "કુટુંબ", "વાણી", "ખોરાક", "જમણી આંખ"],
+          3: ["ભાઈ-બહેન", "હિંમત", "ટૂંકી મુસાફરી", "સંવાદ", "કૌશલ્ય"],
+          4: ["માતા", "ઘર", "મિલકત", "વાહનો", "શિક્ષણ"],
+          5: ["સંતાન", "બુદ્ધિ", "પ્રેમ", "સટ્ટો", "સર્જનાત્મકતા"],
+          6: ["શત્રુ", "રોગ", "દેવું", "સેવા", "અવરોધો"],
+          7: ["લગ્ન", "ભાગીદારી", "વ્યાપાર", "વિદેશ પ્રવાસ", "જાહેર વ્યવહાર"],
+          8: ["આયુષ્ય", "વારસો", "ગુપ્ત વિદ્યા", "અચાનક ઘટનાઓ", "પરિવર્તન"],
+          9: ["પિતા", "ભાગ્ય", "ઉચ્ચ શિક્ષણ", "લાંબી મુસાફરી", "ધર્મ"],
+          10: ["કારકિર્દી", "વ્યવસાય", "કીર્તિ", "સત્તા", "સરકાર"],
+          11: ["લાભ", "આવક", "મિત્રો", "આકાંક્ષાઓ", "મોટા ભાઈ-બહેન"],
+          12: ["નુકસાન", "ખર્ચ", "વિદેશ", "મોક્ષ", "હોસ્પિટલ"]
+        }
       },
       prashna: {
         badge: "પ્રશ્ન કુંડળી",
@@ -3061,7 +4221,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "પ્રશ્ન કુંડળી વિશે",
         aboutText1: "પ્રશ્ન કુંડળી પ્રશ્ન પૂછવાના સમયના આધારે જવાબો આપે છે।",
         aboutText2: "લગ્ન પ્રશ્નકર્તાનું પ્રતિનિધિત્વ કરે છે, અન્ય ભાવો માહિતી આપે છે।",
-        aboutText3: "સારા પરિણામો માટે એક સમયે એક સ્પષ્ટ પ્રશ્ન પૂછો।"
+        aboutText3: "સારા પરિણામો માટે એક સમયે એક સ્પષ્ટ પ્રશ્ન પૂછો।",
+        questionCategories: {
+          career: "કારકિર્દી અને વ્યવસાય",
+          love: "પ્રેમ અને સંબંધો",
+          health: "આરોગ્ય અને સુખાકારી",
+          finance: "પૈસા અને નાણાં",
+          travel: "મુસાફરી અને સ્થળાંતર",
+          education: "શિક્ષણ અને શીખવું",
+          legal: "કાનૂની બાબતો",
+          general: "સામાન્ય પ્રશ્ન"
+        },
+        zodiacNames: {
+          Aries: "મેષ", Taurus: "વૃષભ", Gemini: "મિથુન", Cancer: "કર્ક",
+          Leo: "સિંહ", Virgo: "કન્યા", Libra: "તુલા", Scorpio: "વૃશ્ચિક",
+          Sagittarius: "ધન", Capricorn: "મકર", Aquarius: "કુંભ", Pisces: "મીન"
+        },
+        planetNames: {
+          Sun: "સૂર્ય", Moon: "ચંદ્ર", Mars: "મંગળ", Mercury: "બુધ",
+          Jupiter: "ગુરુ", Venus: "શુક્ર", Saturn: "શનિ", Rahu: "રાહુ", Ketu: "કેતુ"
+        }
       },
       babyNames: {
         badge: "બાળકના નામ",
@@ -3088,7 +4267,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "નક્ષત્ર-આધારિત નામકરણ વિશે",
         aboutText1: "વૈદિક પરંપરામાં જન્મ નક્ષત્રના આધારે નામ પસંદ કરવામાં આવે છે।",
         aboutText2: "નક્ષત્ર જન્મ સમયે ચંદ્રની સ્થિતિ દ્વારા નક્કી થાય છે।",
-        aboutText3: "વ્યક્તિગત પસંદગીનો આદર કરીને આને માર્ગદર્શિકા તરીકે વાપરો।"
+        aboutText3: "વ્યક્તિગત પસંદગીનો આદર કરીને આને માર્ગદર્શિકા તરીકે વાપરો।",
+        nakshatraNames: {
+          Ashwini: "અશ્વિની", Bharani: "ભરણી", Krittika: "કૃત્તિકા", Rohini: "રોહિણી",
+          Mrigashira: "મૃગશીર્ષ", Ardra: "આર્દ્રા", Punarvasu: "પુનર્વસુ", Pushya: "પુષ્ય",
+          Ashlesha: "આશ્લેષા", Magha: "મઘા", "Purva Phalguni": "પૂર્વા ફાલ્ગુની",
+          "Uttara Phalguni": "ઉત્તરા ફાલ્ગુની", Hasta: "હસ્ત", Chitra: "ચિત્રા", Swati: "સ્વાતી",
+          Vishakha: "વિશાખા", Anuradha: "અનુરાધા", Jyeshtha: "જ્યેષ્ઠા", Mula: "મૂળ",
+          "Purva Ashadha": "પૂર્વાષાઢા", "Uttara Ashadha": "ઉત્તરાષાઢા", Shravana: "શ્રવણ",
+          Dhanishta: "ધનિષ્ઠા", Shatabhisha: "શતભિષા", "Purva Bhadrapada": "પૂર્વ ભાદ્રપદ",
+          "Uttara Bhadrapada": "ઉત્તર ભાદ્રપદ", Revati: "રેવતી"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "અશ્વિની કુમાર", Yama: "યમ", Agni: "અગ્નિ", Brahma: "બ્રહ્મા",
+          Soma: "સોમ", Rudra: "રુદ્ર", Aditi: "અદિતિ", Brihaspati: "બૃહસ્પતિ",
+          Nagas: "નાગ", Pitris: "પિતૃ", Bhaga: "ભગ", Aryaman: "અર્યમન",
+          Savitar: "સવિતાર", Vishwakarma: "વિશ્વકર્મા", Vayu: "વાયુ", "Indra-Agni": "ઇન્દ્ર-અગ્નિ",
+          Mitra: "મિત્ર", Indra: "ઇન્દ્ર", Nirriti: "નિર્ઋતિ", Apas: "આપસ",
+          Vishvadevas: "વિશ્વદેવ", Vishnu: "વિષ્ણુ", Vasus: "વસુ", Varuna: "વરુણ",
+          "Aja Ekapada": "અજ એકપાદ", "Ahir Budhnya": "અહિર્બુધ્ન્ય", Pushan: "પૂષન"
+        },
+        colors: {
+          Red: "લાલ", "Blood Red": "રક્ત લાલ", White: "સફેદ", "Silver Grey": "ચાંદી ભૂખરો",
+          Green: "લીલો", Yellow: "પીળો", "Black-Red": "કાળો-લાલ", Ivory: "હાથીદાંત",
+          "Light Brown": "આછો ભૂરો", "Bright Blue": "તેજસ્વી વાદળી", "Deep Green": "ઘેરો લીલો",
+          Black: "કાળો", Golden: "સોનેરી", "Reddish Brown": "લાલાશ ભૂરો", Cream: "ક્રીમ",
+          "Brown Yellow": "ભૂરો પીળો", Copper: "તાંબુ", "Light Blue": "આછો વાદળી",
+          "Blue Green": "વાદળી લીલો", Purple: "જાંબલી", Brown: "ભૂરો"
+        },
+        characteristics: {
+          Quick: "ઝડપી", Energetic: "ઊર્જાવાન", Healing: "ઉપચારાત્મક", Creative: "સર્જનાત્મક",
+          Nurturing: "પોષણકારી", Transformative: "પરિવર્તનકારી", Sharp: "તીક્ષ્ણ", Determined: "દૃઢનિશ્ચયી",
+          Purifying: "શુદ્ધિકારક", Beautiful: "સુંદર", Artistic: "કલાત્મક", Fertile: "ફળદ્રુપ",
+          Curious: "જિજ્ઞાસુ", Gentle: "કોમળ", Searching: "શોધક", Intense: "તીવ્ર",
+          Emotional: "ભાવનાત્મક", Optimistic: "આશાવાદી", Renewing: "નવીકરણ", Nourishing: "પોષક",
+          Spiritual: "આધ્યાત્મિક", Prosperous: "સમૃદ્ધ", Intuitive: "અંતર્જ્ઞાની", Mystical: "રહસ્યમય",
+          Penetrating: "ભેદક", Royal: "રાજવી", Ancestral: "પૂર્વજ", Authoritative: "અધિકારી",
+          Romantic: "રોમેન્ટિક", Relaxing: "આરામદાયક", Generous: "ઉદાર", Friendly: "મૈત્રીપૂર્ણ",
+          Helpful: "મદદગાર", Skillful: "કુશળ", Clever: "હોશિયાર", Independent: "સ્વતંત્ર",
+          Flexible: "લવચીક", Diplomatic: "રાજદ્વારી", Ambitious: "મહત્વાકાંક્ષી", Focused: "કેન્દ્રિત",
+          Devoted: "સમર્પિત", Successful: "સફળ", Protective: "રક્ષણાત્મક", Courageous: "સાહસિક",
+          Senior: "વરિષ્ઠ", Investigative: "તપાસાત્મક", Destructive: "વિનાશકારી", Invincible: "અજેય",
+          Energizing: "ઊર્જાદાયી", Universal: "સાર્વત્રિક", Victorious: "વિજયી", Righteous: "ધાર્મિક",
+          Listening: "સાંભળનાર", Learning: "શીખનાર", Connected: "જોડાયેલ", Wealthy: "ધનવાન",
+          Musical: "સંગીતમય", Adaptable: "અનુકૂલનીય", Fiery: "અગ્નિમય", Deep: "ઊંડો",
+          Wise: "જ્ઞાની", Controlled: "નિયંત્રિત", Safe: "સુરક્ષિત"
+        }
       },
       gemstones: {
         badge: "રત્ન ભલામણો",
@@ -3194,7 +4418,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "હસ્તરેખા વિશે",
         aboutText1: "હસ્તરેખા હાથની હથેળી પરની રેખાઓ, આકારો અને પર્વતોનો અર્થ કાઢે છે।",
         aboutText2: "વૈદિક પરંપરામાં, હસ્તરેખાને હસ્ત સામુદ્રિક શાસ્ત્ર કહેવાય છે।",
-        aboutText3: "આત્મ-ચિંતન માટેના સાધન તરીકે વાપરો, સંપૂર્ણ ભવિષ્યવાણી નહીં।"
+        aboutText3: "આત્મ-ચિંતન માટેના સાધન તરીકે વાપરો, સંપૂર્ણ ભવિષ્યવાણી નહીં।",
+        lineNames: {
+          "Heart Line": "હૃદય રેખા", "Head Line": "મસ્તિષ્ક રેખા", "Life Line": "જીવન રેખા",
+          "Fate Line": "ભાગ્ય રેખા", "Sun Line": "સૂર્ય રેખા", "Marriage Line": "લગ્ન રેખા"
+        },
+        mountNames: {
+          "Mount of Jupiter": "ગુરુ પર્વત", "Mount of Saturn": "શનિ પર્વત",
+          "Mount of Apollo (Sun)": "સૂર્ય પર્વત", "Mount of Mercury": "બુધ પર્વત",
+          "Mount of Venus": "શુક્ર પર્વત", "Mount of Moon": "ચંદ્ર પર્વત",
+          "Mount of Mars (Upper)": "મંગળ પર્વત (ઉપરનો)", "Mount of Mars (Lower)": "મંગળ પર્વત (નીચેનો)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "લાંબી આંગળીઓ", "Short Fingers": "ટૂંકી આંગળીઓ",
+          "Pointed Fingertips": "અણીદાર આંગળીના ટોચ", "Square Fingertips": "ચોરસ આંગળીના ટોચ",
+          "Spatulate Fingertips": "સ્પેટ્યુલેટ આંગળીના ટોચ", "Conic Fingertips": "શંકુ આંગળીના ટોચ"
+        },
+        handShapeNames: {
+          "Earth Hand": "પૃથ્વી હાથ", "Air Hand": "વાયુ હાથ",
+          "Water Hand": "જળ હાથ", "Fire Hand": "અગ્નિ હાથ"
+        }
       },
       common: {
         name: "નામ",
@@ -3388,7 +4631,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಟ್ಯಾರೋ ಓದುವಿಕೆಯ ಬಗ್ಗೆ",
         aboutText1: "ಟ್ಯಾರೋ ಎಂಬುದು 78 ಕಾರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ ಭವಿಷ್ಯ ಹೇಳುವ ಒಂದು ರೂಪವಾಗಿದೆ।",
         aboutText2: "ಪ್ರತಿ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಚಿತ್ರಗಳು, ಸಂಕೇತಗಳು ಮತ್ತು ಕಥೆಗಳಿವೆ।",
-        aboutText3: "ಟ್ಯಾರೋ ಎಂಬುದು ಆತ್ಮಾವಲೋಕನ ಮತ್ತು ಮಾರ್ಗದರ್ಶನಕ್ಕೆ ಒಂದು ಸಾಧನವಾಗಿದೆ।"
+        aboutText3: "ಟ್ಯಾರೋ ಎಂಬುದು ಆತ್ಮಾವಲೋಕನ ಮತ್ತು ಮಾರ್ಗದರ್ಶನಕ್ಕೆ ಒಂದು ಸಾಧನವಾಗಿದೆ।",
+        cardNames: {
+          "The Fool": "ಮೂರ್ಖ",
+          "The Magician": "ಮಾಂತ್ರಿಕ",
+          "The High Priestess": "ಉನ್ನತ ಪೂಜಾರಿಣಿ",
+          "The Empress": "ಮಹಾರಾಣಿ",
+          "The Emperor": "ಚಕ್ರವರ್ತಿ",
+          "The Hierophant": "ಧರ್ಮಗುರು",
+          "The Lovers": "ಪ್ರೇಮಿಗಳು",
+          "The Chariot": "ರಥ",
+          "Strength": "ಶಕ್ತಿ",
+          "The Hermit": "ಸನ್ಯಾಸಿ",
+          "Wheel of Fortune": "ಅದೃಷ್ಟ ಚಕ್ರ",
+          "Justice": "ನ್ಯಾಯ",
+          "The Hanged Man": "ನೇತಾಡುವ ಮನುಷ್ಯ",
+          "Death": "ಮರಣ",
+          "Temperance": "ಸಂಯಮ",
+          "The Devil": "ದೆವ್ವ",
+          "The Tower": "ಗೋಪುರ",
+          "The Star": "ನಕ್ಷತ್ರ",
+          "The Moon": "ಚಂದ್ರ",
+          "The Sun": "ಸೂರ್ಯ",
+          "Judgement": "ತೀರ್ಪು",
+          "The World": "ಪ್ರಪಂಚ"
+        },
+        yesNoAnswers: {
+          Yes: "ಹೌದು", No: "ಇಲ್ಲ", Maybe: "ಬಹುಶಃ", Unlikely: "ಅಸಂಭವ",
+          Strong: "ಬಲವಾದ", Moderate: "ಮಧ್ಯಮ", Uncertain: "ಅನಿಶ್ಚಿತ"
+        }
       },
       vastu: {
         badge: "ವಾಸ್ತು ಶಾಸ್ತ್ರ",
@@ -3416,7 +4687,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ವಾಸ್ತು ಶಾಸ್ತ್ರದ ಬಗ್ಗೆ",
         aboutText1: "ವಾಸ್ತು ಶಾಸ್ತ್ರ 5,000 ವರ್ಷ ಹಳೆಯ ಭಾರತೀಯ ವಾಸ್ತುಶಿಲ್ಪ ವಿಜ್ಞಾನವಾಗಿದೆ।",
         aboutText2: "ಧನಾತ್ಮಕ ಶಕ್ತಿ ಹರಿವಿಗಾಗಿ ಐದು ತತ್ವಗಳು ಮತ್ತು ಎಂಟು ದಿಕ್ಕುಗಳ ಮೇಲೆ ಆಧಾರಿತ।",
-        aboutText3: "ಸರಳ ಪರಿಹಾರಗಳು ಆಧುನಿಕ ಸ್ಥಳಗಳಲ್ಲಿ ಶಕ್ತಿಯನ್ನು ಸಮತೋಲನಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತವೆ।"
+        aboutText3: "ಸರಳ ಪರಿಹಾರಗಳು ಆಧುನಿಕ ಸ್ಥಳಗಳಲ್ಲಿ ಶಕ್ತಿಯನ್ನು ಸಮತೋಲನಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತವೆ।",
+        directionNames: {
+          North: "ಉತ್ತರ", South: "ದಕ್ಷಿಣ", East: "ಪೂರ್ವ", West: "ಪಶ್ಚಿಮ",
+          "North-East": "ಈಶಾನ್ಯ", "South-East": "ಆಗ್ನೇಯ",
+          "South-West": "ನೈಋತ್ಯ", "North-West": "ವಾಯುವ್ಯ"
+        },
+        elementNames: {
+          Water: "ನೀರು", Fire: "ಅಗ್ನಿ", Air: "ವಾಯು", Space: "ಆಕಾಶ", Earth: "ಭೂಮಿ"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "ಕುಬೇರ (ಸಂಪತ್ತು)", "Yama (Dharma)": "ಯಮ (ಧರ್ಮ)",
+          "Indra (King of Gods)": "ಇಂದ್ರ (ದೇವತೆಗಳ ರಾಜ)", "Varuna (Rain God)": "ವರುಣ (ಮಳೆ ದೇವತೆ)",
+          "Ishanya (Shiva)": "ಈಶಾನ್ಯ (ಶಿವ)", "Agni (Fire God)": "ಅಗ್ನಿ (ಅಗ್ನಿ ದೇವತೆ)",
+          "Nairuti (Demon)": "ನೈಋತಿ (ರಾಕ್ಷಸ)", "Vayu (Wind God)": "ವಾಯು (ಗಾಳಿ ದೇವತೆ)"
+        },
+        roomNames: {
+          bedroom: "ಮಲಗುವ ಕೋಣೆ", kitchen: "ಅಡುಗೆ ಮನೆ", bathroom: "ಸ್ನಾನಗೃಹ",
+          livingRoom: "ಕುಳಿತುಕೊಳ್ಳುವ ಕೋಣೆ", puja: "ಪೂಜಾ ಕೋಣೆ", entrance: "ಪ್ರವೇಶದ್ವಾರ"
+        },
+        problemNames: {
+          "Financial Problems": "ಆರ್ಥಿಕ ಸಮಸ್ಯೆಗಳು", "Health Issues": "ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳು",
+          "Relationship Problems": "ಸಂಬಂಧ ಸಮಸ್ಯೆಗಳು", "Career Obstacles": "ವೃತ್ತಿ ಅಡೆತಡೆಗಳು",
+          "Negative Energy": "ನಕಾರಾತ್ಮಕ ಶಕ್ತಿ"
+        }
       },
       chinese: {
         badge: "ಚೀನೀ ಜ್ಯೋತಿಷ್ಯ",
@@ -3449,7 +4743,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಚೀನೀ ಜ್ಯೋತಿಷ್ಯದ ಬಗ್ಗೆ",
         aboutText1: "ಚೀನೀ ಜ್ಯೋತಿಷ್ಯವು ಪ್ರಾಣಿ ಚಿಹ್ನೆಗಳೊಂದಿಗೆ 12 ವರ್ಷಗಳ ಚಕ್ರದ ಮೇಲೆ ಆಧಾರಿತವಾಗಿದೆ।",
         aboutText2: "ನಿಮ್ಮ ರಾಶಿಯನ್ನು ಚಂದ್ರ ಕ್ಯಾಲೆಂಡರ್ ಪ್ರಕಾರ ಜನ್ಮ ವರ್ಷದಿಂದ ನಿರ್ಧರಿಸಲಾಗುತ್ತದೆ।",
-        aboutText3: "2026 ಹಾವು ವರ್ಷವಾಗಿದೆ, ಎಚ್ಚರಿಕೆಯ ಯೋಜನೆಗೆ ಅನುಕೂಲಕರ।"
+        aboutText3: "2026 ಹಾವು ವರ್ಷವಾಗಿದೆ, ಎಚ್ಚರಿಕೆಯ ಯೋಜನೆಗೆ ಅನುಕೂಲಕರ।",
+        animalNames: {
+          Rat: "ಇಲಿ", Ox: "ಎತ್ತು", Tiger: "ಹುಲಿ", Rabbit: "ಮೊಲ", Dragon: "ಡ್ರ್ಯಾಗನ್", Snake: "ಹಾವು",
+          Horse: "ಕುದುರೆ", Goat: "ಮೇಕೆ", Monkey: "ಕೋತಿ", Rooster: "ಕೋಳಿ", Dog: "ನಾಯಿ", Pig: "ಹಂದಿ"
+        },
+        elementNames: {
+          Wood: "ಮರ", Fire: "ಬೆಂಕಿ", Earth: "ಭೂಮಿ", Metal: "ಲೋಹ", Water: "ನೀರು"
+        },
+        yinYangNames: {
+          Yin: "ಯಿನ್", Yang: "ಯಾಂಗ್"
+        }
       },
       kp: {
         badge: "ಕೆಪಿ ವ್ಯವಸ್ಥೆ",
@@ -3486,7 +4790,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಕೆಪಿ ವ್ಯವಸ್ಥೆಯ ಬಗ್ಗೆ",
         aboutText1: "ಕೆಪಿ ವ್ಯವಸ್ಥೆಯನ್ನು 1960ರ ದಶಕದಲ್ಲಿ ಪ್ರೊಫೆಸರ್ ಕೆ.ಎಸ್. ಕೃಷ್ಣಮೂರ್ತಿ ಅಭಿವೃದ್ಧಿಪಡಿಸಿದರು।",
         aboutText2: "ಮುಖ್ಯ ನಾವೀನ್ಯತೆ ಎಂದರೆ ಫಲಿತಾಂಶವನ್ನು ನಿರ್ಧರಿಸುವ ಸಬ್-ಲಾರ್ಡ್।",
-        aboutText3: "ನಿರ್ದಿಷ್ಟ ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ಘಟನೆಗಳ ಸಮಯಕ್ಕೆ ಉಪಯುಕ್ತ।"
+        aboutText3: "ನಿರ್ದಿಷ್ಟ ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ಘಟನೆಗಳ ಸಮಯಕ್ಕೆ ಉಪಯುಕ್ತ।",
+        nakshatraNames: {
+          Ashwini: "ಅಶ್ವಿನಿ", Bharani: "ಭರಣಿ", Krittika: "ಕೃತ್ತಿಕಾ", Rohini: "ರೋಹಿಣಿ",
+          Mrigashira: "ಮೃಗಶಿರಾ", Ardra: "ಆರ್ದ್ರಾ", Punarvasu: "ಪುನರ್ವಸು", Pushya: "ಪುಷ್ಯ",
+          Ashlesha: "ಆಶ್ಲೇಷಾ", Magha: "ಮಘಾ", "Purva Phalguni": "ಪೂರ್ವ ಫಲ್ಗುಣಿ",
+          "Uttara Phalguni": "ಉತ್ತರ ಫಲ್ಗುಣಿ", Hasta: "ಹಸ್ತ", Chitra: "ಚಿತ್ರಾ", Swati: "ಸ್ವಾತಿ",
+          Vishakha: "ವಿಶಾಖಾ", Anuradha: "ಅನುರಾಧಾ", Jyeshtha: "ಜ್ಯೇಷ್ಠಾ", Mula: "ಮೂಲ",
+          "Purva Ashadha": "ಪೂರ್ವಾಷಾಢ", "Uttara Ashadha": "ಉತ್ತರಾಷಾಢ", Shravana: "ಶ್ರವಣ",
+          Dhanishta: "ಧನಿಷ್ಠಾ", Shatabhisha: "ಶತಭಿಷಾ", "Purva Bhadrapada": "ಪೂರ್ವ ಭಾದ್ರಪದ",
+          "Uttara Bhadrapada": "ಉತ್ತರ ಭಾದ್ರಪದ", Revati: "ರೇವತಿ"
+        },
+        zodiacNames: {
+          Aries: "ಮೇಷ", Taurus: "ವೃಷಭ", Gemini: "ಮಿಥುನ", Cancer: "ಕರ್ಕಾಟಕ",
+          Leo: "ಸಿಂಹ", Virgo: "ಕನ್ಯಾ", Libra: "ತುಲಾ", Scorpio: "ವೃಶ್ಚಿಕ",
+          Sagittarius: "ಧನು", Capricorn: "ಮಕರ", Aquarius: "ಕುಂಭ", Pisces: "ಮೀನ"
+        },
+        planetNames: {
+          Sun: "ಸೂರ್ಯ", Moon: "ಚಂದ್ರ", Mars: "ಮಂಗಳ", Mercury: "ಬುಧ",
+          Jupiter: "ಗುರು", Venus: "ಶುಕ್ರ", Saturn: "ಶನಿ", Rahu: "ರಾಹು", Ketu: "ಕೇತು"
+        },
+        houseSignifications: {
+          1: ["ಸ್ವಯಂ", "ವ್ಯಕ್ತಿತ್ವ", "ದೇಹ", "ಆರೋಗ್ಯ", "ಸ್ವಭಾವ"],
+          2: ["ಸಂಪತ್ತು", "ಕುಟುಂಬ", "ವಾಣಿ", "ಆಹಾರ", "ಬಲ ಕಣ್ಣು"],
+          3: ["ಸಹೋದರರು", "ಧೈರ್ಯ", "ಸಣ್ಣ ಪ್ರಯಾಣಗಳು", "ಸಂವಹನ", "ಕೌಶಲ್ಯಗಳು"],
+          4: ["ತಾಯಿ", "ಮನೆ", "ಆಸ್ತಿ", "ವಾಹನಗಳು", "ಶಿಕ್ಷಣ"],
+          5: ["ಮಕ್ಕಳು", "ಬುದ್ಧಿ", "ಪ್ರೇಮ", "ಊಹಾಪೋಹ", "ಸೃಜನಶೀಲತೆ"],
+          6: ["ಶತ್ರುಗಳು", "ರೋಗಗಳು", "ಸಾಲಗಳು", "ಸೇವೆ", "ಅಡೆತಡೆಗಳು"],
+          7: ["ವಿವಾಹ", "ಪಾಲುದಾರಿಕೆ", "ವ್ಯಾಪಾರ", "ವಿದೇಶ ಪ್ರಯಾಣ", "ಸಾರ್ವಜನಿಕ ವ್ಯವಹಾರಗಳು"],
+          8: ["ಆಯುಷ್ಯ", "ಪರಂಪರೆ", "ಗುಪ್ತ ವಿದ್ಯೆ", "ಆಕಸ್ಮಿಕ ಘಟನೆಗಳು", "ಪರಿವರ್ತನೆ"],
+          9: ["ತಂದೆ", "ಅದೃಷ್ಟ", "ಉನ್ನತ ಶಿಕ್ಷಣ", "ದೀರ್ಘ ಪ್ರಯಾಣಗಳು", "ಧರ್ಮ"],
+          10: ["ವೃತ್ತಿ", "ಉದ್ಯೋಗ", "ಖ್ಯಾತಿ", "ಅಧಿಕಾರ", "ಸರ್ಕಾರ"],
+          11: ["ಲಾಭಗಳು", "ಆದಾಯ", "ಸ್ನೇಹಿತರು", "ಆಕಾಂಕ್ಷೆಗಳು", "ಹಿರಿಯ ಸಹೋದರರು"],
+          12: ["ನಷ್ಟಗಳು", "ಖರ್ಚುಗಳು", "ವಿದೇಶ", "ಮೋಕ್ಷ", "ಆಸ್ಪತ್ರೆ"]
+        }
       },
       prashna: {
         badge: "ಪ್ರಶ್ನ ಕುಂಡಲಿ",
@@ -3521,6 +4858,25 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಪ್ರಶ್ನ ಕುಂಡಲಿಯ ಬಗ್ಗೆ",
         aboutText1: "ಪ್ರಶ್ನ ಕುಂಡಲಿ ಪ್ರಶ್ನೆ ಕೇಳಿದ ಸಮಯದ ಆಧಾರದ ಮೇಲೆ ಉತ್ತರಗಳನ್ನು ನೀಡುತ್ತದೆ।",
         aboutText2: "ಲಗ್ನವು ಪ್ರಶ್ನಕರ್ತನನ್ನು ಪ್ರತಿನಿಧಿಸುತ್ತದೆ, ಇತರ ಭಾವಗಳು ಮಾಹಿತಿ ನೀಡುತ್ತವೆ।",
+        questionCategories: {
+          career: "ವೃತ್ತಿ ಮತ್ತು ವ್ಯಾಪಾರ",
+          love: "ಪ್ರೇಮ ಮತ್ತು ಸಂಬಂಧಗಳು",
+          health: "ಆರೋಗ್ಯ ಮತ್ತು ಕ್ಷೇಮ",
+          finance: "ಹಣ ಮತ್ತು ಹಣಕಾಸು",
+          travel: "ಪ್ರಯಾಣ ಮತ್ತು ಸ್ಥಳಾಂತರ",
+          education: "ಶಿಕ್ಷಣ ಮತ್ತು ಕಲಿಕೆ",
+          legal: "ಕಾನೂನು ವಿಷಯಗಳು",
+          general: "ಸಾಮಾನ್ಯ ಪ್ರಶ್ನೆ"
+        },
+        zodiacNames: {
+          Aries: "ಮೇಷ", Taurus: "ವೃಷಭ", Gemini: "ಮಿಥುನ", Cancer: "ಕರ್ಕಾಟಕ",
+          Leo: "ಸಿಂಹ", Virgo: "ಕನ್ಯಾ", Libra: "ತುಲಾ", Scorpio: "ವೃಶ್ಚಿಕ",
+          Sagittarius: "ಧನು", Capricorn: "ಮಕರ", Aquarius: "ಕುಂಭ", Pisces: "ಮೀನ"
+        },
+        planetNames: {
+          Sun: "ಸೂರ್ಯ", Moon: "ಚಂದ್ರ", Mars: "ಮಂಗಳ", Mercury: "ಬುಧ",
+          Jupiter: "ಗುರು", Venus: "ಶುಕ್ರ", Saturn: "ಶನಿ", Rahu: "ರಾಹು", Ketu: "ಕೇತು"
+        },
         aboutText3: "ಉತ್ತಮ ಫಲಿತಾಂಶಗಳಿಗೆ ಒಂದು ಸಮಯದಲ್ಲಿ ಒಂದು ಸ್ಪಷ್ಟ ಪ್ರಶ್ನೆ ಕೇಳಿ।"
       },
       babyNames: {
@@ -3548,7 +4904,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ನಕ್ಷತ್ರ-ಆಧಾರಿತ ಹೆಸರಿಡುವಿಕೆಯ ಬಗ್ಗೆ",
         aboutText1: "ವೈದಿಕ ಸಂಪ್ರದಾಯದಲ್ಲಿ ಜನ್ಮ ನಕ್ಷತ್ರದ ಆಧಾರದ ಮೇಲೆ ಹೆಸರನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗುತ್ತದೆ।",
         aboutText2: "ನಕ್ಷತ್ರವನ್ನು ಜನ್ಮ ಸಮಯದಲ್ಲಿ ಚಂದ್ರನ ಸ್ಥಾನದಿಂದ ನಿರ್ಧರಿಸಲಾಗುತ್ತದೆ।",
-        aboutText3: "ವೈಯಕ್ತಿಕ ಆದ್ಯತೆಯನ್ನು ಗೌರವಿಸುತ್ತಾ ಇದನ್ನು ಮಾರ್ಗದರ್ಶಿಯಾಗಿ ಬಳಸಿ।"
+        aboutText3: "ವೈಯಕ್ತಿಕ ಆದ್ಯತೆಯನ್ನು ಗೌರವಿಸುತ್ತಾ ಇದನ್ನು ಮಾರ್ಗದರ್ಶಿಯಾಗಿ ಬಳಸಿ।",
+        nakshatraNames: {
+          Ashwini: "ಅಶ್ವಿನಿ", Bharani: "ಭರಣಿ", Krittika: "ಕೃತ್ತಿಕಾ", Rohini: "ರೋಹಿಣಿ",
+          Mrigashira: "ಮೃಗಶಿರಾ", Ardra: "ಆರ್ದ್ರಾ", Punarvasu: "ಪುನರ್ವಸು", Pushya: "ಪುಷ್ಯ",
+          Ashlesha: "ಆಶ್ಲೇಷಾ", Magha: "ಮಘಾ", "Purva Phalguni": "ಪೂರ್ವ ಫಲ್ಗುಣಿ",
+          "Uttara Phalguni": "ಉತ್ತರ ಫಲ್ಗುಣಿ", Hasta: "ಹಸ್ತ", Chitra: "ಚಿತ್ರಾ", Swati: "ಸ್ವಾತಿ",
+          Vishakha: "ವಿಶಾಖಾ", Anuradha: "ಅನುರಾಧಾ", Jyeshtha: "ಜ್ಯೇಷ್ಠಾ", Mula: "ಮೂಲ",
+          "Purva Ashadha": "ಪೂರ್ವಾಷಾಢಾ", "Uttara Ashadha": "ಉತ್ತರಾಷಾಢಾ", Shravana: "ಶ್ರವಣ",
+          Dhanishta: "ಧನಿಷ್ಠಾ", Shatabhisha: "ಶತಭಿಷಾ", "Purva Bhadrapada": "ಪೂರ್ವ ಭಾದ್ರಪದ",
+          "Uttara Bhadrapada": "ಉತ್ತರ ಭಾದ್ರಪದ", Revati: "ರೇವತಿ"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "ಅಶ್ವಿನಿ ಕುಮಾರರು", Yama: "ಯಮ", Agni: "ಅಗ್ನಿ", Brahma: "ಬ್ರಹ್ಮ",
+          Soma: "ಸೋಮ", Rudra: "ರುದ್ರ", Aditi: "ಅದಿತಿ", Brihaspati: "ಬೃಹಸ್ಪತಿ",
+          Nagas: "ನಾಗರು", Pitris: "ಪಿತೃಗಳು", Bhaga: "ಭಗ", Aryaman: "ಅರ್ಯಮನ್",
+          Savitar: "ಸವಿತಾರ್", Vishwakarma: "ವಿಶ್ವಕರ್ಮ", Vayu: "ವಾಯು", "Indra-Agni": "ಇಂದ್ರ-ಅಗ್ನಿ",
+          Mitra: "ಮಿತ್ರ", Indra: "ಇಂದ್ರ", Nirriti: "ನಿರ್ಋತಿ", Apas: "ಆಪಸ್",
+          Vishvadevas: "ವಿಶ್ವದೇವರು", Vishnu: "ವಿಷ್ಣು", Vasus: "ವಸುಗಳು", Varuna: "ವರುಣ",
+          "Aja Ekapada": "ಅಜ ಏಕಪಾದ", "Ahir Budhnya": "ಅಹಿರ್ಬುಧ್ನ್ಯ", Pushan: "ಪೂಷನ್"
+        },
+        colors: {
+          Red: "ಕೆಂಪು", "Blood Red": "ರಕ್ತ ಕೆಂಪು", White: "ಬಿಳಿ", "Silver Grey": "ಬೆಳ್ಳಿ ಬೂದು",
+          Green: "ಹಸಿರು", Yellow: "ಹಳದಿ", "Black-Red": "ಕಪ್ಪು-ಕೆಂಪು", Ivory: "ದಂತ",
+          "Light Brown": "ತಿಳಿ ಕಂದು", "Bright Blue": "ಪ್ರಕಾಶಮಾನ ನೀಲಿ", "Deep Green": "ಗಾಢ ಹಸಿರು",
+          Black: "ಕಪ್ಪು", Golden: "ಚಿನ್ನದ", "Reddish Brown": "ಕೆಂಪು ಕಂದು", Cream: "ಕ್ರೀಮ್",
+          "Brown Yellow": "ಕಂದು ಹಳದಿ", Copper: "ತಾಮ್ರ", "Light Blue": "ತಿಳಿ ನೀಲಿ",
+          "Blue Green": "ನೀಲಿ ಹಸಿರು", Purple: "ನೇರಳೆ", Brown: "ಕಂದು"
+        },
+        characteristics: {
+          Quick: "ತ್ವರಿತ", Energetic: "ಶಕ್ತಿಯುತ", Healing: "ಗುಣಪಡಿಸುವ", Creative: "ಸೃಜನಶೀಲ",
+          Nurturing: "ಪೋಷಿಸುವ", Transformative: "ಪರಿವರ್ತನಾತ್ಮಕ", Sharp: "ತೀಕ್ಷ್ಣ", Determined: "ದೃಢನಿಶ್ಚಯಿ",
+          Purifying: "ಶುದ್ಧೀಕರಿಸುವ", Beautiful: "ಸುಂದರ", Artistic: "ಕಲಾತ್ಮಕ", Fertile: "ಫಲವತ್ತಾದ",
+          Curious: "ಕುತೂಹಲಿ", Gentle: "ಮೃದು", Searching: "ಹುಡುಕುವ", Intense: "ತೀವ್ರ",
+          Emotional: "ಭಾವನಾತ್ಮಕ", Optimistic: "ಆಶಾವಾದಿ", Renewing: "ನವೀಕರಿಸುವ", Nourishing: "ಪೋಷಕ",
+          Spiritual: "ಆಧ್ಯಾತ್ಮಿಕ", Prosperous: "ಸಮೃದ್ಧ", Intuitive: "ಅಂತರ್ಜ್ಞಾನಿ", Mystical: "ರಹಸ್ಯಮಯ",
+          Penetrating: "ಭೇದಿಸುವ", Royal: "ರಾಜಮನೆತನದ", Ancestral: "ಪೂರ್ವಜರ", Authoritative: "ಅಧಿಕಾರಯುತ",
+          Romantic: "ರೋಮ್ಯಾಂಟಿಕ್", Relaxing: "ವಿಶ್ರಾಂತಿದಾಯಕ", Generous: "ಉದಾರ", Friendly: "ಸ್ನೇಹಪರ",
+          Helpful: "ಸಹಾಯಕ", Skillful: "ನುರಿತ", Clever: "ಬುದ್ಧಿವಂತ", Independent: "ಸ್ವತಂತ್ರ",
+          Flexible: "ಹೊಂದಿಕೊಳ್ಳುವ", Diplomatic: "ರಾಜತಾಂತ್ರಿಕ", Ambitious: "ಮಹತ್ವಾಕಾಂಕ್ಷಿ", Focused: "ಕೇಂದ್ರೀಕೃತ",
+          Devoted: "ಸಮರ್ಪಿತ", Successful: "ಯಶಸ್ವಿ", Protective: "ರಕ್ಷಣಾತ್ಮಕ", Courageous: "ಧೈರ್ಯಶಾಲಿ",
+          Senior: "ಹಿರಿಯ", Investigative: "ತನಿಖಾತ್ಮಕ", Destructive: "ವಿನಾಶಕಾರಿ", Invincible: "ಅಜೇಯ",
+          Energizing: "ಶಕ್ತಿದಾಯಕ", Universal: "ಸಾರ್ವತ್ರಿಕ", Victorious: "ವಿಜಯಶಾಲಿ", Righteous: "ಧಾರ್ಮಿಕ",
+          Listening: "ಕೇಳುವ", Learning: "ಕಲಿಯುವ", Connected: "ಸಂಪರ್ಕಿತ", Wealthy: "ಶ್ರೀಮಂತ",
+          Musical: "ಸಂಗೀತಮಯ", Adaptable: "ಹೊಂದಿಕೊಳ್ಳಬಲ್ಲ", Fiery: "ಅಗ್ನಿಮಯ", Deep: "ಆಳವಾದ",
+          Wise: "ಜ್ಞಾನಿ", Controlled: "ನಿಯಂತ್ರಿತ", Safe: "ಸುರಕ್ಷಿತ"
+        }
       },
       gemstones: {
         badge: "ರತ್ನ ಶಿಫಾರಸುಗಳು",
@@ -3654,7 +5055,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಹಸ್ತರೇಖಾ ಶಾಸ್ತ್ರದ ಬಗ್ಗೆ",
         aboutText1: "ಹಸ್ತರೇಖಾ ಶಾಸ್ತ್ರವು ಕೈಯ ಅಂಗೈಯಲ್ಲಿರುವ ರೇಖೆಗಳು, ಆಕಾರಗಳು ಮತ್ತು ಪರ್ವತಗಳ ಅರ್ಥವನ್ನು ವ್ಯಾಖ್ಯಾನಿಸುತ್ತದೆ।",
         aboutText2: "ವೈದಿಕ ಸಂಪ್ರದಾಯದಲ್ಲಿ, ಹಸ್ತರೇಖಾ ಶಾಸ್ತ್ರವನ್ನು ಹಸ್ತ ಸಾಮುದ್ರಿಕ ಶಾಸ್ತ್ರ ಎಂದು ಕರೆಯಲಾಗುತ್ತದೆ।",
-        aboutText3: "ಆತ್ಮಾವಲೋಕನಕ್ಕೆ ಒಂದು ಸಾಧನವಾಗಿ ಬಳಸಿ, ಸಂಪೂರ್ಣ ಭವಿಷ್ಯವಾಣಿಯಲ್ಲ।"
+        aboutText3: "ಆತ್ಮಾವಲೋಕನಕ್ಕೆ ಒಂದು ಸಾಧನವಾಗಿ ಬಳಸಿ, ಸಂಪೂರ್ಣ ಭವಿಷ್ಯವಾಣಿಯಲ್ಲ।",
+        lineNames: {
+          "Heart Line": "ಹೃದಯ ರೇಖೆ", "Head Line": "ಮಸ್ತಿಷ್ಕ ರೇಖೆ", "Life Line": "ಜೀವನ ರೇಖೆ",
+          "Fate Line": "ಭಾಗ್ಯ ರೇಖೆ", "Sun Line": "ಸೂರ್ಯ ರೇಖೆ", "Marriage Line": "ವಿವಾಹ ರೇಖೆ"
+        },
+        mountNames: {
+          "Mount of Jupiter": "ಗುರು ಪರ್ವತ", "Mount of Saturn": "ಶನಿ ಪರ್ವತ",
+          "Mount of Apollo (Sun)": "ಸೂರ್ಯ ಪರ್ವತ", "Mount of Mercury": "ಬುಧ ಪರ್ವತ",
+          "Mount of Venus": "ಶುಕ್ರ ಪರ್ವತ", "Mount of Moon": "ಚಂದ್ರ ಪರ್ವತ",
+          "Mount of Mars (Upper)": "ಕುಜ ಪರ್ವತ (ಮೇಲಿನ)", "Mount of Mars (Lower)": "ಕುಜ ಪರ್ವತ (ಕೆಳಗಿನ)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "ಉದ್ದ ಬೆರಳುಗಳು", "Short Fingers": "ಚಿಕ್ಕ ಬೆರಳುಗಳು",
+          "Pointed Fingertips": "ಚೂಪಾದ ಬೆರಳ ತುದಿಗಳು", "Square Fingertips": "ಚೌಕ ಬೆರಳ ತುದಿಗಳು",
+          "Spatulate Fingertips": "ಸ್ಪಾಟ್ಯುಲೇಟ್ ಬೆರಳ ತುದಿಗಳು", "Conic Fingertips": "ಶಂಕು ಬೆರಳ ತುದಿಗಳು"
+        },
+        handShapeNames: {
+          "Earth Hand": "ಭೂಮಿ ಕೈ", "Air Hand": "ವಾಯು ಕೈ",
+          "Water Hand": "ನೀರು ಕೈ", "Fire Hand": "ಅಗ್ನಿ ಕೈ"
+        }
       },
       common: {
         name: "ಹೆಸರು",
@@ -3848,7 +5268,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ടാരോ വായനയെക്കുറിച്ച്",
         aboutText1: "ടാരോ എന്നത് 78 കാർഡുകൾ ഉപയോഗിച്ച് ഭാവി പറയുന്ന ഒരു രൂപമാണ്।",
         aboutText2: "ഓരോ കാർഡിലും ചിത്രങ്ങൾ, ചിഹ്നങ്ങൾ, കഥകൾ എന്നിവയുണ്ട്।",
-        aboutText3: "ടാരോ എന്നത് ആത്മപരിശോധനയ്ക്കും മാർഗ്ഗനിർദ്ദേശത്തിനുമുള്ള ഒരു ഉപകരണമാണ്।"
+        aboutText3: "ടാരോ എന്നത് ആത്മപരിശോധനയ്ക്കും മാർഗ്ഗനിർദ്ദേശത്തിനുമുള്ള ഒരു ഉപകരണമാണ്।",
+        cardNames: {
+          "The Fool": "വിഡ്ഢി",
+          "The Magician": "മാന്ത്രികൻ",
+          "The High Priestess": "ഉന്നത പുരോഹിത",
+          "The Empress": "മഹാറാണി",
+          "The Emperor": "ചക്രവർത്തി",
+          "The Hierophant": "മതഗുരു",
+          "The Lovers": "പ്രേമികൾ",
+          "The Chariot": "രഥം",
+          "Strength": "ശക്തി",
+          "The Hermit": "സന്യാസി",
+          "Wheel of Fortune": "ഭാഗ്യചക്രം",
+          "Justice": "നീതി",
+          "The Hanged Man": "തൂങ്ങിക്കിടക്കുന്ന മനുഷ്യൻ",
+          "Death": "മരണം",
+          "Temperance": "സംയമനം",
+          "The Devil": "പിശാച്",
+          "The Tower": "ഗോപുരം",
+          "The Star": "നക്ഷത്രം",
+          "The Moon": "ചന്ദ്രൻ",
+          "The Sun": "സൂര്യൻ",
+          "Judgement": "വിധി",
+          "The World": "ലോകം"
+        },
+        yesNoAnswers: {
+          Yes: "അതെ", No: "ഇല്ല", Maybe: "ഒരുപക്ഷേ", Unlikely: "സാധ്യതയില്ല",
+          Strong: "ശക്തമായ", Moderate: "മിതമായ", Uncertain: "അനിശ്ചിതം"
+        }
       },
       vastu: {
         badge: "വാസ്തു ശാസ്ത്രം",
@@ -3876,7 +5324,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "വാസ്തു ശാസ്ത്രത്തെക്കുറിച്ച്",
         aboutText1: "വാസ്തു ശാസ്ത്രം 5,000 വർഷം പഴക്കമുള്ള ഇന്ത്യൻ വാസ്തുവിദ്യാ ശാസ്ത്രമാണ്।",
         aboutText2: "പോസിറ്റീവ് ഊർജ്ജ പ്രവാഹത്തിനായി അഞ്ച് തത്വങ്ങളും എട്ട് ദിശകളും അടിസ്ഥാനമാക്കിയുള്ളത്।",
-        aboutText3: "ലളിതമായ പരിഹാരങ്ങൾ ആധുനിക ഇടങ്ങളിൽ ഊർജ്ജം സന്തുലിതമാക്കാൻ സഹായിക്കുന്നു।"
+        aboutText3: "ലളിതമായ പരിഹാരങ്ങൾ ആധുനിക ഇടങ്ങളിൽ ഊർജ്ജം സന്തുലിതമാക്കാൻ സഹായിക്കുന്നു।",
+        directionNames: {
+          North: "വടക്ക്", South: "തെക്ക്", East: "കിഴക്ക്", West: "പടിഞ്ഞാറ്",
+          "North-East": "ഈശാനം", "South-East": "അഗ്നി",
+          "South-West": "നൈരുതി", "North-West": "വായുവ്യം"
+        },
+        elementNames: {
+          Water: "ജലം", Fire: "അഗ്നി", Air: "വായു", Space: "ആകാശം", Earth: "ഭൂമി"
+        },
+        deityNames: {
+          "Kubera (Wealth)": "കുബേരൻ (സമ്പത്ത്)", "Yama (Dharma)": "യമൻ (ധർമ്മം)",
+          "Indra (King of Gods)": "ഇന്ദ്രൻ (ദേവരാജാവ്)", "Varuna (Rain God)": "വരുണൻ (മഴ ദേവൻ)",
+          "Ishanya (Shiva)": "ഈശാന്യൻ (ശിവൻ)", "Agni (Fire God)": "അഗ്നി (അഗ്നി ദേവൻ)",
+          "Nairuti (Demon)": "നൈരുതി (രാക്ഷസൻ)", "Vayu (Wind God)": "വായു (കാറ്റ് ദേവൻ)"
+        },
+        roomNames: {
+          bedroom: "കിടപ്പുമുറി", kitchen: "അടുക്കള", bathroom: "കുളിമുറി",
+          livingRoom: "സ്വീകരണമുറി", puja: "പൂജാമുറി", entrance: "പ്രവേശനകവാടം"
+        },
+        problemNames: {
+          "Financial Problems": "സാമ്പത്തിക പ്രശ്നങ്ങൾ", "Health Issues": "ആരോഗ്യ പ്രശ്നങ്ങൾ",
+          "Relationship Problems": "ബന്ധ പ്രശ്നങ്ങൾ", "Career Obstacles": "കരിയർ തടസ്സങ്ങൾ",
+          "Negative Energy": "നെഗറ്റീവ് ഊർജ്ജം"
+        }
       },
       chinese: {
         badge: "ചൈനീസ് ജ്യോതിഷം",
@@ -3909,7 +5380,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ചൈനീസ് ജ്യോതിഷത്തെക്കുറിച്ച്",
         aboutText1: "ചൈനീസ് ജ്യോതിഷം മൃഗ ചിഹ്നങ്ങളുള്ള 12 വർഷ ചക്രത്തെ അടിസ്ഥാനമാക്കിയുള്ളതാണ്।",
         aboutText2: "നിങ്ങളുടെ രാശി ചന്ദ്ര കലണ്ടർ പ്രകാരം ജനന വർഷത്തിൽ നിന്ന് നിർണ്ണയിക്കുന്നു।",
-        aboutText3: "2026 സർപ്പ വർഷമാണ്, ശ്രദ്ധാപൂർവ്വമായ ആസൂത്രണത്തിന് അനുകൂലം।"
+        aboutText3: "2026 സർപ്പ വർഷമാണ്, ശ്രദ്ധാപൂർവ്വമായ ആസൂത്രണത്തിന് അനുകൂലം।",
+        animalNames: {
+          Rat: "എലി", Ox: "കാള", Tiger: "കടുവ", Rabbit: "മുയൽ", Dragon: "ഡ്രാഗൺ", Snake: "പാമ്പ്",
+          Horse: "കുതിര", Goat: "ആട്", Monkey: "കുരങ്ങ്", Rooster: "കോഴി", Dog: "നായ", Pig: "പന്നി"
+        },
+        elementNames: {
+          Wood: "മരം", Fire: "തീ", Earth: "ഭൂമി", Metal: "ലോഹം", Water: "വെള്ളം"
+        },
+        yinYangNames: {
+          Yin: "യിൻ", Yang: "യാങ്"
+        }
       },
       kp: {
         badge: "കെപി സിസ്റ്റം",
@@ -3946,7 +5427,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "കെപി സിസ്റ്റത്തെക്കുറിച്ച്",
         aboutText1: "കെപി സിസ്റ്റം 1960-കളിൽ പ്രൊഫസർ കെ.എസ്. കൃഷ്ണമൂർത്തി വികസിപ്പിച്ചു।",
         aboutText2: "പ്രധാന നവീകരണം ഫലം നിർണ്ണയിക്കുന്ന സബ്-ലോർഡാണ്।",
-        aboutText3: "നിർദ്ദിഷ്ട ചോദ്യങ്ങൾക്കും സംഭവങ്ങളുടെ സമയത്തിനും ഉപയോഗപ്രദം।"
+        aboutText3: "നിർദ്ദിഷ്ട ചോദ്യങ്ങൾക്കും സംഭവങ്ങളുടെ സമയത്തിനും ഉപയോഗപ്രദം।",
+        nakshatraNames: {
+          Ashwini: "അശ്വതി", Bharani: "ഭരണി", Krittika: "കാർത്തിക", Rohini: "രോഹിണി",
+          Mrigashira: "മകയിരം", Ardra: "തിരുവാതിര", Punarvasu: "പുണർതം", Pushya: "പൂയം",
+          Ashlesha: "ആയില്യം", Magha: "മകം", "Purva Phalguni": "പൂരം",
+          "Uttara Phalguni": "ഉത്രം", Hasta: "അത്തം", Chitra: "ചിത്തിര", Swati: "ചോതി",
+          Vishakha: "വിശാഖം", Anuradha: "അനിഴം", Jyeshtha: "തൃക്കേട്ട", Mula: "മൂലം",
+          "Purva Ashadha": "പൂരാടം", "Uttara Ashadha": "ഉത്രാടം", Shravana: "തിരുവോണം",
+          Dhanishta: "അവിട്ടം", Shatabhisha: "ചതയം", "Purva Bhadrapada": "പൂരുരുട്ടാതി",
+          "Uttara Bhadrapada": "ഉത്രട്ടാതി", Revati: "രേവതി"
+        },
+        zodiacNames: {
+          Aries: "മേടം", Taurus: "ഇടവം", Gemini: "മിഥുനം", Cancer: "കർക്കടകം",
+          Leo: "ചിങ്ങം", Virgo: "കന്നി", Libra: "തുലാം", Scorpio: "വൃശ്ചികം",
+          Sagittarius: "ധനു", Capricorn: "മകരം", Aquarius: "കുംഭം", Pisces: "മീനം"
+        },
+        planetNames: {
+          Sun: "സൂര്യൻ", Moon: "ചന്ദ്രൻ", Mars: "ചൊവ്വ", Mercury: "ബുധൻ",
+          Jupiter: "വ്യാഴം", Venus: "ശുക്രൻ", Saturn: "ശനി", Rahu: "രാഹു", Ketu: "കേതു"
+        },
+        houseSignifications: {
+          1: ["സ്വയം", "വ്യക്തിത്വം", "ശരീരം", "ആരോഗ്യം", "സ്വഭാവം"],
+          2: ["സമ്പത്ത്", "കുടുംബം", "വാക്ക്", "ഭക്ഷണം", "വലത് കണ്ണ്"],
+          3: ["സഹോദരങ്ങൾ", "ധൈര്യം", "ചെറിയ യാത്രകൾ", "ആശയവിനിമയം", "കഴിവുകൾ"],
+          4: ["അമ്മ", "വീട്", "സ്വത്ത്", "വാഹനങ്ങൾ", "വിദ്യാഭ്യാസം"],
+          5: ["കുട്ടികൾ", "ബുദ്ധി", "പ്രണയം", "ഊഹക്കച്ചവടം", "സർഗ്ഗാത്മകത"],
+          6: ["ശത്രുക്കൾ", "രോഗങ്ങൾ", "കടങ്ങൾ", "സേവനം", "തടസ്സങ്ങൾ"],
+          7: ["വിവാഹം", "പങ്കാളിത്തം", "വ്യാപാരം", "വിദേശ യാത്ര", "പൊതു ഇടപാടുകൾ"],
+          8: ["ആയുസ്സ്", "പൈതൃകം", "രഹസ്യ വിദ്യ", "പെട്ടെന്നുള്ള സംഭവങ്ങൾ", "പരിവർത്തനം"],
+          9: ["അച്ഛൻ", "ഭാഗ്യം", "ഉന്നത വിദ്യാഭ്യാസം", "നീണ്ട യാത്രകൾ", "ധർമ്മം"],
+          10: ["തൊഴിൽ", "ജോലി", "പ്രശസ്തി", "അധികാരം", "സർക്കാർ"],
+          11: ["ലാഭങ്ങൾ", "വരുമാനം", "സുഹൃത്തുക്കൾ", "ആഗ്രഹങ്ങൾ", "മൂത്ത സഹോദരങ്ങൾ"],
+          12: ["നഷ്ടങ്ങൾ", "ചെലവുകൾ", "വിദേശം", "മോക്ഷം", "ആശുപത്രി"]
+        }
       },
       prashna: {
         badge: "പ്രശ്ന കുണ്ഡലി",
@@ -3981,7 +5495,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "പ്രശ്ന കുണ്ഡലിയെക്കുറിച്ച്",
         aboutText1: "പ്രശ്ന കുണ്ഡലി ചോദ്യം ചോദിച്ച സമയത്തിന്റെ അടിസ്ഥാനത്തിൽ ഉത്തരങ്ങൾ നൽകുന്നു।",
         aboutText2: "ലഗ്നം ചോദ്യകർത്താവിനെ പ്രതിനിധീകരിക്കുന്നു, മറ്റ് ഭാവങ്ങൾ വിവരങ്ങൾ നൽകുന്നു।",
-        aboutText3: "മികച്ച ഫലങ്ങൾക്ക് ഒരു സമയത്ത് ഒരു വ്യക്തമായ ചോദ്യം ചോദിക്കുക।"
+        aboutText3: "മികച്ച ഫലങ്ങൾക്ക് ഒരു സമയത്ത് ഒരു വ്യക്തമായ ചോദ്യം ചോദിക്കുക।",
+        questionCategories: {
+          career: "തൊഴിൽ & ബിസിനസ്",
+          love: "പ്രണയം & ബന്ധങ്ങൾ",
+          health: "ആരോഗ്യം & ക്ഷേമം",
+          finance: "പണം & ധനകാര്യം",
+          travel: "യാത്ര & സ്ഥലമാറ്റം",
+          education: "വിദ്യാഭ്യാസം & പഠനം",
+          legal: "നിയമ വിഷയങ്ങൾ",
+          general: "പൊതു ചോദ്യം"
+        },
+        zodiacNames: {
+          Aries: "മേടം", Taurus: "ഇടവം", Gemini: "മിഥുനം", Cancer: "കർക്കടകം",
+          Leo: "ചിങ്ങം", Virgo: "കന്നി", Libra: "തുലാം", Scorpio: "വൃശ്ചികം",
+          Sagittarius: "ധനു", Capricorn: "മകരം", Aquarius: "കുംഭം", Pisces: "മീനം"
+        },
+        planetNames: {
+          Sun: "സൂര്യൻ", Moon: "ചന്ദ്രൻ", Mars: "ചൊവ്വ", Mercury: "ബുധൻ",
+          Jupiter: "വ്യാഴം", Venus: "ശുക്രൻ", Saturn: "ശനി", Rahu: "രാഹു", Ketu: "കേതു"
+        }
       },
       babyNames: {
         badge: "കുഞ്ഞിന്റെ പേരുകൾ",
@@ -4008,7 +5541,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "നക്ഷത്ര അടിസ്ഥാനമാക്കിയ പേരിടലിനെക്കുറിച്ച്",
         aboutText1: "വൈദിക പാരമ്പര്യത്തിൽ ജനന നക്ഷത്രത്തിന്റെ അടിസ്ഥാനത്തിൽ പേര് തിരഞ്ഞെടുക്കുന്നു।",
         aboutText2: "നക്ഷത്രം ജനന സമയത്ത് ചന്ദ്രന്റെ സ്ഥാനത്തിൽ നിന്ന് നിർണ്ണയിക്കുന്നു।",
-        aboutText3: "വ്യക്തിഗത മുൻഗണനയെ മാനിച്ച് ഇത് ഒരു മാർഗ്ഗനിർദ്ദേശമായി ഉപയോഗിക്കുക।"
+        aboutText3: "വ്യക്തിഗത മുൻഗണനയെ മാനിച്ച് ഇത് ഒരു മാർഗ്ഗനിർദ്ദേശമായി ഉപയോഗിക്കുക।",
+        nakshatraNames: {
+          Ashwini: "അശ്വതി", Bharani: "ഭരണി", Krittika: "കാർത്തിക", Rohini: "രോഹിണി",
+          Mrigashira: "മകയിരം", Ardra: "തിരുവാതിര", Punarvasu: "പുണർതം", Pushya: "പൂയം",
+          Ashlesha: "ആയില്യം", Magha: "മകം", "Purva Phalguni": "പൂരം",
+          "Uttara Phalguni": "ഉത്രം", Hasta: "അത്തം", Chitra: "ചിത്തിര", Swati: "ചോതി",
+          Vishakha: "വിശാഖം", Anuradha: "അനിഴം", Jyeshtha: "തൃക്കേട്ട", Mula: "മൂലം",
+          "Purva Ashadha": "പൂരാടം", "Uttara Ashadha": "ഉത്രാടം", Shravana: "തിരുവോണം",
+          Dhanishta: "അവിട്ടം", Shatabhisha: "ചതയം", "Purva Bhadrapada": "പൂരുരുട്ടാതി",
+          "Uttara Bhadrapada": "ഉത്രട്ടാതി", Revati: "രേവതി"
+        },
+        deityNames: {
+          "Ashwini Kumaras": "അശ്വിനി കുമാരന്മാർ", Yama: "യമൻ", Agni: "അഗ്നി", Brahma: "ബ്രഹ്മാവ്",
+          Soma: "സോമൻ", Rudra: "രുദ്രൻ", Aditi: "അദിതി", Brihaspati: "ബൃഹസ്പതി",
+          Nagas: "നാഗങ്ങൾ", Pitris: "പിതൃക്കൾ", Bhaga: "ഭഗൻ", Aryaman: "അര്യമൻ",
+          Savitar: "സവിതാവ്", Vishwakarma: "വിശ്വകർമ്മാവ്", Vayu: "വായു", "Indra-Agni": "ഇന്ദ്ര-അഗ്നി",
+          Mitra: "മിത്രൻ", Indra: "ഇന്ദ്രൻ", Nirriti: "നിർഋതി", Apas: "ആപസ്",
+          Vishvadevas: "വിശ്വദേവന്മാർ", Vishnu: "വിഷ്ണു", Vasus: "വസുക്കൾ", Varuna: "വരുണൻ",
+          "Aja Ekapada": "അജ ഏകപാദ", "Ahir Budhnya": "അഹിർബുധ്ന്യ", Pushan: "പൂഷൻ"
+        },
+        colors: {
+          Red: "ചുവപ്പ്", "Blood Red": "രക്ത ചുവപ്പ്", White: "വെള്ള", "Silver Grey": "വെള്ളി ചാരം",
+          Green: "പച്ച", Yellow: "മഞ്ഞ", "Black-Red": "കറുപ്പ്-ചുവപ്പ്", Ivory: "ആനക്കൊമ്പ്",
+          "Light Brown": "ഇളം തവിട്ട്", "Bright Blue": "തിളങ്ങുന്ന നീല", "Deep Green": "കടും പച്ച",
+          Black: "കറുപ്പ്", Golden: "സ്വർണ്ണ", "Reddish Brown": "ചുവപ്പ് തവിട്ട്", Cream: "ക്രീം",
+          "Brown Yellow": "തവിട്ട് മഞ്ഞ", Copper: "ചെമ്പ്", "Light Blue": "ഇളം നീല",
+          "Blue Green": "നീല പച്ച", Purple: "പർപ്പിൾ", Brown: "തവിട്ട്"
+        },
+        characteristics: {
+          Quick: "വേഗത്തിലുള്ള", Energetic: "ഊർജ്ജസ്വലമായ", Healing: "രോഗശമനം", Creative: "സൃഷ്ടിപരമായ",
+          Nurturing: "പരിപോഷിക്കുന്ന", Transformative: "പരിവർത്തനാത്മക", Sharp: "മൂർച്ചയുള്ള", Determined: "ദൃഢനിശ്ചയമുള്ള",
+          Purifying: "ശുദ്ധീകരിക്കുന്ന", Beautiful: "സുന്ദരമായ", Artistic: "കലാപരമായ", Fertile: "ഫലഭൂയിഷ്ഠമായ",
+          Curious: "ജിജ്ഞാസയുള്ള", Gentle: "സൗമ്യമായ", Searching: "അന്വേഷിക്കുന്ന", Intense: "തീവ്രമായ",
+          Emotional: "വൈകാരികമായ", Optimistic: "ശുഭാപ്തിവിശ്വാസമുള്ള", Renewing: "പുതുക്കുന്ന", Nourishing: "പോഷകമായ",
+          Spiritual: "ആത്മീയമായ", Prosperous: "സമൃദ്ധമായ", Intuitive: "അന്തർജ്ഞാനമുള്ള", Mystical: "നിഗൂഢമായ",
+          Penetrating: "തുളച്ചുകയറുന്ന", Royal: "രാജകീയമായ", Ancestral: "പൂർവ്വികരുടെ", Authoritative: "അധികാരമുള്ള",
+          Romantic: "റൊമാന്റിക്", Relaxing: "വിശ്രമദായകമായ", Generous: "ഉദാരമായ", Friendly: "സൗഹൃദപരമായ",
+          Helpful: "സഹായകരമായ", Skillful: "വൈദഗ്ധ്യമുള്ള", Clever: "ബുദ്ധിമാനായ", Independent: "സ്വതന്ത്രമായ",
+          Flexible: "വഴക്കമുള്ള", Diplomatic: "നയതന്ത്രജ്ഞമായ", Ambitious: "മഹത്വാകാംക്ഷയുള്ള", Focused: "കേന്ദ്രീകൃതമായ",
+          Devoted: "സമർപ്പിതമായ", Successful: "വിജയകരമായ", Protective: "സംരക്ഷണാത്മകമായ", Courageous: "ധൈര്യമുള്ള",
+          Senior: "മുതിർന്ന", Investigative: "അന്വേഷണാത്മകമായ", Destructive: "വിനാശകരമായ", Invincible: "അജയ്യമായ",
+          Energizing: "ഊർജ്ജദായകമായ", Universal: "സാർവ്വത്രികമായ", Victorious: "വിജയശാലിയായ", Righteous: "ധാർമ്മികമായ",
+          Listening: "കേൾക്കുന്ന", Learning: "പഠിക്കുന്ന", Connected: "ബന്ധപ്പെട്ട", Wealthy: "സമ്പന്നമായ",
+          Musical: "സംഗീതാത്മകമായ", Adaptable: "അനുയോജ്യമായ", Fiery: "അഗ്നിമയമായ", Deep: "ആഴമുള്ള",
+          Wise: "ജ്ഞാനിയായ", Controlled: "നിയന്ത്രിതമായ", Safe: "സുരക്ഷിതമായ"
+        }
       },
       gemstones: {
         badge: "രത്ന ശുപാർശകൾ",
@@ -4114,7 +5692,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ഹസ്തരേഖാ ശാസ്ത്രത്തെക്കുറിച്ച്",
         aboutText1: "ഹസ്തരേഖാ ശാസ്ത്രം കൈയിലെ ഉള്ളംകൈയിലെ രേഖകൾ, ആകൃതികൾ, പർവ്വതങ്ങൾ എന്നിവയുടെ അർത്ഥം വ്യാഖ്യാനിക്കുന്നു।",
         aboutText2: "വൈദിക പാരമ്പര്യത്തിൽ, ഹസ്തരേഖാ ശാസ്ത്രത്തെ ഹസ്ത സാമുദ്രിക ശാസ്ത്രം എന്ന് വിളിക്കുന്നു।",
-        aboutText3: "ആത്മപരിശോധനയ്ക്കുള്ള ഒരു ഉപകരണമായി ഉപയോഗിക്കുക, സമ്പൂർണ്ണ പ്രവചനമല്ല।"
+        aboutText3: "ആത്മപരിശോധനയ്ക്കുള്ള ഒരു ഉപകരണമായി ഉപയോഗിക്കുക, സമ്പൂർണ്ണ പ്രവചനമല്ല।",
+        lineNames: {
+          "Heart Line": "ഹൃദയ രേഖ", "Head Line": "മസ്തിഷ്ക രേഖ", "Life Line": "ജീവിത രേഖ",
+          "Fate Line": "ഭാഗ്യ രേഖ", "Sun Line": "സൂര്യ രേഖ", "Marriage Line": "വിവാഹ രേഖ"
+        },
+        mountNames: {
+          "Mount of Jupiter": "വ്യാഴ പർവ്വതം", "Mount of Saturn": "ശനി പർവ്വതം",
+          "Mount of Apollo (Sun)": "സൂര്യ പർവ്വതം", "Mount of Mercury": "ബുധ പർവ്വതം",
+          "Mount of Venus": "ശുക്ര പർവ്വതം", "Mount of Moon": "ചന്ദ്ര പർവ്വതം",
+          "Mount of Mars (Upper)": "ചൊവ്വ പർവ്വതം (മുകളിൽ)", "Mount of Mars (Lower)": "ചൊവ്വ പർവ്വതം (താഴെ)"
+        },
+        fingerTypeNames: {
+          "Long Fingers": "നീണ്ട വിരലുകൾ", "Short Fingers": "ചെറിയ വിരലുകൾ",
+          "Pointed Fingertips": "കൂർത്ത വിരൽ അഗ്രങ്ങൾ", "Square Fingertips": "ചതുരശ്ര വിരൽ അഗ്രങ്ങൾ",
+          "Spatulate Fingertips": "സ്പാറ്റുലേറ്റ് വിരൽ അഗ്രങ്ങൾ", "Conic Fingertips": "ശങ്കു വിരൽ അഗ്രങ്ങൾ"
+        },
+        handShapeNames: {
+          "Earth Hand": "ഭൂമി കൈ", "Air Hand": "വായു കൈ",
+          "Water Hand": "ജലം കൈ", "Fire Hand": "അഗ്നി കൈ"
+        }
       },
       common: {
         name: "പേര്",
@@ -4308,7 +5905,35 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਟੈਰੋ ਰੀਡਿੰਗ ਬਾਰੇ",
       aboutText1: "ਟੈਰੋ 78 ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਭਵਿੱਖ ਦੱਸਣ ਦਾ ਇੱਕ ਰੂਪ ਹੈ।",
       aboutText2: "ਹਰ ਕਾਰਡ ਵਿੱਚ ਤਸਵੀਰਾਂ, ਚਿੰਨ੍ਹ ਅਤੇ ਕਹਾਣੀਆਂ ਹਨ।",
-      aboutText3: "ਟੈਰੋ ਆਤਮ-ਨਿਰੀਖਣ ਅਤੇ ਮਾਰਗਦਰਸ਼ਨ ਲਈ ਇੱਕ ਸਾਧਨ ਹੈ।"
+      aboutText3: "ਟੈਰੋ ਆਤਮ-ਨਿਰੀਖਣ ਅਤੇ ਮਾਰਗਦਰਸ਼ਨ ਲਈ ਇੱਕ ਸਾਧਨ ਹੈ।",
+      cardNames: {
+        "The Fool": "ਮੂਰਖ",
+        "The Magician": "ਜਾਦੂਗਰ",
+        "The High Priestess": "ਉੱਚ ਪੁਜਾਰਨ",
+        "The Empress": "ਮਹਾਰਾਣੀ",
+        "The Emperor": "ਸਮਰਾਟ",
+        "The Hierophant": "ਧਰਮ ਗੁਰੂ",
+        "The Lovers": "ਪ੍ਰੇਮੀ",
+        "The Chariot": "ਰੱਥ",
+        "Strength": "ਸ਼ਕਤੀ",
+        "The Hermit": "ਸੰਨਿਆਸੀ",
+        "Wheel of Fortune": "ਕਿਸਮਤ ਦਾ ਚੱਕਰ",
+        "Justice": "ਨਿਆਂ",
+        "The Hanged Man": "ਲਟਕਦਾ ਆਦਮੀ",
+        "Death": "ਮੌਤ",
+        "Temperance": "ਸੰਜਮ",
+        "The Devil": "ਸ਼ੈਤਾਨ",
+        "The Tower": "ਮੀਨਾਰ",
+        "The Star": "ਤਾਰਾ",
+        "The Moon": "ਚੰਦਰਮਾ",
+        "The Sun": "ਸੂਰਜ",
+        "Judgement": "ਫੈਸਲਾ",
+        "The World": "ਸੰਸਾਰ"
+      },
+      yesNoAnswers: {
+        Yes: "ਹਾਂ", No: "ਨਹੀਂ", Maybe: "ਸ਼ਾਇਦ", Unlikely: "ਅਸੰਭਵ",
+        Strong: "ਮਜ਼ਬੂਤ", Moderate: "ਦਰਮਿਆਨਾ", Uncertain: "ਅਨਿਸ਼ਚਿਤ"
+      }
     },
     vastu: {
       badge: "ਵਾਸਤੂ ਸ਼ਾਸਤਰ",
@@ -4336,7 +5961,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਵਾਸਤੂ ਸ਼ਾਸਤਰ ਬਾਰੇ",
       aboutText1: "ਵਾਸਤੂ ਸ਼ਾਸਤਰ 5,000 ਸਾਲ ਪੁਰਾਣਾ ਭਾਰਤੀ ਆਰਕੀਟੈਕਚਰ ਵਿਗਿਆਨ ਹੈ।",
       aboutText2: "ਸਕਾਰਾਤਮਕ ਊਰਜਾ ਪ੍ਰਵਾਹ ਲਈ ਪੰਜ ਤੱਤਾਂ ਅਤੇ ਅੱਠ ਦਿਸ਼ਾਵਾਂ 'ਤੇ ਆਧਾਰਿਤ।",
-      aboutText3: "ਸਧਾਰਨ ਉਪਾਅ ਆਧੁਨਿਕ ਥਾਵਾਂ ਵਿੱਚ ਊਰਜਾ ਸੰਤੁਲਿਤ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੇ ਹਨ।"
+      aboutText3: "ਸਧਾਰਨ ਉਪਾਅ ਆਧੁਨਿਕ ਥਾਵਾਂ ਵਿੱਚ ਊਰਜਾ ਸੰਤੁਲਿਤ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੇ ਹਨ।",
+      directionNames: {
+        North: "ਉੱਤਰ", South: "ਦੱਖਣ", East: "ਪੂਰਬ", West: "ਪੱਛਮ",
+        "North-East": "ਈਸ਼ਾਨ", "South-East": "ਅਗਨੀ",
+        "South-West": "ਨੈਰਿਤੀ", "North-West": "ਵਾਯੂਵੀ"
+      },
+      elementNames: {
+        Water: "ਪਾਣੀ", Fire: "ਅੱਗ", Air: "ਹਵਾ", Space: "ਆਕਾਸ਼", Earth: "ਧਰਤੀ"
+      },
+      deityNames: {
+        "Kubera (Wealth)": "ਕੁਬੇਰ (ਧਨ)", "Yama (Dharma)": "ਯਮ (ਧਰਮ)",
+        "Indra (King of Gods)": "ਇੰਦਰ (ਦੇਵਤਿਆਂ ਦਾ ਰਾਜਾ)", "Varuna (Rain God)": "ਵਰੁਣ (ਮੀਂਹ ਦੇਵਤਾ)",
+        "Ishanya (Shiva)": "ਈਸ਼ਾਨ (ਸ਼ਿਵ)", "Agni (Fire God)": "ਅਗਨੀ (ਅੱਗ ਦੇਵਤਾ)",
+        "Nairuti (Demon)": "ਨੈਰਿਤੀ (ਰਾਕਸ਼ਸ)", "Vayu (Wind God)": "ਵਾਯੂ (ਹਵਾ ਦੇਵਤਾ)"
+      },
+      roomNames: {
+        bedroom: "ਸੌਣ ਵਾਲਾ ਕਮਰਾ", kitchen: "ਰਸੋਈ", bathroom: "ਨਹਾਉਣ ਵਾਲਾ ਕਮਰਾ",
+        livingRoom: "ਬੈਠਕ", puja: "ਪੂਜਾ ਕਮਰਾ", entrance: "ਪ੍ਰਵੇਸ਼ ਦੁਆਰ"
+      },
+      problemNames: {
+        "Financial Problems": "ਵਿੱਤੀ ਸਮੱਸਿਆਵਾਂ", "Health Issues": "ਸਿਹਤ ਸਮੱਸਿਆਵਾਂ",
+        "Relationship Problems": "ਰਿਸ਼ਤੇ ਦੀਆਂ ਸਮੱਸਿਆਵਾਂ", "Career Obstacles": "ਕਰੀਅਰ ਰੁਕਾਵਟਾਂ",
+        "Negative Energy": "ਨਕਾਰਾਤਮਕ ਊਰਜਾ"
+      }
     },
     chinese: {
       badge: "ਚੀਨੀ ਜੋਤਿਸ਼",
@@ -4369,7 +6017,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਚੀਨੀ ਜੋਤਿਸ਼ ਬਾਰੇ",
       aboutText1: "ਚੀਨੀ ਜੋਤਿਸ਼ ਜਾਨਵਰ ਚਿੰਨ੍ਹਾਂ ਨਾਲ 12 ਸਾਲ ਦੇ ਚੱਕਰ 'ਤੇ ਆਧਾਰਿਤ ਹੈ।",
       aboutText2: "ਤੁਹਾਡੀ ਰਾਸ਼ੀ ਚੰਦਰ ਕੈਲੰਡਰ ਅਨੁਸਾਰ ਜਨਮ ਸਾਲ ਤੋਂ ਨਿਰਧਾਰਿਤ ਹੁੰਦੀ ਹੈ।",
-      aboutText3: "2026 ਸੱਪ ਸਾਲ ਹੈ, ਸਾਵਧਾਨ ਯੋਜਨਾਬੰਦੀ ਲਈ ਅਨੁਕੂਲ।"
+      aboutText3: "2026 ਸੱਪ ਸਾਲ ਹੈ, ਸਾਵਧਾਨ ਯੋਜਨਾਬੰਦੀ ਲਈ ਅਨੁਕੂਲ।",
+      animalNames: {
+        Rat: "ਚੂਹਾ", Ox: "ਬਲਦ", Tiger: "ਬਾਘ", Rabbit: "ਖਰਗੋਸ਼", Dragon: "ਡ੍ਰੈਗਨ", Snake: "ਸੱਪ",
+        Horse: "ਘੋੜਾ", Goat: "ਬੱਕਰੀ", Monkey: "ਬਾਂਦਰ", Rooster: "ਮੁਰਗਾ", Dog: "ਕੁੱਤਾ", Pig: "ਸੂਰ"
+      },
+      elementNames: {
+        Wood: "ਲੱਕੜ", Fire: "ਅੱਗ", Earth: "ਧਰਤੀ", Metal: "ਧਾਤੂ", Water: "ਪਾਣੀ"
+      },
+      yinYangNames: {
+        Yin: "ਯਿਨ", Yang: "ਯਾਂਗ"
+      }
     },
     kp: {
       badge: "ਕੇਪੀ ਸਿਸਟਮ",
@@ -4406,7 +6064,40 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਕੇਪੀ ਸਿਸਟਮ ਬਾਰੇ",
       aboutText1: "ਕੇਪੀ ਸਿਸਟਮ 1960 ਦੇ ਦਹਾਕੇ ਵਿੱਚ ਪ੍ਰੋਫੈਸਰ ਕੇ.ਐਸ. ਕ੍ਰਿਸ਼ਨਾਮੂਰਤੀ ਨੇ ਵਿਕਸਿਤ ਕੀਤਾ।",
       aboutText2: "ਮੁੱਖ ਨਵੀਨਤਾ ਸਬ-ਲਾਰਡ ਹੈ ਜੋ ਨਤੀਜਾ ਨਿਰਧਾਰਿਤ ਕਰਦਾ ਹੈ।",
-      aboutText3: "ਖਾਸ ਸਵਾਲਾਂ ਅਤੇ ਘਟਨਾਵਾਂ ਦੇ ਸਮੇਂ ਲਈ ਉਪਯੋਗੀ।"
+      aboutText3: "ਖਾਸ ਸਵਾਲਾਂ ਅਤੇ ਘਟਨਾਵਾਂ ਦੇ ਸਮੇਂ ਲਈ ਉਪਯੋਗੀ।",
+      nakshatraNames: {
+        Ashwini: "ਅਸ਼ਵਿਨੀ", Bharani: "ਭਰਣੀ", Krittika: "ਕ੍ਰਿੱਤਿਕਾ", Rohini: "ਰੋਹਿਣੀ",
+        Mrigashira: "ਮ੍ਰਿਗਸ਼ਿਰਾ", Ardra: "ਆਰਦਰਾ", Punarvasu: "ਪੁਨਰਵਸੂ", Pushya: "ਪੁਸ਼ਯ",
+        Ashlesha: "ਆਸ਼ਲੇਸ਼ਾ", Magha: "ਮਘਾ", "Purva Phalguni": "ਪੂਰਵਾ ਫਾਲਗੁਨੀ",
+        "Uttara Phalguni": "ਉੱਤਰਾ ਫਾਲਗੁਨੀ", Hasta: "ਹਸਤ", Chitra: "ਚਿੱਤਰਾ", Swati: "ਸਵਾਤੀ",
+        Vishakha: "ਵਿਸ਼ਾਖਾ", Anuradha: "ਅਨੁਰਾਧਾ", Jyeshtha: "ਜਯੇਸ਼ਠਾ", Mula: "ਮੂਲ",
+        "Purva Ashadha": "ਪੂਰਵਾਸ਼ਾਢਾ", "Uttara Ashadha": "ਉੱਤਰਾਸ਼ਾਢਾ", Shravana: "ਸ਼੍ਰਵਣ",
+        Dhanishta: "ਧਨਿਸ਼ਠਾ", Shatabhisha: "ਸ਼ਤਭਿਸ਼ਾ", "Purva Bhadrapada": "ਪੂਰਵ ਭਾਦਰਪਦ",
+        "Uttara Bhadrapada": "ਉੱਤਰ ਭਾਦਰਪਦ", Revati: "ਰੇਵਤੀ"
+      },
+      zodiacNames: {
+        Aries: "ਮੇਖ", Taurus: "ਬ੍ਰਿਸ਼ਭ", Gemini: "ਮਿਥੁਨ", Cancer: "ਕਰਕ",
+        Leo: "ਸਿੰਘ", Virgo: "ਕੰਨਿਆ", Libra: "ਤੁਲਾ", Scorpio: "ਬ੍ਰਿਸ਼ਚਿਕ",
+        Sagittarius: "ਧਨੁ", Capricorn: "ਮਕਰ", Aquarius: "ਕੁੰਭ", Pisces: "ਮੀਨ"
+      },
+      planetNames: {
+        Sun: "ਸੂਰਜ", Moon: "ਚੰਦਰ", Mars: "ਮੰਗਲ", Mercury: "ਬੁੱਧ",
+        Jupiter: "ਗੁਰੂ", Venus: "ਸ਼ੁੱਕਰ", Saturn: "ਸ਼ਨੀ", Rahu: "ਰਾਹੂ", Ketu: "ਕੇਤੂ"
+      },
+      houseSignifications: {
+        1: ["ਸਵੈ", "ਸ਼ਖਸੀਅਤ", "ਸਰੀਰ", "ਸਿਹਤ", "ਸੁਭਾਅ"],
+        2: ["ਧਨ", "ਪਰਿਵਾਰ", "ਬੋਲੀ", "ਭੋਜਨ", "ਸੱਜੀ ਅੱਖ"],
+        3: ["ਭੈਣ-ਭਰਾ", "ਹਿੰਮਤ", "ਛੋਟੀਆਂ ਯਾਤਰਾਵਾਂ", "ਸੰਚਾਰ", "ਹੁਨਰ"],
+        4: ["ਮਾਂ", "ਘਰ", "ਜਾਇਦਾਦ", "ਵਾਹਨ", "ਸਿੱਖਿਆ"],
+        5: ["ਬੱਚੇ", "ਬੁੱਧੀ", "ਪਿਆਰ", "ਸੱਟਾ", "ਸਿਰਜਣਾਤਮਕਤਾ"],
+        6: ["ਦੁਸ਼ਮਣ", "ਬਿਮਾਰੀਆਂ", "ਕਰਜ਼ੇ", "ਸੇਵਾ", "ਰੁਕਾਵਟਾਂ"],
+        7: ["ਵਿਆਹ", "ਭਾਈਵਾਲੀ", "ਵਪਾਰ", "ਵਿਦੇਸ਼ ਯਾਤਰਾ", "ਜਨਤਕ ਮਾਮਲੇ"],
+        8: ["ਉਮਰ", "ਵਿਰਾਸਤ", "ਗੁਪਤ ਵਿੱਦਿਆ", "ਅਚਾਨਕ ਘਟਨਾਵਾਂ", "ਤਬਦੀਲੀ"],
+        9: ["ਪਿਤਾ", "ਕਿਸਮਤ", "ਉੱਚ ਸਿੱਖਿਆ", "ਲੰਬੀਆਂ ਯਾਤਰਾਵਾਂ", "ਧਰਮ"],
+        10: ["ਕਰੀਅਰ", "ਪੇਸ਼ਾ", "ਪ੍ਰਸਿੱਧੀ", "ਅਧਿਕਾਰ", "ਸਰਕਾਰ"],
+        11: ["ਲਾਭ", "ਆਮਦਨ", "ਦੋਸਤ", "ਇੱਛਾਵਾਂ", "ਵੱਡੇ ਭੈਣ-ਭਰਾ"],
+        12: ["ਨੁਕਸਾਨ", "ਖਰਚੇ", "ਵਿਦੇਸ਼", "ਮੋਕਸ਼", "ਹਸਪਤਾਲ"]
+      }
     },
     prashna: {
       badge: "ਪ੍ਰਸ਼ਨ ਕੁੰਡਲੀ",
@@ -4441,7 +6132,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਪ੍ਰਸ਼ਨ ਕੁੰਡਲੀ ਬਾਰੇ",
       aboutText1: "ਪ੍ਰਸ਼ਨ ਕੁੰਡਲੀ ਸਵਾਲ ਪੁੱਛੇ ਜਾਣ ਦੇ ਸਮੇਂ ਦੇ ਆਧਾਰ 'ਤੇ ਜਵਾਬ ਦਿੰਦੀ ਹੈ।",
       aboutText2: "ਲਗਨ ਸਵਾਲ ਪੁੱਛਣ ਵਾਲੇ ਨੂੰ ਦਰਸਾਉਂਦਾ ਹੈ, ਹੋਰ ਭਾਵ ਜਾਣਕਾਰੀ ਦਿੰਦੇ ਹਨ।",
-      aboutText3: "ਵਧੀਆ ਨਤੀਜਿਆਂ ਲਈ ਇੱਕ ਸਮੇਂ ਇੱਕ ਸਪੱਸ਼ਟ ਸਵਾਲ ਪੁੱਛੋ।"
+      aboutText3: "ਵਧੀਆ ਨਤੀਜਿਆਂ ਲਈ ਇੱਕ ਸਮੇਂ ਇੱਕ ਸਪੱਸ਼ਟ ਸਵਾਲ ਪੁੱਛੋ।",
+      questionCategories: {
+        career: "ਕਰੀਅਰ ਅਤੇ ਕਾਰੋਬਾਰ",
+        love: "ਪਿਆਰ ਅਤੇ ਰਿਸ਼ਤੇ",
+        health: "ਸਿਹਤ ਅਤੇ ਤੰਦਰੁਸਤੀ",
+        finance: "ਪੈਸਾ ਅਤੇ ਵਿੱਤ",
+        travel: "ਯਾਤਰਾ ਅਤੇ ਸਥਾਨਾਂਤਰਣ",
+        education: "ਸਿੱਖਿਆ ਅਤੇ ਸਿੱਖਣਾ",
+        legal: "ਕਾਨੂੰਨੀ ਮਾਮਲੇ",
+        general: "ਆਮ ਸਵਾਲ"
+      },
+      zodiacNames: {
+        Aries: "ਮੇਖ", Taurus: "ਬ੍ਰਿਸ਼ਭ", Gemini: "ਮਿਥੁਨ", Cancer: "ਕਰਕ",
+        Leo: "ਸਿੰਘ", Virgo: "ਕੰਨਿਆ", Libra: "ਤੁਲਾ", Scorpio: "ਬ੍ਰਿਸ਼ਚਿਕ",
+        Sagittarius: "ਧਨੁ", Capricorn: "ਮਕਰ", Aquarius: "ਕੁੰਭ", Pisces: "ਮੀਨ"
+      },
+      planetNames: {
+        Sun: "ਸੂਰਜ", Moon: "ਚੰਦਰ", Mars: "ਮੰਗਲ", Mercury: "ਬੁੱਧ",
+        Jupiter: "ਗੁਰੂ", Venus: "ਸ਼ੁੱਕਰ", Saturn: "ਸ਼ਨੀ", Rahu: "ਰਾਹੂ", Ketu: "ਕੇਤੂ"
+      }
     },
     babyNames: {
       badge: "ਬੱਚੇ ਦੇ ਨਾਮ",
@@ -4468,7 +6178,52 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਨਕਸ਼ਤਰ-ਅਧਾਰਿਤ ਨਾਮਕਰਨ ਬਾਰੇ",
       aboutText1: "ਵੈਦਿਕ ਪਰੰਪਰਾ ਵਿੱਚ ਜਨਮ ਨਕਸ਼ਤਰ ਦੇ ਆਧਾਰ 'ਤੇ ਨਾਮ ਚੁਣਿਆ ਜਾਂਦਾ ਹੈ।",
       aboutText2: "ਨਕਸ਼ਤਰ ਜਨਮ ਸਮੇਂ ਚੰਦਰਮਾ ਦੀ ਸਥਿਤੀ ਤੋਂ ਨਿਰਧਾਰਿਤ ਹੁੰਦਾ ਹੈ।",
-      aboutText3: "ਨਿੱਜੀ ਪਸੰਦ ਦਾ ਸਤਿਕਾਰ ਕਰਦੇ ਹੋਏ ਇਸਨੂੰ ਮਾਰਗਦਰਸ਼ਕ ਵਜੋਂ ਵਰਤੋ।"
+      aboutText3: "ਨਿੱਜੀ ਪਸੰਦ ਦਾ ਸਤਿਕਾਰ ਕਰਦੇ ਹੋਏ ਇਸਨੂੰ ਮਾਰਗਦਰਸ਼ਕ ਵਜੋਂ ਵਰਤੋ।",
+      nakshatraNames: {
+        Ashwini: "ਅਸ਼ਵਿਨੀ", Bharani: "ਭਰਨੀ", Krittika: "ਕ੍ਰਿਤਿਕਾ", Rohini: "ਰੋਹਿਣੀ",
+        Mrigashira: "ਮ੍ਰਿਗਸ਼ਿਰਾ", Ardra: "ਆਰਦਰਾ", Punarvasu: "ਪੁਨਰਵਸੂ", Pushya: "ਪੁਸ਼ਯ",
+        Ashlesha: "ਆਸ਼ਲੇਸ਼ਾ", Magha: "ਮਘਾ", "Purva Phalguni": "ਪੂਰਵਾ ਫਾਲਗੁਨੀ",
+        "Uttara Phalguni": "ਉੱਤਰਾ ਫਾਲਗੁਨੀ", Hasta: "ਹਸਤਾ", Chitra: "ਚਿਤਰਾ", Swati: "ਸਵਾਤੀ",
+        Vishakha: "ਵਿਸ਼ਾਖਾ", Anuradha: "ਅਨੁਰਾਧਾ", Jyeshtha: "ਜਯੇਸ਼ਠਾ", Mula: "ਮੂਲਾ",
+        "Purva Ashadha": "ਪੂਰਵਾਸ਼ਾਢਾ", "Uttara Ashadha": "ਉੱਤਰਾਸ਼ਾਢਾ", Shravana: "ਸ਼੍ਰਵਣ",
+        Dhanishta: "ਧਨਿਸ਼ਠਾ", Shatabhisha: "ਸ਼ਤਭਿਸ਼ਾ", "Purva Bhadrapada": "ਪੂਰਵਾ ਭਾਦਰਪਦ",
+        "Uttara Bhadrapada": "ਉੱਤਰਾ ਭਾਦਰਪਦ", Revati: "ਰੇਵਤੀ"
+      },
+      deityNames: {
+        "Ashwini Kumaras": "ਅਸ਼ਵਿਨੀ ਕੁਮਾਰ", Yama: "ਯਮ", Agni: "ਅਗਨੀ", Brahma: "ਬ੍ਰਹਮਾ",
+        Soma: "ਸੋਮ", Rudra: "ਰੁਦਰ", Aditi: "ਅਦਿਤੀ", Brihaspati: "ਬ੍ਰਿਹਸਪਤੀ",
+        Nagas: "ਨਾਗ", Pitris: "ਪਿਤਰ", Bhaga: "ਭਗ", Aryaman: "ਅਰਯਮਨ",
+        Savitar: "ਸਵਿਤਾਰ", Vishwakarma: "ਵਿਸ਼ਵਕਰਮਾ", Vayu: "ਵਾਯੂ", "Indra-Agni": "ਇੰਦਰ-ਅਗਨੀ",
+        Mitra: "ਮਿਤਰ", Indra: "ਇੰਦਰ", Nirriti: "ਨਿਰਰਿਤੀ", Apas: "ਆਪਸ",
+        Vishvadevas: "ਵਿਸ਼ਵਦੇਵ", Vishnu: "ਵਿਸ਼ਨੂ", Vasus: "ਵਸੂ", Varuna: "ਵਰੁਣ",
+        "Aja Ekapada": "ਅਜ ਏਕਪਾਦ", "Ahir Budhnya": "ਅਹਿਰਬੁਧਨਯ", Pushan: "ਪੂਸ਼ਨ"
+      },
+      colors: {
+        Red: "ਲਾਲ", "Blood Red": "ਖੂਨ ਲਾਲ", White: "ਚਿੱਟਾ", "Silver Grey": "ਚਾਂਦੀ ਸਲੇਟੀ",
+        Green: "ਹਰਾ", Yellow: "ਪੀਲਾ", "Black-Red": "ਕਾਲਾ-ਲਾਲ", Ivory: "ਹਾਥੀ ਦੰਦ",
+        "Light Brown": "ਹਲਕਾ ਭੂਰਾ", "Bright Blue": "ਚਮਕਦਾਰ ਨੀਲਾ", "Deep Green": "ਗੂੜ੍ਹਾ ਹਰਾ",
+        Black: "ਕਾਲਾ", Golden: "ਸੁਨਹਿਰਾ", "Reddish Brown": "ਲਾਲ ਭੂਰਾ", Cream: "ਕਰੀਮ",
+        "Brown Yellow": "ਭੂਰਾ ਪੀਲਾ", Copper: "ਤਾਂਬਾ", "Light Blue": "ਹਲਕਾ ਨੀਲਾ",
+        "Blue Green": "ਨੀਲਾ ਹਰਾ", Purple: "ਜਾਮਨੀ", Brown: "ਭੂਰਾ"
+      },
+      characteristics: {
+        Quick: "ਤੇਜ਼", Energetic: "ਊਰਜਾਵਾਨ", Healing: "ਇਲਾਜ", Creative: "ਸਿਰਜਣਾਤਮਕ",
+        Nurturing: "ਪਾਲਣ ਪੋਸ਼ਣ", Transformative: "ਬਦਲਾਅ ਲਿਆਉਣ ਵਾਲਾ", Sharp: "ਤਿੱਖਾ", Determined: "ਦ੍ਰਿੜ੍ਹ",
+        Purifying: "ਸ਼ੁੱਧ ਕਰਨ ਵਾਲਾ", Beautiful: "ਸੁੰਦਰ", Artistic: "ਕਲਾਤਮਕ", Fertile: "ਉਪਜਾਊ",
+        Curious: "ਉਤਸੁਕ", Gentle: "ਕੋਮਲ", Searching: "ਖੋਜੀ", Intense: "ਤੀਬਰ",
+        Emotional: "ਭਾਵੁਕ", Optimistic: "ਆਸ਼ਾਵਾਦੀ", Renewing: "ਨਵੀਨੀਕਰਨ", Nourishing: "ਪੋਸ਼ਕ",
+        Spiritual: "ਅਧਿਆਤਮਿਕ", Prosperous: "ਖੁਸ਼ਹਾਲ", Intuitive: "ਅੰਤਰਜਾਮੀ", Mystical: "ਰਹੱਸਮਈ",
+        Penetrating: "ਭੇਦਣ ਵਾਲਾ", Royal: "ਸ਼ਾਹੀ", Ancestral: "ਪੁਰਖਿਆਂ ਦਾ", Authoritative: "ਅਧਿਕਾਰਕ",
+        Romantic: "ਰੋਮਾਂਟਿਕ", Relaxing: "ਆਰਾਮਦਾਇਕ", Generous: "ਦਾਨੀ", Friendly: "ਦੋਸਤਾਨਾ",
+        Helpful: "ਮਦਦਗਾਰ", Skillful: "ਹੁਨਰਮੰਦ", Clever: "ਚਲਾਕ", Independent: "ਸੁਤੰਤਰ",
+        Flexible: "ਲਚਕੀਲਾ", Diplomatic: "ਕੂਟਨੀਤਕ", Ambitious: "ਮਹੱਤਵਾਕਾਂਖੀ", Focused: "ਕੇਂਦਰਿਤ",
+        Devoted: "ਸਮਰਪਿਤ", Successful: "ਸਫਲ", Protective: "ਸੁਰੱਖਿਆਤਮਕ", Courageous: "ਬਹਾਦਰ",
+        Senior: "ਸੀਨੀਅਰ", Investigative: "ਜਾਂਚ", Destructive: "ਵਿਨਾਸ਼ਕਾਰੀ", Invincible: "ਅਜੇਤੂ",
+        Energizing: "ਊਰਜਾ ਦੇਣ ਵਾਲਾ", Universal: "ਵਿਸ਼ਵਵਿਆਪੀ", Victorious: "ਜੇਤੂ", Righteous: "ਧਰਮੀ",
+        Listening: "ਸੁਣਨ ਵਾਲਾ", Learning: "ਸਿੱਖਣ ਵਾਲਾ", Connected: "ਜੁੜਿਆ", Wealthy: "ਅਮੀਰ",
+        Musical: "ਸੰਗੀਤਕ", Adaptable: "ਅਨੁਕੂਲ", Fiery: "ਅਗਨੀਮਈ", Deep: "ਡੂੰਘਾ",
+        Wise: "ਸਿਆਣਾ", Controlled: "ਨਿਯੰਤਰਿਤ", Safe: "ਸੁਰੱਖਿਅਤ"
+      }
     },
     gemstones: {
       badge: "ਰਤਨ ਸਿਫਾਰਸ਼ਾਂ",
@@ -4574,7 +6329,26 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਹੱਥ ਰੇਖਾ ਵਿਗਿਆਨ ਬਾਰੇ",
       aboutText1: "ਹੱਥ ਰੇਖਾ ਵਿਗਿਆਨ ਹੱਥ ਦੀ ਹਥੇਲੀ ਵਿੱਚ ਰੇਖਾਵਾਂ, ਸ਼ਕਲਾਂ ਅਤੇ ਪਰਬਤਾਂ ਦੇ ਅਰਥ ਦੀ ਵਿਆਖਿਆ ਕਰਦਾ ਹੈ।",
       aboutText2: "ਵੈਦਿਕ ਪਰੰਪਰਾ ਵਿੱਚ, ਹੱਥ ਰੇਖਾ ਵਿਗਿਆਨ ਨੂੰ ਹਸਤ ਸਾਮੁਦ੍ਰਿਕ ਸ਼ਾਸਤਰ ਕਿਹਾ ਜਾਂਦਾ ਹੈ।",
-      aboutText3: "ਆਤਮ-ਨਿਰੀਖਣ ਲਈ ਇੱਕ ਸਾਧਨ ਵਜੋਂ ਵਰਤੋ, ਪੂਰੀ ਭਵਿੱਖਬਾਣੀ ਨਹੀਂ।"
+      aboutText3: "ਆਤਮ-ਨਿਰੀਖਣ ਲਈ ਇੱਕ ਸਾਧਨ ਵਜੋਂ ਵਰਤੋ, ਪੂਰੀ ਭਵਿੱਖਬਾਣੀ ਨਹੀਂ।",
+      lineNames: {
+        "Heart Line": "ਦਿਲ ਰੇਖਾ", "Head Line": "ਦਿਮਾਗ ਰੇਖਾ", "Life Line": "ਜੀਵਨ ਰੇਖਾ",
+        "Fate Line": "ਭਾਗ ਰੇਖਾ", "Sun Line": "ਸੂਰਜ ਰੇਖਾ", "Marriage Line": "ਵਿਆਹ ਰੇਖਾ"
+      },
+      mountNames: {
+        "Mount of Jupiter": "ਬ੍ਰਿਹਸਪਤੀ ਪਰਬਤ", "Mount of Saturn": "ਸ਼ਨੀ ਪਰਬਤ",
+        "Mount of Apollo (Sun)": "ਸੂਰਜ ਪਰਬਤ", "Mount of Mercury": "ਬੁੱਧ ਪਰਬਤ",
+        "Mount of Venus": "ਸ਼ੁੱਕਰ ਪਰਬਤ", "Mount of Moon": "ਚੰਦਰ ਪਰਬਤ",
+        "Mount of Mars (Upper)": "ਮੰਗਲ ਪਰਬਤ (ਉੱਪਰ)", "Mount of Mars (Lower)": "ਮੰਗਲ ਪਰਬਤ (ਹੇਠਾਂ)"
+      },
+      fingerTypeNames: {
+        "Long Fingers": "ਲੰਬੀਆਂ ਉਂਗਲਾਂ", "Short Fingers": "ਛੋਟੀਆਂ ਉਂਗਲਾਂ",
+        "Pointed Fingertips": "ਨੋਕੀਲੀਆਂ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ", "Square Fingertips": "ਚੌਰਸ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ",
+        "Spatulate Fingertips": "ਸਪੈਟੁਲੇਟ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ", "Conic Fingertips": "ਸ਼ੰਕੂ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ"
+      },
+      handShapeNames: {
+        "Earth Hand": "ਧਰਤੀ ਹੱਥ", "Air Hand": "ਹਵਾ ਹੱਥ",
+        "Water Hand": "ਪਾਣੀ ਹੱਥ", "Fire Hand": "ਅੱਗ ਹੱਥ"
+      }
     },
     common: {
       name: "ਨਾਮ",

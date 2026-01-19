@@ -19,6 +19,26 @@ import {
   Zap,
 } from "lucide-react";
 
+// Helper function to get translated line name
+const getTranslatedLineName = (name: string, t: (key: string, fallback: string) => string): string => {
+  return t(`palmistry.lineNames.${name}`, name);
+};
+
+// Helper function to get translated mount name
+const getTranslatedMountName = (name: string, t: (key: string, fallback: string) => string): string => {
+  return t(`palmistry.mountNames.${name}`, name);
+};
+
+// Helper function to get translated finger type name
+const getTranslatedFingerTypeName = (name: string, t: (key: string, fallback: string) => string): string => {
+  return t(`palmistry.fingerTypeNames.${name}`, name);
+};
+
+// Helper function to get translated hand shape name
+const getTranslatedHandShapeName = (name: string, t: (key: string, fallback: string) => string): string => {
+  return t(`palmistry.handShapeNames.${name}`, name);
+};
+
 interface PalmLine {
   name: string;
   hindi: string;
@@ -313,7 +333,7 @@ export default function PalmistryPage() {
                         {line.name === "Fate Line" && <Star className="w-4 h-4 mr-2 text-purple-500" />}
                         {line.name === "Sun Line" && <Star className="w-4 h-4 mr-2 text-yellow-500" />}
                         {line.name === "Marriage Line" && <Heart className="w-4 h-4 mr-2 text-pink-500" />}
-                        <span>{line.name}</span>
+                        <span>{getTranslatedLineName(line.name, t)}</span>
                       </Button>
                     ))}
                   </CardContent>
@@ -347,7 +367,7 @@ export default function PalmistryPage() {
                           {selectedLine.name === "Marriage Line" && <Heart className="w-6 h-6 text-pink-500" />}
                         </div>
                         <div>
-                          <CardTitle>{selectedLine.name}</CardTitle>
+                          <CardTitle>{getTranslatedLineName(selectedLine.name, t)}</CardTitle>
                           <CardDescription>{selectedLine.hindi}</CardDescription>
                         </div>
                       </div>
@@ -405,7 +425,7 @@ export default function PalmistryPage() {
                         onClick={() => setSelectedMount(mount)}
                       >
                         <Star className="w-4 h-4 mr-2" />
-                        <span className="truncate">{mount.name}</span>
+                        <span className="truncate">{getTranslatedMountName(mount.name, t)}</span>
                       </Button>
                     ))}
                   </CardContent>
@@ -429,7 +449,7 @@ export default function PalmistryPage() {
                 ) : (
                   <Card>
                     <CardHeader>
-                      <CardTitle>{selectedMount.name}</CardTitle>
+                      <CardTitle>{getTranslatedMountName(selectedMount.name, t)}</CardTitle>
                       <CardDescription>Planet: {selectedMount.planet}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -466,7 +486,7 @@ export default function PalmistryPage() {
               {fingerTypes.map((finger, idx) => (
                 <Card key={idx} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
-                    <CardTitle className="text-lg">{finger.name}</CardTitle>
+                    <CardTitle className="text-lg">{getTranslatedFingerTypeName(finger.name, t)}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-600">{finger.meaning}</p>
@@ -517,7 +537,7 @@ export default function PalmistryPage() {
                       {shape.name === "Air Hand" && <span className="text-2xl">💨</span>}
                       {shape.name === "Water Hand" && <span className="text-2xl">💧</span>}
                       {shape.name === "Fire Hand" && <span className="text-2xl">🔥</span>}
-                      {shape.name}
+                      {getTranslatedHandShapeName(shape.name, t)}
                     </CardTitle>
                     <CardDescription>{shape.characteristics}</CardDescription>
                   </CardHeader>
