@@ -271,19 +271,33 @@ export default function NumerologyPage() {
     setIsCalculating(false);
   };
 
-  const numberMeanings: Record<number, string> = {
-    1: "The Leader - Independent, ambitious, and pioneering",
-    2: "The Peacemaker - Diplomatic, cooperative, and sensitive",
-    3: "The Communicator - Creative, expressive, and social",
-    4: "The Builder - Practical, organized, and hardworking",
-    5: "The Freedom Seeker - Adventurous, versatile, and dynamic",
-    6: "The Nurturer - Responsible, loving, and protective",
-    7: "The Seeker - Analytical, spiritual, and introspective",
-    8: "The Achiever - Ambitious, authoritative, and successful",
-    9: "The Humanitarian - Compassionate, generous, and wise",
-    11: "The Intuitive - Visionary, inspirational, and spiritual (Master Number)",
-    22: "The Master Builder - Practical visionary with great potential (Master Number)",
-    33: "The Master Teacher - Selfless, nurturing, and spiritually evolved (Master Number)"
+  // Get translated number meaning
+  const getNumberMeaning = (num: number): string => {
+    const defaultMeanings: Record<number, string> = {
+      1: "The Leader - Independent, ambitious, and pioneering",
+      2: "The Peacemaker - Diplomatic, cooperative, and sensitive",
+      3: "The Communicator - Creative, expressive, and social",
+      4: "The Builder - Practical, organized, and hardworking",
+      5: "The Freedom Seeker - Adventurous, versatile, and dynamic",
+      6: "The Nurturer - Responsible, loving, and protective",
+      7: "The Seeker - Analytical, spiritual, and introspective",
+      8: "The Achiever - Ambitious, authoritative, and successful",
+      9: "The Humanitarian - Compassionate, generous, and wise",
+      11: "The Intuitive - Visionary, inspirational, and spiritual (Master Number)",
+      22: "The Master Builder - Practical visionary with great potential (Master Number)",
+      33: "The Master Teacher - Selfless, nurturing, and spiritually evolved (Master Number)"
+    };
+    return t(`numerology.numberMeanings.${num}`, defaultMeanings[num] || defaultMeanings[9]);
+  };
+
+  // Get translated color name
+  const getTranslatedColor = (color: string): string => {
+    return t(`numerology.colors.${color}`, color);
+  };
+
+  // Get translated day name
+  const getTranslatedDay = (day: string): string => {
+    return t(`numerology.days.${day}`, day);
   };
 
   return (
@@ -447,7 +461,7 @@ export default function NumerologyPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle>{t("numerology.lifePathMeaning", "Your Life Path Number")}: {result.lifePath}</CardTitle>
-                        <CardDescription>{numberMeanings[result.lifePath]}</CardDescription>
+                        <CardDescription>{getNumberMeaning(result.lifePath)}</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="grid md:grid-cols-2 gap-4">
@@ -456,28 +470,28 @@ export default function NumerologyPage() {
                               <Star className="w-4 h-4" />
                               {t("numerology.destinyNumber", "Destiny Number")}: {result.destiny}
                             </h4>
-                            <p className="text-sm text-gray-600">{numberMeanings[result.destiny]}</p>
+                            <p className="text-sm text-gray-600">{getNumberMeaning(result.destiny)}</p>
                           </div>
                           <div className="p-4 bg-purple-50 rounded-lg">
                             <h4 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">
                               <Heart className="w-4 h-4" />
                               {t("numerology.soulNumber", "Soul Urge Number")}: {result.soul}
                             </h4>
-                            <p className="text-sm text-gray-600">{numberMeanings[result.soul]}</p>
+                            <p className="text-sm text-gray-600">{getNumberMeaning(result.soul)}</p>
                           </div>
                           <div className="p-4 bg-pink-50 rounded-lg">
                             <h4 className="font-semibold text-pink-700 mb-2 flex items-center gap-2">
                               <User className="w-4 h-4" />
                               {t("numerology.personalityNumber", "Personality Number")}: {result.personality}
                             </h4>
-                            <p className="text-sm text-gray-600">{numberMeanings[result.personality]}</p>
+                            <p className="text-sm text-gray-600">{getNumberMeaning(result.personality)}</p>
                           </div>
                           <div className="p-4 bg-blue-50 rounded-lg">
                             <h4 className="font-semibold text-blue-700 mb-2 flex items-center gap-2">
                               <TrendingUp className="w-4 h-4" />
                               {t("numerology.maturityNumber", "Maturity Number")}: {result.maturity}
                             </h4>
-                            <p className="text-sm text-gray-600">{numberMeanings[result.maturity]}</p>
+                            <p className="text-sm text-gray-600">{getNumberMeaning(result.maturity)}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -576,11 +590,11 @@ export default function NumerologyPage() {
                               {t("numerology.luckyColors", "Lucky Colors")}
                             </h4>
                             <div className="flex flex-wrap gap-2">
-                              {result.luckyColors.map((color, idx) => (
-                                <Badge key={idx} className="bg-pink-100 text-pink-700">
-                                  {color}
-                                </Badge>
-                              ))}
+                                                            {result.luckyColors.map((color, idx) => (
+                                                              <Badge key={idx} className="bg-pink-100 text-pink-700">
+                                                                {getTranslatedColor(color)}
+                                                              </Badge>
+                                                            ))}
                             </div>
                           </div>
                           
@@ -589,11 +603,11 @@ export default function NumerologyPage() {
                               {t("numerology.luckyDays", "Lucky Days")}
                             </h4>
                             <div className="flex flex-wrap gap-2">
-                              {result.luckyDays.map((day, idx) => (
-                                <Badge key={idx} className="bg-blue-100 text-blue-700">
-                                  {day}
-                                </Badge>
-                              ))}
+                                                            {result.luckyDays.map((day, idx) => (
+                                                              <Badge key={idx} className="bg-blue-100 text-blue-700">
+                                                                {getTranslatedDay(day)}
+                                                              </Badge>
+                                                            ))}
                             </div>
                           </div>
                         </div>
@@ -616,7 +630,7 @@ export default function NumerologyPage() {
                               <div className="w-16 h-16 flex items-center justify-center bg-gradient-to-br from-pink-500 to-red-500 text-white rounded-full text-2xl font-bold mb-2">
                                 {num}
                               </div>
-                              <p className="text-xs text-gray-500">{numberMeanings[num]?.split(' - ')[0]}</p>
+                              <p className="text-xs text-gray-500">{getNumberMeaning(num).split(' - ')[0]}</p>
                             </div>
                           ))}
                         </div>

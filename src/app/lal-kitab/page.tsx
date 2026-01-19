@@ -44,6 +44,7 @@ interface PlanetPosition {
 }
 
 interface Debt {
+  key: string;
   name: string;
   nameHindi: string;
   description: string;
@@ -59,12 +60,17 @@ interface LalKitabResult {
   remedies: string[];
 }
 
-const zodiacSigns = [
+const zodiacSignKeys = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-];
+] as const;
 
-const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+const planetKeys = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"] as const;
+
+const debtKeys = [
+  "pitriRina", "matriRina", "striRina", "bhaiRina", 
+  "swajanRina", "kulRina", "atyacharRina", "ajanmaRina"
+] as const;
 
 // Lal Kitab Pakka Ghar (Permanent Houses) for each planet
 const pakkaGhar: Record<string, number[]> = {
@@ -92,48 +98,48 @@ function calculatePlanetaryPositions(birthDate: string, birthTime: string): Plan
   // Sun position (approximately 1 degree per day)
   const sunLongitude = (dayOfYear * (360 / 365.25) + 280) % 360;
   const sunHouse = Math.floor(sunLongitude / 30) + 1;
-  positions.push({ planet: "Sun", house: sunHouse, sign: zodiacSigns[sunHouse - 1] });
+  positions.push({ planet: "Sun", house: sunHouse, sign: zodiacSignKeys[sunHouse - 1] });
   
   // Moon position (approximately 13 degrees per day)
   const moonLongitude = (dayOfYear * 13.176 + hour * 0.55 + 180) % 360;
   const moonHouse = Math.floor(moonLongitude / 30) + 1;
-  positions.push({ planet: "Moon", house: moonHouse > 12 ? moonHouse - 12 : moonHouse, sign: zodiacSigns[(moonHouse - 1) % 12] });
+  positions.push({ planet: "Moon", house: moonHouse > 12 ? moonHouse - 12 : moonHouse, sign: zodiacSignKeys[(moonHouse - 1) % 12] });
   
   // Mars (approximately 0.52 degrees per day)
   const marsLongitude = (dayOfYear * 0.524 + 45) % 360;
   const marsHouse = Math.floor(marsLongitude / 30) + 1;
-  positions.push({ planet: "Mars", house: marsHouse > 12 ? marsHouse - 12 : marsHouse, sign: zodiacSigns[(marsHouse - 1) % 12] });
+  positions.push({ planet: "Mars", house: marsHouse > 12 ? marsHouse - 12 : marsHouse, sign: zodiacSignKeys[(marsHouse - 1) % 12] });
   
   // Mercury (close to Sun, within 28 degrees)
   const mercuryOffset = Math.sin(dayOfYear * 0.1) * 28;
   const mercuryLongitude = (sunLongitude + mercuryOffset + 360) % 360;
   const mercuryHouse = Math.floor(mercuryLongitude / 30) + 1;
-  positions.push({ planet: "Mercury", house: mercuryHouse > 12 ? mercuryHouse - 12 : mercuryHouse, sign: zodiacSigns[(mercuryHouse - 1) % 12] });
+  positions.push({ planet: "Mercury", house: mercuryHouse > 12 ? mercuryHouse - 12 : mercuryHouse, sign: zodiacSignKeys[(mercuryHouse - 1) % 12] });
   
   // Jupiter (approximately 0.083 degrees per day)
   const jupiterLongitude = (dayOfYear * 0.083 + 120) % 360;
   const jupiterHouse = Math.floor(jupiterLongitude / 30) + 1;
-  positions.push({ planet: "Jupiter", house: jupiterHouse > 12 ? jupiterHouse - 12 : jupiterHouse, sign: zodiacSigns[(jupiterHouse - 1) % 12] });
+  positions.push({ planet: "Jupiter", house: jupiterHouse > 12 ? jupiterHouse - 12 : jupiterHouse, sign: zodiacSignKeys[(jupiterHouse - 1) % 12] });
   
   // Venus (close to Sun, within 47 degrees)
   const venusOffset = Math.sin(dayOfYear * 0.08) * 47;
   const venusLongitude = (sunLongitude + venusOffset + 360) % 360;
   const venusHouse = Math.floor(venusLongitude / 30) + 1;
-  positions.push({ planet: "Venus", house: venusHouse > 12 ? venusHouse - 12 : venusHouse, sign: zodiacSigns[(venusHouse - 1) % 12] });
+  positions.push({ planet: "Venus", house: venusHouse > 12 ? venusHouse - 12 : venusHouse, sign: zodiacSignKeys[(venusHouse - 1) % 12] });
   
   // Saturn (approximately 0.033 degrees per day)
   const saturnLongitude = (dayOfYear * 0.033 + 240) % 360;
   const saturnHouse = Math.floor(saturnLongitude / 30) + 1;
-  positions.push({ planet: "Saturn", house: saturnHouse > 12 ? saturnHouse - 12 : saturnHouse, sign: zodiacSigns[(saturnHouse - 1) % 12] });
+  positions.push({ planet: "Saturn", house: saturnHouse > 12 ? saturnHouse - 12 : saturnHouse, sign: zodiacSignKeys[(saturnHouse - 1) % 12] });
   
   // Rahu (moves backwards, approximately 0.053 degrees per day)
   const rahuLongitude = (360 - (dayOfYear * 0.053) + 300) % 360;
   const rahuHouse = Math.floor(rahuLongitude / 30) + 1;
-  positions.push({ planet: "Rahu", house: rahuHouse > 12 ? rahuHouse - 12 : rahuHouse, sign: zodiacSigns[(rahuHouse - 1) % 12] });
+  positions.push({ planet: "Rahu", house: rahuHouse > 12 ? rahuHouse - 12 : rahuHouse, sign: zodiacSignKeys[(rahuHouse - 1) % 12] });
   
   // Ketu (opposite to Rahu)
   const ketuHouse = rahuHouse > 6 ? rahuHouse - 6 : rahuHouse + 6;
-  positions.push({ planet: "Ketu", house: ketuHouse, sign: zodiacSigns[(ketuHouse - 1) % 12] });
+  positions.push({ planet: "Ketu", house: ketuHouse, sign: zodiacSignKeys[(ketuHouse - 1) % 12] });
   
   return positions;
 }
@@ -162,6 +168,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const pitriCondition1 = jupiterBadHouses.includes(jupiter);
   const pitriCondition2 = [2, 5, 9, 12].some(h => [mercury, venus, rahu, ketu].includes(h));
   debts.push({
+    key: "pitriRina",
     name: "Father's Debt (Pitri Rina)",
     nameHindi: "पितृ ऋण",
     description: "Debt related to father or ancestors. May cause obstacles in career and education.",
@@ -180,6 +187,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const moonBadHouses = [3, 6, 8, 10, 11, 12];
   const matriCondition = moonBadHouses.includes(moon) || ketu === 4;
   debts.push({
+    key: "matriRina",
     name: "Mother's Debt (Matri Rina)",
     nameHindi: "मातृ ऋण",
     description: "Debt related to mother. May cause mental stress and emotional issues.",
@@ -199,6 +207,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const striCondition1 = venusBadHouses.includes(venus);
   const striCondition2 = [2, 7].some(h => [sun, moon, rahu].includes(h));
   debts.push({
+    key: "striRina",
     name: "Wife's Debt (Stri Rina)",
     nameHindi: "स्त्री ऋण",
     description: "Debt related to wife or women. May cause marital problems and relationship issues.",
@@ -218,6 +227,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const bhaiCondition1 = mercuryBadHouses.includes(mercury);
   const bhaiCondition2 = [3, 6].includes(moon);
   debts.push({
+    key: "bhaiRina",
     name: "Sibling's Debt (Bhai Rina)",
     nameHindi: "भाई ऋण",
     description: "Debt related to siblings. May cause conflicts with brothers/sisters.",
@@ -237,6 +247,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const swajanCondition1 = marsBadHouses.includes(mars);
   const swajanCondition2 = [mercury, ketu].includes(8);
   debts.push({
+    key: "swajanRina",
     name: "Relative's Debt (Swajan Rina)",
     nameHindi: "स्वजन ऋण",
     description: "Debt related to relatives. May cause property disputes and family conflicts.",
@@ -255,6 +266,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const kulCondition1 = ![1, 5, 11].includes(sun);
   const kulCondition2 = [venus, saturn, rahu, ketu].some(p => p === 5);
   debts.push({
+    key: "kulRina",
     name: "Clan's Debt (Kul Rina)",
     nameHindi: "कुल ऋण",
     description: "Debt related to family lineage. May cause issues with children and family reputation.",
@@ -274,6 +286,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const atyacharCondition1 = saturnBadHouses.includes(saturn);
   const atyacharCondition2 = [10, 12].some(h => [sun, moon, mars].includes(h));
   debts.push({
+    key: "atyacharRina",
     name: "Cruelty Debt (Atyachar Rina)",
     nameHindi: "अत्याचार ऋण",
     description: "Debt from past cruelty. May cause sudden losses and accidents.",
@@ -292,6 +305,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   const ajanmaCondition1 = ![3, 6].includes(rahu);
   const ajanmaCondition2 = [sun, mars, saturn].some(p => p === 5);
   debts.push({
+    key: "ajanmaRina",
     name: "Unborn's Debt (Ajanma Rina)",
     nameHindi: "अजन्मा ऋण",
     description: "Debt related to unborn children. May cause issues with progeny.",
@@ -579,17 +593,18 @@ export default function LalKitabPage() {
                             return <div key={idx} className="aspect-square bg-red-50"></div>;
                           }
                           const planetsInHouse = result.planets.filter(p => p.house === house);
+                          const signKey = zodiacSignKeys[house - 1];
                           return (
                             <div 
                               key={idx} 
                               className="aspect-square border-2 border-red-300 bg-white p-1 flex flex-col items-center justify-center text-xs"
                             >
                               <span className="font-bold text-red-600">{house}</span>
-                              <span className="text-[10px] text-gray-500">{zodiacSigns[house - 1]}</span>
+                              <span className="text-[10px] text-gray-500">{t(`lalKitab.zodiacSigns.${signKey}`, signKey)}</span>
                               <div className="flex flex-wrap justify-center gap-0.5 mt-1">
                                 {planetsInHouse.map(p => (
                                   <span key={p.planet} className="text-[9px] bg-red-100 px-1 rounded">
-                                    {p.planet.substring(0, 2)}
+                                    {t(`lalKitab.planets.${p.planet}`, p.planet).substring(0, 2)}
                                   </span>
                                 ))}
                               </div>
@@ -614,17 +629,17 @@ export default function LalKitabPage() {
                               const isPakka = pakkaGhar[pos.planet]?.includes(pos.house);
                               return (
                                 <tr key={pos.planet} className="border-b">
-                                  <td className="py-2 font-medium">{pos.planet}</td>
+                                  <td className="py-2 font-medium">{t(`lalKitab.planets.${pos.planet}`, pos.planet)}</td>
                                   <td className="py-2">{pos.house}</td>
-                                  <td className="py-2">{pos.sign}</td>
+                                  <td className="py-2">{t(`lalKitab.zodiacSigns.${pos.sign}`, pos.sign)}</td>
                                   <td className="py-2">
                                     {isPakka ? (
                                       <Badge className="bg-green-100 text-green-700">
                                         <CheckCircle className="w-3 h-3 mr-1" />
-                                        Yes
+                                        {t("lalKitab.yes", "Yes")}
                                       </Badge>
                                     ) : (
-                                      <Badge variant="outline">No</Badge>
+                                      <Badge variant="outline">{t("lalKitab.no", "No")}</Badge>
                                     )}
                                   </td>
                                 </tr>
@@ -669,15 +684,14 @@ export default function LalKitabPage() {
                             }`}>
                               <CardHeader className="pb-2">
                                 <div className="flex items-center justify-between">
-                                  <CardTitle className="text-lg">{debt.name}</CardTitle>
+                                  <CardTitle className="text-lg">{t(`lalKitab.debtNames.${debt.key}`, debt.name)}</CardTitle>
                                   <Badge className={
                                     debt.severity === "high" ? "bg-red-100 text-red-700" :
                                     debt.severity === "medium" ? "bg-orange-100 text-orange-700" : "bg-yellow-100 text-yellow-700"
                                   }>
-                                    {debt.severity.toUpperCase()}
+                                    {t(`lalKitab.severityLevels.${debt.severity}`, debt.severity.toUpperCase())}
                                   </Badge>
                                 </div>
-                                <p className="text-sm text-gray-500">{debt.nameHindi}</p>
                               </CardHeader>
                               <CardContent>
                                 <p className="text-gray-600 mb-4">{debt.description}</p>

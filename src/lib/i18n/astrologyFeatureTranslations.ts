@@ -39,7 +39,29 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Lal Kitab",
       aboutText1: "Lal Kitab is a set of five Urdu language books on Hindu astrology and palmistry, written in the 19th century. The books are based on the Samudrika Shastra.",
       aboutText2: "Unlike traditional Vedic astrology, Lal Kitab uses a fixed house system where Aries is always the first house. It emphasizes simple, affordable remedies.",
-      aboutText3: "The system identifies eight types of karmic debts (Rinas) that affect one's life and provides specific remedies to mitigate their effects."
+      aboutText3: "The system identifies eight types of karmic debts (Rinas) that affect one's life and provides specific remedies to mitigate their effects.",
+      // Data translations
+      zodiacSigns: {
+        Aries: "Aries", Taurus: "Taurus", Gemini: "Gemini", Cancer: "Cancer",
+        Leo: "Leo", Virgo: "Virgo", Libra: "Libra", Scorpio: "Scorpio",
+        Sagittarius: "Sagittarius", Capricorn: "Capricorn", Aquarius: "Aquarius", Pisces: "Pisces"
+      },
+      planets: {
+        Sun: "Sun", Moon: "Moon", Mars: "Mars", Mercury: "Mercury",
+        Jupiter: "Jupiter", Venus: "Venus", Saturn: "Saturn", Rahu: "Rahu", Ketu: "Ketu"
+      },
+      debtNames: {
+        pitriRina: "Father's Debt (Pitri Rina)",
+        matriRina: "Mother's Debt (Matri Rina)",
+        striRina: "Wife's Debt (Stri Rina)",
+        bhaiRina: "Sibling's Debt (Bhai Rina)",
+        swajanRina: "Relative's Debt (Swajan Rina)",
+        kulRina: "Clan's Debt (Kul Rina)",
+        atyacharRina: "Cruelty Debt (Atyachar Rina)",
+        ajanmaRina: "Unborn's Debt (Ajanma Rina)"
+      },
+      severityLevels: { high: "High", medium: "Medium", low: "Low" },
+      yes: "Yes", no: "No"
     },
     // Numerology
     numerology: {
@@ -78,7 +100,33 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "About Numerology",
       aboutText1: "Numerology is the study of numbers and their influence on human life. The Pythagorean system assigns numerical values to letters.",
       aboutText2: "Your Life Path number is calculated from your birth date and reveals your life's purpose. Your Destiny number comes from your full name.",
-      aboutText3: "Master Numbers (11, 22, 33) carry special significance and are not reduced to single digits."
+      aboutText3: "Master Numbers (11, 22, 33) carry special significance and are not reduced to single digits.",
+      // Number meanings
+      numberMeanings: {
+        "1": "The Leader - Independent, ambitious, and pioneering",
+        "2": "The Peacemaker - Diplomatic, cooperative, and sensitive",
+        "3": "The Communicator - Creative, expressive, and social",
+        "4": "The Builder - Practical, organized, and hardworking",
+        "5": "The Freedom Seeker - Adventurous, versatile, and dynamic",
+        "6": "The Nurturer - Responsible, loving, and protective",
+        "7": "The Seeker - Analytical, spiritual, and introspective",
+        "8": "The Achiever - Ambitious, authoritative, and successful",
+        "9": "The Humanitarian - Compassionate, generous, and wise",
+        "11": "The Intuitive - Visionary, inspirational, and spiritual (Master Number)",
+        "22": "The Master Builder - Practical visionary with great potential (Master Number)",
+        "33": "The Master Teacher - Selfless, nurturing, and spiritually evolved (Master Number)"
+      },
+      // Lucky colors
+      colors: {
+        Red: "Red", Orange: "Orange", Gold: "Gold", White: "White", Cream: "Cream",
+        Green: "Green", Yellow: "Yellow", Purple: "Purple", Pink: "Pink", Blue: "Blue",
+        Grey: "Grey", Khaki: "Khaki", Black: "Black", Silver: "Silver", Violet: "Violet", Coral: "Coral"
+      },
+      // Lucky days
+      days: {
+        Sunday: "Sunday", Monday: "Monday", Tuesday: "Tuesday", Wednesday: "Wednesday",
+        Thursday: "Thursday", Friday: "Friday", Saturday: "Saturday", "All days": "All days"
+      }
     },
     // Tarot
     tarot: {
@@ -463,7 +511,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "लाल किताब के बारे में",
         aboutText1: "लाल किताब हिंदू ज्योतिष और हस्तरेखा पर पांच उर्दू भाषा की पुस्तकों का एक सेट है, जो 19वीं शताब्दी में लिखी गई थी।",
         aboutText2: "पारंपरिक वैदिक ज्योतिष के विपरीत, लाल किताब एक निश्चित भाव प्रणाली का उपयोग करती है जहां मेष हमेशा पहला भाव होता है।",
-        aboutText3: "यह प्रणाली आठ प्रकार के कर्म ऋणों की पहचान करती है जो जीवन को प्रभावित करते हैं और उनके प्रभाव को कम करने के लिए विशिष्ट उपाय प्रदान करती है।"
+        aboutText3: "यह प्रणाली आठ प्रकार के कर्म ऋणों की पहचान करती है जो जीवन को प्रभावित करते हैं और उनके प्रभाव को कम करने के लिए विशिष्ट उपाय प्रदान करती है।",
+        zodiacSigns: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तुला", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planets: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगल", Mercury: "बुध",
+          Jupiter: "गुरु", Venus: "शुक्र", Saturn: "शनि", Rahu: "राहु", Ketu: "केतु"
+        },
+        debtNames: {
+          pitriRina: "पितृ ऋण",
+          matriRina: "मातृ ऋण",
+          striRina: "स्त्री ऋण",
+          bhaiRina: "भाई ऋण",
+          swajanRina: "स्वजन ऋण",
+          kulRina: "कुल ऋण",
+          atyacharRina: "अत्याचार ऋण",
+          ajanmaRina: "अजन्मा ऋण"
+        },
+        severityLevels: { high: "उच्च", medium: "मध्यम", low: "निम्न" },
+        yes: "हां", no: "नहीं"
       },
       numerology: {
         badge: "अंक ज्योतिष",
@@ -503,7 +572,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "अंक ज्योतिष के बारे में",
         aboutText1: "अंक ज्योतिष संख्याओं और मानव जीवन पर उनके प्रभाव का अध्ययन है।",
         aboutText2: "आपकी जीवन पथ संख्या आपकी जन्म तिथि से गणना की जाती है और आपके जीवन के उद्देश्य को प्रकट करती है।",
-        aboutText3: "मास्टर नंबर (11, 22, 33) विशेष महत्व रखते हैं।"
+        aboutText3: "मास्टर नंबर (11, 22, 33) विशेष महत्व रखते हैं।",
+        numberMeanings: {
+          "1": "नेता - स्वतंत्र, महत्वाकांक्षी और अग्रणी",
+          "2": "शांतिदूत - कूटनीतिक, सहयोगी और संवेदनशील",
+          "3": "संचारक - रचनात्मक, अभिव्यक्त और सामाजिक",
+          "4": "निर्माता - व्यावहारिक, संगठित और मेहनती",
+          "5": "स्वतंत्रता प्रेमी - साहसी, बहुमुखी और गतिशील",
+          "6": "पालनकर्ता - जिम्मेदार, प्यारा और सुरक्षात्मक",
+          "7": "खोजी - विश्लेषणात्मक, आध्यात्मिक और आत्मनिरीक्षक",
+          "8": "उपलब्धिकर्ता - महत्वाकांक्षी, आधिकारिक और सफल",
+          "9": "मानवतावादी - दयालु, उदार और बुद्धिमान",
+          "11": "अंतर्ज्ञानी - दूरदर्शी, प्रेरणादायक और आध्यात्मिक (मास्टर नंबर)",
+          "22": "मास्टर बिल्डर - महान क्षमता वाला व्यावहारिक दूरदर्शी (मास्टर नंबर)",
+          "33": "मास्टर शिक्षक - निस्वार्थ, पालनकर्ता और आध्यात्मिक रूप से विकसित (मास्टर नंबर)"
+        },
+        colors: {
+          Red: "लाल", Orange: "नारंगी", Gold: "सुनहरा", White: "सफेद", Cream: "क्रीम",
+          Green: "हरा", Yellow: "पीला", Purple: "बैंगनी", Pink: "गुलाबी", Blue: "नीला",
+          Grey: "धूसर", Khaki: "खाकी", Black: "काला", Silver: "चांदी", Violet: "बैंगनी", Coral: "मूंगा"
+        },
+        days: {
+          Sunday: "रविवार", Monday: "सोमवार", Tuesday: "मंगलवार", Wednesday: "बुधवार",
+          Thursday: "गुरुवार", Friday: "शुक्रवार", Saturday: "शनिवार", "All days": "सभी दिन"
+        }
       },
       tarot: {
         badge: "टैरो रीडिंग",
@@ -879,7 +971,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "லால் கிதாப் பற்றி",
         aboutText1: "லால் கிதாப் என்பது 19ஆம் நூற்றாண்டில் எழுதப்பட்ட இந்து ஜோதிடம் மற்றும் கைரேகை பற்றிய ஐந்து உருது மொழி புத்தகங்களின் தொகுப்பாகும்.",
         aboutText2: "பாரம்பரிய வேத ஜோதிடத்தைப் போலல்லாமல், லால் கிதாப் ஒரு நிலையான வீட்டு முறையைப் பயன்படுத்துகிறது.",
-        aboutText3: "இந்த அமைப்பு வாழ்க்கையை பாதிக்கும் எட்டு வகையான கர்ம கடன்களை அடையாளம் காண்கிறது."
+        aboutText3: "இந்த அமைப்பு வாழ்க்கையை பாதிக்கும் எட்டு வகையான கர்ம கடன்களை அடையாளம் காண்கிறது.",
+        zodiacSigns: {
+          Aries: "மேஷம்", Taurus: "ரிஷபம்", Gemini: "மிதுனம்", Cancer: "கடகம்",
+          Leo: "சிம்மம்", Virgo: "கன்னி", Libra: "துலாம்", Scorpio: "விருச்சிகம்",
+          Sagittarius: "தனுசு", Capricorn: "மகரம்", Aquarius: "கும்பம்", Pisces: "மீனம்"
+        },
+        planets: {
+          Sun: "சூரியன்", Moon: "சந்திரன்", Mars: "செவ்வாய்", Mercury: "புதன்",
+          Jupiter: "குரு", Venus: "சுக்கிரன்", Saturn: "சனி", Rahu: "ராகு", Ketu: "கேது"
+        },
+        debtNames: {
+          pitriRina: "பித்ரு ரிணம்",
+          matriRina: "மாத்ரு ரிணம்",
+          striRina: "ஸ்த்ரீ ரிணம்",
+          bhaiRina: "சகோதர ரிணம்",
+          swajanRina: "சுவஜன ரிணம்",
+          kulRina: "குல ரிணம்",
+          atyacharRina: "அத்யாசார ரிணம்",
+          ajanmaRina: "அஜன்ம ரிணம்"
+        },
+        severityLevels: { high: "அதிகம்", medium: "நடுத்தரம்", low: "குறைவு" },
+        yes: "ஆம்", no: "இல்லை"
       },
       numerology: {
         badge: "எண் கணிதம்",
@@ -919,7 +1032,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "எண் கணிதம் பற்றி",
         aboutText1: "எண் கணிதம் என்பது எண்கள் மற்றும் மனித வாழ்க்கையில் அவற்றின் தாக்கத்தைப் பற்றிய ஆய்வு ஆகும்.",
         aboutText2: "உங்கள் வாழ்க்கை பாதை எண் உங்கள் பிறந்த தேதியிலிருந்து கணக்கிடப்படுகிறது.",
-        aboutText3: "மாஸ்டர் எண்கள் (11, 22, 33) சிறப்பு முக்கியத்துவம் வாய்ந்தவை."
+        aboutText3: "மாஸ்டர் எண்கள் (11, 22, 33) சிறப்பு முக்கியத்துவம் வாய்ந்தவை.",
+        numberMeanings: {
+          "1": "தலைவர் - சுதந்திரமான, லட்சியமான மற்றும் முன்னோடி",
+          "2": "சமாதான தூதர் - இராஜதந்திர, ஒத்துழைப்பு மற்றும் உணர்திறன்",
+          "3": "தொடர்பாளர் - படைப்பாற்றல், வெளிப்படையான மற்றும் சமூக",
+          "4": "கட்டுபவர் - நடைமுறை, ஒழுங்கமைக்கப்பட்ட மற்றும் கடின உழைப்பு",
+          "5": "சுதந்திர தேடுபவர் - சாகசமான, பல்துறை மற்றும் மாறும்",
+          "6": "பராமரிப்பாளர் - பொறுப்பான, அன்பான மற்றும் பாதுகாப்பான",
+          "7": "தேடுபவர் - பகுப்பாய்வு, ஆன்மீக மற்றும் உள்நோக்கம்",
+          "8": "சாதனையாளர் - லட்சியமான, அதிகாரபூர்வ மற்றும் வெற்றிகரமான",
+          "9": "மனிதாபிமானி - இரக்கமுள்ள, தாராளமான மற்றும் புத்திசாலி",
+          "11": "உள்ளுணர்வு - தொலைநோக்கு, ஊக்கமளிக்கும் மற்றும் ஆன்மீக (மாஸ்டர் எண்)",
+          "22": "மாஸ்டர் பில்டர் - பெரும் திறன் கொண்ட நடைமுறை தொலைநோக்கு (மாஸ்டர் எண்)",
+          "33": "மாஸ்டர் ஆசிரியர் - தன்னலமற்ற, பராமரிப்பு மற்றும் ஆன்மீக வளர்ச்சி (மாஸ்டர் எண்)"
+        },
+        colors: {
+          Red: "சிவப்பு", Orange: "ஆரஞ்சு", Gold: "தங்கம்", White: "வெள்ளை", Cream: "கிரீம்",
+          Green: "பச்சை", Yellow: "மஞ்சள்", Purple: "ஊதா", Pink: "இளஞ்சிவப்பு", Blue: "நீலம்",
+          Grey: "சாம்பல்", Khaki: "காக்கி", Black: "கருப்பு", Silver: "வெள்ளி", Violet: "ஊதா", Coral: "பவளம்"
+        },
+        days: {
+          Sunday: "ஞாயிறு", Monday: "திங்கள்", Tuesday: "செவ்வாய்", Wednesday: "புதன்",
+          Thursday: "வியாழன்", Friday: "வெள்ளி", Saturday: "சனி", "All days": "அனைத்து நாட்களும்"
+        }
       },
       tarot: {
         badge: "டாரட் வாசிப்பு",
@@ -1295,7 +1431,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "లాల్ కితాబ్ గురించి",
         aboutText1: "లాల్ కితాబ్ అనేది 19వ శతాబ్దంలో వ్రాయబడిన హిందూ జ్యోతిషం మరియు హస్తరేఖపై ఐదు ఉర్దూ భాషా పుస్తకాల సమాహారం.",
         aboutText2: "సాంప్రదాయ వేద జ్యోతిషం వలె కాకుండా, లాల్ కితాబ్ స్థిర భావ వ్యవస్థను ఉపయోగిస్తుంది.",
-        aboutText3: "ఈ వ్యవస్థ జీవితాన్ని ప్రభావితం చేసే ఎనిమిది రకాల కర్మ రుణాలను గుర్తిస్తుంది."
+        aboutText3: "ఈ వ్యవస్థ జీవితాన్ని ప్రభావితం చేసే ఎనిమిది రకాల కర్మ రుణాలను గుర్తిస్తుంది.",
+        zodiacSigns: {
+          Aries: "మేషం", Taurus: "వృషభం", Gemini: "మిథునం", Cancer: "కర్కాటకం",
+          Leo: "సింహం", Virgo: "కన్య", Libra: "తుల", Scorpio: "వృశ్చికం",
+          Sagittarius: "ధనుస్సు", Capricorn: "మకరం", Aquarius: "కుంభం", Pisces: "మీనం"
+        },
+        planets: {
+          Sun: "సూర్యుడు", Moon: "చంద్రుడు", Mars: "కుజుడు", Mercury: "బుధుడు",
+          Jupiter: "గురుడు", Venus: "శుక్రుడు", Saturn: "శని", Rahu: "రాహు", Ketu: "కేతు"
+        },
+        debtNames: {
+          pitriRina: "పితృ ఋణం",
+          matriRina: "మాతృ ఋణం",
+          striRina: "స్త్రీ ఋణం",
+          bhaiRina: "సోదర ఋణం",
+          swajanRina: "స్వజన ఋణం",
+          kulRina: "కుల ఋణం",
+          atyacharRina: "అత్యాచార ఋణం",
+          ajanmaRina: "అజన్మ ఋణం"
+        },
+        severityLevels: { high: "అధికం", medium: "మధ్యస్థం", low: "తక్కువ" },
+        yes: "అవును", no: "కాదు"
       },
       numerology: {
         badge: "సంఖ్యా శాస్త్రం",
@@ -1335,7 +1492,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "సంఖ్యా శాస్త్రం గురించి",
         aboutText1: "సంఖ్యా శాస్త్రం అనేది సంఖ్యలు మరియు మానవ జీవితంపై వాటి ప్రభావం గురించిన అధ్యయనం.",
         aboutText2: "మీ జీవిత మార్గ సంఖ్య మీ పుట్టిన తేదీ నుండి లెక్కించబడుతుంది.",
-        aboutText3: "మాస్టర్ సంఖ్యలు (11, 22, 33) ప్రత్యేక ప్రాముఖ్యతను కలిగి ఉంటాయి."
+        aboutText3: "మాస్టర్ సంఖ్యలు (11, 22, 33) ప్రత్యేక ప్రాముఖ్యతను కలిగి ఉంటాయి.",
+        numberMeanings: {
+          "1": "నాయకుడు - స్వతంత్ర, ఆశయం మరియు మార్గదర్శక",
+          "2": "శాంతి దూత - దౌత్య, సహకార మరియు సున్నితమైన",
+          "3": "కమ్యూనికేటర్ - సృజనాత్మక, వ్యక్తీకరణ మరియు సామాజిక",
+          "4": "నిర్మాత - ఆచరణాత్మక, వ్యవస్థీకృత మరియు కష్టపడే",
+          "5": "స్వేచ్ఛా అన్వేషకుడు - సాహసోపేత, బహుముఖ మరియు చైతన్యవంతమైన",
+          "6": "పోషకుడు - బాధ్యతాయుతమైన, ప్రేమగల మరియు రక్షణాత్మక",
+          "7": "అన్వేషకుడు - విశ్లేషణాత్మక, ఆధ్యాత్మిక మరియు అంతర్ముఖ",
+          "8": "సాధకుడు - ఆశయం, అధికారిక మరియు విజయవంతమైన",
+          "9": "మానవతావాది - కరుణామయ, ఉదార మరియు తెలివైన",
+          "11": "అంతర్దృష్టి - దార్శనిక, ప్రేరణాదాయక మరియు ఆధ్యాత్మిక (మాస్టర్ సంఖ్య)",
+          "22": "మాస్టర్ బిల్డర్ - గొప్ప సామర్థ్యంతో ఆచరణాత్మక దార్శనికుడు (మాస్టర్ సంఖ్య)",
+          "33": "మాస్టర్ టీచర్ - నిస్వార్థ, పోషణ మరియు ఆధ్యాత్మికంగా అభివృద్ధి చెందిన (మాస్టర్ సంఖ్య)"
+        },
+        colors: {
+          Red: "ఎరుపు", Orange: "నారింజ", Gold: "బంగారం", White: "తెలుపు", Cream: "క్రీమ్",
+          Green: "ఆకుపచ్చ", Yellow: "పసుపు", Purple: "ఊదా", Pink: "గులాబీ", Blue: "నీలం",
+          Grey: "బూడిద", Khaki: "ఖాకీ", Black: "నలుపు", Silver: "వెండి", Violet: "వయోలెట్", Coral: "పగడం"
+        },
+        days: {
+          Sunday: "ఆదివారం", Monday: "సోమవారం", Tuesday: "మంగళవారం", Wednesday: "బుధవారం",
+          Thursday: "గురువారం", Friday: "శుక్రవారం", Saturday: "శనివారం", "All days": "అన్ని రోజులు"
+        }
       },
       tarot: {
         badge: "టారో రీడింగ్",
@@ -1711,7 +1891,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "লাল কিতাব সম্পর্কে",
         aboutText1: "লাল কিতাব হল হিন্দু জ্যোতিষ এবং হস্তরেখার উপর 19 শতকে লেখা পাঁচটি উর্দু ভাষার বইয়ের সংকলন।",
         aboutText2: "ঐতিহ্যবাহী বৈদিক জ্যোতিষের বিপরীতে, লাল কিতাব একটি স্থির ভাব পদ্ধতি ব্যবহার করে।",
-        aboutText3: "এই পদ্ধতি জীবনকে প্রভাবিত করে এমন আট ধরনের কর্ম ঋণ চিহ্নিত করে।"
+        aboutText3: "এই পদ্ধতি জীবনকে প্রভাবিত করে এমন আট ধরনের কর্ম ঋণ চিহ্নিত করে।",
+        zodiacSigns: {
+          Aries: "মেষ", Taurus: "বৃষ", Gemini: "মিথুন", Cancer: "কর্কট",
+          Leo: "সিংহ", Virgo: "কন্যা", Libra: "তুলা", Scorpio: "বৃশ্চিক",
+          Sagittarius: "ধনু", Capricorn: "মকর", Aquarius: "কুম্ভ", Pisces: "মীন"
+        },
+        planets: {
+          Sun: "সূর্য", Moon: "চন্দ্র", Mars: "মঙ্গল", Mercury: "বুধ",
+          Jupiter: "বৃহস্পতি", Venus: "শুক্র", Saturn: "শনি", Rahu: "রাহু", Ketu: "কেতু"
+        },
+        debtNames: {
+          pitriRina: "পিতৃ ঋণ",
+          matriRina: "মাতৃ ঋণ",
+          striRina: "স্ত্রী ঋণ",
+          bhaiRina: "ভ্রাতৃ ঋণ",
+          swajanRina: "স্বজন ঋণ",
+          kulRina: "কুল ঋণ",
+          atyacharRina: "অত্যাচার ঋণ",
+          ajanmaRina: "অজন্মা ঋণ"
+        },
+        severityLevels: { high: "উচ্চ", medium: "মাঝারি", low: "নিম্ন" },
+        yes: "হ্যাঁ", no: "না"
       },
       numerology: {
         badge: "সংখ্যাতত্ত্ব",
@@ -1751,7 +1952,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "সংখ্যাতত্ত্ব সম্পর্কে",
         aboutText1: "সংখ্যাতত্ত্ব হল সংখ্যা এবং মানব জীবনে তাদের প্রভাবের অধ্যয়ন।",
         aboutText2: "আপনার জীবন পথ সংখ্যা আপনার জন্ম তারিখ থেকে গণনা করা হয়।",
-        aboutText3: "মাস্টার সংখ্যা (11, 22, 33) বিশেষ তাৎপর্য বহন করে।"
+        aboutText3: "মাস্টার সংখ্যা (11, 22, 33) বিশেষ তাৎপর্য বহন করে।",
+        numberMeanings: {
+          "1": "নেতা - স্বাধীন, উচ্চাকাঙ্ক্ষী এবং অগ্রগামী",
+          "2": "শান্তিদূত - কূটনৈতিক, সহযোগী এবং সংবেদনশীল",
+          "3": "যোগাযোগকারী - সৃজনশীল, অভিব্যক্তিপূর্ণ এবং সামাজিক",
+          "4": "নির্মাতা - ব্যবহারিক, সংগঠিত এবং পরিশ্রমী",
+          "5": "স্বাধীনতা সন্ধানী - দুঃসাহসিক, বহুমুখী এবং গতিশীল",
+          "6": "পালনকারী - দায়িত্বশীল, প্রেমময় এবং সুরক্ষামূলক",
+          "7": "অনুসন্ধানকারী - বিশ্লেষণাত্মক, আধ্যাত্মিক এবং অন্তর্মুখী",
+          "8": "অর্জনকারী - উচ্চাকাঙ্ক্ষী, কর্তৃত্বপূর্ণ এবং সফল",
+          "9": "মানবতাবাদী - সহানুভূতিশীল, উদার এবং জ্ঞানী",
+          "11": "অন্তর্দৃষ্টিসম্পন্ন - দূরদর্শী, অনুপ্রেরণাদায়ক এবং আধ্যাত্মিক (মাস্টার সংখ্যা)",
+          "22": "মাস্টার বিল্ডার - মহান সম্ভাবনার সাথে ব্যবহারিক দূরদর্শী (মাস্টার সংখ্যা)",
+          "33": "মাস্টার শিক্ষক - নিঃস্বার্থ, পালনকারী এবং আধ্যাত্মিকভাবে বিকশিত (মাস্টার সংখ্যা)"
+        },
+        colors: {
+          Red: "লাল", Orange: "কমলা", Gold: "সোনালি", White: "সাদা", Cream: "ক্রিম",
+          Green: "সবুজ", Yellow: "হলুদ", Purple: "বেগুনি", Pink: "গোলাপি", Blue: "নীল",
+          Grey: "ধূসর", Khaki: "খাকি", Black: "কালো", Silver: "রূপালি", Violet: "বেগুনি", Coral: "প্রবাল"
+        },
+        days: {
+          Sunday: "রবিবার", Monday: "সোমবার", Tuesday: "মঙ্গলবার", Wednesday: "বুধবার",
+          Thursday: "বৃহস্পতিবার", Friday: "শুক্রবার", Saturday: "শনিবার", "All days": "সব দিন"
+        }
       },
       tarot: {
         badge: "ট্যারো রিডিং",
@@ -2127,7 +2351,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "लाल किताब बद्दल",
         aboutText1: "लाल किताब हे हिंदू ज्योतिष आणि हस्तरेखेवर 19व्या शतकात लिहिलेल्या पाच उर्दू भाषेतील पुस्तकांचे संकलन आहे।",
         aboutText2: "पारंपारिक वैदिक ज्योतिषाच्या विपरीत, लाल किताब स्थिर भाव पद्धती वापरते।",
-        aboutText3: "ही पद्धती जीवनावर परिणाम करणारे आठ प्रकारचे कर्म ऋण ओळखते।"
+        aboutText3: "ही पद्धती जीवनावर परिणाम करणारे आठ प्रकारचे कर्म ऋण ओळखते।",
+        zodiacSigns: {
+          Aries: "मेष", Taurus: "वृषभ", Gemini: "मिथुन", Cancer: "कर्क",
+          Leo: "सिंह", Virgo: "कन्या", Libra: "तूळ", Scorpio: "वृश्चिक",
+          Sagittarius: "धनु", Capricorn: "मकर", Aquarius: "कुंभ", Pisces: "मीन"
+        },
+        planets: {
+          Sun: "सूर्य", Moon: "चंद्र", Mars: "मंगळ", Mercury: "बुध",
+          Jupiter: "गुरू", Venus: "शुक्र", Saturn: "शनि", Rahu: "राहू", Ketu: "केतू"
+        },
+        debtNames: {
+          pitriRina: "पितृ ऋण",
+          matriRina: "मातृ ऋण",
+          striRina: "स्त्री ऋण",
+          bhaiRina: "भ्रातृ ऋण",
+          swajanRina: "स्वजन ऋण",
+          kulRina: "कुल ऋण",
+          atyacharRina: "अत्याचार ऋण",
+          ajanmaRina: "अजन्मा ऋण"
+        },
+        severityLevels: { high: "उच्च", medium: "मध्यम", low: "कमी" },
+        yes: "होय", no: "नाही"
       },
       numerology: {
         badge: "अंकशास्त्र",
@@ -2167,7 +2412,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "अंकशास्त्र बद्दल",
         aboutText1: "अंकशास्त्र म्हणजे संख्या आणि मानवी जीवनावर त्यांच्या प्रभावाचा अभ्यास।",
         aboutText2: "आपला जीवन मार्ग अंक आपल्या जन्म तारखेवरून गणना केला जातो।",
-        aboutText3: "मास्टर अंक (11, 22, 33) विशेष महत्त्व धारण करतात।"
+        aboutText3: "मास्टर अंक (11, 22, 33) विशेष महत्त्व धारण करतात।",
+        numberMeanings: {
+          "1": "नेता - स्वतंत्र, महत्त्वाकांक्षी आणि अग्रणी",
+          "2": "शांतिदूत - मुत्सद्दी, सहकारी आणि संवेदनशील",
+          "3": "संवादक - सर्जनशील, अभिव्यक्त आणि सामाजिक",
+          "4": "निर्माता - व्यावहारिक, संघटित आणि मेहनती",
+          "5": "स्वातंत्र्य शोधक - साहसी, बहुमुखी आणि गतिशील",
+          "6": "पालनकर्ता - जबाबदार, प्रेमळ आणि संरक्षणात्मक",
+          "7": "शोधक - विश्लेषणात्मक, आध्यात्मिक आणि अंतर्मुख",
+          "8": "साधक - महत्त्वाकांक्षी, अधिकारी आणि यशस्वी",
+          "9": "मानवतावादी - करुणामय, उदार आणि बुद्धिमान",
+          "11": "अंतर्ज्ञानी - दूरदर्शी, प्रेरणादायी आणि आध्यात्मिक (मास्टर अंक)",
+          "22": "मास्टर बिल्डर - महान क्षमतेसह व्यावहारिक दूरदर्शी (मास्टर अंक)",
+          "33": "मास्टर शिक्षक - निःस्वार्थी, पालनकर्ता आणि आध्यात्मिकदृष्ट्या विकसित (मास्टर अंक)"
+        },
+        colors: {
+          Red: "लाल", Orange: "नारंगी", Gold: "सोनेरी", White: "पांढरा", Cream: "क्रीम",
+          Green: "हिरवा", Yellow: "पिवळा", Purple: "जांभळा", Pink: "गुलाबी", Blue: "निळा",
+          Grey: "राखाडी", Khaki: "खाकी", Black: "काळा", Silver: "चांदी", Violet: "जांभळा", Coral: "प्रवाळ"
+        },
+        days: {
+          Sunday: "रविवार", Monday: "सोमवार", Tuesday: "मंगळवार", Wednesday: "बुधवार",
+          Thursday: "गुरुवार", Friday: "शुक्रवार", Saturday: "शनिवार", "All days": "सर्व दिवस"
+        }
       },
       tarot: {
         badge: "टॅरो वाचन",
@@ -2543,7 +2811,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "લાલ કિતાબ વિશે",
         aboutText1: "લાલ કિતાબ એ હિંદુ જ્યોતિષ અને હસ્તરેખા પર 19મી સદીમાં લખાયેલા પાંચ ઉર્દૂ ભાષાના પુસ્તકોનો સંગ્રહ છે।",
         aboutText2: "પરંપરાગત વૈદિક જ્યોતિષથી વિપરીત, લાલ કિતાબ સ્થિર ભાવ પદ્ધતિનો ઉપયોગ કરે છે।",
-        aboutText3: "આ પદ્ધતિ જીવનને અસર કરતા આઠ પ્રકારના કર્મ ઋણ ઓળખે છે।"
+        aboutText3: "આ પદ્ધતિ જીવનને અસર કરતા આઠ પ્રકારના કર્મ ઋણ ઓળખે છે।",
+        zodiacSigns: {
+          Aries: "મેષ", Taurus: "વૃષભ", Gemini: "મિથુન", Cancer: "કર્ક",
+          Leo: "સિંહ", Virgo: "કન્યા", Libra: "તુલા", Scorpio: "વૃશ્ચિક",
+          Sagittarius: "ધનુ", Capricorn: "મકર", Aquarius: "કુંભ", Pisces: "મીન"
+        },
+        planets: {
+          Sun: "સૂર્ય", Moon: "ચંદ્ર", Mars: "મંગળ", Mercury: "બુધ",
+          Jupiter: "ગુરુ", Venus: "શુક્ર", Saturn: "શનિ", Rahu: "રાહુ", Ketu: "કેતુ"
+        },
+        debtNames: {
+          pitriRina: "પિતૃ ઋણ",
+          matriRina: "માતૃ ઋણ",
+          striRina: "સ્ત્રી ઋણ",
+          bhaiRina: "ભ્રાતૃ ઋણ",
+          swajanRina: "સ્વજન ઋણ",
+          kulRina: "કુળ ઋણ",
+          atyacharRina: "અત્યાચાર ઋણ",
+          ajanmaRina: "અજન્મા ઋણ"
+        },
+        severityLevels: { high: "ઉચ્ચ", medium: "મધ્યમ", low: "નીચું" },
+        yes: "હા", no: "ના"
       },
       numerology: {
         badge: "અંકશાસ્ત્ર",
@@ -2583,7 +2872,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "અંકશાસ્ત્ર વિશે",
         aboutText1: "અંકશાસ્ત્ર એ સંખ્યાઓ અને માનવ જીવન પર તેમના પ્રભાવનો અભ્યાસ છે।",
         aboutText2: "તમારો જીવન માર્ગ અંક તમારી જન્મ તારીખ પરથી ગણવામાં આવે છે।",
-        aboutText3: "માસ્ટર અંકો (11, 22, 33) વિશેષ મહત્વ ધરાવે છે।"
+        aboutText3: "માસ્ટર અંકો (11, 22, 33) વિશેષ મહત્વ ધરાવે છે।",
+        numberMeanings: {
+          "1": "નેતા - સ્વતંત્ર, મહત્વાકાંક્ષી અને અગ્રણી",
+          "2": "શાંતિદૂત - રાજદ્વારી, સહકારી અને સંવેદનશીલ",
+          "3": "સંવાદક - સર્જનાત્મક, અભિવ્યક્ત અને સામાજિક",
+          "4": "નિર્માતા - વ્યવહારુ, સંગઠિત અને મહેનતુ",
+          "5": "સ્વતંત્રતા શોધક - સાહસિક, બહુમુખી અને ગતિશીલ",
+          "6": "પાલનકર્તા - જવાબદાર, પ્રેમાળ અને રક્ષણાત્મક",
+          "7": "શોધક - વિશ્લેષણાત્મક, આધ્યાત્મિક અને અંતર્મુખ",
+          "8": "સાધક - મહત્વાકાંક્ષી, અધિકારી અને સફળ",
+          "9": "માનવતાવાદી - કરુણાશીલ, ઉદાર અને બુદ્ધિમાન",
+          "11": "અંતર્જ્ઞાની - દૂરદર્શી, પ્રેરણાદાયક અને આધ્યાત્મિક (માસ્ટર અંક)",
+          "22": "માસ્ટર બિલ્ડર - મહાન ક્ષમતા સાથે વ્યવહારુ દૂરદર્શી (માસ્ટર અંક)",
+          "33": "માસ્ટર શિક્ષક - નિઃસ્વાર્થ, પાલનકર્તા અને આધ્યાત્મિક રીતે વિકસિત (માસ્ટર અંક)"
+        },
+        colors: {
+          Red: "લાલ", Orange: "નારંગી", Gold: "સોનેરી", White: "સફેદ", Cream: "ક્રીમ",
+          Green: "લીલો", Yellow: "પીળો", Purple: "જાંબલી", Pink: "ગુલાબી", Blue: "વાદળી",
+          Grey: "રાખોડી", Khaki: "ખાકી", Black: "કાળો", Silver: "ચાંદી", Violet: "જાંબલી", Coral: "પરવાળો"
+        },
+        days: {
+          Sunday: "રવિવાર", Monday: "સોમવાર", Tuesday: "મંગળવાર", Wednesday: "બુધવાર",
+          Thursday: "ગુરુવાર", Friday: "શુક્રવાર", Saturday: "શનિવાર", "All days": "બધા દિવસો"
+        }
       },
       tarot: {
         badge: "ટેરો રીડિંગ",
@@ -2959,7 +3271,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಲಾಲ್ ಕಿತಾಬ್ ಬಗ್ಗೆ",
         aboutText1: "ಲಾಲ್ ಕಿತಾಬ್ ಎಂಬುದು ಹಿಂದೂ ಜ್ಯೋತಿಷ್ಯ ಮತ್ತು ಹಸ್ತರೇಖಾ ಶಾಸ್ತ್ರದ ಮೇಲೆ 19ನೇ ಶತಮಾನದಲ್ಲಿ ಬರೆಯಲಾದ ಐದು ಉರ್ದು ಭಾಷೆಯ ಪುಸ್ತಕಗಳ ಸಂಗ್ರಹವಾಗಿದೆ।",
         aboutText2: "ಸಾಂಪ್ರದಾಯಿಕ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯಕ್ಕಿಂತ ಭಿನ್ನವಾಗಿ, ಲಾಲ್ ಕಿತಾಬ್ ಸ್ಥಿರ ಭಾವ ವ್ಯವಸ್ಥೆಯನ್ನು ಬಳಸುತ್ತದೆ।",
-        aboutText3: "ಈ ವ್ಯವಸ್ಥೆಯು ಜೀವನವನ್ನು ಪ್ರಭಾವಿಸುವ ಎಂಟು ವಿಧದ ಕರ್ಮ ಋಣಗಳನ್ನು ಗುರುತಿಸುತ್ತದೆ।"
+        aboutText3: "ಈ ವ್ಯವಸ್ಥೆಯು ಜೀವನವನ್ನು ಪ್ರಭಾವಿಸುವ ಎಂಟು ವಿಧದ ಕರ್ಮ ಋಣಗಳನ್ನು ಗುರುತಿಸುತ್ತದೆ।",
+        zodiacSigns: {
+          Aries: "ಮೇಷ", Taurus: "ವೃಷಭ", Gemini: "ಮಿಥುನ", Cancer: "ಕರ್ಕಾಟಕ",
+          Leo: "ಸಿಂಹ", Virgo: "ಕನ್ಯಾ", Libra: "ತುಲಾ", Scorpio: "ವೃಶ್ಚಿಕ",
+          Sagittarius: "ಧನು", Capricorn: "ಮಕರ", Aquarius: "ಕುಂಭ", Pisces: "ಮೀನ"
+        },
+        planets: {
+          Sun: "ಸೂರ್ಯ", Moon: "ಚಂದ್ರ", Mars: "ಕುಜ", Mercury: "ಬುಧ",
+          Jupiter: "ಗುರು", Venus: "ಶುಕ್ರ", Saturn: "ಶನಿ", Rahu: "ರಾಹು", Ketu: "ಕೇತು"
+        },
+        debtNames: {
+          pitriRina: "ಪಿತೃ ಋಣ",
+          matriRina: "ಮಾತೃ ಋಣ",
+          striRina: "ಸ್ತ್ರೀ ಋಣ",
+          bhaiRina: "ಸೋದರ ಋಣ",
+          swajanRina: "ಸ್ವಜನ ಋಣ",
+          kulRina: "ಕುಲ ಋಣ",
+          atyacharRina: "ಅತ್ಯಾಚಾರ ಋಣ",
+          ajanmaRina: "ಅಜನ್ಮ ಋಣ"
+        },
+        severityLevels: { high: "ಹೆಚ್ಚು", medium: "ಮಧ್ಯಮ", low: "ಕಡಿಮೆ" },
+        yes: "ಹೌದು", no: "ಇಲ್ಲ"
       },
       numerology: {
         badge: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ",
@@ -2999,7 +3332,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರದ ಬಗ್ಗೆ",
         aboutText1: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರವು ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಮಾನವ ಜೀವನದ ಮೇಲೆ ಅವುಗಳ ಪ್ರಭಾವದ ಅಧ್ಯಯನವಾಗಿದೆ।",
         aboutText2: "ನಿಮ್ಮ ಜೀವನ ಮಾರ್ಗ ಸಂಖ್ಯೆಯನ್ನು ನಿಮ್ಮ ಜನ್ಮ ದಿನಾಂಕದಿಂದ ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತದೆ।",
-        aboutText3: "ಮಾಸ್ಟರ್ ಸಂಖ್ಯೆಗಳು (11, 22, 33) ವಿಶೇಷ ಮಹತ್ವವನ್ನು ಹೊಂದಿವೆ।"
+        aboutText3: "ಮಾಸ್ಟರ್ ಸಂಖ್ಯೆಗಳು (11, 22, 33) ವಿಶೇಷ ಮಹತ್ವವನ್ನು ಹೊಂದಿವೆ।",
+        numberMeanings: {
+          "1": "ನಾಯಕ - ಸ್ವತಂತ್ರ, ಮಹತ್ವಾಕಾಂಕ್ಷಿ ಮತ್ತು ಮುಂಚೂಣಿ",
+          "2": "ಶಾಂತಿದೂತ - ರಾಜತಾಂತ್ರಿಕ, ಸಹಕಾರಿ ಮತ್ತು ಸೂಕ್ಷ್ಮ",
+          "3": "ಸಂವಹನಕಾರ - ಸೃಜನಶೀಲ, ಅಭಿವ್ಯಕ್ತಿಶೀಲ ಮತ್ತು ಸಾಮಾಜಿಕ",
+          "4": "ನಿರ್ಮಾತ - ಪ್ರಾಯೋಗಿಕ, ಸಂಘಟಿತ ಮತ್ತು ಶ್ರಮಜೀವಿ",
+          "5": "ಸ್ವಾತಂತ್ರ್ಯ ಅನ್ವೇಷಕ - ಸಾಹಸಮಯ, ಬಹುಮುಖ ಮತ್ತು ಚಲನಶೀಲ",
+          "6": "ಪೋಷಕ - ಜವಾಬ್ದಾರಿಯುತ, ಪ್ರೀತಿಯ ಮತ್ತು ರಕ್ಷಣಾತ್ಮಕ",
+          "7": "ಅನ್ವೇಷಕ - ವಿಶ್ಲೇಷಣಾತ್ಮಕ, ಆಧ್ಯಾತ್ಮಿಕ ಮತ್ತು ಅಂತರ್ಮುಖಿ",
+          "8": "ಸಾಧಕ - ಮಹತ್ವಾಕಾಂಕ್ಷಿ, ಅಧಿಕಾರಯುತ ಮತ್ತು ಯಶಸ್ವಿ",
+          "9": "ಮಾನವತಾವಾದಿ - ಕರುಣಾಮಯ, ಉದಾರ ಮತ್ತು ಬುದ್ಧಿವಂತ",
+          "11": "ಅಂತರ್ಜ್ಞಾನಿ - ದೂರದೃಷ್ಟಿ, ಪ್ರೇರಣಾದಾಯಕ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ (ಮಾಸ್ಟರ್ ಸಂಖ್ಯೆ)",
+          "22": "ಮಾಸ್ಟರ್ ಬಿಲ್ಡರ್ - ಮಹಾನ್ ಸಾಮರ್ಥ್ಯದೊಂದಿಗೆ ಪ್ರಾಯೋಗಿಕ ದೂರದೃಷ್ಟಿ (ಮಾಸ್ಟರ್ ಸಂಖ್ಯೆ)",
+          "33": "ಮಾಸ್ಟರ್ ಶಿಕ್ಷಕ - ನಿಸ್ವಾರ್ಥ, ಪೋಷಕ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕವಾಗಿ ಅಭಿವೃದ್ಧಿ ಹೊಂದಿದ (ಮಾಸ್ಟರ್ ಸಂಖ್ಯೆ)"
+        },
+        colors: {
+          Red: "ಕೆಂಪು", Orange: "ಕಿತ್ತಳೆ", Gold: "ಚಿನ್ನ", White: "ಬಿಳಿ", Cream: "ಕ್ರೀಮ್",
+          Green: "ಹಸಿರು", Yellow: "ಹಳದಿ", Purple: "ನೇರಳೆ", Pink: "ಗುಲಾಬಿ", Blue: "ನೀಲಿ",
+          Grey: "ಬೂದು", Khaki: "ಖಾಕಿ", Black: "ಕಪ್ಪು", Silver: "ಬೆಳ್ಳಿ", Violet: "ನೇರಳೆ", Coral: "ಹವಳ"
+        },
+        days: {
+          Sunday: "ಭಾನುವಾರ", Monday: "ಸೋಮವಾರ", Tuesday: "ಮಂಗಳವಾರ", Wednesday: "ಬುಧವಾರ",
+          Thursday: "ಗುರುವಾರ", Friday: "ಶುಕ್ರವಾರ", Saturday: "ಶನಿವಾರ", "All days": "ಎಲ್ಲಾ ದಿನಗಳು"
+        }
       },
       tarot: {
         badge: "ಟ್ಯಾರೋ ಓದುವಿಕೆ",
@@ -3375,7 +3731,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "ലാൽ കിതാബിനെക്കുറിച്ച്",
         aboutText1: "ലാൽ കിതാബ് എന്നത് ഹിന്ദു ജ്യോതിഷത്തിലും ഹസ്തരേഖാ ശാസ്ത്രത്തിലും 19-ാം നൂറ്റാണ്ടിൽ എഴുതിയ അഞ്ച് ഉർദു ഭാഷാ പുസ്തകങ്ങളുടെ ശേഖരമാണ്।",
         aboutText2: "പരമ്പരാഗത വൈദിക ജ്യോതിഷത്തിൽ നിന്ന് വ്യത്യസ്തമായി, ലാൽ കിതാബ് സ്ഥിര ഭാവ സമ്പ്രദായം ഉപയോഗിക്കുന്നു।",
-        aboutText3: "ഈ സമ്പ്രദായം ജീവിതത്തെ ബാധിക്കുന്ന എട്ട് തരം കർമ്മ ഋണങ്ങൾ തിരിച്ചറിയുന്നു।"
+        aboutText3: "ഈ സമ്പ്രദായം ജീവിതത്തെ ബാധിക്കുന്ന എട്ട് തരം കർമ്മ ഋണങ്ങൾ തിരിച്ചറിയുന്നു।",
+        zodiacSigns: {
+          Aries: "മേടം", Taurus: "ഇടവം", Gemini: "മിഥുനം", Cancer: "കർക്കടകം",
+          Leo: "ചിങ്ങം", Virgo: "കന്നി", Libra: "തുലാം", Scorpio: "വൃശ്ചികം",
+          Sagittarius: "ധനു", Capricorn: "മകരം", Aquarius: "കുംഭം", Pisces: "മീനം"
+        },
+        planets: {
+          Sun: "സൂര്യൻ", Moon: "ചന്ദ്രൻ", Mars: "ചൊവ്വ", Mercury: "ബുധൻ",
+          Jupiter: "വ്യാഴം", Venus: "ശുക്രൻ", Saturn: "ശനി", Rahu: "രാഹു", Ketu: "കേതു"
+        },
+        debtNames: {
+          pitriRina: "പിതൃ ഋണം",
+          matriRina: "മാതൃ ഋണം",
+          striRina: "സ്ത്രീ ഋണം",
+          bhaiRina: "സഹോദര ഋണം",
+          swajanRina: "സ്വജന ഋണം",
+          kulRina: "കുല ഋണം",
+          atyacharRina: "അത്യാചാര ഋണം",
+          ajanmaRina: "അജന്മ ഋണം"
+        },
+        severityLevels: { high: "ഉയർന്നത്", medium: "മധ്യമം", low: "താഴ്ന്നത്" },
+        yes: "അതെ", no: "ഇല്ല"
       },
       numerology: {
         badge: "സംഖ്യാശാസ്ത്രം",
@@ -3415,7 +3792,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         aboutTitle: "സംഖ്യാശാസ്ത്രത്തെക്കുറിച്ച്",
         aboutText1: "സംഖ്യാശാസ്ത്രം എന്നത് സംഖ്യകളും മനുഷ്യ ജീവിതത്തിൽ അവയുടെ സ്വാധീനവും പഠിക്കുന്നതാണ്।",
         aboutText2: "നിങ്ങളുടെ ജീവിത പാത സംഖ്യ നിങ്ങളുടെ ജനന തീയതിയിൽ നിന്ന് കണക്കുകൂട്ടുന്നു।",
-        aboutText3: "മാസ്റ്റർ സംഖ്യകൾ (11, 22, 33) പ്രത്യേക പ്രാധാന്യം വഹിക്കുന്നു।"
+        aboutText3: "മാസ്റ്റർ സംഖ്യകൾ (11, 22, 33) പ്രത്യേക പ്രാധാന്യം വഹിക്കുന്നു।",
+        numberMeanings: {
+          "1": "നേതാവ് - സ്വതന്ത്ര, അഭിലാഷി, മുൻഗാമി",
+          "2": "സമാധാന ദൂതൻ - നയതന്ത്രജ്ഞ, സഹകാരി, സംവേദനശീല",
+          "3": "ആശയവിനിമയകാരൻ - സർഗ്ഗാത്മക, ആവിഷ്കാരശേഷിയുള്ള, സാമൂഹിക",
+          "4": "നിർമ്മാതാവ് - പ്രായോഗിക, സംഘടിത, കഠിനാധ്വാനി",
+          "5": "സ്വാതന്ത്ര്യ അന്വേഷകൻ - സാഹസിക, ബഹുമുഖ, ചലനാത്മക",
+          "6": "പരിപാലകൻ - ഉത്തരവാദിത്തമുള്ള, സ്നേഹമുള്ള, സംരക്ഷണാത്മക",
+          "7": "അന്വേഷകൻ - വിശകലനാത്മക, ആത്മീയ, അന്തർമുഖ",
+          "8": "നേട്ടക്കാരൻ - അഭിലാഷി, അധികാരശേഷിയുള്ള, വിജയകരമായ",
+          "9": "മാനവികവാദി - കരുണാമയ, ഉദാര, ജ്ഞാനി",
+          "11": "അന്തർജ്ഞാനി - ദീർഘദൃഷ്ടി, പ്രചോദനാത്മക, ആത്മീയ (മാസ്റ്റർ സംഖ്യ)",
+          "22": "മാസ്റ്റർ ബിൽഡർ - മഹത്തായ കഴിവുള്ള പ്രായോഗിക ദീർഘദൃഷ്ടി (മാസ്റ്റർ സംഖ്യ)",
+          "33": "മാസ്റ്റർ അധ്യാപകൻ - നിസ്വാർത്ഥ, പരിപാലക, ആത്മീയമായി വികസിച്ച (മാസ്റ്റർ സംഖ്യ)"
+        },
+        colors: {
+          Red: "ചുവപ്പ്", Orange: "ഓറഞ്ച്", Gold: "സ്വർണ്ണം", White: "വെള്ള", Cream: "ക്രീം",
+          Green: "പച്ച", Yellow: "മഞ്ഞ", Purple: "പർപ്പിൾ", Pink: "പിങ്ക്", Blue: "നീല",
+          Grey: "ചാരനിറം", Khaki: "ഖാക്കി", Black: "കറുപ്പ്", Silver: "വെള്ളി", Violet: "വയലറ്റ്", Coral: "പവിഴം"
+        },
+        days: {
+          Sunday: "ഞായറാഴ്ച", Monday: "തിങ്കളാഴ്ച", Tuesday: "ചൊവ്വാഴ്ച", Wednesday: "ബുധനാഴ്ച",
+          Thursday: "വ്യാഴാഴ്ച", Friday: "വെള്ളിയാഴ്ച", Saturday: "ശനിയാഴ്ച", "All days": "എല്ലാ ദിവസങ്ങളും"
+        }
       },
       tarot: {
         badge: "ടാരോ വായന",
@@ -3791,7 +4191,28 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਲਾਲ ਕਿਤਾਬ ਬਾਰੇ",
       aboutText1: "ਲਾਲ ਕਿਤਾਬ ਹਿੰਦੂ ਜੋਤਿਸ਼ ਅਤੇ ਹੱਥ ਰੇਖਾ ਵਿਗਿਆਨ 'ਤੇ 19ਵੀਂ ਸਦੀ ਵਿੱਚ ਲਿਖੀਆਂ ਪੰਜ ਉਰਦੂ ਭਾਸ਼ਾ ਦੀਆਂ ਕਿਤਾਬਾਂ ਦਾ ਸੰਗ੍ਰਹਿ ਹੈ।",
       aboutText2: "ਰਵਾਇਤੀ ਵੈਦਿਕ ਜੋਤਿਸ਼ ਤੋਂ ਵੱਖ, ਲਾਲ ਕਿਤਾਬ ਸਥਿਰ ਭਾਵ ਪ੍ਰਣਾਲੀ ਵਰਤਦੀ ਹੈ।",
-      aboutText3: "ਇਹ ਪ੍ਰਣਾਲੀ ਜ਼ਿੰਦਗੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰਨ ਵਾਲੇ ਅੱਠ ਕਿਸਮ ਦੇ ਕਰਮ ਰਿਣਾਂ ਦੀ ਪਛਾਣ ਕਰਦੀ ਹੈ।"
+      aboutText3: "ਇਹ ਪ੍ਰਣਾਲੀ ਜ਼ਿੰਦਗੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰਨ ਵਾਲੇ ਅੱਠ ਕਿਸਮ ਦੇ ਕਰਮ ਰਿਣਾਂ ਦੀ ਪਛਾਣ ਕਰਦੀ ਹੈ।",
+      zodiacSigns: {
+        Aries: "ਮੇਖ", Taurus: "ਬ੍ਰਿਸ਼ਭ", Gemini: "ਮਿਥੁਨ", Cancer: "ਕਰਕ",
+        Leo: "ਸਿੰਘ", Virgo: "ਕੰਨਿਆ", Libra: "ਤੁਲਾ", Scorpio: "ਬ੍ਰਿਸ਼ਚਿਕ",
+        Sagittarius: "ਧਨੁ", Capricorn: "ਮਕਰ", Aquarius: "ਕੁੰਭ", Pisces: "ਮੀਨ"
+      },
+      planets: {
+        Sun: "ਸੂਰਜ", Moon: "ਚੰਦਰ", Mars: "ਮੰਗਲ", Mercury: "ਬੁੱਧ",
+        Jupiter: "ਗੁਰੂ", Venus: "ਸ਼ੁੱਕਰ", Saturn: "ਸ਼ਨੀ", Rahu: "ਰਾਹੂ", Ketu: "ਕੇਤੂ"
+      },
+      debtNames: {
+        pitriRina: "ਪਿਤਰੀ ਰਿਣ",
+        matriRina: "ਮਾਤਰੀ ਰਿਣ",
+        striRina: "ਸਤਰੀ ਰਿਣ",
+        bhaiRina: "ਭਰਾ ਰਿਣ",
+        swajanRina: "ਸਵਜਨ ਰਿਣ",
+        kulRina: "ਕੁਲ ਰਿਣ",
+        atyacharRina: "ਅਤਿਆਚਾਰ ਰਿਣ",
+        ajanmaRina: "ਅਜਨਮਾ ਰਿਣ"
+      },
+      severityLevels: { high: "ਉੱਚ", medium: "ਮੱਧਮ", low: "ਘੱਟ" },
+      yes: "ਹਾਂ", no: "ਨਹੀਂ"
     },
     numerology: {
       badge: "ਅੰਕ ਵਿਗਿਆਨ",
@@ -3831,7 +4252,30 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
       aboutTitle: "ਅੰਕ ਵਿਗਿਆਨ ਬਾਰੇ",
       aboutText1: "ਅੰਕ ਵਿਗਿਆਨ ਅੰਕਾਂ ਅਤੇ ਮਨੁੱਖੀ ਜੀਵਨ 'ਤੇ ਉਨ੍ਹਾਂ ਦੇ ਪ੍ਰਭਾਵ ਦਾ ਅਧਿਐਨ ਹੈ।",
       aboutText2: "ਤੁਹਾਡਾ ਜੀਵਨ ਮਾਰਗ ਅੰਕ ਤੁਹਾਡੀ ਜਨਮ ਮਿਤੀ ਤੋਂ ਗਣਨਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
-      aboutText3: "ਮਾਸਟਰ ਅੰਕ (11, 22, 33) ਵਿਸ਼ੇਸ਼ ਮਹੱਤਵ ਰੱਖਦੇ ਹਨ।"
+      aboutText3: "ਮਾਸਟਰ ਅੰਕ (11, 22, 33) ਵਿਸ਼ੇਸ਼ ਮਹੱਤਵ ਰੱਖਦੇ ਹਨ।",
+      numberMeanings: {
+        "1": "ਨੇਤਾ - ਸੁਤੰਤਰ, ਮਹੱਤਵਾਕਾਂਖੀ ਅਤੇ ਮੋਹਰੀ",
+        "2": "ਸ਼ਾਂਤੀਦੂਤ - ਕੂਟਨੀਤਿਕ, ਸਹਿਯੋਗੀ ਅਤੇ ਸੰਵੇਦਨਸ਼ੀਲ",
+        "3": "ਸੰਚਾਰਕ - ਸਿਰਜਣਾਤਮਕ, ਪ੍ਰਗਟਾਵੇ ਵਾਲਾ ਅਤੇ ਸਮਾਜਿਕ",
+        "4": "ਨਿਰਮਾਤਾ - ਵਿਹਾਰਕ, ਸੰਗਠਿਤ ਅਤੇ ਮਿਹਨਤੀ",
+        "5": "ਆਜ਼ਾਦੀ ਖੋਜੀ - ਸਾਹਸੀ, ਬਹੁਮੁਖੀ ਅਤੇ ਗਤੀਸ਼ੀਲ",
+        "6": "ਪਾਲਣਹਾਰ - ਜ਼ਿੰਮੇਵਾਰ, ਪਿਆਰ ਕਰਨ ਵਾਲਾ ਅਤੇ ਸੁਰੱਖਿਆਤਮਕ",
+        "7": "ਖੋਜੀ - ਵਿਸ਼ਲੇਸ਼ਣਾਤਮਕ, ਅਧਿਆਤਮਿਕ ਅਤੇ ਅੰਤਰਮੁਖੀ",
+        "8": "ਪ੍ਰਾਪਤਕਰਤਾ - ਮਹੱਤਵਾਕਾਂਖੀ, ਅਧਿਕਾਰੀ ਅਤੇ ਸਫਲ",
+        "9": "ਮਾਨਵਤਾਵਾਦੀ - ਦਿਆਲੂ, ਉਦਾਰ ਅਤੇ ਸਿਆਣਾ",
+        "11": "ਅੰਤਰਦ੍ਰਿਸ਼ਟੀ ਵਾਲਾ - ਦੂਰਦਰਸ਼ੀ, ਪ੍ਰੇਰਨਾਦਾਇਕ ਅਤੇ ਅਧਿਆਤਮਿਕ (ਮਾਸਟਰ ਅੰਕ)",
+        "22": "ਮਾਸਟਰ ਬਿਲਡਰ - ਮਹਾਨ ਸਮਰੱਥਾ ਵਾਲਾ ਵਿਹਾਰਕ ਦੂਰਦਰਸ਼ੀ (ਮਾਸਟਰ ਅੰਕ)",
+        "33": "ਮਾਸਟਰ ਅਧਿਆਪਕ - ਨਿਸਵਾਰਥ, ਪਾਲਣਹਾਰ ਅਤੇ ਅਧਿਆਤਮਿਕ ਤੌਰ 'ਤੇ ਵਿਕਸਿਤ (ਮਾਸਟਰ ਅੰਕ)"
+      },
+      colors: {
+        Red: "ਲਾਲ", Orange: "ਸੰਤਰੀ", Gold: "ਸੋਨੇਰੀ", White: "ਚਿੱਟਾ", Cream: "ਕਰੀਮ",
+        Green: "ਹਰਾ", Yellow: "ਪੀਲਾ", Purple: "ਜਾਮਣੀ", Pink: "ਗੁਲਾਬੀ", Blue: "ਨੀਲਾ",
+        Grey: "ਸਲੇਟੀ", Khaki: "ਖਾਕੀ", Black: "ਕਾਲਾ", Silver: "ਚਾਂਦੀ", Violet: "ਬੈਂਗਣੀ", Coral: "ਮੂੰਗਾ"
+      },
+      days: {
+        Sunday: "ਐਤਵਾਰ", Monday: "ਸੋਮਵਾਰ", Tuesday: "ਮੰਗਲਵਾਰ", Wednesday: "ਬੁੱਧਵਾਰ",
+        Thursday: "ਵੀਰਵਾਰ", Friday: "ਸ਼ੁੱਕਰਵਾਰ", Saturday: "ਸ਼ਨੀਵਾਰ", "All days": "ਸਾਰੇ ਦਿਨ"
+      }
     },
     tarot: {
       badge: "ਟੈਰੋ ਰੀਡਿੰਗ",
