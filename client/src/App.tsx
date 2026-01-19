@@ -24,6 +24,8 @@ import { PricingPage } from '@/pages/public/PricingPage'
 import { HelpCenterPage } from '@/pages/public/HelpCenterPage'
 import { TrackRepairPage } from '@/pages/public/TrackRepairPage'
 import { SitemapPage } from '@/pages/public/SitemapPage'
+import { AuthorPage } from '@/pages/public/AuthorPage'
+import { CategoryPage } from '@/pages/public/CategoryPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -46,6 +48,8 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
+        <Route path="/blog/author/:slug" element={<AuthorPage />} />
+        <Route path="/blog/category/:slug" element={<CategoryPage />} />
                 <Route path="/booking" element={<BookingPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                                 <Route path="/help" element={<HelpCenterPage />} />
