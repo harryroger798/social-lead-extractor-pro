@@ -74,19 +74,35 @@ export function Header() {
         { name: t('nav.eclipses2026', 'Eclipses 2026'), href: "/eclipses-2026", description: t('nav.eclipses2026Desc', 'Solar & lunar eclipse guide') },
       ],
     },
-    {
-      name: t('nav.doshas', 'Doshas'),
-      href: "#",
-      children: [
-        { name: t('nav.mangalDosh', 'Mangal Dosh'), href: "/doshas/mangal-dosh", description: t('nav.mangalDoshDesc', 'Manglik dosha guide & remedies') },
-        { name: t('nav.kaalSarpDosh', 'Kaal Sarp Dosh'), href: "/doshas/kaal-sarp-dosh", description: t('nav.kaalSarpDoshDesc', '12 types & remedies') },
-        { name: t('nav.sadeSati', 'Sade Sati'), href: "/doshas/sade-sati", description: t('nav.sadeSatiDesc', "Saturn's 7.5 year transit") },
-        { name: t('nav.pitraDosh', 'Pitra Dosh'), href: "/doshas/pitra-dosh", description: t('nav.pitraDoshDesc', 'Ancestral karma & remedies') },
-        { name: t('nav.mangalDoshCalculator', 'Mangal Dosh Calculator'), href: "/tools/mangal-dosh-calculator", description: t('nav.mangalDoshCalculatorDesc', 'Check Manglik status') },
-        { name: t('nav.sadeSatiCalculator', 'Sade Sati Calculator'), href: "/tools/sade-sati-calculator", description: t('nav.sadeSatiCalculatorDesc', 'Check Sade Sati phase') },
-      ],
-    },
-    { name: t('nav.consultation', 'Consultation'), href: "/consultation" },
+        {
+          name: t('nav.doshas', 'Doshas'),
+          href: "#",
+          children: [
+            { name: t('nav.mangalDosh', 'Mangal Dosh'), href: "/doshas/mangal-dosh", description: t('nav.mangalDoshDesc', 'Manglik dosha guide & remedies') },
+            { name: t('nav.kaalSarpDosh', 'Kaal Sarp Dosh'), href: "/doshas/kaal-sarp-dosh", description: t('nav.kaalSarpDoshDesc', '12 types & remedies') },
+            { name: t('nav.sadeSati', 'Sade Sati'), href: "/doshas/sade-sati", description: t('nav.sadeSatiDesc', "Saturn's 7.5 year transit") },
+            { name: t('nav.pitraDosh', 'Pitra Dosh'), href: "/doshas/pitra-dosh", description: t('nav.pitraDoshDesc', 'Ancestral karma & remedies') },
+            { name: t('nav.mangalDoshCalculator', 'Mangal Dosh Calculator'), href: "/tools/mangal-dosh-calculator", description: t('nav.mangalDoshCalculatorDesc', 'Check Manglik status') },
+            { name: t('nav.sadeSatiCalculator', 'Sade Sati Calculator'), href: "/tools/sade-sati-calculator", description: t('nav.sadeSatiCalculatorDesc', 'Check Sade Sati phase') },
+          ],
+        },
+        {
+          name: t('nav.moreAstrology', 'More'),
+          href: "#",
+          children: [
+            { name: t('navAstrology.lalKitab', 'Lal Kitab'), href: "/lal-kitab", description: t('navAstrology.lalKitabDesc', 'Ancient remedial astrology system') },
+            { name: t('navAstrology.numerology', 'Numerology'), href: "/numerology", description: t('navAstrology.numerologyDesc', 'Discover your life path numbers') },
+            { name: t('navAstrology.tarot', 'Tarot Reading'), href: "/tarot", description: t('navAstrology.tarotDesc', 'Daily, love, career card readings') },
+            { name: t('navAstrology.vastu', 'Vastu Shastra'), href: "/vastu", description: t('navAstrology.vastuDesc', 'Home and office Vastu tips') },
+            { name: t('navAstrology.chinese', 'Chinese Astrology'), href: "/chinese-astrology", description: t('navAstrology.chineseDesc', 'Your Chinese zodiac sign') },
+            { name: t('navAstrology.kpSystem', 'KP System'), href: "/kp-system", description: t('navAstrology.kpSystemDesc', 'Krishnamurti Paddhati astrology') },
+            { name: t('navAstrology.prashna', 'Prashna Kundli'), href: "/prashna-kundli", description: t('navAstrology.prashnaDesc', 'Question-based horary astrology') },
+            { name: t('navAstrology.babyNames', 'Baby Names'), href: "/baby-names", description: t('navAstrology.babyNamesDesc', 'Nakshatra-based name suggestions') },
+            { name: t('navAstrology.gemstones', 'Gemstones'), href: "/gemstones", description: t('navAstrology.gemstonesDesc', 'Astrological gemstone guide') },
+            { name: t('navAstrology.palmistry', 'Palmistry'), href: "/palmistry", description: t('navAstrology.palmistryDesc', 'Palm reading guide') },
+          ],
+        },
+        { name: t('nav.consultation', 'Consultation'), href: "/consultation" },
     { name: t('nav.about', 'About'), href: "/about" },
   ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

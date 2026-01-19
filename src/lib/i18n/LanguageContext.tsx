@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Language, translations } from "./translations";
 import { newFeatureTranslations, deepMerge } from "./newFeatureTranslations";
+import { astrologyFeatureTranslations, deepMergeAstrology } from "./astrologyFeatureTranslations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
 
@@ -72,17 +73,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
-  // Merge base translations with new feature translations
-  const mergedTranslations = useMemo(() => {
-    const merged: Record<Language, Record<string, unknown>> = {} as Record<Language, Record<string, unknown>>;
-    for (const lang of VALID_LANGUAGES) {
-      merged[lang] = deepMerge(
-        translations[lang] as Record<string, unknown>,
-        newFeatureTranslations[lang] || {}
-      );
-    }
-    return merged;
-  }, []);
+    // Merge base translations with new feature translations and astrology feature translations
+    const mergedTranslations = useMemo(() => {
+      const merged: Record<Language, Record<string, unknown>> = {} as Record<Language, Record<string, unknown>>;
+      for (const lang of VALID_LANGUAGES) {
+        const base = deepMerge(
+          translations[lang] as Record<string, unknown>,
+          newFeatureTranslations[lang] || {}
+        );
+        merged[lang] = deepMergeAstrology(
+          base,
+          astrologyFeatureTranslations[lang] || {}
+        );
+      }
+      return merged;
+    }, []);
 
   const t: TranslateFunction = useCallback((key: string, fallback?: string): string => {
     const currentTranslations = mergedTranslations[language];
