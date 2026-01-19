@@ -729,4 +729,86 @@ router.get('/status/summary', authenticate, asyncHandler(async (req, res) => {
   });
 }));
 
+// PUBLIC endpoint - no authentication required
+// Allows customers to track their repair status by phone number
+router.get('/public/track', [
+  query('phone')
+    .trim()
+    .notEmpty()
+    .withMessage('Phone number is required')
+    .isLength({ min: 10, max: 15 })
+    .withMessage('Phone number must be between 10 and 15 digits')
+], asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      details: errors.array()
+    });
+  }
+
+  const { phone } = req.query;
+  const db = getDatabase();
+
+  // Find customer by phone number
+  const customer = db.prepare('SELECT id, name, phone FROM customers WHERE phone LIKE ?').get(`%${phone}%`);
+  
+  if (!customer) {
+    return res.status(404).json({
+      success: false,
+      error: 'No repairs found',
+      message: 'No repairs found for this phone number. Please check the number and try again.'
+    });
+  }
+
+  // Get all repairs for this customer (limited info for privacy)
+  const repairs = db.prepare(`
+    SELECT 
+      r.id,
+      r.invoice_number,
+      r.device_type,
+      r.brand,
+      r.model,
+      r.status,
+      r.priority,
+      r.created_at,
+      r.estimated_completion,
+      r.completed_at,
+      r.warranty_expiry,
+      s.name as service_name
+    FROM repairs r
+    LEFT JOIN services s ON r.service_id = s.id
+    WHERE r.customer_id = ?
+    ORDER BY r.created_at DESC
+    LIMIT 10
+  `).all(customer.id);
+
+  if (repairs.length === 0) {
+    return res.status(404).json({
+      success: false,
+      error: 'No repairs found',
+      message: 'No repairs found for this phone number.'
+    });
+  }
+
+  res.json({
+    success: true,
+    data: {
+      customer_name: customer.name,
+      repairs: repairs.map(r => ({
+        invoice_number: r.invoice_number,
+        device: `${r.brand || ''} ${r.model || ''} (${r.device_type})`.trim(),
+        service: r.service_name || 'General Repair',
+        status: r.status,
+        priority: r.priority,
+        created_at: r.created_at,
+        estimated_completion: r.estimated_completion,
+        completed_at: r.completed_at,
+        warranty_expiry: r.warranty_expiry
+      }))
+    }
+  });
+}));
+
 module.exports = router;

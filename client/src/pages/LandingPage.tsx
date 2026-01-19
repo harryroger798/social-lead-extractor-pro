@@ -848,13 +848,13 @@ export function LandingPage() {
                   
                   <GlassCard className="p-8">
                     <form 
-                      onSubmit={(e) => {
-                        e.preventDefault()
-                        const phone = (e.target as HTMLFormElement).phone.value
-                        if (phone) {
-                          window.location.href = `/login?redirect=/app&phone=${phone}`
-                        }
-                      }}
+                                            onSubmit={(e) => {
+                                              e.preventDefault()
+                                              const phone = (e.target as HTMLFormElement).phone.value
+                                              if (phone) {
+                                                window.location.href = `/track?phone=${phone}`
+                                              }
+                                            }}
                       className="flex flex-col sm:flex-row gap-4"
                     >
                       <div className="flex-1 relative">
