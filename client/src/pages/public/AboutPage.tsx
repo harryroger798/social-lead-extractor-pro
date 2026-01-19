@@ -99,7 +99,7 @@ export function AboutPage() {
               <GradientOrbs variant="subtle" />
               <DotGridPattern opacity="light" />
               <AnimatedLines color="default" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
                     initial={{ opacity: 0, x: -50 }}
@@ -108,7 +108,7 @@ export function AboutPage() {
                     transition={{ duration: 0.6 }}
                   >
                     <img 
-                      src="/images/founder-portrait.png" 
+                      src="/images/founder-portrait.png"
                       alt="Founder" 
                       className="w-full max-w-md mx-auto rounded-2xl shadow-xl"
                     />
@@ -147,7 +147,7 @@ export function AboutPage() {
               <DotGridPattern opacity="light" />
               <GradientOrbs variant="subtle" />
               <FloatingParticles count={20} color="primary" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
                     initial={{ opacity: 0, x: -50 }}
@@ -195,7 +195,7 @@ export function AboutPage() {
               <FloatingTechIcons variant="default" />
               <GradientOrbs variant="subtle" />
               <AnimatedLines color="default" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -204,7 +204,7 @@ export function AboutPage() {
                     transition={{ duration: 0.6 }}
                   >
                     <img 
-                      src="/images/mission-illustration.png" 
+                      src="/images/mission-illustration.png"
                       alt="Our Mission" 
                       className="w-full max-w-md mx-auto"
                     />
@@ -236,7 +236,7 @@ export function AboutPage() {
               <CircuitPattern variant="default" />
               <GradientOrbs variant="subtle" />
               <FloatingParticles count={15} color="primary" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -267,7 +267,7 @@ export function AboutPage() {
       {/* Stats Section */}
       <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
         <FloatingParticles count={40} color="white" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -317,7 +317,7 @@ export function AboutPage() {
       {/* Values Section */}
       <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
         <GradientOrbs variant="subtle" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

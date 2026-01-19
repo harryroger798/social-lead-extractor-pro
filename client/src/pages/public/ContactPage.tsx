@@ -78,7 +78,7 @@ export function ContactPage() {
               <DotGridPattern opacity="light" />
               <AnimatedLines color="default" />
               <FloatingParticles count={15} color="primary" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
                     initial={{ opacity: 0, x: -50 }}
@@ -87,7 +87,7 @@ export function ContactPage() {
                     transition={{ duration: 0.6 }}
                   >
                     <img 
-                      src="/images/contact-illustration.png" 
+                      src="/images/contact-illustration.png"
                       alt="Contact Us" 
                       className="w-full max-w-md mx-auto"
                     />
@@ -119,7 +119,7 @@ export function ContactPage() {
               <GradientOrbs variant="subtle" />
               <FloatingTechIcons variant="default" />
               <DotGridPattern opacity="light" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <div className="grid gap-12 lg:grid-cols-2">
             {/* Contact Form */}
             <motion.div
@@ -289,7 +289,7 @@ export function ContactPage() {
         <CircuitPattern variant="default" />
         <GradientOrbs variant="subtle" />
         <FloatingParticles count={15} color="primary" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

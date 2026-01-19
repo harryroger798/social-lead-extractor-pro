@@ -464,7 +464,7 @@ export function LandingPage() {
         <DotGridPattern opacity="light" />
         <GradientOrbs variant="subtle" />
         <AnimatedLines color="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -567,7 +567,7 @@ export function LandingPage() {
         <FloatingTechIcons variant="default" />
         <DotGridPattern opacity="light" />
         <FloatingParticles count={25} color="primary" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -612,7 +612,7 @@ export function LandingPage() {
       <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
         <FloatingParticles count={40} color="white" />
         <AnimatedLines color="light" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
@@ -670,7 +670,7 @@ export function LandingPage() {
         <CircuitPattern variant="default" />
         <GradientOrbs variant="subtle" />
         <FloatingParticles count={20} color="primary" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -717,7 +717,7 @@ export function LandingPage() {
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
         <AnimatedLines color="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -769,7 +769,7 @@ export function LandingPage() {
               <DotGridPattern opacity="light" />
               <GradientOrbs variant="subtle" />
               <CircuitPattern variant="default" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -826,7 +826,7 @@ export function LandingPage() {
               <FloatingTechIcons variant="default" />
               <GradientOrbs variant="subtle" />
               <FloatingParticles count={20} color="primary" />
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-4 relative z-10">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -937,7 +937,7 @@ export function LandingPage() {
       {/* Contact Info Section */}
       <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
         <CircuitPattern variant="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-3 gap-8">
             <GlassCard className="p-8 text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">

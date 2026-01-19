@@ -97,7 +97,7 @@ export function BookingPage() {
         <DotGridPattern opacity="light" />
         <AnimatedLines color="default" />
         <CircuitPattern variant="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto">
             {/* Progress Steps */}
             <motion.div 

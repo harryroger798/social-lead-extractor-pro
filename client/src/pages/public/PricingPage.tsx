@@ -89,7 +89,7 @@ export function PricingPage() {
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         <FloatingParticles count={30} color="white" />
         <FloatingTechIcons variant="light" />
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -128,7 +128,7 @@ export function PricingPage() {
         <DotGridPattern opacity="light" />
         <AnimatedLines color="default" />
         <FloatingTechIcons variant="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-3 gap-8">
             {pricingPlans.map((plan, index) => (
               <motion.div
@@ -177,7 +177,7 @@ export function PricingPage() {
         <CircuitPattern variant="default" />
         <GradientOrbs variant="subtle" />
         <FloatingParticles count={25} color="primary" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -220,7 +220,7 @@ export function PricingPage() {
       {/* CTA Section */}
       <section className="relative py-20 bg-gradient-to-r from-primary to-purple-600 overflow-hidden">
         <FloatingParticles count={40} color="white" />
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}

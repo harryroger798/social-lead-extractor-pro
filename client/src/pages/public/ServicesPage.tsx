@@ -109,7 +109,7 @@ export function PublicServicesPage() {
         <DotGridPattern opacity="light" />
         <AnimatedLines color="default" />
         <FloatingParticles count={20} color="primary" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {services.map((service, index) => (
               <motion.div
@@ -155,7 +155,7 @@ export function PublicServicesPage() {
       {/* Why Choose Us Section */}
       <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
         <FloatingParticles count={40} color="white" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -207,7 +207,7 @@ export function PublicServicesPage() {
         <CircuitPattern variant="default" />
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}

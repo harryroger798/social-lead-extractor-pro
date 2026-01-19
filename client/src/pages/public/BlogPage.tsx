@@ -94,7 +94,7 @@ export function BlogPage() {
         <DotGridPattern opacity="light" />
         <AnimatedLines color="default" />
         <FloatingTechIcons variant="default" />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid gap-8 md:grid-cols-2">
             {blogPosts.map((post, index) => (
               <motion.article
