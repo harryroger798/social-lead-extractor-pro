@@ -284,6 +284,19 @@ export default function GemstonesPage() {
   const [activeTab, setActiveTab] = useState("recommendation");
   const [selectedGem, setSelectedGem] = useState<string | null>(null);
 
+  // Helper function to get translated gemstone name
+  const getGemName = (key: string) => t(`gemstones.gemNames.${key}`, gemstones[key]?.name || key);
+  
+  // Helper function to get translated planet name
+  const getPlanetName = (planet: string) => t(`gemstones.planets.${planet}`, planet);
+  
+  // Helper function to get translated benefits
+  const getGemBenefits = (key: string): string[] => {
+    const translatedBenefits = t(`gemstones.gemBenefits.${key}`, undefined);
+    if (Array.isArray(translatedBenefits)) return translatedBenefits;
+    return gemstones[key]?.benefits || [];
+  };
+
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCalculating(true);
@@ -423,8 +436,8 @@ export default function GemstonesPage() {
                           <div className={`w-16 h-16 rounded-full shadow-lg ${gemColors[Object.keys(gemstones).find(k => gemstones[k].name === recommendation.primary.name) || 'Ruby']}`} />
                           <div>
                             <Badge className="mb-1 bg-violet-600">{t("gemstones.primary", "Primary Recommendation")}</Badge>
-                            <CardTitle className="text-2xl">{recommendation.primary.name}</CardTitle>
-                            <CardDescription>{recommendation.primary.hindi} - {recommendation.primary.planet}</CardDescription>
+                            <CardTitle className="text-2xl">{getGemName(Object.keys(gemstones).find(k => gemstones[k].name === recommendation.primary.name) || 'Ruby')}</CardTitle>
+                            <CardDescription>{recommendation.primary.hindi} - {getPlanetName(recommendation.primary.planet)}</CardDescription>
                           </div>
                         </div>
                       </CardHeader>
@@ -435,7 +448,7 @@ export default function GemstonesPage() {
                             {t("gemstones.benefits", "Benefits")}
                           </h4>
                           <ul className="grid md:grid-cols-2 gap-2">
-                            {recommendation.primary.benefits.map((benefit, idx) => (
+                            {getGemBenefits(Object.keys(gemstones).find(k => gemstones[k].name === recommendation.primary.name) || 'Ruby').map((benefit, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm">
                                 <Star className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                                 {benefit}
@@ -447,10 +460,10 @@ export default function GemstonesPage() {
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="p-3 bg-white rounded-lg">
                             <h5 className="font-semibold text-sm mb-2">{t("gemstones.howToWear", "How to Wear")}</h5>
-                            <p className="text-sm text-gray-600"><strong>Weight:</strong> {recommendation.primary.weight}</p>
-                            <p className="text-sm text-gray-600"><strong>Metal:</strong> {recommendation.primary.metal}</p>
-                            <p className="text-sm text-gray-600"><strong>Finger:</strong> {recommendation.primary.finger}</p>
-                            <p className="text-sm text-gray-600"><strong>Day:</strong> {recommendation.primary.day}</p>
+                            <p className="text-sm text-gray-600"><strong>{t("gemstones.weight", "Weight")}:</strong> {recommendation.primary.weight}</p>
+                            <p className="text-sm text-gray-600"><strong>{t("gemstones.metal", "Metal")}:</strong> {recommendation.primary.metal}</p>
+                            <p className="text-sm text-gray-600"><strong>{t("gemstones.finger", "Finger")}:</strong> {recommendation.primary.finger}</p>
+                            <p className="text-sm text-gray-600"><strong>{t("gemstones.day", "Day")}:</strong> {recommendation.primary.day}</p>
                           </div>
                           <div className="p-3 bg-white rounded-lg">
                             <h5 className="font-semibold text-sm mb-2">{t("gemstones.mantra", "Mantra")}</h5>
@@ -465,20 +478,22 @@ export default function GemstonesPage() {
                     {/* Secondary Gemstones */}
                     <h3 className="text-lg font-semibold">{t("gemstones.secondary", "Secondary Recommendations")}</h3>
                     <div className="grid md:grid-cols-2 gap-4">
-                      {recommendation.secondary.map((gem, idx) => (
+                      {recommendation.secondary.map((gem, idx) => {
+                        const gemKey = Object.keys(gemstones).find(k => gemstones[k].name === gem.name) || 'Ruby';
+                        return (
                         <Card key={idx} className="hover:shadow-lg transition-shadow">
                           <CardHeader className="pb-2">
                             <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-full shadow ${gemColors[Object.keys(gemstones).find(k => gemstones[k].name === gem.name) || 'Ruby']}`} />
+                              <div className={`w-10 h-10 rounded-full shadow ${gemColors[gemKey]}`} />
                               <div>
-                                <CardTitle className="text-lg">{gem.name}</CardTitle>
-                                <CardDescription>{gem.planet}</CardDescription>
+                                <CardTitle className="text-lg">{getGemName(gemKey)}</CardTitle>
+                                <CardDescription>{getPlanetName(gem.planet)}</CardDescription>
                               </div>
                             </div>
                           </CardHeader>
                           <CardContent>
                             <ul className="space-y-1">
-                              {gem.benefits.slice(0, 3).map((benefit, bIdx) => (
+                              {getGemBenefits(gemKey).slice(0, 3).map((benefit, bIdx) => (
                                 <li key={bIdx} className="flex items-start gap-2 text-sm">
                                   <Star className="w-3 h-3 text-yellow-500 mt-1 flex-shrink-0" />
                                   {benefit}
@@ -487,7 +502,7 @@ export default function GemstonesPage() {
                             </ul>
                           </CardContent>
                         </Card>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 )}
@@ -508,14 +523,14 @@ export default function GemstonesPage() {
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-full shadow-lg ${gemColors[key]}`} />
                       <div>
-                        <CardTitle>{gem.name}</CardTitle>
+                        <CardTitle>{getGemName(key)}</CardTitle>
                         <CardDescription>{gem.hindi}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline">{gem.planet}</Badge>
+                      <Badge variant="outline">{getPlanetName(gem.planet)}</Badge>
                       <Badge variant="secondary">{gem.color}</Badge>
                     </div>
                     
@@ -524,7 +539,7 @@ export default function GemstonesPage() {
                         <div>
                           <h4 className="font-semibold text-sm text-green-700 mb-2">{t("gemstones.benefits", "Benefits")}</h4>
                           <ul className="space-y-1">
-                            {gem.benefits.map((b, i) => (
+                            {getGemBenefits(key).map((b, i) => (
                               <li key={i} className="text-sm flex items-start gap-2">
                                 <CheckCircle className="w-3 h-3 text-green-500 mt-1" />
                                 {b}
@@ -534,10 +549,10 @@ export default function GemstonesPage() {
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm mb-2">{t("gemstones.howToWear", "How to Wear")}</h4>
-                          <p className="text-sm text-gray-600">Weight: {gem.weight}</p>
-                          <p className="text-sm text-gray-600">Metal: {gem.metal}</p>
-                          <p className="text-sm text-gray-600">Finger: {gem.finger}</p>
-                          <p className="text-sm text-gray-600">Day: {gem.day}</p>
+                          <p className="text-sm text-gray-600">{t("gemstones.weight", "Weight")}: {gem.weight}</p>
+                          <p className="text-sm text-gray-600">{t("gemstones.metal", "Metal")}: {gem.metal}</p>
+                          <p className="text-sm text-gray-600">{t("gemstones.finger", "Finger")}: {gem.finger}</p>
+                          <p className="text-sm text-gray-600">{t("gemstones.day", "Day")}: {gem.day}</p>
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm mb-1">{t("gemstones.mantra", "Mantra")}</h4>
@@ -563,38 +578,38 @@ export default function GemstonesPage() {
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
-                      <span>Always consult a qualified astrologer before wearing any gemstone</span>
+                      <span>{t("gemstones.guideConsultAstrologer", "Always consult a qualified astrologer before wearing any gemstone")}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
-                      <span>Get your birth chart analyzed to determine which planets need strengthening</span>
+                      <span>{t("gemstones.guideAnalyzeChart", "Get your birth chart analyzed to determine which planets need strengthening")}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
-                      <span>Test Blue Sapphire (Neelam) for 3 days before permanent wearing</span>
+                      <span>{t("gemstones.guideTestBlueSapphire", "Test Blue Sapphire (Neelam) for 3 days before permanent wearing")}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
-                      <span>Buy certified, natural gemstones from reputable dealers</span>
+                      <span>{t("gemstones.guideBuyCertified", "Buy certified, natural gemstones from reputable dealers")}</span>
                     </li>
                   </ul>
 
                   <h3 className="text-lg font-semibold mt-6">{t("gemstones.purification", "Purification Process")}</h3>
                   <ol className="list-decimal list-inside space-y-2 text-gray-600">
-                    <li>Dip the gemstone in raw milk or Ganga water overnight</li>
-                    <li>On the auspicious day, wash it with Ganga water</li>
-                    <li>Place it on a clean cloth in front of your deity</li>
-                    <li>Light incense and a lamp</li>
-                    <li>Chant the respective mantra 108 times</li>
-                    <li>Wear the gemstone on the specified finger</li>
+                    <li>{t("gemstones.purificationStep1", "Dip the gemstone in raw milk or Ganga water overnight")}</li>
+                    <li>{t("gemstones.purificationStep2", "On the auspicious day, wash it with Ganga water")}</li>
+                    <li>{t("gemstones.purificationStep3", "Place it on a clean cloth in front of your deity")}</li>
+                    <li>{t("gemstones.purificationStep4", "Light incense and a lamp")}</li>
+                    <li>{t("gemstones.purificationStep5", "Chant the respective mantra 108 times")}</li>
+                    <li>{t("gemstones.purificationStep6", "Wear the gemstone on the specified finger")}</li>
                   </ol>
 
                   <h3 className="text-lg font-semibold mt-6">{t("gemstones.cautions", "Important Cautions")}</h3>
                   <ul className="space-y-2 text-gray-600">
-                    <li>Never wear conflicting gemstones together (e.g., Ruby with Blue Sapphire)</li>
-                    <li>Remove gemstones during impure activities</li>
-                    <li>Gemstones lose power over time - replace after 3-5 years</li>
-                    <li>Cracked or damaged gemstones should not be worn</li>
+                    <li>{t("gemstones.cautionConflicting", "Never wear conflicting gemstones together (e.g., Ruby with Blue Sapphire)")}</li>
+                    <li>{t("gemstones.cautionImpure", "Remove gemstones during impure activities")}</li>
+                    <li>{t("gemstones.cautionReplace", "Gemstones lose power over time - replace after 3-5 years")}</li>
+                    <li>{t("gemstones.cautionDamaged", "Cracked or damaged gemstones should not be worn")}</li>
                   </ul>
                 </CardContent>
               </Card>
