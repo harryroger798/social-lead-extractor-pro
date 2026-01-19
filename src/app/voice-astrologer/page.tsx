@@ -84,15 +84,16 @@ const getDeepgramLanguage = (langCode: string): VapiDeepgramLanguage => {
 };
 
 // Build transient assistant configuration using VAPI's built-in providers
-// This uses Deepgram for STT/TTS and Groq for LLM - all charged through VAPI credits
-// No external API keys required (OpenAI, ElevenLabs, etc.)
+// Uses VAPI Voices (Rohan - Indian American accent) for better Hindi/Indian language support
+// Deepgram Nova-2 with "multi" for automatic language detection
+// Groq LLM for fast responses - all charged through VAPI credits
 const buildAssistantConfig = (langCode: string) => ({
   name: "VedicStarAstro AI Astrologer",
   firstMessage: getFirstMessage(langCode),
   transcriber: {
     provider: "deepgram" as const,
     model: "nova-2" as const,
-    language: getDeepgramLanguage(langCode),
+    language: "multi" as const, // Auto-detect language for multilingual support
   },
   model: {
     provider: "groq" as const,
@@ -104,11 +105,11 @@ const buildAssistantConfig = (langCode: string) => ({
       },
     ],
     temperature: 0.7,
-    maxTokens: 250,
+    maxTokens: 300,
   },
   voice: {
-    provider: "deepgram" as const,
-    voiceId: "asteria" as const, // Valid Deepgram voice ID
+    provider: "vapi" as const,
+    voiceId: "Rohan" as const, // VAPI built-in voice - Indian American accent, bright & optimistic
   },
   silenceTimeoutSeconds: 30,
   maxDurationSeconds: 300,
@@ -130,16 +131,30 @@ const getLanguageSystemPrompt = (langCode: string): string => {
   
   const langName = languageNames[langCode] || "English";
   const languageInstruction = langCode === "en" 
-    ? "Respond in English. You may use Hindi terms with English explanations when appropriate."
+    ? "Respond in English. You may use Sanskrit/Hindi astrological terms with brief English explanations when appropriate."
     : `IMPORTANT: You MUST respond entirely in ${langName}. All your responses must be in ${langName}. Do not respond in English unless the user specifically asks for it.`;
 
-  return `You are an expert Vedic astrologer with deep knowledge of Jyotish Shastra. You provide guidance based on Vedic astrology principles, planetary positions, Nakshatras, Doshas and their remedies, Kundli interpretation, and Muhurat guidance.
+  return `You are an expert Vedic astrologer from VedicStarAstro with deep knowledge of Jyotish Shastra.
 
-Be compassionate and supportive. Provide practical remedies when discussing challenges. Keep responses concise (2-3 sentences for voice). 
+CRITICAL RULES:
+1. NEVER assume or make up the user's name. Do NOT call them "Emma", "friend", or any name unless they tell you their name.
+2. Address the user respectfully without using names - say "you" or use respectful terms like "ji" in Hindi.
+3. Keep responses concise (2-3 sentences max) since this is voice conversation.
+4. When user provides birth details, acknowledge them and give relevant astrological insights.
+5. Always mention VedicStarAstro (not "FedEx" or other names) when referring to the platform.
+
+You provide guidance on:
+- Kundli (birth chart) interpretation
+- Planetary positions and their effects
+- Nakshatras and Moon signs
+- Doshas (Mangal, Kaal Sarp, etc.) and remedies
+- Dasha periods and predictions
+- Marriage compatibility and Muhurat timing
+- Career and financial astrology
 
 ${languageInstruction}
 
-You are representing VedicStarAstro, a trusted platform for authentic Vedic astrology services.`;
+Be compassionate, supportive, and provide practical remedies. Remember: astrology provides guidance, not certainties.`;
 };
 
 const getFirstMessage = (langCode: string): string => {
