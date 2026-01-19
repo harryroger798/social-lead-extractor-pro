@@ -34,7 +34,34 @@ interface TarotCard {
   description: string;
   advice: string;
   isReversed: boolean;
+  image: string;
 }
+
+// Tarot card images from Wikimedia Commons (public domain Rider-Waite-Smith deck)
+const tarotImages: Record<number, string> = {
+  0: "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg",
+  1: "https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg",
+  2: "https://upload.wikimedia.org/wikipedia/commons/8/88/RWS_Tarot_02_High_Priestess.jpg",
+  3: "https://upload.wikimedia.org/wikipedia/commons/d/d2/RWS_Tarot_03_Empress.jpg",
+  4: "https://upload.wikimedia.org/wikipedia/commons/c/c3/RWS_Tarot_04_Emperor.jpg",
+  5: "https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_05_Hierophant.jpg",
+  6: "https://upload.wikimedia.org/wikipedia/commons/3/3a/TheLovers.jpg",
+  7: "https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg",
+  8: "https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg",
+  9: "https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg",
+  10: "https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg",
+  11: "https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg",
+  12: "https://upload.wikimedia.org/wikipedia/commons/2/2b/RWS_Tarot_12_Hanged_Man.jpg",
+  13: "https://upload.wikimedia.org/wikipedia/commons/d/d7/RWS_Tarot_13_Death.jpg",
+  14: "https://upload.wikimedia.org/wikipedia/commons/f/f8/RWS_Tarot_14_Temperance.jpg",
+  15: "https://upload.wikimedia.org/wikipedia/commons/5/55/RWS_Tarot_15_Devil.jpg",
+  16: "https://upload.wikimedia.org/wikipedia/commons/5/53/RWS_Tarot_16_Tower.jpg",
+  17: "https://upload.wikimedia.org/wikipedia/commons/d/db/RWS_Tarot_17_Star.jpg",
+  18: "https://upload.wikimedia.org/wikipedia/commons/7/7f/RWS_Tarot_18_Moon.jpg",
+  19: "https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg",
+  20: "https://upload.wikimedia.org/wikipedia/commons/d/dd/RWS_Tarot_20_Judgement.jpg",
+  21: "https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg"
+};
 
 // Major Arcana cards
 const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
@@ -42,6 +69,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Fool",
     number: 0,
     arcana: "major",
+    image: tarotImages[0],
     upright: ["New beginnings", "Innocence", "Spontaneity", "Free spirit"],
     reversed: ["Recklessness", "Risk-taking", "Holding back"],
     description: "The Fool represents new beginnings, having faith in the future, being inexperienced, not knowing what to expect, having beginner's luck, improvisation and believing in the universe.",
@@ -51,6 +79,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Magician",
     number: 1,
     arcana: "major",
+    image: tarotImages[1],
     upright: ["Manifestation", "Resourcefulness", "Power", "Inspired action"],
     reversed: ["Manipulation", "Poor planning", "Untapped talents"],
     description: "The Magician represents willpower, desire, creation, manifestation. He symbolizes the power to tap universal energies and use them for creative purposes.",
@@ -60,6 +89,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The High Priestess",
     number: 2,
     arcana: "major",
+    image: tarotImages[2],
     upright: ["Intuition", "Sacred knowledge", "Divine feminine", "Subconscious mind"],
     reversed: ["Secrets", "Disconnected from intuition", "Withdrawal"],
     description: "The High Priestess represents wisdom, serenity, knowledge and understanding. She is often described as the guardian of the unconscious.",
@@ -69,6 +99,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Empress",
     number: 3,
     arcana: "major",
+    image: tarotImages[3],
     upright: ["Femininity", "Beauty", "Nature", "Nurturing", "Abundance"],
     reversed: ["Creative block", "Dependence on others", "Emptiness"],
     description: "The Empress represents fertility, femininity, beauty, nature and abundance. She is the mother figure of the tarot deck.",
@@ -78,6 +109,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Emperor",
     number: 4,
     arcana: "major",
+    image: tarotImages[4],
     upright: ["Authority", "Establishment", "Structure", "Father figure"],
     reversed: ["Domination", "Excessive control", "Lack of discipline"],
     description: "The Emperor represents authority figures, structure, solid foundations. He is the father figure of the tarot deck.",
@@ -87,6 +119,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Hierophant",
     number: 5,
     arcana: "major",
+    image: tarotImages[5],
     upright: ["Spiritual wisdom", "Religious beliefs", "Conformity", "Tradition"],
     reversed: ["Personal beliefs", "Freedom", "Challenging the status quo"],
     description: "The Hierophant represents tradition, conformity, morality and ethics. He is the masculine counterpart to the High Priestess.",
@@ -96,6 +129,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Lovers",
     number: 6,
     arcana: "major",
+    image: tarotImages[6],
     upright: ["Love", "Harmony", "Relationships", "Values alignment", "Choices"],
     reversed: ["Self-love", "Disharmony", "Imbalance", "Misalignment of values"],
     description: "The Lovers represents relationships and choices. Its appearance in a spread indicates some decision about an existing relationship or a temptation of the heart.",
@@ -105,6 +139,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Chariot",
     number: 7,
     arcana: "major",
+    image: tarotImages[7],
     upright: ["Control", "Willpower", "Success", "Action", "Determination"],
     reversed: ["Self-discipline", "Opposition", "Lack of direction"],
     description: "The Chariot represents conquest, victory, overcoming obstacles through confidence and control. It suggests a battle that can be won if the querent has the willpower.",
@@ -114,6 +149,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Strength",
     number: 8,
     arcana: "major",
+    image: tarotImages[8],
     upright: ["Strength", "Courage", "Persuasion", "Influence", "Compassion"],
     reversed: ["Inner strength", "Self-doubt", "Low energy", "Raw emotion"],
     description: "Strength represents inner strength, bravery, compassion, focus, and persuasion. This card suggests that you can overcome any obstacle with patience and inner calm.",
@@ -123,6 +159,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Hermit",
     number: 9,
     arcana: "major",
+    image: tarotImages[9],
     upright: ["Soul-searching", "Introspection", "Being alone", "Inner guidance"],
     reversed: ["Isolation", "Loneliness", "Withdrawal"],
     description: "The Hermit represents soul-searching, introspection, being alone, inner guidance. He is a seeker of truth and illumination.",
@@ -132,6 +169,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Wheel of Fortune",
     number: 10,
     arcana: "major",
+    image: tarotImages[10],
     upright: ["Good luck", "Karma", "Life cycles", "Destiny", "Turning point"],
     reversed: ["Bad luck", "Resistance to change", "Breaking cycles"],
     description: "The Wheel of Fortune represents karma, destiny, a turning point, luck and fortune. It reminds us that nothing is permanent and change is inevitable.",
@@ -141,6 +179,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Justice",
     number: 11,
     arcana: "major",
+    image: tarotImages[11],
     upright: ["Justice", "Fairness", "Truth", "Cause and effect", "Law"],
     reversed: ["Unfairness", "Lack of accountability", "Dishonesty"],
     description: "Justice represents justice, fairness, truth, cause and effect, law. It suggests that all actions have consequences.",
@@ -150,6 +189,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Hanged Man",
     number: 12,
     arcana: "major",
+    image: tarotImages[12],
     upright: ["Pause", "Surrender", "Letting go", "New perspectives"],
     reversed: ["Delays", "Resistance", "Stalling", "Indecision"],
     description: "The Hanged Man represents surrender, letting go, new perspectives. It suggests a pause in life, perhaps a time of meditation and reflection.",
@@ -159,6 +199,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Death",
     number: 13,
     arcana: "major",
+    image: tarotImages[13],
     upright: ["Endings", "Change", "Transformation", "Transition"],
     reversed: ["Resistance to change", "Personal transformation", "Inner purging"],
     description: "Death represents endings, change, transformation, transition. It rarely means physical death; rather, it signifies the end of a cycle and new beginnings.",
@@ -168,6 +209,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Temperance",
     number: 14,
     arcana: "major",
+    image: tarotImages[14],
     upright: ["Balance", "Moderation", "Patience", "Purpose"],
     reversed: ["Imbalance", "Excess", "Self-healing", "Re-alignment"],
     description: "Temperance represents balance, moderation, patience, purpose. It suggests finding middle ground and avoiding extremes.",
@@ -177,6 +219,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Devil",
     number: 15,
     arcana: "major",
+    image: tarotImages[15],
     upright: ["Shadow self", "Attachment", "Addiction", "Restriction"],
     reversed: ["Releasing limiting beliefs", "Exploring dark thoughts", "Detachment"],
     description: "The Devil represents shadow self, attachment, addiction, restriction, sexuality. It suggests being bound by material things or unhealthy attachments.",
@@ -186,6 +229,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Tower",
     number: 16,
     arcana: "major",
+    image: tarotImages[16],
     upright: ["Sudden change", "Upheaval", "Chaos", "Revelation", "Awakening"],
     reversed: ["Personal transformation", "Fear of change", "Averting disaster"],
     description: "The Tower represents sudden change, upheaval, chaos, revelation, awakening. It suggests that change is coming whether you want it or not.",
@@ -195,6 +239,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Star",
     number: 17,
     arcana: "major",
+    image: tarotImages[17],
     upright: ["Hope", "Faith", "Purpose", "Renewal", "Spirituality"],
     reversed: ["Lack of faith", "Despair", "Self-trust", "Disconnection"],
     description: "The Star represents hope, faith, purpose, renewal, spirituality. It is a card of great hope and inspiration.",
@@ -204,6 +249,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Moon",
     number: 18,
     arcana: "major",
+    image: tarotImages[18],
     upright: ["Illusion", "Fear", "Anxiety", "Subconscious", "Intuition"],
     reversed: ["Release of fear", "Repressed emotion", "Inner confusion"],
     description: "The Moon represents illusion, fear, anxiety, subconscious, intuition. It suggests that things may not be as they appear.",
@@ -213,6 +259,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The Sun",
     number: 19,
     arcana: "major",
+    image: tarotImages[19],
     upright: ["Positivity", "Fun", "Warmth", "Success", "Vitality"],
     reversed: ["Inner child", "Feeling down", "Overly optimistic"],
     description: "The Sun represents positivity, fun, warmth, success, vitality. It is one of the most positive cards in the deck.",
@@ -222,6 +269,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "Judgement",
     number: 20,
     arcana: "major",
+    image: tarotImages[20],
     upright: ["Judgement", "Rebirth", "Inner calling", "Absolution"],
     reversed: ["Self-doubt", "Inner critic", "Ignoring the call"],
     description: "Judgement represents judgement, rebirth, inner calling, absolution. It suggests a time of self-evaluation and reflection.",
@@ -231,6 +279,7 @@ const majorArcana: Omit<TarotCard, 'isReversed'>[] = [
     name: "The World",
     number: 21,
     arcana: "major",
+    image: tarotImages[21],
     upright: ["Completion", "Integration", "Accomplishment", "Travel"],
     reversed: ["Seeking personal closure", "Short-cuts", "Delays"],
     description: "The World represents completion, integration, accomplishment, travel. It signifies the end of a cycle and the achievement of goals.",
@@ -300,52 +349,49 @@ export default function TarotPage() {
     setIsDrawing(false);
   };
 
-  const renderCard = (card: TarotCard, position?: string) => (
-    <Card className={`overflow-hidden ${card.isReversed ? 'border-purple-300' : 'border-amber-300'} border-2`}>
-      <div className={`h-48 bg-gradient-to-br ${card.isReversed ? 'from-purple-600 to-indigo-800' : 'from-amber-500 to-orange-600'} flex items-center justify-center relative`}>
-        {card.isReversed && (
-          <Badge className="absolute top-2 right-2 bg-purple-800">
-            {t("tarot.reversed", "Reversed")}
-          </Badge>
-        )}
-        {position && (
-          <Badge className="absolute top-2 left-2 bg-black/50">
-            {position}
-          </Badge>
-        )}
-        <div className="text-center text-white">
-          <div className="text-5xl mb-2">
-            {card.number === 0 ? "0" : card.number}
-          </div>
-          <div className={`text-lg font-bold ${card.isReversed ? 'rotate-180' : ''}`}>
-            {card.name}
-          </div>
+    const renderCard = (card: TarotCard, position?: string) => (
+      <Card className={`overflow-hidden ${card.isReversed ? 'border-purple-300' : 'border-amber-300'} border-2`}>
+        <div className={`h-64 relative overflow-hidden`}>
+          {card.isReversed && (
+            <Badge className="absolute top-2 right-2 bg-purple-800 z-10">
+              {t("tarot.reversed", "Reversed")}
+            </Badge>
+          )}
+          {position && (
+            <Badge className="absolute top-2 left-2 bg-black/50 z-10">
+              {position}
+            </Badge>
+          )}
+          <img 
+            src={card.image} 
+            alt={card.name}
+            className={`w-full h-full object-cover ${card.isReversed ? 'rotate-180' : ''}`}
+          />
         </div>
-      </div>
-      <CardContent className="p-4">
-        <h4 className="font-semibold text-lg mb-2">{card.name}</h4>
-        <div className="mb-3">
-          <p className="text-xs text-gray-500 mb-1">
-            {card.isReversed ? t("tarot.reversedMeaning", "Reversed Meaning") : t("tarot.uprightMeaning", "Upright Meaning")}
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {(card.isReversed ? card.reversed : card.upright).map((meaning, idx) => (
-              <Badge key={idx} variant="secondary" className="text-xs">
-                {meaning}
-              </Badge>
-            ))}
+        <CardContent className="p-4">
+          <h4 className="font-semibold text-lg mb-2">{card.name}</h4>
+          <div className="mb-3">
+            <p className="text-xs text-gray-500 mb-1">
+              {card.isReversed ? t("tarot.reversedMeaning", "Reversed Meaning") : t("tarot.uprightMeaning", "Upright Meaning")}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {(card.isReversed ? card.reversed : card.upright).map((meaning, idx) => (
+                <Badge key={idx} variant="secondary" className="text-xs">
+                  {meaning}
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
-        <p className="text-sm text-gray-600 mb-3">{card.description}</p>
-        <div className="p-2 bg-amber-50 rounded-lg">
-          <p className="text-sm font-medium text-amber-800">
-            <Sparkles className="w-4 h-4 inline mr-1" />
-            {card.advice}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+          <p className="text-sm text-gray-600 mb-3">{card.description}</p>
+          <div className="p-2 bg-amber-50 rounded-lg">
+            <p className="text-sm font-medium text-amber-800">
+              <Sparkles className="w-4 h-4 inline mr-1" />
+              {card.advice}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-purple-50 to-indigo-50">

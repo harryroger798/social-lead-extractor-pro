@@ -28,6 +28,7 @@ interface Gemstone {
   hindi: string;
   planet: string;
   color: string;
+  image: string;
   benefits: string[];
   whoShouldWear: string[];
   whoShouldAvoid: string[];
@@ -40,12 +41,26 @@ interface Gemstone {
   alternatives: string[];
 }
 
+// Real gemstone images from Wikimedia Commons (public domain)
+const gemstoneImages: Record<string, string> = {
+  Ruby: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Ruby_gem.JPG/440px-Ruby_gem.JPG",
+  Pearl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/White_pearl_necklace.jpg/440px-White_pearl_necklace.jpg",
+  RedCoral: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Coral_jewellery.jpg/440px-Coral_jewellery.jpg",
+  Emerald: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Emerald_rough_300x422.jpg/330px-Emerald_rough_300x422.jpg",
+  YellowSapphire: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Saphir_jaune.jpg/440px-Saphir_jaune.jpg",
+  Diamond: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Brillanten.jpg/440px-Brillanten.jpg",
+  BlueSapphire: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sapphire_Gem.jpg/440px-Sapphire_Gem.jpg",
+  Hessonite: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Hessonite_garnet.jpg/440px-Hessonite_garnet.jpg",
+  CatsEye: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Chrysoberyl_cat%27s_eye.jpg/440px-Chrysoberyl_cat%27s_eye.jpg"
+};
+
 const gemstones: Record<string, Gemstone> = {
   Ruby: {
     name: "Ruby",
     hindi: "माणिक्य (Manikya)",
     planet: "Sun",
     color: "Red",
+    image: gemstoneImages.Ruby,
     benefits: [
       "Enhances leadership qualities",
       "Boosts confidence and self-esteem",
@@ -63,12 +78,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "High (₹5,000 - ₹50,000+ per carat)",
     alternatives: ["Red Garnet", "Red Spinel", "Star Ruby"]
   },
-  Pearl: {
-    name: "Pearl",
-    hindi: "मोती (Moti)",
-    planet: "Moon",
-    color: "White/Cream",
-    benefits: [
+    Pearl: {
+      name: "Pearl",
+      hindi: "मोती (Moti)",
+      planet: "Moon",
+      color: "White/Cream",
+      image: gemstoneImages.Pearl,
+      benefits: [
       "Calms the mind and emotions",
       "Improves relationship with mother",
       "Enhances intuition",
@@ -85,12 +101,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "Moderate (₹1,000 - ₹10,000+ per carat)",
     alternatives: ["Moonstone", "White Coral"]
   },
-  RedCoral: {
-    name: "Red Coral",
-    hindi: "मूंगा (Moonga)",
-    planet: "Mars",
-    color: "Red/Orange",
-    benefits: [
+    RedCoral: {
+      name: "Red Coral",
+      hindi: "मूंगा (Moonga)",
+      planet: "Mars",
+      color: "Red/Orange",
+      image: gemstoneImages.RedCoral,
+      benefits: [
       "Increases courage and confidence",
       "Protects from enemies",
       "Good for blood-related issues",
@@ -107,12 +124,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "Moderate (₹500 - ₹5,000+ per carat)",
     alternatives: ["Carnelian", "Red Jasper"]
   },
-  Emerald: {
-    name: "Emerald",
-    hindi: "पन्ना (Panna)",
-    planet: "Mercury",
-    color: "Green",
-    benefits: [
+    Emerald: {
+      name: "Emerald",
+      hindi: "पन्ना (Panna)",
+      planet: "Mercury",
+      color: "Green",
+      image: gemstoneImages.Emerald,
+      benefits: [
       "Enhances intelligence and memory",
       "Good for communication skills",
       "Helps in business and trade",
@@ -129,12 +147,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "High (₹3,000 - ₹30,000+ per carat)",
     alternatives: ["Green Tourmaline", "Peridot", "Green Onyx"]
   },
-  YellowSapphire: {
-    name: "Yellow Sapphire",
-    hindi: "पुखराज (Pukhraj)",
-    planet: "Jupiter",
-    color: "Yellow",
-    benefits: [
+    YellowSapphire: {
+      name: "Yellow Sapphire",
+      hindi: "पुखराज (Pukhraj)",
+      planet: "Jupiter",
+      color: "Yellow",
+      image: gemstoneImages.YellowSapphire,
+      benefits: [
       "Brings wisdom and knowledge",
       "Good for marriage and children",
       "Enhances wealth and prosperity",
@@ -151,12 +170,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "High (₹5,000 - ₹50,000+ per carat)",
     alternatives: ["Citrine", "Yellow Topaz", "Golden Beryl"]
   },
-  Diamond: {
-    name: "Diamond",
-    hindi: "हीरा (Heera)",
-    planet: "Venus",
-    color: "White/Colorless",
-    benefits: [
+    Diamond: {
+      name: "Diamond",
+      hindi: "हीरा (Heera)",
+      planet: "Venus",
+      color: "White/Colorless",
+      image: gemstoneImages.Diamond,
+      benefits: [
       "Brings luxury and comfort",
       "Enhances beauty and charm",
       "Good for love and marriage",
@@ -173,12 +193,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "Very High (₹50,000 - ₹5,00,000+ per carat)",
     alternatives: ["White Sapphire", "Zircon", "White Topaz"]
   },
-  BlueSapphire: {
-    name: "Blue Sapphire",
-    hindi: "नीलम (Neelam)",
-    planet: "Saturn",
-    color: "Blue",
-    benefits: [
+    BlueSapphire: {
+      name: "Blue Sapphire",
+      hindi: "नीलम (Neelam)",
+      planet: "Saturn",
+      color: "Blue",
+      image: gemstoneImages.BlueSapphire,
+      benefits: [
       "Brings sudden wealth and success",
       "Protects from accidents",
       "Good for career growth",
@@ -195,12 +216,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "High (₹5,000 - ₹1,00,000+ per carat)",
     alternatives: ["Amethyst", "Blue Spinel", "Iolite"]
   },
-  Hessonite: {
-    name: "Hessonite (Gomed)",
-    hindi: "गोमेद (Gomed)",
-    planet: "Rahu",
-    color: "Honey/Brown",
-    benefits: [
+    Hessonite: {
+      name: "Hessonite (Gomed)",
+      hindi: "गोमेद (Gomed)",
+      planet: "Rahu",
+      color: "Honey/Brown",
+      image: gemstoneImages.Hessonite,
+      benefits: [
       "Removes confusion and fear",
       "Good for sudden gains",
       "Protects from enemies",
@@ -217,12 +239,13 @@ const gemstones: Record<string, Gemstone> = {
     price: "Moderate (₹500 - ₹5,000+ per carat)",
     alternatives: ["Orange Zircon", "Spessartite Garnet"]
   },
-  CatsEye: {
-    name: "Cat's Eye (Lehsunia)",
-    hindi: "लहसुनिया (Lehsunia)",
-    planet: "Ketu",
-    color: "Greenish/Yellowish with chatoyancy",
-    benefits: [
+    CatsEye: {
+      name: "Cat's Eye (Lehsunia)",
+      hindi: "लहसुनिया (Lehsunia)",
+      planet: "Ketu",
+      color: "Greenish/Yellowish with chatoyancy",
+      image: gemstoneImages.CatsEye,
+      benefits: [
       "Protects from accidents",
       "Good for spiritual growth",
       "Removes negative energy",
@@ -420,7 +443,9 @@ export default function GemstonesPage() {
                     <Card className="border-2 border-violet-300 bg-gradient-to-br from-violet-50 to-purple-50">
                       <CardHeader>
                         <div className="flex items-center gap-4">
-                          <div className={`w-16 h-16 rounded-full ${gemColors[recommendation.primary.name.replace(/\s/g, '')]} shadow-lg`}></div>
+                          <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
+                            <img src={recommendation.primary.image} alt={recommendation.primary.name} className="w-full h-full object-cover" />
+                          </div>
                           <div>
                             <Badge className="mb-1 bg-violet-600">{t("gemstones.primary", "Primary Recommendation")}</Badge>
                             <CardTitle className="text-2xl">{recommendation.primary.name}</CardTitle>
@@ -469,7 +494,9 @@ export default function GemstonesPage() {
                         <Card key={idx} className="hover:shadow-lg transition-shadow">
                           <CardHeader className="pb-2">
                             <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-full ${gemColors[gem.name.replace(/\s/g, '')]} shadow`}></div>
+                              <div className="w-10 h-10 rounded-full overflow-hidden shadow">
+                                <img src={gem.image} alt={gem.name} className="w-full h-full object-cover" />
+                              </div>
                               <div>
                                 <CardTitle className="text-lg">{gem.name}</CardTitle>
                                 <CardDescription>{gem.planet}</CardDescription>
@@ -506,7 +533,9 @@ export default function GemstonesPage() {
                 >
                   <CardHeader>
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-full ${gemColors[key]} shadow-lg`}></div>
+                      <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg">
+                        <img src={gem.image} alt={gem.name} className="w-full h-full object-cover" />
+                      </div>
                       <div>
                         <CardTitle>{gem.name}</CardTitle>
                         <CardDescription>{gem.hindi}</CardDescription>
