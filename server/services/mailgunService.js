@@ -76,7 +76,12 @@ class MailgunService {
         message: 'Email sent successfully'
       };
     } catch (error) {
-      logger.error('Mailgun email error:', error.response?.data || error.message);
+      logger.error('Mailgun email error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        stack: error.stack?.substring(0, 500)
+      });
       
       if (error.response?.status === 401) {
         throw new Error('Invalid Mailgun API key');
@@ -178,15 +183,28 @@ class MailgunService {
     const businessPhone = getSetting('business_phone') || '+91 7003888936';
     const businessAddress = getSetting('business_address') || 'Barrackpore, West Bengal';
 
-    const templates = {
-      repair_created: this.repairCreatedTemplate(data, themeColor),
-      repair_status_update: this.repairStatusUpdateTemplate(data, themeColor),
-      repair_completed: this.repairCompletedTemplate(data, themeColor),
-      invoice: this.invoiceTemplate(data, themeColor),
-      payment_received: this.paymentReceivedTemplate(data, themeColor)
-    };
+    // Use lazy evaluation - only call the template function that's needed
+    let content;
+    switch (template) {
+      case 'repair_created':
+        content = this.repairCreatedTemplate(data, themeColor);
+        break;
+      case 'repair_status_update':
+        content = this.repairStatusUpdateTemplate(data, themeColor);
+        break;
+      case 'repair_completed':
+        content = this.repairCompletedTemplate(data, themeColor);
+        break;
+      case 'invoice':
+        content = this.invoiceTemplate(data, themeColor);
+        break;
+      case 'payment_received':
+        content = this.paymentReceivedTemplate(data, themeColor);
+        break;
+      default:
+        content = '<p>Email content</p>';
+    }
 
-    const content = templates[template] || '<p>Email content</p>';
     return this.wrapInEmailLayout(content, businessName, themeColor, businessPhone, businessAddress);
   }
 
