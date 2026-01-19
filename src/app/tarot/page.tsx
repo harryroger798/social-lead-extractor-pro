@@ -349,6 +349,11 @@ export default function TarotPage() {
     setIsDrawing(false);
   };
 
+    // Helper function to get translated card name
+    const getTranslatedCardName = (name: string): string => {
+      return t(`tarot.cardNames.${name}`, name);
+    };
+
     const renderCard = (card: TarotCard, position?: string) => (
       <Card className={`overflow-hidden ${card.isReversed ? 'border-purple-300' : 'border-amber-300'} border-2`}>
         <div className={`h-64 relative overflow-hidden`}>
@@ -369,7 +374,7 @@ export default function TarotPage() {
           />
         </div>
         <CardContent className="p-4">
-          <h4 className="font-semibold text-lg mb-2">{card.name}</h4>
+          <h4 className="font-semibold text-lg mb-2">{getTranslatedCardName(card.name)}</h4>
           <div className="mb-3">
             <p className="text-xs text-gray-500 mb-1">
               {card.isReversed ? t("tarot.reversedMeaning", "Reversed Meaning") : t("tarot.uprightMeaning", "Upright Meaning")}

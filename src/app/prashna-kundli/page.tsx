@@ -49,64 +49,111 @@ const questionCategories = [
   { id: "general", label: "General Question", icon: "❓" },
 ];
 
-function calculatePrashnaChart(timestamp: Date): { ascendant: string; moonSign: string; planets: Record<string, number> } {
-  const hour = timestamp.getHours() + timestamp.getMinutes() / 60;
+function calculatePrashnaChart(timestamp: Date, questionText: string): { ascendant: string; moonSign: string; planets: Record<string, number>; nakshatra: string; nakshatraPada: number } {
+  const hour = timestamp.getHours() + timestamp.getMinutes() / 60 + timestamp.getSeconds() / 3600;
   const dayOfYear = Math.floor((timestamp.getTime() - new Date(timestamp.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+  const milliseconds = timestamp.getMilliseconds();
   
-  // Calculate ascendant based on time (approximately 2 hours per sign)
-  const ascendantIndex = Math.floor(((hour + 6) % 24) / 2) % 12;
+  // Create a hash from the question text to add variation
+  let questionHash = 0;
+  for (let i = 0; i < questionText.length; i++) {
+    questionHash = ((questionHash << 5) - questionHash) + questionText.charCodeAt(i);
+    questionHash = questionHash & questionHash; // Convert to 32bit integer
+  }
+  const questionFactor = Math.abs(questionHash % 1000) / 1000;
   
-  // Calculate moon sign based on day
-  const moonIndex = Math.floor((dayOfYear * 13.176 + hour * 0.55) / 30) % 12;
+  // Calculate ascendant based on time with more precision (approximately 2 hours per sign, but with minute/second variation)
+  // In real Vedic astrology, ascendant changes every ~2 hours, but we add slight variation based on exact time
+  const preciseHour = hour + (milliseconds / 3600000) + (questionFactor * 0.1);
+  const ascendantIndex = Math.floor(((preciseHour + 6) % 24) / 2) % 12;
   
-  // Simplified planetary positions
+  // Calculate moon sign based on day with more precision
+  // Moon moves through zodiac in ~27.3 days, so roughly 2.5 days per sign
+  const moonProgress = (dayOfYear * 13.176 + hour * 0.55 + questionFactor * 2) / 30;
+  const moonIndex = Math.floor(moonProgress) % 12;
+  
+  // Calculate Nakshatra (27 lunar mansions) - Moon's position in nakshatra
+  const nakshatras = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+    "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+  ];
+  const nakshatraIndex = Math.floor((moonProgress * 27 / 12) + questionFactor * 3) % 27;
+  const nakshatraPada = Math.floor((moonProgress * 108 / 12) % 4) + 1;
+  
+  // More accurate planetary positions based on actual orbital periods
+  // These are simplified but more realistic than before
   const planets: Record<string, number> = {
-    Sun: Math.floor(dayOfYear / 30) % 12,
+    Sun: Math.floor(dayOfYear / 30.44) % 12, // Sun moves ~1 sign per month
     Moon: moonIndex,
-    Mars: Math.floor(dayOfYear * 0.524 / 30) % 12,
-    Mercury: (Math.floor(dayOfYear / 30) + Math.floor(Math.sin(dayOfYear * 0.1) * 2)) % 12,
-    Jupiter: Math.floor(dayOfYear * 0.083 / 30) % 12,
-    Venus: (Math.floor(dayOfYear / 30) + Math.floor(Math.sin(dayOfYear * 0.08) * 2)) % 12,
-    Saturn: Math.floor(dayOfYear * 0.033 / 30) % 12,
+    Mars: Math.floor((dayOfYear + questionFactor * 30) * 0.524 / 30) % 12, // Mars ~687 days orbit
+    Mercury: (Math.floor(dayOfYear / 30) + Math.floor(Math.sin((dayOfYear + questionFactor * 10) * 0.1) * 2) + 12) % 12, // Mercury close to Sun
+    Jupiter: Math.floor((dayOfYear + 180) * 0.083 / 30) % 12, // Jupiter ~12 years orbit
+    Venus: (Math.floor(dayOfYear / 30) + Math.floor(Math.sin((dayOfYear + questionFactor * 15) * 0.08) * 2) + 12) % 12, // Venus close to Sun
+    Saturn: Math.floor((dayOfYear + 90) * 0.033 / 30) % 12, // Saturn ~29.5 years orbit
+    Rahu: (12 - Math.floor((dayOfYear + questionFactor * 50) * 0.05 / 30)) % 12, // Rahu moves retrograde
+    Ketu: (6 - Math.floor((dayOfYear + questionFactor * 50) * 0.05 / 30) + 12) % 12, // Ketu opposite Rahu
   };
   
   return {
     ascendant: zodiacSigns[ascendantIndex],
     moonSign: zodiacSigns[moonIndex],
-    planets
+    planets,
+    nakshatra: nakshatras[nakshatraIndex],
+    nakshatraPada
   };
 }
 
-function generatePrashnaAnswer(question: string, category: string, chart: { ascendant: string; moonSign: string; planets: Record<string, number> }): PrashnaResult {
+function generatePrashnaAnswer(question: string, category: string, chart: { ascendant: string; moonSign: string; planets: Record<string, number>; nakshatra: string; nakshatraPada: number }): PrashnaResult {
   const timestamp = new Date();
   
-  // Determine answer based on ascendant and moon position
+  // Determine answer based on ascendant, moon position, and nakshatra
   const ascendantIndex = zodiacSigns.indexOf(chart.ascendant);
   const moonIndex = zodiacSigns.indexOf(chart.moonSign);
   
-  // Favorable ascendants for positive answers
-  const favorableAscendants = [0, 2, 4, 6, 8, 10]; // Odd signs (Aries, Gemini, Leo, etc.)
+  // Favorable ascendants for positive answers (odd signs in Vedic astrology are generally more active/positive)
+  const favorableAscendants = [0, 2, 4, 6, 8, 10]; // Aries, Gemini, Leo, Libra, Sagittarius, Aquarius
   const isFavorableAscendant = favorableAscendants.includes(ascendantIndex);
   
-  // Moon in good houses (1, 4, 7, 10 from ascendant)
+  // Moon in good houses (1, 4, 5, 7, 9, 10, 11 from ascendant are generally favorable)
   const moonHouse = ((moonIndex - ascendantIndex + 12) % 12) + 1;
   const isFavorableMoon = [1, 4, 5, 7, 9, 10, 11].includes(moonHouse);
+  
+  // Nakshatra-based favorability (some nakshatras are more auspicious)
+  const auspiciousNakshatras = ["Ashwini", "Rohini", "Mrigashira", "Punarvasu", "Pushya", "Hasta", "Chitra", "Swati", "Anuradha", "Shravana", "Dhanishta", "Revati"];
+  const isAuspiciousNakshatra = auspiciousNakshatras.includes(chart.nakshatra);
+  
+  // Pada consideration (1st and 4th padas are generally more favorable)
+  const isFavorablePada = [1, 4].includes(chart.nakshatraPada);
   
   let answer: "positive" | "negative" | "neutral";
   let confidence: "high" | "medium" | "low";
   
-  if (isFavorableAscendant && isFavorableMoon) {
+  // Calculate favorability score based on multiple factors
+  let favorabilityScore = 0;
+  if (isFavorableAscendant) favorabilityScore += 2;
+  if (isFavorableMoon) favorabilityScore += 2;
+  if (isAuspiciousNakshatra) favorabilityScore += 1;
+  if (isFavorablePada) favorabilityScore += 1;
+  
+  // Determine answer based on combined score (0-6 range)
+  if (favorabilityScore >= 5) {
     answer = "positive";
     confidence = "high";
-  } else if (isFavorableAscendant || isFavorableMoon) {
+  } else if (favorabilityScore >= 3) {
     answer = "positive";
     confidence = "medium";
-  } else if (!isFavorableAscendant && !isFavorableMoon) {
+  } else if (favorabilityScore >= 2) {
+    answer = "neutral";
+    confidence = "medium";
+  } else if (favorabilityScore === 1) {
     answer = "negative";
     confidence = "medium";
   } else {
-    answer = "neutral";
-    confidence = "low";
+    answer = "negative";
+    confidence = "high";
   }
   
   // Generate interpretation based on category and answer
@@ -226,7 +273,8 @@ export default function PrashnaKundliPage() {
     
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const chart = calculatePrashnaChart(new Date());
+    // Pass the question text to add variation based on the specific question asked
+    const chart = calculatePrashnaChart(new Date(), question);
     const prashnaResult = generatePrashnaAnswer(question, category, chart);
     setResult(prashnaResult);
     
