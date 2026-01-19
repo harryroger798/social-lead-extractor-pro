@@ -1,8 +1,8 @@
 const express = require('express');
 const { body, query, validationResult } = require('express-validator');
-const { getDatabase, getNextInvoiceNumber } = require('../database/db');
+const { getDatabase, getNextInvoiceNumber, getSetting } = require('../database/db');
 const { authenticate, isAdminOrTechnician } = require('../middleware/auth');
-const { asyncHandler, ValidationError, NotFoundError } = require('../middleware/errorHandler');
+const { asyncHandler, ValidationError, NotFoundError, logger } = require('../middleware/errorHandler');
 const { logActivity, ACTIVITY_ACTIONS } = require('../middleware/logging');
 const { 
   REPAIR_STATUS, 
@@ -13,8 +13,48 @@ const {
   DEFAULT_WARRANTY_DAYS,
   DEFAULT_GST_RATE
 } = require('../config/constants');
+const mailgunService = require('../services/mailgunService');
 
 const router = express.Router();
+
+// Helper function to send repair emails (non-blocking)
+const sendRepairEmail = async (emailType, data) => {
+  try {
+    const mailgunEnabled = getSetting('mailgun_enabled') === '1';
+    const mailgunApiKey = getSetting('mailgun_api_key');
+    
+    if (!mailgunEnabled || !mailgunApiKey) {
+      logger.info('Mailgun not configured, skipping email');
+      return;
+    }
+
+    if (!data.customer?.email) {
+      logger.info('Customer has no email, skipping email');
+      return;
+    }
+
+    switch (emailType) {
+      case 'repair_created':
+        await mailgunService.sendRepairCreatedEmail(data);
+        break;
+      case 'status_update':
+        await mailgunService.sendRepairStatusUpdateEmail(data);
+        break;
+      case 'repair_completed':
+        await mailgunService.sendRepairCompletedEmail(data);
+        break;
+      case 'invoice':
+        await mailgunService.sendInvoiceEmail(data);
+        break;
+      case 'payment_received':
+        await mailgunService.sendPaymentReceivedEmail(data);
+        break;
+    }
+    logger.info(`Email sent: ${emailType} to ${data.customer.email}`);
+  } catch (error) {
+    logger.error(`Failed to send ${emailType} email:`, error.message);
+  }
+};
 
 const repairValidation = [
   body('customer_id')
@@ -242,13 +282,19 @@ router.post('/', authenticate, isAdminOrTechnician, repairValidation, asyncHandl
     .run(customer_id);
   
   const repair = db.prepare(`
-    SELECT r.*, c.name as customer_name, c.phone as customer_phone
+    SELECT r.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email
     FROM repairs r
     LEFT JOIN customers c ON r.customer_id = c.id
     WHERE r.id = ?
   `).get(result.lastInsertRowid);
   
   logActivity(req.user.id, ACTIVITY_ACTIONS.CREATE, 'repairs', repair.id, null, repair, req);
+  
+  // Send repair created email (non-blocking)
+  sendRepairEmail('repair_created', {
+    customer: { name: repair.customer_name, email: repair.customer_email, phone: repair.customer_phone },
+    repair
+  });
   
   res.status(201).json({
     success: true,
@@ -486,13 +532,27 @@ router.patch('/:id/status', authenticate, isAdminOrTechnician, [
     }
   
     const updatedRepair = db.prepare(`
-      SELECT r.*, c.name as customer_name, c.phone as customer_phone
+      Select r.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email
       FROM repairs r
       LEFT JOIN customers c ON r.customer_id = c.id
       WHERE r.id = ?
     `).get(id);
   
     logActivity(req.user.id, ACTIVITY_ACTIONS.UPDATE, 'repairs', id, { status: repair.status }, { status }, req);
+  
+    // Send status update email (non-blocking)
+    const customer = { name: updatedRepair.customer_name, email: updatedRepair.customer_email, phone: updatedRepair.customer_phone };
+    
+    if (status === REPAIR_STATUS.COMPLETED) {
+      // Send repair completed email with invoice
+      sendRepairEmail('repair_completed', { customer, repair: updatedRepair, invoice });
+      if (invoice) {
+        sendRepairEmail('invoice', { customer, invoice, repair: updatedRepair });
+      }
+    } else {
+      // Send status update email
+      sendRepairEmail('status_update', { customer, repair: updatedRepair, oldStatus: repair.status, newStatus: status });
+    }
   
     res.json({
       success: true,
@@ -636,13 +696,20 @@ router.post('/:id/complete', authenticate, isAdminOrTechnician, asyncHandler(asy
   }
   
   const updatedRepair = db.prepare(`
-    SELECT r.*, c.name as customer_name, c.phone as customer_phone
+    SELECT r.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email
     FROM repairs r
     LEFT JOIN customers c ON r.customer_id = c.id
     WHERE r.id = ?
   `).get(id);
   
   logActivity(req.user.id, ACTIVITY_ACTIONS.UPDATE, 'repairs', id, { status: repair.status }, { status: REPAIR_STATUS.COMPLETED }, req);
+  
+  // Send repair completed email (non-blocking)
+  const customer = { name: repair.customer_name, email: repair.customer_email, phone: repair.customer_phone };
+  sendRepairEmail('repair_completed', { customer, repair: updatedRepair, invoice });
+  if (invoice) {
+    sendRepairEmail('invoice', { customer, invoice, repair: updatedRepair });
+  }
   
   res.json({
     success: true,
@@ -653,7 +720,7 @@ router.post('/:id/complete', authenticate, isAdminOrTechnician, asyncHandler(asy
   });
 }));
 
-router.post('/:id/mobile-details', authenticate, isAdminOrTechnician, asyncHandler(async (req, res) => {
+router.post('/:id/mobile-details',authenticate, isAdminOrTechnician, asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { phone_model, imei_number, repair_type, parts_replaced, parts_supplier, parts_cost, software_issues, hardware_issues } = req.body;
   const db = getDatabase();
