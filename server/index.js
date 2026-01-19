@@ -21,7 +21,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const settingsRoutes = require('./routes/settings');
 const digitalServiceRoutes = require('./routes/digitalServices');
 const airtableRoutes = require('./routes/airtable');
-const omnisendRoutes = require('./routes/omnisend');
+const mailgunRoutes = require('./routes/omnisend'); // Using same route file, now with Mailgun
 const exportRoutes = require('./routes/exports');
 const backupRoutes = require('./routes/backup');
 
@@ -136,7 +136,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/digital-services', digitalServiceRoutes);
 app.use('/api/airtable', airtableRoutes);
-app.use('/api/omnisend', omnisendRoutes);
+app.use('/api/mailgun', mailgunRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/backup', backupRoutes);
 

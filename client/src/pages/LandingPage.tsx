@@ -551,7 +551,7 @@ export function LandingPage() {
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              <span className="font-medium">Omnisend</span>
+              <span className="font-medium">Mailgun</span>
             </div>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />

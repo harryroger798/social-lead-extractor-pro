@@ -5,7 +5,7 @@ const { authenticate, isAdminOrTechnician, isAdmin } = require('../middleware/au
 const { asyncHandler, ValidationError, NotFoundError } = require('../middleware/errorHandler');
 const { logActivity, ACTIVITY_ACTIONS } = require('../middleware/logging');
 const { MESSAGE_TYPES, MESSAGE_STATUS } = require('../config/constants');
-const omnisendService = require('../services/omnisendService');
+const mailgunService = require('../services/mailgunService');
 
 const router = express.Router();
 
@@ -32,16 +32,16 @@ router.post('/send-invoice', authenticate, isAdminOrTechnician, [
     throw new NotFoundError('Invoice');
   }
   
-  const omnisendEnabled = getSetting('omnisend_enabled') === '1';
-  const omnisendApiKey = getSetting('omnisend_api_key');
+    const mailgunEnabled = getSetting('mailgun_enabled') === '1';
+    const mailgunApiKey = getSetting('mailgun_api_key');
   
-  if (!omnisendEnabled || !omnisendApiKey) {
-    return res.status(400).json({
-      success: false,
-      error: 'Omnisend not configured',
-      message: 'Please configure Omnisend API key and enable it in settings'
-    });
-  }
+    if (!mailgunEnabled || !mailgunApiKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'Mailgun not configured',
+        message: 'Please configure Mailgun API key and enable it in settings'
+      });
+    }
   
   let recipient;
   let subject;
@@ -81,7 +81,7 @@ router.post('/send-invoice', authenticate, isAdminOrTechnician, [
   const logResult = logStmt.run(invoice_id, invoice.customer_id, channel, recipient, subject || null, body_text);
   
   try {
-    const result = await omnisendService.sendMessage({
+    const result = await mailgunService.sendMessage({
       channel,
       recipient,
       subject,
@@ -183,21 +183,21 @@ router.post('/test-email', authenticate, isAdmin, [
   
   const { email, test_message } = req.body;
   
-  const omnisendEnabled = getSetting('omnisend_enabled') === '1';
-  const omnisendApiKey = getSetting('omnisend_api_key');
+    const mailgunEnabled = getSetting('mailgun_enabled') === '1';
+    const mailgunApiKey = getSetting('mailgun_api_key');
   
-  if (!omnisendEnabled || !omnisendApiKey) {
-    return res.status(400).json({
-      success: false,
-      error: 'Omnisend not configured',
-      message: 'Please configure Omnisend API key and enable it in settings'
-    });
-  }
+    if (!mailgunEnabled || !mailgunApiKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'Mailgun not configured',
+        message: 'Please configure Mailgun API key and enable it in settings'
+      });
+    }
   
   try {
-    const result = await omnisendService.sendTestEmail({
+    const result = await mailgunService.sendTestEmail({
       email,
-      message: test_message || `This is a test email from ${getSetting('business_name')}. If you received this, your Omnisend integration is working correctly!`
+      message: test_message || `This is a test email from ${getSetting('business_name')}. If you received this, your Mailgun integration is working correctly!`
     });
     
     res.json({
@@ -285,7 +285,7 @@ router.post('/retry/:id', authenticate, isAdminOrTechnician, asyncHandler(async 
   }
   
   try {
-    const result = await omnisendService.sendMessage({
+    const result = await mailgunService.sendMessage({
       channel: log.message_type,
       recipient: log.recipient,
       subject: log.subject,

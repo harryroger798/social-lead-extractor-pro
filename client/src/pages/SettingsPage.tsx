@@ -101,14 +101,15 @@ export function SettingsPage() {
     })
   }
 
-  const handleOmnisendSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    updateIntegrationsMutation.mutate({
-      omnisend_api_key: formData.get('omnisend_api_key'),
-      omnisend_enabled: true,
-    })
-  }
+    const handleMailgunSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const formData = new FormData(e.currentTarget)
+      updateIntegrationsMutation.mutate({
+        mailgun_api_key: formData.get('mailgun_api_key'),
+        mailgun_domain: formData.get('mailgun_domain'),
+        mailgun_enabled: true,
+      })
+    }
 
   const handlePaymentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -436,41 +437,51 @@ export function SettingsPage() {
               </Card>
 
               <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
-                <div className="h-1 bg-gradient-to-r from-orange-500 to-red-500" />
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 dark:text-white">
-                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                      <Mail className="h-4 w-4 text-white" />
-                    </div>
-                    Omnisend Integration
-                  </CardTitle>
-                  <CardDescription>
-                    Configure Omnisend for email and SMS notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleOmnisendSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="omnisend_api_key">API Key</Label>
-                      <Input
-                        id="omnisend_api_key"
-                        name="omnisend_api_key"
-                        type="password"
-                        defaultValue={settings.omnisend_api_key}
-                        placeholder="Enter Omnisend API key"
-                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      disabled={updateIntegrationsMutation.isPending}
-                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save
-                    </Button>
-                  </form>
-                </CardContent>
+                                <div className="h-1 bg-gradient-to-r from-orange-500 to-red-500" />
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2 dark:text-white">
+                                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                                      <Mail className="h-4 w-4 text-white" />
+                                    </div>
+                                    Mailgun Integration
+                                  </CardTitle>
+                                  <CardDescription>
+                                    Configure Mailgun for email notifications
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <form onSubmit={handleMailgunSubmit} className="space-y-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="mailgun_api_key">API Key</Label>
+                                      <Input
+                                        id="mailgun_api_key"
+                                        name="mailgun_api_key"
+                                        type="password"
+                                        defaultValue={settings.mailgun_api_key}
+                                        placeholder="Enter Mailgun API key"
+                                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="mailgun_domain">Domain</Label>
+                                      <Input
+                                        id="mailgun_domain"
+                                        name="mailgun_domain"
+                                        defaultValue={settings.mailgun_domain || 'bytecare.shop'}
+                                        placeholder="e.g., bytecare.shop"
+                                        className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                                      />
+                                    </div>
+                                    <Button 
+                                      type="submit" 
+                                      disabled={updateIntegrationsMutation.isPending}
+                                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25"
+                                    >
+                                      <Save className="mr-2 h-4 w-4" />
+                                      Save
+                                    </Button>
+                                  </form>
+                                </CardContent>
               </Card>
             </>
           ) : (
