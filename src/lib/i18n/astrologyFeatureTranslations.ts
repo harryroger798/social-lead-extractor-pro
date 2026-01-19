@@ -628,12 +628,41 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         "Pointed Fingertips": "Pointed Fingertips", "Square Fingertips": "Square Fingertips",
         "Spatulate Fingertips": "Spatulate Fingertips", "Conic Fingertips": "Conic Fingertips"
       },
-      handShapeNames: {
-        "Earth Hand": "Earth Hand", "Air Hand": "Air Hand",
-        "Water Hand": "Water Hand", "Fire Hand": "Fire Hand"
-      }
-    },
-    // Common
+          handShapeNames: {
+            "Earth Hand": "Earth Hand", "Air Hand": "Air Hand",
+            "Water Hand": "Water Hand", "Fire Hand": "Fire Hand"
+          },
+          analyze: {
+            tab: "Analyze",
+            title: "Analyze Your Palm",
+            description: "Upload a clear photo of your palm to get an AI-powered palm reading based on traditional Vedic palmistry.",
+            uploadPrompt: "Click to upload your palm image",
+            uploadHint: "JPG, PNG or WebP. Max 10MB.",
+            selectImage: "Select Image",
+            tipsTitle: "Tips for a good palm photo:",
+            tip1: "Use good lighting - natural daylight works best",
+            tip2: "Keep your palm flat and fingers slightly spread",
+            tip3: "Capture your dominant hand (right if right-handed)",
+            tip4: "Ensure all major lines are visible in the frame",
+            tip5: "Avoid shadows across your palm",
+            uploadedPalm: "Uploaded palm image",
+            changeImage: "Change Image",
+            analyzeButton: "Analyze My Palm",
+            analyzing: "Analyzing your palm...",
+            analyzingHint: "This may take a few seconds",
+            invalidFile: "Please upload a valid image file (JPG, PNG, etc.)",
+            error: "Failed to analyze palm image. Please try again.",
+            tryAgain: "Try Again",
+            analysisComplete: "Palm Analysis Complete!",
+            overallReading: "Overall Reading",
+            detectedLines: "Detected Palm Lines",
+            confidence: "confidence",
+            handShape: "Hand Shape Analysis",
+            disclaimer: "This palm reading is based on traditional Vedic palmistry principles and is intended for entertainment and self-reflection purposes only. It should not be considered as professional advice or absolute prediction.",
+            tryAnother: "Analyze Another Palm"
+          }
+        },
+        // Common
     common: {
       birthDate: "Birth Date",
       birthTime: "Birth Time",
@@ -1272,13 +1301,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "नुकीली उंगलियां", "Square Fingertips": "चौकोर उंगलियां",
           "Spatulate Fingertips": "स्पैटुलेट उंगलियां", "Conic Fingertips": "शंक्वाकार उंगलियां"
         },
-        handShapeNames: {
-          "Earth Hand": "पृथ्वी हाथ", "Air Hand": "वायु हाथ",
-          "Water Hand": "जल हाथ", "Fire Hand": "अग्नि हाथ"
-        }
-      },
-      common: {
-        name: "नाम",
+              handShapeNames: {
+                "Earth Hand": "पृथ्वी हाथ", "Air Hand": "वायु हाथ",
+                "Water Hand": "जल हाथ", "Fire Hand": "अग्नि हाथ"
+              },
+              analyze: {
+                tab: "विश्लेषण",
+                title: "अपनी हथेली का विश्लेषण करें",
+                description: "पारंपरिक वैदिक हस्तरेखा पर आधारित AI-संचालित हस्तरेखा पढ़ने के लिए अपनी हथेली की स्पष्ट तस्वीर अपलोड करें।",
+                uploadPrompt: "अपनी हथेली की छवि अपलोड करने के लिए क्लिक करें",
+                uploadHint: "JPG, PNG या WebP। अधिकतम 10MB।",
+                selectImage: "छवि चुनें",
+                tipsTitle: "अच्छी हथेली फोटो के लिए सुझाव:",
+                tip1: "अच्छी रोशनी का उपयोग करें - प्राकृतिक दिन की रोशनी सबसे अच्छी है",
+                tip2: "अपनी हथेली सपाट रखें और उंगलियां थोड़ी फैली हुई",
+                tip3: "अपना प्रमुख हाथ कैप्चर करें (दाहिने हाथ वालों के लिए दाहिना)",
+                tip4: "सुनिश्चित करें कि सभी प्रमुख रेखाएं फ्रेम में दिखाई दें",
+                tip5: "अपनी हथेली पर छाया से बचें",
+                uploadedPalm: "अपलोड की गई हथेली छवि",
+                changeImage: "छवि बदलें",
+                analyzeButton: "मेरी हथेली का विश्लेषण करें",
+                analyzing: "आपकी हथेली का विश्लेषण हो रहा है...",
+                analyzingHint: "इसमें कुछ सेकंड लग सकते हैं",
+                invalidFile: "कृपया एक वैध छवि फ़ाइल अपलोड करें (JPG, PNG, आदि)",
+                error: "हथेली छवि का विश्लेषण करने में विफल। कृपया पुनः प्रयास करें।",
+                tryAgain: "पुनः प्रयास करें",
+                analysisComplete: "हथेली विश्लेषण पूर्ण!",
+                overallReading: "समग्र पठन",
+                detectedLines: "पहचानी गई हस्तरेखाएं",
+                confidence: "विश्वास",
+                handShape: "हाथ के आकार का विश्लेषण",
+                disclaimer: "यह हस्तरेखा पठन पारंपरिक वैदिक हस्तरेखा सिद्धांतों पर आधारित है और केवल मनोरंजन और आत्म-चिंतन के उद्देश्यों के लिए है। इसे पेशेवर सलाह या पूर्ण भविष्यवाणी नहीं माना जाना चाहिए।",
+                tryAnother: "एक और हथेली का विश्लेषण करें"
+              }
+            },
+            common: {
+              name: "नाम",
         enterName: "अपना नाम दर्ज करें",
         birthDate: "जन्म तिथि",
         birthTime: "जन्म समय",
@@ -1920,13 +1978,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "கூர்மையான விரல் நுனிகள்", "Square Fingertips": "சதுர விரல் நுனிகள்",
           "Spatulate Fingertips": "ஸ்பாட்டுலேட் விரல் நுனிகள்", "Conic Fingertips": "கூம்பு விரல் நுனிகள்"
         },
-        handShapeNames: {
-          "Earth Hand": "பூமி கை", "Air Hand": "காற்று கை",
-          "Water Hand": "நீர் கை", "Fire Hand": "நெருப்பு கை"
-        }
-      },
-      common: {
-        name: "பெயர்",
+              handShapeNames: {
+                "Earth Hand": "பூமி கை", "Air Hand": "காற்று கை",
+                "Water Hand": "நீர் கை", "Fire Hand": "நெருப்பு கை"
+              },
+              analyze: {
+                tab: "பகுப்பாய்வு",
+                title: "உங்கள் உள்ளங்கையை பகுப்பாய்வு செய்யுங்கள்",
+                description: "பாரம்பரிய வேத கைரேகை அடிப்படையில் AI-இயக்கப்படும் கைரேகை வாசிப்புக்கு உங்கள் உள்ளங்கையின் தெளிவான புகைப்படத்தை பதிவேற்றவும்.",
+                uploadPrompt: "உங்கள் உள்ளங்கை படத்தை பதிவேற்ற கிளிக் செய்யவும்",
+                uploadHint: "JPG, PNG அல்லது WebP. அதிகபட்சம் 10MB.",
+                selectImage: "படத்தைத் தேர்ந்தெடுக்கவும்",
+                tipsTitle: "நல்ல உள்ளங்கை புகைப்படத்திற்கான குறிப்புகள்:",
+                tip1: "நல்ல வெளிச்சத்தைப் பயன்படுத்துங்கள் - இயற்கை பகல் வெளிச்சம் சிறந்தது",
+                tip2: "உங்கள் உள்ளங்கையை தட்டையாகவும் விரல்களை சற்று விரித்தும் வைக்கவும்",
+                tip3: "உங்கள் ஆதிக்க கையை படம்பிடிக்கவும் (வலது கை பயன்படுத்துபவர்களுக்கு வலது)",
+                tip4: "அனைத்து முக்கிய ரேகைகளும் பிரேமில் தெரியும்படி உறுதிசெய்யவும்",
+                tip5: "உங்கள் உள்ளங்கையில் நிழல்களைத் தவிர்க்கவும்",
+                uploadedPalm: "பதிவேற்றப்பட்ட உள்ளங்கை படம்",
+                changeImage: "படத்தை மாற்று",
+                analyzeButton: "என் உள்ளங்கையை பகுப்பாய்வு செய்",
+                analyzing: "உங்கள் உள்ளங்கையை பகுப்பாய்வு செய்கிறது...",
+                analyzingHint: "இது சில வினாடிகள் ஆகலாம்",
+                invalidFile: "சரியான படக் கோப்பை பதிவேற்றவும் (JPG, PNG, போன்றவை)",
+                error: "உள்ளங்கை படத்தை பகுப்பாய்வு செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+                tryAgain: "மீண்டும் முயற்சிக்கவும்",
+                analysisComplete: "உள்ளங்கை பகுப்பாய்வு முடிந்தது!",
+                overallReading: "ஒட்டுமொத்த வாசிப்பு",
+                detectedLines: "கண்டறியப்பட்ட கைரேகைகள்",
+                confidence: "நம்பிக்கை",
+                handShape: "கை வடிவ பகுப்பாய்வு",
+                disclaimer: "இந்த கைரேகை வாசிப்பு பாரம்பரிய வேத கைரேகை கொள்கைகளை அடிப்படையாகக் கொண்டது மற்றும் பொழுதுபோக்கு மற்றும் சுய-பிரதிபலிப்பு நோக்கங்களுக்காக மட்டுமே. இது தொழில்முறை ஆலோசனை அல்லது முழுமையான கணிப்பாக கருதப்படக்கூடாது.",
+                tryAnother: "மற்றொரு உள்ளங்கையை பகுப்பாய்வு செய்"
+              }
+            },
+            common: {
+              name: "பெயர்",
         enterName: "உங்கள் பெயரை உள்ளிடவும்",
         birthDate: "பிறந்த தேதி",
         birthTime: "பிறந்த நேரம்",
@@ -2568,13 +2655,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "మొనదేలిన వేలు చివరలు", "Square Fingertips": "చతురస్ర వేలు చివరలు",
           "Spatulate Fingertips": "స్పాట్యులేట్ వేలు చివరలు", "Conic Fingertips": "శంకు వేలు చివరలు"
         },
-        handShapeNames: {
-          "Earth Hand": "భూమి చేయి", "Air Hand": "వాయు చేయి",
-          "Water Hand": "జల చేయి", "Fire Hand": "అగ్ని చేయి"
-        }
-      },
-      common: {
-        name: "పేరు",
+              handShapeNames: {
+                "Earth Hand": "భూమి చేయి", "Air Hand": "వాయు చేయి",
+                "Water Hand": "జల చేయి", "Fire Hand": "అగ్ని చేయి"
+              },
+              analyze: {
+                tab: "విశ్లేషణ",
+                title: "మీ అరచేతిని విశ్లేషించండి",
+                description: "సాంప్రదాయ వేద హస్తరేఖ ఆధారంగా AI-ఆధారిత హస్తరేఖ చదవడానికి మీ అరచేతి యొక్క స్పష్టమైన ఫోటోను అప్‌లోడ్ చేయండి.",
+                uploadPrompt: "మీ అరచేతి చిత్రాన్ని అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి",
+                uploadHint: "JPG, PNG లేదా WebP. గరిష్టంగా 10MB.",
+                selectImage: "చిత్రాన్ని ఎంచుకోండి",
+                tipsTitle: "మంచి అరచేతి ఫోటో కోసం చిట్కాలు:",
+                tip1: "మంచి వెలుతురు ఉపయోగించండి - సహజ పగటి వెలుతురు ఉత్తమం",
+                tip2: "మీ అరచేతిని చదునుగా మరియు వేళ్లను కొద్దిగా విస్తరించి ఉంచండి",
+                tip3: "మీ ప్రధాన చేతిని క్యాప్చర్ చేయండి (కుడిచేతి వారికి కుడి)",
+                tip4: "అన్ని ప్రధాన రేఖలు ఫ్రేమ్‌లో కనిపించేలా చూడండి",
+                tip5: "మీ అరచేతిపై నీడలను నివారించండి",
+                uploadedPalm: "అప్‌లోడ్ చేసిన అరచేతి చిత్రం",
+                changeImage: "చిత్రాన్ని మార్చండి",
+                analyzeButton: "నా అరచేతిని విశ్లేషించండి",
+                analyzing: "మీ అరచేతిని విశ్లేషిస్తోంది...",
+                analyzingHint: "ఇది కొన్ని సెకన్లు పట్టవచ్చు",
+                invalidFile: "దయచేసి చెల్లుబాటు అయ్యే చిత్ర ఫైల్‌ను అప్‌లోడ్ చేయండి (JPG, PNG, మొదలైనవి)",
+                error: "అరచేతి చిత్రాన్ని విశ్లేషించడంలో విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.",
+                tryAgain: "మళ్లీ ప్రయత్నించండి",
+                analysisComplete: "అరచేతి విశ్లేషణ పూర్తయింది!",
+                overallReading: "మొత్తం చదవడం",
+                detectedLines: "గుర్తించిన హస్తరేఖలు",
+                confidence: "నమ్మకం",
+                handShape: "చేతి ఆకార విశ్లేషణ",
+                disclaimer: "ఈ హస్తరేఖ చదవడం సాంప్రదాయ వేద హస్తరేఖ సూత్రాలపై ఆధారపడి ఉంది మరియు వినోదం మరియు స్వీయ-ప్రతిబింబం ప్రయోజనాల కోసం మాత్రమే. ఇది వృత్తిపరమైన సలహా లేదా సంపూర్ణ అంచనాగా పరిగణించకూడదు.",
+                tryAnother: "మరొక అరచేతిని విశ్లేషించండి"
+              }
+            },
+            common: {
+              name: "పేరు",
         enterName: "మీ పేరు నమోదు చేయండి",
         birthDate: "పుట్టిన తేదీ",
         birthTime: "పుట్టిన సమయం",
@@ -3216,13 +3332,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "সূচালো আঙুলের ডগা", "Square Fingertips": "চতুষ্কোণ আঙুলের ডগা",
           "Spatulate Fingertips": "স্প্যাটুলেট আঙুলের ডগা", "Conic Fingertips": "শঙ্কু আঙুলের ডগা"
         },
-        handShapeNames: {
-          "Earth Hand": "পৃথিবী হাত", "Air Hand": "বায়ু হাত",
-          "Water Hand": "জল হাত", "Fire Hand": "অগ্নি হাত"
-        }
-      },
-      common: {
-        name: "নাম",
+              handShapeNames: {
+                "Earth Hand": "পৃথিবী হাত", "Air Hand": "বায়ু হাত",
+                "Water Hand": "জল হাত", "Fire Hand": "অগ্নি হাত"
+              },
+              analyze: {
+                tab: "বিশ্লেষণ",
+                title: "আপনার হাতের তালু বিশ্লেষণ করুন",
+                description: "ঐতিহ্যবাহী বৈদিক হস্তরেখা ভিত্তিক AI-চালিত হস্তরেখা পড়ার জন্য আপনার হাতের তালুর স্পষ্ট ছবি আপলোড করুন।",
+                uploadPrompt: "আপনার হাতের তালুর ছবি আপলোড করতে ক্লিক করুন",
+                uploadHint: "JPG, PNG বা WebP। সর্বোচ্চ 10MB।",
+                selectImage: "ছবি নির্বাচন করুন",
+                tipsTitle: "ভালো হাতের তালুর ছবির জন্য টিপস:",
+                tip1: "ভালো আলো ব্যবহার করুন - প্রাকৃতিক দিনের আলো সবচেয়ে ভালো",
+                tip2: "আপনার হাতের তালু সমতল রাখুন এবং আঙুলগুলো সামান্য ছড়িয়ে দিন",
+                tip3: "আপনার প্রধান হাত ক্যাপচার করুন (ডানহাতিদের জন্য ডান)",
+                tip4: "সমস্ত প্রধান রেখা ফ্রেমে দৃশ্যমান নিশ্চিত করুন",
+                tip5: "আপনার হাতের তালুতে ছায়া এড়িয়ে চলুন",
+                uploadedPalm: "আপলোড করা হাতের তালুর ছবি",
+                changeImage: "ছবি পরিবর্তন করুন",
+                analyzeButton: "আমার হাতের তালু বিশ্লেষণ করুন",
+                analyzing: "আপনার হাতের তালু বিশ্লেষণ করা হচ্ছে...",
+                analyzingHint: "এটি কয়েক সেকেন্ড সময় নিতে পারে",
+                invalidFile: "অনুগ্রহ করে একটি বৈধ ছবি ফাইল আপলোড করুন (JPG, PNG, ইত্যাদি)",
+                error: "হাতের তালুর ছবি বিশ্লেষণ করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+                tryAgain: "আবার চেষ্টা করুন",
+                analysisComplete: "হাতের তালু বিশ্লেষণ সম্পূর্ণ!",
+                overallReading: "সামগ্রিক পাঠ",
+                detectedLines: "সনাক্ত করা হস্তরেখা",
+                confidence: "আত্মবিশ্বাস",
+                handShape: "হাতের আকৃতি বিশ্লেষণ",
+                disclaimer: "এই হস্তরেখা পাঠ ঐতিহ্যবাহী বৈদিক হস্তরেখা নীতির উপর ভিত্তি করে এবং শুধুমাত্র বিনোদন এবং আত্ম-প্রতিফলনের উদ্দেশ্যে। এটি পেশাদার পরামর্শ বা সম্পূর্ণ ভবিষ্যদ্বাণী হিসাবে বিবেচনা করা উচিত নয়।",
+                tryAnother: "অন্য একটি হাতের তালু বিশ্লেষণ করুন"
+              }
+            },
+            common: {
+              name: "নাম",
         enterName: "আপনার নাম লিখুন",
         birthDate: "জন্ম তারিখ",
         birthTime: "জন্ম সময়",
@@ -3864,13 +4009,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "टोकदार बोटांचे टोक", "Square Fingertips": "चौकोनी बोटांचे टोक",
           "Spatulate Fingertips": "स्पॅट्युलेट बोटांचे टोक", "Conic Fingertips": "शंकू बोटांचे टोक"
         },
-        handShapeNames: {
-          "Earth Hand": "पृथ्वी हात", "Air Hand": "वायू हात",
-          "Water Hand": "जल हात", "Fire Hand": "अग्नि हात"
-        }
-      },
-      common: {
-        name: "नाव",
+              handShapeNames: {
+                "Earth Hand": "पृथ्वी हात", "Air Hand": "वायू हात",
+                "Water Hand": "जल हात", "Fire Hand": "अग्नि हात"
+              },
+              analyze: {
+                tab: "विश्लेषण",
+                title: "तुमचा तळहात विश्लेषित करा",
+                description: "पारंपारिक वैदिक हस्तरेखा आधारित AI-चालित हस्तरेखा वाचनासाठी तुमच्या तळहाताचा स्पष्ट फोटो अपलोड करा.",
+                uploadPrompt: "तुमची तळहाताची प्रतिमा अपलोड करण्यासाठी क्लिक करा",
+                uploadHint: "JPG, PNG किंवा WebP. कमाल 10MB.",
+                selectImage: "प्रतिमा निवडा",
+                tipsTitle: "चांगल्या तळहाताच्या फोटोसाठी टिप्स:",
+                tip1: "चांगला प्रकाश वापरा - नैसर्गिक दिवसाचा प्रकाश सर्वोत्तम आहे",
+                tip2: "तुमचा तळहात सपाट ठेवा आणि बोटे थोडी पसरवा",
+                tip3: "तुमचा प्रमुख हात कॅप्चर करा (उजव्या हाताच्यांसाठी उजवा)",
+                tip4: "सर्व प्रमुख रेषा फ्रेममध्ये दिसत असल्याची खात्री करा",
+                tip5: "तुमच्या तळहातावर सावल्या टाळा",
+                uploadedPalm: "अपलोड केलेली तळहाताची प्रतिमा",
+                changeImage: "प्रतिमा बदला",
+                analyzeButton: "माझा तळहात विश्लेषित करा",
+                analyzing: "तुमचा तळहात विश्लेषित करत आहे...",
+                analyzingHint: "यास काही सेकंद लागू शकतात",
+                invalidFile: "कृपया वैध प्रतिमा फाइल अपलोड करा (JPG, PNG, इ.)",
+                error: "तळहाताची प्रतिमा विश्लेषित करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+                tryAgain: "पुन्हा प्रयत्न करा",
+                analysisComplete: "तळहात विश्लेषण पूर्ण!",
+                overallReading: "एकूण वाचन",
+                detectedLines: "ओळखलेल्या हस्तरेखा",
+                confidence: "आत्मविश्वास",
+                handShape: "हाताच्या आकाराचे विश्लेषण",
+                disclaimer: "हे हस्तरेखा वाचन पारंपारिक वैदिक हस्तरेखा तत्त्वांवर आधारित आहे आणि केवळ मनोरंजन आणि आत्म-चिंतनाच्या उद्देशाने आहे. याला व्यावसायिक सल्ला किंवा संपूर्ण भविष्यवाणी मानू नये.",
+                tryAnother: "दुसरा तळहात विश्लेषित करा"
+              }
+            },
+            common: {
+              name: "नाव",
         enterName: "आपले नाव प्रविष्ट करा",
         birthDate: "जन्म तारीख",
         birthTime: "जन्म वेळ",
@@ -4512,13 +4686,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "અણીદાર આંગળીના ટોચ", "Square Fingertips": "ચોરસ આંગળીના ટોચ",
           "Spatulate Fingertips": "સ્પેટ્યુલેટ આંગળીના ટોચ", "Conic Fingertips": "શંકુ આંગળીના ટોચ"
         },
-        handShapeNames: {
-          "Earth Hand": "પૃથ્વી હાથ", "Air Hand": "વાયુ હાથ",
-          "Water Hand": "જળ હાથ", "Fire Hand": "અગ્નિ હાથ"
-        }
-      },
-      common: {
-        name: "નામ",
+              handShapeNames: {
+                "Earth Hand": "પૃથ્વી હાથ", "Air Hand": "વાયુ હાથ",
+                "Water Hand": "જળ હાથ", "Fire Hand": "અગ્નિ હાથ"
+              },
+              analyze: {
+                tab: "વિશ્લેષણ",
+                title: "તમારી હથેળીનું વિશ્લેષણ કરો",
+                description: "પરંપરાગત વૈદિક હસ્તરેખા આધારિત AI-સંચાલિત હસ્તરેખા વાંચન માટે તમારી હથેળીનો સ્પષ્ટ ફોટો અપલોડ કરો.",
+                uploadPrompt: "તમારી હથેળીની છબી અપલોડ કરવા ક્લિક કરો",
+                uploadHint: "JPG, PNG અથવા WebP. મહત્તમ 10MB.",
+                selectImage: "છબી પસંદ કરો",
+                tipsTitle: "સારા હથેળી ફોટો માટે ટિપ્સ:",
+                tip1: "સારી લાઇટિંગ વાપરો - કુદરતી દિવસનો પ્રકાશ શ્રેષ્ઠ છે",
+                tip2: "તમારી હથેળી સપાટ રાખો અને આંગળીઓ થોડી ફેલાવો",
+                tip3: "તમારો પ્રભાવશાળી હાથ કેપ્ચર કરો (જમણા હાથવાળા માટે જમણો)",
+                tip4: "બધી મુખ્ય રેખાઓ ફ્રેમમાં દેખાય તેની ખાતરી કરો",
+                tip5: "તમારી હથેળી પર પડછાયા ટાળો",
+                uploadedPalm: "અપલોડ કરેલી હથેળીની છબી",
+                changeImage: "છબી બદલો",
+                analyzeButton: "મારી હથેળીનું વિશ્લેષણ કરો",
+                analyzing: "તમારી હથેળીનું વિશ્લેષણ કરી રહ્યા છીએ...",
+                analyzingHint: "આમાં થોડી સેકન્ડ લાગી શકે છે",
+                invalidFile: "કૃપા કરીને માન્ય છબી ફાઇલ અપલોડ કરો (JPG, PNG, વગેરે)",
+                error: "હથેળીની છબીનું વિશ્લેષણ કરવામાં નિષ્ફળ. કૃપા કરીને ફરીથી પ્રયાસ કરો.",
+                tryAgain: "ફરીથી પ્રયાસ કરો",
+                analysisComplete: "હથેળી વિશ્લેષણ પૂર્ણ!",
+                overallReading: "એકંદર વાંચન",
+                detectedLines: "શોધાયેલ હસ્તરેખાઓ",
+                confidence: "વિશ્વાસ",
+                handShape: "હાથના આકારનું વિશ્લેષણ",
+                disclaimer: "આ હસ્તરેખા વાંચન પરંપરાગત વૈદિક હસ્તરેખા સિદ્ધાંતો પર આધારિત છે અને માત્ર મનોરંજન અને આત્મ-ચિંતનના હેતુઓ માટે છે. તેને વ્યાવસાયિક સલાહ અથવા સંપૂર્ણ આગાહી તરીકે ગણવું જોઈએ નહીં.",
+                tryAnother: "બીજી હથેળીનું વિશ્લેષણ કરો"
+              }
+            },
+            common: {
+              name: "નામ",
         enterName: "તમારું નામ દાખલ કરો",
         birthDate: "જન્મ તારીખ",
         birthTime: "જન્મ સમય",
@@ -5160,12 +5363,41 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "ಚೂಪಾದ ಬೆರಳ ತುದಿಗಳು", "Square Fingertips": "ಚೌಕ ಬೆರಳ ತುದಿಗಳು",
           "Spatulate Fingertips": "ಸ್ಪಾಟ್ಯುಲೇಟ್ ಬೆರಳ ತುದಿಗಳು", "Conic Fingertips": "ಶಂಕು ಬೆರಳ ತುದಿಗಳು"
         },
-        handShapeNames: {
-          "Earth Hand": "ಭೂಮಿ ಕೈ", "Air Hand": "ವಾಯು ಕೈ",
-          "Water Hand": "ನೀರು ಕೈ", "Fire Hand": "ಅಗ್ನಿ ಕೈ"
-        }
-      },
-      common: {
+              handShapeNames: {
+                "Earth Hand": "ಭೂಮಿ ಕೈ", "Air Hand": "ವಾಯು ಕೈ",
+                "Water Hand": "ನೀರು ಕೈ", "Fire Hand": "ಅಗ್ನಿ ಕೈ"
+              },
+              analyze: {
+                tab: "ವಿಶ್ಲೇಷಣೆ",
+                title: "ನಿಮ್ಮ ಅಂಗೈಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
+                description: "ಸಾಂಪ್ರದಾಯಿಕ ವೈದಿಕ ಹಸ್ತರೇಖಾ ಆಧಾರಿತ AI-ಚಾಲಿತ ಹಸ್ತರೇಖಾ ಓದುವಿಕೆಗಾಗಿ ನಿಮ್ಮ ಅಂಗೈಯ ಸ್ಪಷ್ಟ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.",
+                uploadPrompt: "ನಿಮ್ಮ ಅಂಗೈ ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+                uploadHint: "JPG, PNG ಅಥವಾ WebP. ಗರಿಷ್ಠ 10MB.",
+                selectImage: "ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+                tipsTitle: "ಉತ್ತಮ ಅಂಗೈ ಫೋಟೋಗಾಗಿ ಸಲಹೆಗಳು:",
+                tip1: "ಉತ್ತಮ ಬೆಳಕು ಬಳಸಿ - ನೈಸರ್ಗಿಕ ಹಗಲು ಬೆಳಕು ಉತ್ತಮ",
+                tip2: "ನಿಮ್ಮ ಅಂಗೈಯನ್ನು ಸಮತಟ್ಟಾಗಿ ಮತ್ತು ಬೆರಳುಗಳನ್ನು ಸ್ವಲ್ಪ ಹರಡಿ ಇಡಿ",
+                tip3: "ನಿಮ್ಮ ಪ್ರಧಾನ ಕೈಯನ್ನು ಸೆರೆಹಿಡಿಯಿರಿ (ಬಲಗೈಯವರಿಗೆ ಬಲ)",
+                tip4: "ಎಲ್ಲಾ ಪ್ರಮುಖ ರೇಖೆಗಳು ಫ್ರೇಮ್‌ನಲ್ಲಿ ಗೋಚರಿಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿ",
+                tip5: "ನಿಮ್ಮ ಅಂಗೈಯ ಮೇಲೆ ನೆರಳುಗಳನ್ನು ತಪ್ಪಿಸಿ",
+                uploadedPalm: "ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ಅಂಗೈ ಚಿತ್ರ",
+                changeImage: "ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸಿ",
+                analyzeButton: "ನನ್ನ ಅಂಗೈಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
+                analyzing: "ನಿಮ್ಮ ಅಂಗೈಯನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...",
+                analyzingHint: "ಇದು ಕೆಲವು ಸೆಕೆಂಡುಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು",
+                invalidFile: "ದಯವಿಟ್ಟು ಮಾನ್ಯ ಚಿತ್ರ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ (JPG, PNG, ಇತ್ಯಾದಿ)",
+                error: "ಅಂಗೈ ಚಿತ್ರವನ್ನು ವಿಶ್ಲೇಷಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+                tryAgain: "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+                analysisComplete: "ಅಂಗೈ ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!",
+                overallReading: "ಒಟ್ಟಾರೆ ಓದುವಿಕೆ",
+                detectedLines: "ಪತ್ತೆಯಾದ ಹಸ್ತರೇಖೆಗಳು",
+                confidence: "ವಿಶ್ವಾಸ",
+                handShape: "ಕೈ ಆಕಾರ ವಿಶ್ಲೇಷಣೆ",
+                disclaimer: "ಈ ಹಸ್ತರೇಖಾ ಓದುವಿಕೆಯು ಸಾಂಪ್ರದಾಯಿಕ ವೈದಿಕ ಹಸ್ತರೇಖಾ ತತ್ವಗಳ ಮೇಲೆ ಆಧಾರಿತವಾಗಿದೆ ಮತ್ತು ಮನರಂಜನೆ ಮತ್ತು ಆತ್ಮಾವಲೋಕನ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ. ಇದನ್ನು ವೃತ್ತಿಪರ ಸಲಹೆ ಅಥವಾ ಸಂಪೂರ್ಣ ಭವಿಷ್ಯವಾಣಿ ಎಂದು ಪರಿಗಣಿಸಬಾರದು.",
+                tryAnother: "ಮತ್ತೊಂದು ಅಂಗೈಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ"
+              }
+            },
+            common: {
         name: "ಹೆಸರು",
         enterName: "ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
         birthDate: "ಜನ್ಮ ದಿನಾಂಕ",
@@ -5808,13 +6040,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           "Pointed Fingertips": "കൂർത്ത വിരൽ അഗ്രങ്ങൾ", "Square Fingertips": "ചതുരശ്ര വിരൽ അഗ്രങ്ങൾ",
           "Spatulate Fingertips": "സ്പാറ്റുലേറ്റ് വിരൽ അഗ്രങ്ങൾ", "Conic Fingertips": "ശങ്കു വിരൽ അഗ്രങ്ങൾ"
         },
-        handShapeNames: {
-          "Earth Hand": "ഭൂമി കൈ", "Air Hand": "വായു കൈ",
-          "Water Hand": "ജലം കൈ", "Fire Hand": "അഗ്നി കൈ"
-        }
-      },
-      common: {
-        name: "പേര്",
+              handShapeNames: {
+                "Earth Hand": "ഭൂമി കൈ", "Air Hand": "വായു കൈ",
+                "Water Hand": "ജലം കൈ", "Fire Hand": "അഗ്നി കൈ"
+              },
+              analyze: {
+                tab: "വിശകലനം",
+                title: "നിങ്ങളുടെ ഉള്ളംകൈ വിശകലനം ചെയ്യുക",
+                description: "പരമ്പരാഗത വൈദിക ഹസ്തരേഖാ അടിസ്ഥാനമാക്കിയ AI-പ്രവർത്തിത ഹസ്തരേഖാ വായനയ്ക്കായി നിങ്ങളുടെ ഉള്ളംകൈയുടെ വ്യക്തമായ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക.",
+                uploadPrompt: "നിങ്ങളുടെ ഉള്ളംകൈ ചിത്രം അപ്‌ലോഡ് ചെയ്യാൻ ക്ലിക്ക് ചെയ്യുക",
+                uploadHint: "JPG, PNG അല്ലെങ്കിൽ WebP. പരമാവധി 10MB.",
+                selectImage: "ചിത്രം തിരഞ്ഞെടുക്കുക",
+                tipsTitle: "നല്ല ഉള്ളംകൈ ഫോട്ടോയ്ക്കുള്ള നുറുങ്ങുകൾ:",
+                tip1: "നല്ല വെളിച്ചം ഉപയോഗിക്കുക - സ്വാഭാവിക പകൽ വെളിച്ചം ഏറ്റവും നല്ലത്",
+                tip2: "നിങ്ങളുടെ ഉള്ളംകൈ പരന്നതായും വിരലുകൾ ചെറുതായി വിടർത്തിയും വയ്ക്കുക",
+                tip3: "നിങ്ങളുടെ പ്രധാന കൈ ക്യാപ്ചർ ചെയ്യുക (വലംകൈയ്യന്മാർക്ക് വലത്)",
+                tip4: "എല്ലാ പ്രധാന രേഖകളും ഫ്രെയിമിൽ കാണാമെന്ന് ഉറപ്പാക്കുക",
+                tip5: "നിങ്ങളുടെ ഉള്ളംകൈയിൽ നിഴലുകൾ ഒഴിവാക്കുക",
+                uploadedPalm: "അപ്‌ലോഡ് ചെയ്ത ഉള്ളംകൈ ചിത്രം",
+                changeImage: "ചിത്രം മാറ്റുക",
+                analyzeButton: "എന്റെ ഉള്ളംകൈ വിശകലനം ചെയ്യുക",
+                analyzing: "നിങ്ങളുടെ ഉള്ളംകൈ വിശകലനം ചെയ്യുന്നു...",
+                analyzingHint: "ഇത് കുറച്ച് സെക്കൻഡുകൾ എടുത്തേക്കാം",
+                invalidFile: "ദയവായി സാധുവായ ചിത്ര ഫയൽ അപ്‌ലോഡ് ചെയ്യുക (JPG, PNG, മുതലായവ)",
+                error: "ഉള്ളംകൈ ചിത്രം വിശകലനം ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി വീണ്ടും ശ്രമിക്കുക.",
+                tryAgain: "വീണ്ടും ശ്രമിക്കുക",
+                analysisComplete: "ഉള്ളംകൈ വിശകലനം പൂർത്തിയായി!",
+                overallReading: "മൊത്തത്തിലുള്ള വായന",
+                detectedLines: "കണ്ടെത്തിയ ഹസ്തരേഖകൾ",
+                confidence: "വിശ്വാസം",
+                handShape: "കൈ ആകൃതി വിശകലനം",
+                disclaimer: "ഈ ഹസ്തരേഖാ വായന പരമ്പരാഗത വൈദിക ഹസ്തരേഖാ തത്വങ്ങളെ അടിസ്ഥാനമാക്കിയുള്ളതാണ്, വിനോദത്തിനും ആത്മപരിശോധനയ്ക്കും മാത്രമുള്ളതാണ്. ഇത് പ്രൊഫഷണൽ ഉപദേശമോ സമ്പൂർണ്ണ പ്രവചനമോ ആയി കണക്കാക്കരുത്.",
+                tryAnother: "മറ്റൊരു ഉള്ളംകൈ വിശകലനം ചെയ്യുക"
+              }
+            },
+            common: {
+              name: "പേര്",
         enterName: "നിങ്ങളുടെ പേര് നൽകുക",
         birthDate: "ജനന തീയതി",
         birthTime: "ജനന സമയം",
@@ -6456,13 +6717,42 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         "Pointed Fingertips": "ਨੋਕੀਲੀਆਂ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ", "Square Fingertips": "ਚੌਰਸ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ",
         "Spatulate Fingertips": "ਸਪੈਟੁਲੇਟ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ", "Conic Fingertips": "ਸ਼ੰਕੂ ਉਂਗਲਾਂ ਦੇ ਸਿਰੇ"
       },
-      handShapeNames: {
-        "Earth Hand": "ਧਰਤੀ ਹੱਥ", "Air Hand": "ਹਵਾ ਹੱਥ",
-        "Water Hand": "ਪਾਣੀ ਹੱਥ", "Fire Hand": "ਅੱਗ ਹੱਥ"
-      }
-    },
-    common: {
-      name: "ਨਾਮ",
+          handShapeNames: {
+            "Earth Hand": "ਧਰਤੀ ਹੱਥ", "Air Hand": "ਹਵਾ ਹੱਥ",
+            "Water Hand": "ਪਾਣੀ ਹੱਥ", "Fire Hand": "ਅੱਗ ਹੱਥ"
+          },
+          analyze: {
+            tab: "ਵਿਸ਼ਲੇਸ਼ਣ",
+            title: "ਆਪਣੀ ਹਥੇਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ",
+            description: "ਪਰੰਪਰਾਗਤ ਵੈਦਿਕ ਹੱਥ ਰੇਖਾ ਅਧਾਰਿਤ AI-ਸੰਚਾਲਿਤ ਹੱਥ ਰੇਖਾ ਪੜ੍ਹਨ ਲਈ ਆਪਣੀ ਹਥੇਲੀ ਦੀ ਸਾਫ਼ ਫੋਟੋ ਅੱਪਲੋਡ ਕਰੋ।",
+            uploadPrompt: "ਆਪਣੀ ਹਥੇਲੀ ਦੀ ਤਸਵੀਰ ਅੱਪਲੋਡ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ",
+            uploadHint: "JPG, PNG ਜਾਂ WebP। ਵੱਧ ਤੋਂ ਵੱਧ 10MB।",
+            selectImage: "ਤਸਵੀਰ ਚੁਣੋ",
+            tipsTitle: "ਚੰਗੀ ਹਥੇਲੀ ਫੋਟੋ ਲਈ ਸੁਝਾਅ:",
+            tip1: "ਚੰਗੀ ਰੋਸ਼ਨੀ ਵਰਤੋ - ਕੁਦਰਤੀ ਦਿਨ ਦੀ ਰੋਸ਼ਨੀ ਸਭ ਤੋਂ ਵਧੀਆ ਹੈ",
+            tip2: "ਆਪਣੀ ਹਥੇਲੀ ਸਮਤਲ ਰੱਖੋ ਅਤੇ ਉਂਗਲਾਂ ਥੋੜੀਆਂ ਫੈਲਾਓ",
+            tip3: "ਆਪਣਾ ਪ੍ਰਮੁੱਖ ਹੱਥ ਕੈਪਚਰ ਕਰੋ (ਸੱਜੇ ਹੱਥ ਵਾਲਿਆਂ ਲਈ ਸੱਜਾ)",
+            tip4: "ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਸਾਰੀਆਂ ਮੁੱਖ ਰੇਖਾਵਾਂ ਫਰੇਮ ਵਿੱਚ ਦਿਖਾਈ ਦੇਣ",
+            tip5: "ਆਪਣੀ ਹਥੇਲੀ 'ਤੇ ਪਰਛਾਵੇਂ ਤੋਂ ਬਚੋ",
+            uploadedPalm: "ਅੱਪਲੋਡ ਕੀਤੀ ਹਥੇਲੀ ਦੀ ਤਸਵੀਰ",
+            changeImage: "ਤਸਵੀਰ ਬਦਲੋ",
+            analyzeButton: "ਮੇਰੀ ਹਥੇਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ",
+            analyzing: "ਤੁਹਾਡੀ ਹਥੇਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+            analyzingHint: "ਇਸ ਵਿੱਚ ਕੁਝ ਸਕਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ",
+            invalidFile: "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ ਤਸਵੀਰ ਫਾਈਲ ਅੱਪਲੋਡ ਕਰੋ (JPG, PNG, ਆਦਿ)",
+            error: "ਹਥੇਲੀ ਦੀ ਤਸਵੀਰ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰਨ ਵਿੱਚ ਅਸਫਲ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+            tryAgain: "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+            analysisComplete: "ਹਥੇਲੀ ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ!",
+            overallReading: "ਸਮੁੱਚੀ ਪੜ੍ਹਾਈ",
+            detectedLines: "ਖੋਜੀਆਂ ਗਈਆਂ ਹੱਥ ਰੇਖਾਵਾਂ",
+            confidence: "ਭਰੋਸਾ",
+            handShape: "ਹੱਥ ਦੀ ਸ਼ਕਲ ਵਿਸ਼ਲੇਸ਼ਣ",
+            disclaimer: "ਇਹ ਹੱਥ ਰੇਖਾ ਪੜ੍ਹਾਈ ਪਰੰਪਰਾਗਤ ਵੈਦਿਕ ਹੱਥ ਰੇਖਾ ਸਿਧਾਂਤਾਂ 'ਤੇ ਅਧਾਰਿਤ ਹੈ ਅਤੇ ਸਿਰਫ਼ ਮਨੋਰੰਜਨ ਅਤੇ ਸਵੈ-ਪ੍ਰਤੀਬਿੰਬ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਹੈ। ਇਸਨੂੰ ਪੇਸ਼ੇਵਰ ਸਲਾਹ ਜਾਂ ਪੂਰੀ ਭਵਿੱਖਬਾਣੀ ਨਹੀਂ ਮੰਨਿਆ ਜਾਣਾ ਚਾਹੀਦਾ।",
+            tryAnother: "ਇੱਕ ਹੋਰ ਹਥੇਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ"
+          }
+        },
+        common: {
+          name: "ਨਾਮ",
       enterName: "ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ",
       birthDate: "ਜਨਮ ਮਿਤੀ",
       birthTime: "ਜਨਮ ਸਮਾਂ",

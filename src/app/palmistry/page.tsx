@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,29 @@ import {
   BookOpen,
   Target,
   Zap,
+  Upload,
+  Camera,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
+
+// Palm analysis result interface
+interface PalmAnalysisResult {
+  detectedLines: {
+    name: string;
+    hindi: string;
+    confidence: number;
+    meaning: string;
+    interpretation: string;
+  }[];
+  overallReading: string;
+  handShape: {
+    shape: string;
+    element: string;
+    characteristics: string;
+  };
+}
 
 // Image paths for palm lines
 const lineImages: Record<string, string> = {
@@ -292,9 +314,75 @@ const handShapes = [
 
 export default function PalmistryPage() {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState("lines");
+  const [activeTab, setActiveTab] = useState("analyze");
   const [selectedLine, setSelectedLine] = useState<PalmLine | null>(null);
   const [selectedMount, setSelectedMount] = useState<Mount | null>(null);
+  
+  // Palm analysis states
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<PalmAnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle file upload
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setAnalysisError(t("palmistry.analyze.invalidFile", "Please upload a valid image file (JPG, PNG, etc.)"));
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target?.result as string);
+        setAnalysisResult(null);
+        setAnalysisError(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, [t]);
+
+  // Analyze palm image
+  const analyzePalm = useCallback(async () => {
+    if (!uploadedImage) return;
+    
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    
+    try {
+      const response = await fetch("/api/analyze-palm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: uploadedImage }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAnalysisResult(data.analysis);
+      } else {
+        setAnalysisError(data.error || t("palmistry.analyze.error", "Failed to analyze palm image. Please try again."));
+      }
+    } catch {
+      setAnalysisError(t("palmistry.analyze.error", "Failed to analyze palm image. Please try again."));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [uploadedImage, t]);
+
+  // Reset analysis
+  const resetAnalysis = useCallback(() => {
+    setUploadedImage(null);
+    setAnalysisResult(null);
+    setAnalysisError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, []);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
@@ -319,27 +407,251 @@ export default function PalmistryPage() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
-            <TabsTrigger value="lines" className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              {t("palmistry.lines", "Lines")}
-            </TabsTrigger>
-            <TabsTrigger value="mounts" className="flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              {t("palmistry.mounts", "Mounts")}
-            </TabsTrigger>
-            <TabsTrigger value="fingers" className="flex items-center gap-2">
-              <Hand className="w-4 h-4" />
-              {t("palmistry.fingers", "Fingers")}
-            </TabsTrigger>
-            <TabsTrigger value="shapes" className="flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              {t("palmistry.shapes", "Hand Shapes")}
-            </TabsTrigger>
-          </TabsList>
+                    <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto">
+                      <TabsTrigger value="analyze" className="flex items-center gap-2">
+                        <Camera className="w-4 h-4" />
+                        {t("palmistry.analyze.tab", "Analyze")}
+                      </TabsTrigger>
+                      <TabsTrigger value="lines" className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4" />
+                        {t("palmistry.lines", "Lines")}
+                      </TabsTrigger>
+                      <TabsTrigger value="mounts" className="flex items-center gap-2">
+                        <Target className="w-4 h-4" />
+                        {t("palmistry.mounts", "Mounts")}
+                      </TabsTrigger>
+                      <TabsTrigger value="fingers" className="flex items-center gap-2">
+                        <Hand className="w-4 h-4" />
+                        {t("palmistry.fingers", "Fingers")}
+                      </TabsTrigger>
+                      <TabsTrigger value="shapes" className="flex items-center gap-2">
+                        <Zap className="w-4 h-4" />
+                        {t("palmistry.shapes", "Hand Shapes")}
+                      </TabsTrigger>
+                              </TabsList>
 
-          {/* Lines Tab */}
-          <TabsContent value="lines">
+                    {/* Analyze Tab - Upload and analyze palm image */}
+                    <TabsContent value="analyze">
+                      <div className="max-w-4xl mx-auto">
+                        <Card>
+                          <CardHeader className="text-center">
+                            <CardTitle className="text-2xl">
+                              {t("palmistry.analyze.title", "Analyze Your Palm")}
+                            </CardTitle>
+                            <CardDescription>
+                              {t("palmistry.analyze.description", "Upload a clear photo of your palm to get an AI-powered palm reading based on traditional Vedic palmistry.")}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Upload Section */}
+                            {!uploadedImage ? (
+                              <div className="border-2 border-dashed border-amber-300 rounded-lg p-8 text-center bg-amber-50/50">
+                                <input
+                                  type="file"
+                                  ref={fileInputRef}
+                                  onChange={handleFileUpload}
+                                  accept="image/*"
+                                  className="hidden"
+                                  id="palm-upload"
+                                />
+                                <label
+                                  htmlFor="palm-upload"
+                                  className="cursor-pointer flex flex-col items-center gap-4"
+                                >
+                                  <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <Upload className="w-10 h-10 text-amber-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-lg font-semibold text-gray-700">
+                                      {t("palmistry.analyze.uploadPrompt", "Click to upload your palm image")}
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                      {t("palmistry.analyze.uploadHint", "JPG, PNG or WebP. Max 10MB.")}
+                                    </p>
+                                  </div>
+                                  <Button variant="outline" className="mt-2">
+                                    <Camera className="w-4 h-4 mr-2" />
+                                    {t("palmistry.analyze.selectImage", "Select Image")}
+                                  </Button>
+                                </label>
+                      
+                                {/* Tips for good palm photo */}
+                                <div className="mt-8 text-left bg-white rounded-lg p-4 border border-amber-200">
+                                  <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                    <Info className="w-4 h-4 text-amber-600" />
+                                    {t("palmistry.analyze.tipsTitle", "Tips for a good palm photo:")}
+                                  </h4>
+                                  <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                    <li>{t("palmistry.analyze.tip1", "Use good lighting - natural daylight works best")}</li>
+                                    <li>{t("palmistry.analyze.tip2", "Keep your palm flat and fingers slightly spread")}</li>
+                                    <li>{t("palmistry.analyze.tip3", "Capture your dominant hand (right if right-handed)")}</li>
+                                    <li>{t("palmistry.analyze.tip4", "Ensure all major lines are visible in the frame")}</li>
+                                    <li>{t("palmistry.analyze.tip5", "Avoid shadows across your palm")}</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-6">
+                                {/* Uploaded Image Preview */}
+                                <div className="relative">
+                                  <div className="relative w-full max-w-md mx-auto aspect-square rounded-lg overflow-hidden border-2 border-amber-200">
+                                    <Image
+                                      src={uploadedImage}
+                                      alt={t("palmistry.analyze.uploadedPalm", "Uploaded palm image")}
+                                      fill
+                                      className="object-contain bg-gray-100"
+                                    />
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="absolute top-2 right-2"
+                                    onClick={resetAnalysis}
+                                  >
+                                    {t("palmistry.analyze.changeImage", "Change Image")}
+                                  </Button>
+                                </div>
+                      
+                                {/* Analyze Button */}
+                                {!analysisResult && !isAnalyzing && (
+                                  <div className="text-center">
+                                    <Button
+                                      size="lg"
+                                      onClick={analyzePalm}
+                                      className="bg-amber-600 hover:bg-amber-700"
+                                    >
+                                      <Hand className="w-5 h-5 mr-2" />
+                                      {t("palmistry.analyze.analyzeButton", "Analyze My Palm")}
+                                    </Button>
+                                  </div>
+                                )}
+                      
+                                {/* Loading State */}
+                                {isAnalyzing && (
+                                  <div className="text-center py-8">
+                                    <Loader2 className="w-12 h-12 text-amber-600 animate-spin mx-auto mb-4" />
+                                    <p className="text-lg font-semibold text-gray-700">
+                                      {t("palmistry.analyze.analyzing", "Analyzing your palm...")}
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                      {t("palmistry.analyze.analyzingHint", "This may take a few seconds")}
+                                    </p>
+                                  </div>
+                                )}
+                      
+                                {/* Error State */}
+                                {analysisError && (
+                                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                                    <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                                    <p className="text-red-700">{analysisError}</p>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="mt-3"
+                                      onClick={() => setAnalysisError(null)}
+                                    >
+                                      {t("palmistry.analyze.tryAgain", "Try Again")}
+                                    </Button>
+                                  </div>
+                                )}
+                      
+                                {/* Analysis Results */}
+                                {analysisResult && (
+                                  <div className="space-y-6">
+                                    {/* Success Header */}
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                                      <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                                      <p className="text-green-700 font-semibold">
+                                        {t("palmistry.analyze.analysisComplete", "Palm Analysis Complete!")}
+                                      </p>
+                                    </div>
+                          
+                                    {/* Overall Reading */}
+                                    <Card className="bg-amber-50 border-amber-200">
+                                      <CardHeader>
+                                        <CardTitle className="text-lg flex items-center gap-2">
+                                          <BookOpen className="w-5 h-5 text-amber-600" />
+                                          {t("palmistry.analyze.overallReading", "Overall Reading")}
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent>
+                                        <p className="text-gray-700">{analysisResult.overallReading}</p>
+                                      </CardContent>
+                                    </Card>
+                          
+                                    {/* Detected Lines */}
+                                    {analysisResult.detectedLines.length > 0 && (
+                                      <div>
+                                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                          <TrendingUp className="w-5 h-5 text-amber-600" />
+                                          {t("palmistry.analyze.detectedLines", "Detected Palm Lines")}
+                                        </h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                          {analysisResult.detectedLines.map((line, idx) => (
+                                            <Card key={idx}>
+                                              <CardHeader className="pb-2">
+                                                <div className="flex items-center justify-between">
+                                                  <CardTitle className="text-base">
+                                                    {line.name}
+                                                    <span className="text-sm text-gray-500 ml-2">({line.hindi})</span>
+                                                  </CardTitle>
+                                                  <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                                                    {line.confidence}% {t("palmistry.analyze.confidence", "confidence")}
+                                                  </Badge>
+                                                </div>
+                                              </CardHeader>
+                                              <CardContent className="pt-2">
+                                                <p className="text-sm text-gray-500 mb-2">{line.meaning}</p>
+                                                <p className="text-gray-700">{line.interpretation}</p>
+                                              </CardContent>
+                                            </Card>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                          
+                                    {/* Hand Shape Analysis */}
+                                    <Card>
+                                      <CardHeader>
+                                        <CardTitle className="text-lg flex items-center gap-2">
+                                          <Hand className="w-5 h-5 text-amber-600" />
+                                          {t("palmistry.analyze.handShape", "Hand Shape Analysis")}
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent>
+                                        <div className="flex items-center gap-4 mb-3">
+                                          <Badge className="bg-amber-600">{analysisResult.handShape.shape}</Badge>
+                                          <Badge variant="outline">{analysisResult.handShape.element} Element</Badge>
+                                        </div>
+                                        <p className="text-gray-700">{analysisResult.handShape.characteristics}</p>
+                                      </CardContent>
+                                    </Card>
+                          
+                                    {/* Disclaimer */}
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-600">
+                                      <p className="flex items-start gap-2">
+                                        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                        {t("palmistry.analyze.disclaimer", "This palm reading is based on traditional Vedic palmistry principles and is intended for entertainment and self-reflection purposes only. It should not be considered as professional advice or absolute prediction.")}
+                                      </p>
+                                    </div>
+                          
+                                    {/* Try Another */}
+                                    <div className="text-center">
+                                      <Button variant="outline" onClick={resetAnalysis}>
+                                        {t("palmistry.analyze.tryAnother", "Analyze Another Palm")}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TabsContent>
+
+                    {/* Lines Tab */}
+                    <TabsContent value="lines">
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Lines List */}
               <div className="lg:col-span-1">
