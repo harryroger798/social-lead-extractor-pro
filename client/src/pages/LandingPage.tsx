@@ -795,6 +795,70 @@ export function LandingPage() {
               </div>
             </section>
 
+            {/* Repair Status Tracker Section */}
+            <section className="py-20 bg-gradient-to-b from-slate-100 to-white dark:from-slate-800 dark:to-slate-900">
+              <div className="container mx-auto px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="max-w-2xl mx-auto"
+                >
+                  <div className="text-center mb-8">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">
+                      {i18n.language === 'hi' ? 'Apna Repair Status Check Karein' :
+                       i18n.language === 'bn' ? 'আপনার মেরামতের স্ট্যাটাস চেক করুন' :
+                       'Track Your Repair Status'}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {i18n.language === 'hi' ? 'Phone number daalein aur status jaanein' :
+                       i18n.language === 'bn' ? 'ফোন নম্বর দিন এবং স্ট্যাটাস জানুন' :
+                       'Enter your phone number to check repair status'}
+                    </p>
+                  </div>
+                  
+                  <GlassCard className="p-8">
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        const phone = (e.target as HTMLFormElement).phone.value
+                        if (phone) {
+                          window.location.href = `/login?redirect=/app&phone=${phone}`
+                        }
+                      }}
+                      className="flex flex-col sm:flex-row gap-4"
+                    >
+                      <div className="flex-1 relative">
+                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder={i18n.language === 'hi' ? 'Apna phone number daalein' :
+                                       i18n.language === 'bn' ? 'আপনার ফোন নম্বর দিন' :
+                                       'Enter your phone number'}
+                          className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        size="lg"
+                        className="bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white px-8"
+                      >
+                        {i18n.language === 'hi' ? 'Track Karein' :
+                         i18n.language === 'bn' ? 'ট্র্যাক করুন' :
+                         'Track Status'}
+                      </Button>
+                    </form>
+                    <p className="text-center text-sm text-muted-foreground mt-4">
+                      {i18n.language === 'hi' ? 'Ya humein call karein: +91 98765 43210' :
+                       i18n.language === 'bn' ? 'অথবা আমাদের কল করুন: +91 98765 43210' :
+                       'Or call us: +91 98765 43210'}
+                    </p>
+                  </GlassCard>
+                </motion.div>
+              </div>
+            </section>
+
             {/* CTA Section */}
             <section className="py-24 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
               <FloatingIcons />
