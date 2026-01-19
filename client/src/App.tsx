@@ -23,6 +23,7 @@ import { BookingPage } from '@/pages/public/BookingPage'
 import { PricingPage } from '@/pages/public/PricingPage'
 import { HelpCenterPage } from '@/pages/public/HelpCenterPage'
 import { TrackRepairPage } from '@/pages/public/TrackRepairPage'
+import { SitemapPage } from '@/pages/public/SitemapPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -48,8 +49,9 @@ function App() {
                 <Route path="/booking" element={<BookingPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                                 <Route path="/help" element={<HelpCenterPage />} />
-                                <Route path="/track" element={<TrackRepairPage />} />
-                                <Route path="/login" element={<LoginPage />} />
+                                                                <Route path="/track" element={<TrackRepairPage />} />
+                                                                <Route path="/sitemap.xml" element={<SitemapPage />} />
+                                                                <Route path="/login" element={<LoginPage />} />
         <Route
           path="/app"
           element={
