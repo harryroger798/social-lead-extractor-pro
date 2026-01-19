@@ -33,6 +33,39 @@ export function SettingsPage() {
     queryFn: () => airtableApi.getStatus(),
   })
 
+  const updateBusinessMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => settingsApi.updateBusiness(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+      toast({ title: 'Business settings updated successfully' })
+    },
+    onError: () => {
+      toast({ variant: 'destructive', title: 'Failed to update business settings' })
+    },
+  })
+
+  const updatePaymentMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => settingsApi.updatePayment(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+      toast({ title: 'Payment settings updated successfully' })
+    },
+    onError: () => {
+      toast({ variant: 'destructive', title: 'Failed to update payment settings' })
+    },
+  })
+
+  const updateIntegrationsMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => settingsApi.updateIntegrations(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+      toast({ title: 'Integration settings updated successfully' })
+    },
+    onError: () => {
+      toast({ variant: 'destructive', title: 'Failed to update integration settings' })
+    },
+  })
+
   const updateSettingsMutation = useMutation({
     mutationFn: (data: Record<string, unknown>) => settingsApi.update(data),
     onSuccess: () => {
@@ -50,7 +83,7 @@ export function SettingsPage() {
   const handleBusinessSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    updateSettingsMutation.mutate({
+    updateBusinessMutation.mutate({
       business_name: formData.get('business_name'),
       business_address: formData.get('business_address'),
       business_phone: formData.get('business_phone'),
@@ -59,20 +92,28 @@ export function SettingsPage() {
     })
   }
 
-  const handleIntegrationsSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAirtableSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    updateSettingsMutation.mutate({
+    updateIntegrationsMutation.mutate({
       airtable_api_key: formData.get('airtable_api_key'),
       airtable_base_id: formData.get('airtable_base_id'),
+    })
+  }
+
+  const handleOmnisendSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    updateIntegrationsMutation.mutate({
       omnisend_api_key: formData.get('omnisend_api_key'),
+      omnisend_enabled: true,
     })
   }
 
   const handlePaymentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    updateSettingsMutation.mutate({
+    updatePaymentMutation.mutate({
       upi_id: formData.get('upi_id'),
       bank_name: formData.get('bank_name'),
       bank_account_number: formData.get('bank_account_number'),
@@ -349,7 +390,7 @@ export function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleIntegrationsSubmit} className="space-y-4">
+                  <form onSubmit={handleAirtableSubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="airtable_api_key">API Key</Label>
                       <Input
@@ -374,7 +415,7 @@ export function SettingsPage() {
                     <div className="flex items-center gap-4">
                       <Button 
                         type="submit" 
-                        disabled={updateSettingsMutation.isPending}
+                        disabled={updateIntegrationsMutation.isPending}
                         className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg shadow-purple-500/25"
                       >
                         <Save className="mr-2 h-4 w-4" />
@@ -408,7 +449,7 @@ export function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleIntegrationsSubmit} className="space-y-4">
+                  <form onSubmit={handleOmnisendSubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="omnisend_api_key">API Key</Label>
                       <Input
@@ -422,7 +463,7 @@ export function SettingsPage() {
                     </div>
                     <Button 
                       type="submit" 
-                      disabled={updateSettingsMutation.isPending}
+                      disabled={updateIntegrationsMutation.isPending}
                       className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25"
                     >
                       <Save className="mr-2 h-4 w-4" />
