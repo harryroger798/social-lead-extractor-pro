@@ -413,9 +413,9 @@ class MailgunService {
           </td>
         </tr>
         <tr>
-          <td style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 10px; padding: 20px; text-align: center;">
-            <p style="margin: 0 0 8px 0; color: #065f46; font-size: 12px; font-weight: 500; text-transform: uppercase;">Ticket Number</p>
-            <p style="margin: 0; color: #065f46; font-size: 22px; font-weight: 700; letter-spacing: 1px;">${repair.invoice_number}</p>
+          <td style="background: #f0fdf4; border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #10b981;">
+            <p style="margin: 0 0 8px 0; color: #374151; font-size: 12px; font-weight: 500; text-transform: uppercase;">Ticket Number</p>
+            <p style="margin: 0; color: #1e293b; font-size: 22px; font-weight: 700; letter-spacing: 1px;">${repair.invoice_number}</p>
           </td>
         </tr>
         <tr>
