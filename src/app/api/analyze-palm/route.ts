@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Roboflow API configuration
-const ROBOFLOW_API_KEY = process.env.ROBOFLOW_API_KEY || "rf_4qJJxOP6q6WpM69lG1LMUGTINmh2";
-const ROBOFLOW_MODEL_ID = "palm-reading-b3tep/2"; // Using v2 with 99% mAP
+// Use Private API Key for server-side inference (not Publishable Key which is client-side only)
+const ROBOFLOW_API_KEY = process.env.ROBOFLOW_API_KEY || "zMz0kWTjOf514ZL88sz5";
+const ROBOFLOW_MODEL_ID = "palmistry-g45zz/1"; // Using palmistry model with 6.7k images, detects: fate, head, heart, life
 
 interface RoboflowPrediction {
   class: string;
@@ -24,12 +25,61 @@ interface RoboflowResponse {
 }
 
 // Palm line interpretations based on traditional Vedic palmistry
+// Keys include both formats: "heart" (from palmistry-g45zz model) and "heart_line" (legacy)
 const lineInterpretations: Record<string, {
   name: string;
   hindi: string;
   meaning: string;
   characteristics: { condition: string; interpretation: string }[];
 }> = {
+  "heart": {
+    name: "Heart Line",
+    hindi: "हृदय रेखा",
+    meaning: "Represents emotional life, relationships, and cardiac health",
+    characteristics: [
+      { condition: "Clear and deep", interpretation: "Strong emotional nature, passionate in relationships" },
+      { condition: "Long line", interpretation: "Expressive of feelings, romantic, warm-hearted" },
+      { condition: "Short line", interpretation: "Practical in love, prefers actions over words" },
+      { condition: "Curved line", interpretation: "Emotionally expressive, wears heart on sleeve" },
+      { condition: "Straight line", interpretation: "Logical approach to relationships, reserved emotions" }
+    ]
+  },
+  "head": {
+    name: "Head Line",
+    hindi: "मस्तिष्क रेखा",
+    meaning: "Represents intellect, learning style, and communication",
+    characteristics: [
+      { condition: "Clear and deep", interpretation: "Strong mental abilities, focused thinker" },
+      { condition: "Long line", interpretation: "Clear thinker, analytical, successful in academics" },
+      { condition: "Short line", interpretation: "Prefers physical achievements over mental pursuits" },
+      { condition: "Curved line", interpretation: "Creative, artistic, imaginative mind" },
+      { condition: "Straight line", interpretation: "Practical, logical, realistic thinker" }
+    ]
+  },
+  "life": {
+    name: "Life Line",
+    hindi: "जीवन रेखा",
+    meaning: "Represents vitality, life changes, and physical health (NOT length of life)",
+    characteristics: [
+      { condition: "Clear and deep", interpretation: "Strong vitality, good health, stable life" },
+      { condition: "Long line", interpretation: "High energy, enthusiasm for life" },
+      { condition: "Short line", interpretation: "May need to focus more on health and energy" },
+      { condition: "Wide curve", interpretation: "Generous, warm personality, loves life" },
+      { condition: "Close to thumb", interpretation: "May experience fatigue, needs rest" }
+    ]
+  },
+  "fate": {
+    name: "Fate Line",
+    hindi: "भाग्य रेखा",
+    meaning: "Represents career, life path, and destiny",
+    characteristics: [
+      { condition: "Clear and deep", interpretation: "Strong sense of destiny, clear life path" },
+      { condition: "Long line", interpretation: "Career-focused, strong professional drive" },
+      { condition: "Broken line", interpretation: "Career changes, life transitions ahead" },
+      { condition: "Multiple lines", interpretation: "Multiple careers or diverse interests" },
+      { condition: "Absent", interpretation: "Free will dominates, creates own path" }
+    ]
+  },
   "heart_line": {
     name: "Heart Line",
     hindi: "हृदय रेखा",
