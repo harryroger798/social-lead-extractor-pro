@@ -426,7 +426,7 @@ export function SettingsPage() {
                         Sync Now
                       </Button>
                     </div>
-                    {syncData.last_sync && (
+                    {syncData.last_sync && !isNaN(new Date(syncData.last_sync).getTime()) && (
                       <p className="text-sm text-muted-foreground">
                         Last sync: {new Date(syncData.last_sync).toLocaleString()}
                       </p>

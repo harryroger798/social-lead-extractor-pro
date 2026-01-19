@@ -61,31 +61,38 @@ class OmnisendService {
       const contactId = await this.ensureContact(recipient, 'email');
 
       const businessName = getSetting('business_name') || 'ByteCare';
-      const businessEmail = getSetting('business_email') || 'noreply@bytecare.com';
 
-      const htmlBody = this.generateEmailHTML(body, invoice, businessName);
-
-      const response = await this.client.post('/campaigns/emails', {
-        name: `Invoice ${invoice?.invoice_number || 'Email'}`,
-        type: 'regular',
-        subject: subject,
-        senderName: businessName,
-        senderEmail: businessEmail,
-        replyTo: businessEmail,
-        content: {
-          html: htmlBody,
-          plainText: body
-        },
-        recipients: {
-          type: 'segment',
-          contactIDs: [contactId]
+      const eventData = {
+        systemName: 'bytecare',
+        eventName: invoice ? 'invoice_sent' : 'notification_sent',
+        eventID: `email_${Date.now()}`,
+        origin: 'api',
+        eventVersion: 'v1',
+        email: recipient,
+        properties: {
+          subject: subject,
+          message: body,
+          businessName: businessName,
+          sentAt: new Date().toISOString()
         }
-      });
+      };
+
+      if (invoice) {
+        eventData.properties.invoiceNumber = invoice.invoice_number || '';
+        eventData.properties.subtotal = invoice.subtotal?.toString() || '0';
+        eventData.properties.gstAmount = invoice.gst_amount?.toString() || '0';
+        eventData.properties.totalAmount = invoice.total_amount?.toString() || '0';
+        eventData.properties.customerName = invoice.customer_name || '';
+      }
+
+      const response = await this.client.post('/events', eventData);
+
+      logger.info('Omnisend event sent:', { eventName: eventData.eventName, recipient });
 
       return {
         success: true,
-        omnisend_id: response.data?.campaignID || null,
-        message: 'Email sent successfully'
+        omnisend_id: response.data?.eventID || eventData.eventID,
+        message: 'Email event triggered successfully. Set up an automation in Omnisend to send emails for this event.'
       };
     } catch (error) {
       logger.error('Omnisend email error:', error.response?.data || error.message);
@@ -102,19 +109,36 @@ class OmnisendService {
     try {
       const contactId = await this.ensureContact(recipient, 'phone');
 
-      const response = await this.client.post('/campaigns/sms', {
-        name: `SMS ${invoice?.invoice_number || 'Message'}`,
-        message: body,
-        recipients: {
-          type: 'segment',
-          contactIDs: [contactId]
+      const businessName = getSetting('business_name') || 'ByteCare';
+
+      const eventData = {
+        systemName: 'bytecare',
+        eventName: invoice ? 'invoice_sms_sent' : 'sms_notification_sent',
+        eventID: `sms_${Date.now()}`,
+        origin: 'api',
+        eventVersion: 'v1',
+        phone: recipient,
+        properties: {
+          message: body,
+          businessName: businessName,
+          sentAt: new Date().toISOString()
         }
-      });
+      };
+
+      if (invoice) {
+        eventData.properties.invoiceNumber = invoice.invoice_number || '';
+        eventData.properties.totalAmount = invoice.total_amount?.toString() || '0';
+        eventData.properties.customerName = invoice.customer_name || '';
+      }
+
+      const response = await this.client.post('/events', eventData);
+
+      logger.info('Omnisend SMS event sent:', { eventName: eventData.eventName, recipient });
 
       return {
         success: true,
-        omnisend_id: response.data?.campaignID || null,
-        message: 'SMS sent successfully'
+        omnisend_id: response.data?.eventID || eventData.eventID,
+        message: 'SMS event triggered successfully. Set up an automation in Omnisend to send SMS for this event.'
       };
     } catch (error) {
       logger.error('Omnisend SMS error:', error.response?.data || error.message);
