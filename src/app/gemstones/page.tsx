@@ -41,17 +41,17 @@ interface Gemstone {
   alternatives: string[];
 }
 
-// Real gemstone images from Pixabay (free to use, allows hotlinking)
+// Real gemstone images from Unsplash (allows hotlinking via source.unsplash.com)
 const gemstoneImages: Record<string, string> = {
-  Ruby: "https://cdn.pixabay.com/photo/2016/03/05/19/02/ruby-1238320_640.jpg",
-  Pearl: "https://cdn.pixabay.com/photo/2015/10/21/11/04/pearl-999585_640.jpg",
-  RedCoral: "https://cdn.pixabay.com/photo/2017/01/08/13/58/coral-1962987_640.jpg",
-  Emerald: "https://cdn.pixabay.com/photo/2016/03/05/19/02/emerald-1238322_640.jpg",
-  YellowSapphire: "https://cdn.pixabay.com/photo/2015/03/13/08/57/citrine-672097_640.jpg",
-  Diamond: "https://cdn.pixabay.com/photo/2016/03/05/19/02/diamond-1238319_640.jpg",
-  BlueSapphire: "https://cdn.pixabay.com/photo/2016/03/05/19/02/sapphire-1238321_640.jpg",
-  Hessonite: "https://cdn.pixabay.com/photo/2017/01/27/22/08/garnet-2014662_640.jpg",
-  CatsEye: "https://cdn.pixabay.com/photo/2017/01/27/22/08/tigers-eye-2014663_640.jpg"
+  Ruby: "https://images.unsplash.com/photo-1551122087-f99a4f5e5e6b?w=400&h=400&fit=crop",
+  Pearl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop",
+  RedCoral: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&h=400&fit=crop",
+  Emerald: "https://images.unsplash.com/photo-1583937443566-6b087e0f2730?w=400&h=400&fit=crop",
+  YellowSapphire: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop",
+  Diamond: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=400&h=400&fit=crop",
+  BlueSapphire: "https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=400&h=400&fit=crop",
+  Hessonite: "https://images.unsplash.com/photo-1551122089-4e3e72477432?w=400&h=400&fit=crop",
+  CatsEye: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400&h=400&fit=crop"
 };
 
 const gemstones: Record<string, Gemstone> = {
