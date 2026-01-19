@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { Smartphone, Laptop, Tablet, Monitor, Headphones, Watch, Cpu, HardDrive, Wrench, Shield, Clock, ArrowRight, Zap } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
 
 const services = [
   { icon: Smartphone, key: 'smartphone', color: 'from-green-500 to-emerald-500', image: '/images/screen-replacement.png' },
@@ -78,6 +79,8 @@ export function PublicServicesPage() {
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+        <FloatingParticles count={30} color="white" />
+        <FloatingTechIcons variant="light" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -101,7 +104,9 @@ export function PublicServicesPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+        <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {services.map((service, index) => (
@@ -146,7 +151,8 @@ export function PublicServicesPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600">
+      <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
+        <FloatingParticles count={40} color="white" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -195,7 +201,8 @@ export function PublicServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

@@ -17,6 +17,7 @@ import {
   CreditCard,
   MapPin
 } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
 
 interface FAQItem {
   question: string
@@ -142,7 +143,9 @@ export function HelpCenterPage() {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <section className="relative py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+        <FloatingParticles count={30} color="white" />
+        <FloatingTechIcons variant="light" />
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -177,7 +180,9 @@ export function HelpCenterPage() {
       </section>
 
       {/* Categories */}
-      <section className="py-16 bg-slate-50 dark:bg-slate-900">
+      <section className="relative py-16 bg-slate-50 dark:bg-slate-900 overflow-hidden">
+        <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -214,7 +219,8 @@ export function HelpCenterPage() {
       </section>
 
       {/* FAQs */}
-      <section className="py-16 bg-white dark:bg-slate-800">
+      <section className="relative py-16 bg-white dark:bg-slate-800 overflow-hidden">
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -243,7 +249,8 @@ export function HelpCenterPage() {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-gradient-to-r from-primary to-purple-600">
+      <section className="relative py-16 bg-gradient-to-r from-primary to-purple-600 overflow-hidden">
+        <FloatingParticles count={40} color="white" />
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

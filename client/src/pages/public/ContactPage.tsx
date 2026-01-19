@@ -8,6 +8,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
 
 const contactInfo = [
   { icon: MapPin, key: 'address', value: 'Barrackpore, West Bengal', color: 'from-blue-500 to-cyan-500' },
@@ -40,6 +41,8 @@ export function ContactPage() {
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+        <FloatingParticles count={30} color="white" />
+        <FloatingTechIcons variant="light" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -71,7 +74,8 @@ export function ContactPage() {
       </section>
 
             {/* Contact Illustration Section */}
-            <section className="py-12 bg-white dark:bg-slate-800">
+            <section className="relative py-12 bg-white dark:bg-slate-800 overflow-hidden">
+              <DotGridPattern opacity="light" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -109,7 +113,8 @@ export function ContactPage() {
             </section>
 
             {/* Contact Form & Info Section */}
-            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+            <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+              <GradientOrbs variant="subtle" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 lg:grid-cols-2">
             {/* Contact Form */}
@@ -276,7 +281,8 @@ export function ContactPage() {
       </section>
 
       {/* Location Map Section */}
-      <section className="py-12 bg-white dark:bg-slate-800">
+      <section className="relative py-12 bg-white dark:bg-slate-800 overflow-hidden">
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

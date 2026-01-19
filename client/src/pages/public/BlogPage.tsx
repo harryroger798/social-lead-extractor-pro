@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { Calendar, User, ArrowRight, BookOpen, Lightbulb, Wrench, Shield } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles } from '@/components/ui/visual-enhancements'
 
 const blogPosts = [
   {
@@ -55,6 +56,8 @@ export function BlogPage() {
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+        <FloatingParticles count={30} color="white" />
+        <FloatingTechIcons variant="light" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -86,7 +89,9 @@ export function BlogPage() {
       </section>
 
       {/* Blog Posts Section */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+        <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-2">
             {blogPosts.map((post, index) => (

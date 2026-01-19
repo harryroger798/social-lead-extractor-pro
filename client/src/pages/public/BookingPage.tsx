@@ -10,6 +10,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, CheckCircle, Smartphone, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles } from '@/components/ui/visual-enhancements'
 
 export function BookingPage() {
   const { t, i18n } = useTranslation()
@@ -52,6 +53,8 @@ export function BookingPage() {
             {/* Hero Section */}
             <section className="relative py-16 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+              <FloatingParticles count={30} color="white" />
+              <FloatingTechIcons variant="light" />
               <div className="container mx-auto px-4 relative z-10">
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                   <motion.div
@@ -89,7 +92,9 @@ export function BookingPage() {
             </section>
 
       {/* Booking Form Section */}
-      <section className="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+      <section className="relative py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+        <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Steps */}

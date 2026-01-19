@@ -5,6 +5,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import { Users, Award, Clock, Shield, Heart, Lightbulb, Target, ArrowRight, MapPin, Sparkles } from 'lucide-react'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -60,6 +61,8 @@ export function AboutPage() {
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
+        <FloatingParticles count={30} color="white" />
+        <FloatingTechIcons variant="light" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -92,7 +95,8 @@ export function AboutPage() {
       </section>
 
             {/* Founder Section */}
-            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+            <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+              <GradientOrbs variant="subtle" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -137,7 +141,8 @@ export function AboutPage() {
             </section>
 
             {/* Workshop Section */}
-            <section className="py-20 bg-white dark:bg-slate-800">
+            <section className="relative py-20 bg-white dark:bg-slate-800 overflow-hidden">
+              <DotGridPattern opacity="light" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -182,7 +187,8 @@ export function AboutPage() {
             </section>
 
             {/* Mission Illustration Section */}
-            <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+            <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+              <FloatingTechIcons variant="default" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -220,7 +226,8 @@ export function AboutPage() {
             </section>
 
             {/* Timeline Section */}
-            <section className="py-20 bg-white dark:bg-slate-800">
+            <section className="relative py-20 bg-white dark:bg-slate-800 overflow-hidden">
+              <CircuitPattern variant="default" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -250,7 +257,8 @@ export function AboutPage() {
             </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600">
+      <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
+        <FloatingParticles count={40} color="white" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -299,7 +307,8 @@ export function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
+        <GradientOrbs variant="subtle" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

@@ -30,6 +30,14 @@ import {
   MessageCircle,
   CreditCard
 } from 'lucide-react'
+import { 
+  GradientOrbs, 
+  FloatingTechIcons, 
+  DotGridPattern,
+  CircuitPattern,
+  FloatingParticles,
+  AnimatedLines
+} from '@/components/ui/visual-enhancements'
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -380,7 +388,7 @@ export function LandingPage() {
             className="mt-8"
           >
             <button 
-              onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
+              onClick={() => window.open('https://www.youtube.com/watch?v=WD-JJMVkB6I', '_blank')}
               className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all group"
             >
               <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -452,7 +460,8 @@ export function LandingPage() {
       </section>
 
       {/* Trust Signals Section */}
-      <section className="py-12 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+      <section className="relative py-12 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 overflow-hidden">
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -551,7 +560,9 @@ export function LandingPage() {
       </section>
 
       {/* Services Section */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+      <section className="relative py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+        <GradientOrbs variant="subtle" />
+        <FloatingTechIcons variant="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -594,7 +605,9 @@ export function LandingPage() {
       </section>
 
       {/* Stats Section with Counter Animation */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600">
+      <section className="relative py-20 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 overflow-hidden">
+        <FloatingParticles count={40} color="white" />
+        <AnimatedLines color="light" />
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <motion.div
@@ -649,7 +662,8 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white dark:bg-slate-900">
+      <section className="relative py-24 bg-white dark:bg-slate-900 overflow-hidden">
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -693,7 +707,8 @@ export function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+      <section className="relative py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+        <GradientOrbs variant="subtle" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -742,7 +757,8 @@ export function LandingPage() {
             </section>
 
             {/* WhatsApp Reviews Section */}
-            <section className="py-24 bg-white dark:bg-slate-900">
+            <section className="relative py-24 bg-white dark:bg-slate-900 overflow-hidden">
+              <DotGridPattern opacity="light" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -796,7 +812,8 @@ export function LandingPage() {
             </section>
 
             {/* Repair Status Tracker Section */}
-            <section className="py-20 bg-gradient-to-b from-slate-100 to-white dark:from-slate-800 dark:to-slate-900">
+            <section className="relative py-20 bg-gradient-to-b from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+              <FloatingTechIcons variant="default" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -906,7 +923,8 @@ export function LandingPage() {
       </section>
 
       {/* Contact Info Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <GlassCard className="p-8 text-center">
