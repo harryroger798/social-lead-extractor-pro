@@ -5,7 +5,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import { Users, Award, Clock, Shield, Heart, Lightbulb, Target, ArrowRight, MapPin, Sparkles } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -97,6 +97,8 @@ export function AboutPage() {
             {/* Founder Section */}
             <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
               <GradientOrbs variant="subtle" />
+              <DotGridPattern opacity="light" />
+              <AnimatedLines color="default" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -143,6 +145,8 @@ export function AboutPage() {
             {/* Workshop Section */}
             <section className="relative py-20 bg-white dark:bg-slate-800 overflow-hidden">
               <DotGridPattern opacity="light" />
+              <GradientOrbs variant="subtle" />
+              <FloatingParticles count={20} color="primary" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -189,6 +193,8 @@ export function AboutPage() {
             {/* Mission Illustration Section */}
             <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
               <FloatingTechIcons variant="default" />
+              <GradientOrbs variant="subtle" />
+              <AnimatedLines color="default" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -228,6 +234,8 @@ export function AboutPage() {
             {/* Timeline Section */}
             <section className="relative py-20 bg-white dark:bg-slate-800 overflow-hidden">
               <CircuitPattern variant="default" />
+              <GradientOrbs variant="subtle" />
+              <FloatingParticles count={15} color="primary" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}

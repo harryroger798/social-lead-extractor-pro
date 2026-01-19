@@ -8,7 +8,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 const contactInfo = [
   { icon: MapPin, key: 'address', value: 'Barrackpore, West Bengal', color: 'from-blue-500 to-cyan-500' },
@@ -76,6 +76,8 @@ export function ContactPage() {
             {/* Contact Illustration Section */}
             <section className="relative py-12 bg-white dark:bg-slate-800 overflow-hidden">
               <DotGridPattern opacity="light" />
+              <AnimatedLines color="default" />
+              <FloatingParticles count={15} color="primary" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 md:grid-cols-2 items-center">
                   <motion.div
@@ -115,6 +117,8 @@ export function ContactPage() {
             {/* Contact Form & Info Section */}
             <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
               <GradientOrbs variant="subtle" />
+              <FloatingTechIcons variant="default" />
+              <DotGridPattern opacity="light" />
               <div className="container mx-auto px-4">
                 <div className="grid gap-12 lg:grid-cols-2">
             {/* Contact Form */}
@@ -283,6 +287,8 @@ export function ContactPage() {
       {/* Location Map Section */}
       <section className="relative py-12 bg-white dark:bg-slate-800 overflow-hidden">
         <CircuitPattern variant="default" />
+        <GradientOrbs variant="subtle" />
+        <FloatingParticles count={15} color="primary" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

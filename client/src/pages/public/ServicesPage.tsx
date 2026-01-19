@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { Smartphone, Laptop, Tablet, Monitor, Headphones, Watch, Cpu, HardDrive, Wrench, Shield, Clock, ArrowRight, Zap } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 const services = [
   { icon: Smartphone, key: 'smartphone', color: 'from-green-500 to-emerald-500', image: '/images/screen-replacement.png' },
@@ -107,6 +107,8 @@ export function PublicServicesPage() {
       <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
+        <AnimatedLines color="default" />
+        <FloatingParticles count={20} color="primary" />
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {services.map((service, index) => (
@@ -203,6 +205,8 @@ export function PublicServicesPage() {
       {/* CTA Section */}
       <section className="relative py-20 bg-white dark:bg-slate-900 overflow-hidden">
         <CircuitPattern variant="default" />
+        <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

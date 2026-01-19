@@ -10,7 +10,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, CheckCircle, Smartphone, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 export function BookingPage() {
   const { t, i18n } = useTranslation()
@@ -95,6 +95,8 @@ export function BookingPage() {
       <section className="relative py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
+        <AnimatedLines color="default" />
+        <CircuitPattern variant="default" />
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Steps */}

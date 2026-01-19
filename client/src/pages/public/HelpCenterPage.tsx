@@ -17,7 +17,7 @@ import {
   CreditCard,
   MapPin
 } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 interface FAQItem {
   question: string
@@ -183,6 +183,8 @@ export function HelpCenterPage() {
       <section className="relative py-16 bg-slate-50 dark:bg-slate-900 overflow-hidden">
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
+        <AnimatedLines color="default" />
+        <FloatingTechIcons variant="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -221,6 +223,8 @@ export function HelpCenterPage() {
       {/* FAQs */}
       <section className="relative py-16 bg-white dark:bg-slate-800 overflow-hidden">
         <CircuitPattern variant="default" />
+        <GradientOrbs variant="subtle" />
+        <FloatingParticles count={20} color="primary" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

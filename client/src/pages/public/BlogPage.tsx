@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { Calendar, User, ArrowRight, BookOpen, Lightbulb, Wrench, Shield } from 'lucide-react'
-import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles } from '@/components/ui/visual-enhancements'
+import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, AnimatedLines } from '@/components/ui/visual-enhancements'
 
 const blogPosts = [
   {
@@ -92,6 +92,8 @@ export function BlogPage() {
       <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
         <GradientOrbs variant="subtle" />
         <DotGridPattern opacity="light" />
+        <AnimatedLines color="default" />
+        <FloatingTechIcons variant="default" />
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-2">
             {blogPosts.map((post, index) => (

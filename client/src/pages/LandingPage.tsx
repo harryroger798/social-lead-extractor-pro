@@ -462,6 +462,8 @@ export function LandingPage() {
       {/* Trust Signals Section */}
       <section className="relative py-12 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 overflow-hidden">
         <DotGridPattern opacity="light" />
+        <GradientOrbs variant="subtle" />
+        <AnimatedLines color="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -563,6 +565,8 @@ export function LandingPage() {
       <section className="relative py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
         <GradientOrbs variant="subtle" />
         <FloatingTechIcons variant="default" />
+        <DotGridPattern opacity="light" />
+        <FloatingParticles count={25} color="primary" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -664,6 +668,8 @@ export function LandingPage() {
       {/* Features Section */}
       <section className="relative py-24 bg-white dark:bg-slate-900 overflow-hidden">
         <CircuitPattern variant="default" />
+        <GradientOrbs variant="subtle" />
+        <FloatingParticles count={20} color="primary" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -709,6 +715,8 @@ export function LandingPage() {
       {/* Testimonials Section */}
       <section className="relative py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 overflow-hidden">
         <GradientOrbs variant="subtle" />
+        <DotGridPattern opacity="light" />
+        <AnimatedLines color="default" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -759,6 +767,8 @@ export function LandingPage() {
             {/* WhatsApp Reviews Section */}
             <section className="relative py-24 bg-white dark:bg-slate-900 overflow-hidden">
               <DotGridPattern opacity="light" />
+              <GradientOrbs variant="subtle" />
+              <CircuitPattern variant="default" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -814,6 +824,8 @@ export function LandingPage() {
             {/* Repair Status Tracker Section */}
             <section className="relative py-20 bg-gradient-to-b from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 overflow-hidden">
               <FloatingTechIcons variant="default" />
+              <GradientOrbs variant="subtle" />
+              <FloatingParticles count={20} color="primary" />
               <div className="container mx-auto px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
