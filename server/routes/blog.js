@@ -8,18 +8,23 @@ const mailgunService = require('../services/mailgunService');
 
 const router = express.Router();
 
-const SANITY_PROJECT_ID = '75uz5ykn';
-const SANITY_DATASET = 'production';
-const SANITY_API_VERSION = '2024-01-01';
-const SANITY_TOKEN = 'skoIi7B47AYT2FIVA2KjVjo1ATATGHmAwclzek737l5KePmonsrUJS4HYzqQcC43IN2kICgz0l8qE1nDqxMDj8N9Swib5hqYe30WLvCHt2eZcVwlITiQrvw7ppyLSxoUl7cBsYuTraE7pr1JqN7YZtdvkV4SuUrXKsIXXQvYvgXbFX54NQ1L';
+const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID || '75uz5ykn';
+const SANITY_DATASET = process.env.SANITY_DATASET || 'production';
+const SANITY_API_VERSION = process.env.SANITY_API_VERSION || '2024-01-01';
+const SANITY_TOKEN = process.env.SANITY_API_TOKEN;
 
-const sanityClient = axios.create({
+// Only create sanityClient if token is available
+const sanityClient = SANITY_TOKEN ? axios.create({
   baseURL: `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/mutate/${SANITY_DATASET}`,
   headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${SANITY_TOKEN}`
   }
-});
+}) : null;
+
+if (!SANITY_TOKEN) {
+  logger.warn('SANITY_API_TOKEN not set - blog comments will not be stored in Sanity');
+}
 
 router.post('/comments', [
   body('name').trim().isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
@@ -45,6 +50,14 @@ router.post('/comments', [
 
   const ipAddress = req.ip || req.connection.remoteAddress;
   const userAgent = req.get('User-Agent') || '';
+
+  if (!sanityClient) {
+    logger.warn('Sanity client not configured - comment not stored', { name, postId });
+    return res.json({
+      success: true,
+      message: 'Comment submitted for review. It will appear after approval.'
+    });
+  }
 
   try {
     const comment = {
