@@ -305,10 +305,11 @@ export default function VoiceAstrologerPage() {
         }));
       });
 
-      // Use permanent assistant ID created via VAPI API
-      // Assistant uses Deepgram STT/TTS + Groq LLM (VAPI built-in providers)
-      // No external API keys required (OpenAI, ElevenLabs, etc.)
-      await vapi.start(VAPI_ASSISTANT_ID);
+      // Use transient assistant configuration with Deepgram STT/TTS + Groq LLM
+      // This uses VAPI's built-in providers - no external API keys required
+      // All costs charged through VAPI credits
+      const assistantConfig = buildAssistantConfig(selectedLanguage);
+      await vapi.start(assistantConfig);
     } catch (error) {
       console.error("Failed to start call:", error);
       setCallState({
