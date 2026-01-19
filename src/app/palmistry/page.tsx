@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,36 @@ import {
   Target,
   Zap,
 } from "lucide-react";
+
+// Image paths for palm lines
+const lineImages: Record<string, string> = {
+  "Heart Line": "/images/palmistry/lines/heart-line.png",
+  "Head Line": "/images/palmistry/lines/head-line.png",
+  "Life Line": "/images/palmistry/lines/life-line.png",
+  "Fate Line": "/images/palmistry/lines/fate-line.png",
+  "Sun Line": "/images/palmistry/lines/sun-line.png",
+  "Marriage Line": "/images/palmistry/lines/marriage-line.png",
+};
+
+// Image paths for mounts
+const mountImages: Record<string, string> = {
+  "Mount of Jupiter": "/images/palmistry/mounts/mount-jupiter.png",
+  "Mount of Saturn": "/images/palmistry/mounts/mount-saturn.png",
+  "Mount of Apollo (Sun)": "/images/palmistry/mounts/mount-apollo.png",
+  "Mount of Mercury": "/images/palmistry/mounts/mount-mercury.png",
+  "Mount of Venus": "/images/palmistry/mounts/mount-venus.png",
+  "Mount of Moon": "/images/palmistry/mounts/mount-moon.png",
+  "Mount of Mars (Upper)": "/images/palmistry/mounts/mount-mars-upper.png",
+  "Mount of Mars (Lower)": "/images/palmistry/mounts/mount-mars-lower.png",
+};
+
+// Image paths for hand shapes
+const handShapeImages: Record<string, string> = {
+  "Earth Hand": "/images/palmistry/shapes/earth-hand.png",
+  "Air Hand": "/images/palmistry/shapes/air-hand.png",
+  "Water Hand": "/images/palmistry/shapes/water-hand.png",
+  "Fire Hand": "/images/palmistry/shapes/fire-hand.png",
+};
 
 // Helper function to get translated line name
 const getTranslatedLineName = (name: string, t: (key: string, fallback: string) => string): string => {
@@ -373,6 +404,19 @@ export default function PalmistryPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                      {/* Line Image */}
+                      {lineImages[selectedLine.name] && (
+                        <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden bg-gray-100">
+                          <Image
+                            src={lineImages[selectedLine.name]}
+                            alt={getTranslatedLineName(selectedLine.name, t)}
+                            fill
+                            className="object-contain"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                        </div>
+                      )}
+
                       <div className="p-4 bg-amber-50 rounded-lg">
                         <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
                           <Info className="w-4 h-4" />
@@ -453,6 +497,19 @@ export default function PalmistryPage() {
                       <CardDescription>Planet: {selectedMount.planet}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                      {/* Mount Image */}
+                      {mountImages[selectedMount.name] && (
+                        <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden bg-gray-100">
+                          <Image
+                            src={mountImages[selectedMount.name]}
+                            alt={getTranslatedMountName(selectedMount.name, t)}
+                            fill
+                            className="object-contain"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                        </div>
+                      )}
+
                       <div className="p-4 bg-amber-50 rounded-lg">
                         <h4 className="font-semibold text-amber-800 mb-2">{t("palmistry.location", "Location")}</h4>
                         <p className="text-gray-700">{selectedMount.location}</p>
@@ -541,7 +598,19 @@ export default function PalmistryPage() {
                     </CardTitle>
                     <CardDescription>{shape.characteristics}</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4">
+                    {/* Hand Shape Image */}
+                    {handShapeImages[shape.name] && (
+                      <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100">
+                        <Image
+                          src={handShapeImages[shape.name]}
+                          alt={getTranslatedHandShapeName(shape.name, t)}
+                          fill
+                          className="object-contain"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                    )}
                     <p className="text-gray-600">{shape.meaning}</p>
                   </CardContent>
                 </Card>
