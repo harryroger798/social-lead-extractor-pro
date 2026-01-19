@@ -108,7 +108,7 @@ const buildAssistantConfig = (langCode: string) => ({
   },
   voice: {
     provider: "deepgram" as const,
-    voiceId: "aura-asteria-en",
+    voiceId: "asteria" as const, // Valid Deepgram voice ID
   },
   silenceTimeoutSeconds: 30,
   maxDurationSeconds: 300,
