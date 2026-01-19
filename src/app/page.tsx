@@ -22,6 +22,8 @@ import {
   Sun,
   Heart,
   AlertTriangle,
+  Mic,
+  Phone,
 } from "lucide-react";
 
 // Testimonials stay in original language as requested by user
@@ -212,6 +214,50 @@ export default function Home() {
                 <div className="text-sm text-gray-300 mt-1">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Voice AI Astrologer Highlight Section */}
+      <section className="py-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex-1 text-center lg:text-left">
+              <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                <Sparkles className="w-3 h-3 mr-1" />
+                {t('home.voiceAiBadge', 'NEW - Voice AI Feature')}
+              </Badge>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
+                {t('home.voiceAiTitle', 'Talk to Our AI Astrologer')}
+              </h2>
+              <p className="text-lg text-purple-100 mb-6 max-w-xl">
+                {t('home.voiceAiDesc', 'Get instant Vedic astrology guidance through natural voice conversation. Ask about your birth chart, career, relationships, and more!')}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-purple-700 hover:bg-purple-50 text-lg px-8 py-6 shadow-lg"
+                  asChild
+                >
+                  <Link href="/voice-astrologer">
+                    <Mic className="mr-2 w-5 h-5" />
+                    {t('home.tryVoiceAi', 'Try Voice AI Now')}
+                  </Link>
+                </Button>
+                <div className="flex items-center justify-center gap-2 text-purple-200">
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm">{t('home.voiceAiFree', '5 Free Minutes Daily')}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="w-40 h-40 lg:w-48 lg:h-48 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-4 border-white/20 animate-pulse">
+                <div className="w-28 h-28 lg:w-36 lg:h-36 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-2xl">
+                  <Mic className="w-14 h-14 lg:w-16 lg:h-16 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

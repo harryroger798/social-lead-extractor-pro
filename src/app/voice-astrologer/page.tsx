@@ -108,8 +108,8 @@ const buildAssistantConfig = (langCode: string) => ({
     maxTokens: 300,
   },
   voice: {
-    provider: "vapi" as const,
-    voiceId: "Rohan" as const, // VAPI built-in voice - Indian American accent, bright & optimistic
+    provider: "deepgram" as const,
+    voiceId: "asteria" as const, // Deepgram voice - clear English pronunciation
   },
   silenceTimeoutSeconds: 30,
   maxDurationSeconds: 300,
@@ -383,6 +383,12 @@ export default function VoiceAstrologerPage() {
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             {t("voiceAstrologer.subtitle", "Talk to our AI Astrologer in your preferred language. Get instant Vedic astrology guidance through natural voice conversation.")}
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-amber-800">
+            <Info className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm font-medium">
+              {t("voiceAstrologer.englishNote", "For best results, please speak in English. Hindi and other languages may have pronunciation variations.")}
+            </span>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">

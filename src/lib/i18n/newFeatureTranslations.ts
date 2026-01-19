@@ -182,7 +182,15 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       httpsRequired: "Voice calls require a secure connection (HTTPS). Please access this site via HTTPS to use the Voice AI Astrologer.",
       microphoneDenied: "Microphone access was denied. Please allow microphone access in your browser settings and try again.",
       connectionError: "Connection error. Please try again later.",
-      startError: "Failed to start call. Please check your microphone permissions and try again."
+      startError: "Failed to start call. Please check your microphone permissions and try again.",
+      englishNote: "For best results, please speak in English. Hindi and other languages may have pronunciation variations."
+    },
+    home: {
+      voiceAiBadge: "NEW - Voice AI Feature",
+      voiceAiTitle: "Talk to Our AI Astrologer",
+      voiceAiDesc: "Get instant Vedic astrology guidance through natural voice conversation. Ask about your birth chart, career, relationships, and more!",
+      tryVoiceAi: "Try Voice AI Now",
+      voiceAiFree: "5 Free Minutes Daily"
     },
     blockchainKundli: {
       badge: "Verified & Immutable",
@@ -528,7 +536,15 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       httpsRequired: "वॉयस कॉल के लिए सुरक्षित कनेक्शन (HTTPS) आवश्यक है। कृपया वॉयस AI ज्योतिषी का उपयोग करने के लिए HTTPS के माध्यम से इस साइट तक पहुंचें।",
       microphoneDenied: "माइक्रोफोन एक्सेस अस्वीकार कर दी गई। कृपया अपनी ब्राउज़र सेटिंग्स में माइक्रोफोन एक्सेस की अनुमति दें और पुनः प्रयास करें।",
       connectionError: "कनेक्शन त्रुटि। कृपया बाद में पुनः प्रयास करें।",
-      startError: "कॉल शुरू करने में विफल। कृपया अपनी माइक्रोफोन अनुमतियां जांचें और पुनः प्रयास करें।"
+      startError: "कॉल शुरू करने में विफल। कृपया अपनी माइक्रोफोन अनुमतियां जांचें और पुनः प्रयास करें।",
+      englishNote: "सर्वोत्तम परिणामों के लिए, कृपया अंग्रेजी में बोलें। हिंदी और अन्य भाषाओं में उच्चारण भिन्नताएं हो सकती हैं।"
+    },
+    home: {
+      voiceAiBadge: "नया - वॉयस AI फीचर",
+      voiceAiTitle: "हमारे AI ज्योतिषी से बात करें",
+      voiceAiDesc: "प्राकृतिक वॉयस वार्तालाप के माध्यम से तत्काल वैदिक ज्योतिष मार्गदर्शन प्राप्त करें। अपनी जन्म कुंडली, करियर, रिश्तों और अधिक के बारे में पूछें!",
+      tryVoiceAi: "वॉयस AI आज़माएं",
+      voiceAiFree: "प्रतिदिन 5 मुफ्त मिनट"
     },
     blockchainKundli: {
       badge: "सत्यापित और अपरिवर्तनीय",
