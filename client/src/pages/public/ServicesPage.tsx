@@ -6,14 +6,14 @@ import { motion } from 'framer-motion'
 import { Smartphone, Laptop, Tablet, Monitor, Headphones, Watch, Cpu, HardDrive, Wrench, Shield, Clock, ArrowRight, Zap } from 'lucide-react'
 
 const services = [
-  { icon: Smartphone, key: 'smartphone', price: '₹500 - ₹5,000', color: 'from-green-500 to-emerald-500', image: '/images/screen-replacement.png' },
-  { icon: Laptop, key: 'laptop', price: '₹1,000 - ₹15,000', color: 'from-blue-500 to-cyan-500', image: '/images/laptop-repair.png' },
-  { icon: Tablet, key: 'tablet', price: '₹800 - ₹8,000', color: 'from-purple-500 to-pink-500', image: '/images/screen-replacement.png' },
-  { icon: Monitor, key: 'desktop', price: '₹1,500 - ₹20,000', color: 'from-orange-500 to-red-500', image: '/images/hardware-upgrade.png' },
-  { icon: Headphones, key: 'audio', price: '₹300 - ₹3,000', color: 'from-indigo-500 to-purple-500', image: '/images/software-installation.png' },
-  { icon: Watch, key: 'smartwatch', price: '₹500 - ₹5,000', color: 'from-teal-500 to-cyan-500', image: '/images/screen-replacement.png' },
-  { icon: Cpu, key: 'gaming', price: '₹2,000 - ₹25,000', color: 'from-red-500 to-pink-500', image: '/images/hardware-upgrade.png' },
-  { icon: HardDrive, key: 'dataRecovery', price: '₹1,000 - ₹10,000', color: 'from-amber-500 to-orange-500', image: '/images/data-recovery.png' },
+  { icon: Smartphone, key: 'smartphone', color: 'from-green-500 to-emerald-500', image: '/images/screen-replacement.png' },
+  { icon: Laptop, key: 'laptop', color: 'from-blue-500 to-cyan-500', image: '/images/laptop-repair.png' },
+  { icon: Tablet, key: 'tablet', color: 'from-purple-500 to-pink-500', image: '/images/screen-replacement.png' },
+  { icon: Monitor, key: 'desktop', color: 'from-orange-500 to-red-500', image: '/images/hardware-upgrade.png' },
+  { icon: Headphones, key: 'audio', color: 'from-indigo-500 to-purple-500', image: '/images/software-installation.png' },
+  { icon: Watch, key: 'smartwatch', color: 'from-teal-500 to-cyan-500', image: '/images/screen-replacement.png' },
+  { icon: Cpu, key: 'gaming', color: 'from-red-500 to-pink-500', image: '/images/hardware-upgrade.png' },
+  { icon: HardDrive, key: 'dataRecovery', color: 'from-amber-500 to-orange-500', image: '/images/data-recovery.png' },
 ]
 
 const whyChooseUs = [
@@ -132,12 +132,6 @@ export function PublicServicesPage() {
                   <p className="text-muted-foreground text-sm mb-4">
                     {t(`public.services.${service.key}.description`)}
                   </p>
-                  <div className="mb-4">
-                    <p className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                      {service.price}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{t('public.services.priceRange')}</p>
-                  </div>
                   <Link to="/booking">
                     <Button className={`w-full gap-2 bg-gradient-to-r ${service.color} hover:opacity-90 text-white border-0`}>
                       {t('public.services.bookNow')}

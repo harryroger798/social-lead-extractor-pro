@@ -20,44 +20,41 @@ export function PricingPage() {
     {
       name: i18n.language === 'hi' ? 'PC Repair' : i18n.language === 'bn' ? 'পিসি মেরামত' : 'PC Repair',
       description: i18n.language === 'hi' ? 'Desktop aur laptop ke liye' : i18n.language === 'bn' ? 'ডেস্কটপ এবং ল্যাপটপের জন্য' : 'For desktops and laptops',
-      startingPrice: 299,
       color: 'from-blue-500 to-cyan-500',
       features: [
-        { name: i18n.language === 'hi' ? 'OS Installation' : i18n.language === 'bn' ? 'ওএস ইনস্টলেশন' : 'OS Installation', price: '₹299-499' },
-        { name: i18n.language === 'hi' ? 'Virus Removal' : i18n.language === 'bn' ? 'ভাইরাস রিমুভাল' : 'Virus Removal', price: '₹199-399' },
-        { name: i18n.language === 'hi' ? 'RAM Upgrade' : i18n.language === 'bn' ? 'র‍্যাম আপগ্রেড' : 'RAM Upgrade', price: '₹500+' },
-        { name: i18n.language === 'hi' ? 'SSD Upgrade' : i18n.language === 'bn' ? 'এসএসডি আপগ্রেড' : 'SSD Upgrade', price: '₹800+' },
-        { name: i18n.language === 'hi' ? 'Data Recovery' : i18n.language === 'bn' ? 'ডেটা রিকভারি' : 'Data Recovery', price: '₹499-1999' },
-        { name: i18n.language === 'hi' ? 'Hardware Repair' : i18n.language === 'bn' ? 'হার্ডওয়্যার মেরামত' : 'Hardware Repair', price: '₹399+' },
+        i18n.language === 'hi' ? 'OS Installation' : i18n.language === 'bn' ? 'ওএস ইনস্টলেশন' : 'OS Installation',
+        i18n.language === 'hi' ? 'Virus Removal' : i18n.language === 'bn' ? 'ভাইরাস রিমুভাল' : 'Virus Removal',
+        i18n.language === 'hi' ? 'RAM Upgrade' : i18n.language === 'bn' ? 'র‍্যাম আপগ্রেড' : 'RAM Upgrade',
+        i18n.language === 'hi' ? 'SSD Upgrade' : i18n.language === 'bn' ? 'এসএসডি আপগ্রেড' : 'SSD Upgrade',
+        i18n.language === 'hi' ? 'Data Recovery' : i18n.language === 'bn' ? 'ডেটা রিকভারি' : 'Data Recovery',
+        i18n.language === 'hi' ? 'Hardware Repair' : i18n.language === 'bn' ? 'হার্ডওয়্যার মেরামত' : 'Hardware Repair',
       ]
     },
     {
       name: i18n.language === 'hi' ? 'Mobile Repair' : i18n.language === 'bn' ? 'মোবাইল মেরামত' : 'Mobile Repair',
       description: i18n.language === 'hi' ? 'Smartphone aur tablet ke liye' : i18n.language === 'bn' ? 'স্মার্টফোন এবং ট্যাবলেটের জন্য' : 'For smartphones and tablets',
-      startingPrice: 199,
       color: 'from-green-500 to-emerald-500',
       popular: true,
       features: [
-        { name: i18n.language === 'hi' ? 'Screen Replacement' : i18n.language === 'bn' ? 'স্ক্রিন রিপ্লেসমেন্ট' : 'Screen Replacement', price: '₹999-4999' },
-        { name: i18n.language === 'hi' ? 'Battery Replacement' : i18n.language === 'bn' ? 'ব্যাটারি রিপ্লেসমেন্ট' : 'Battery Replacement', price: '₹499-1499' },
-        { name: i18n.language === 'hi' ? 'Charging Port' : i18n.language === 'bn' ? 'চার্জিং পোর্ট' : 'Charging Port Repair', price: '₹299-699' },
-        { name: i18n.language === 'hi' ? 'Speaker/Mic Repair' : i18n.language === 'bn' ? 'স্পিকার/মাইক মেরামত' : 'Speaker/Mic Repair', price: '₹299-599' },
-        { name: i18n.language === 'hi' ? 'Software Issues' : i18n.language === 'bn' ? 'সফটওয়্যার সমস্যা' : 'Software Issues', price: '₹199-499' },
-        { name: i18n.language === 'hi' ? 'Water Damage' : i18n.language === 'bn' ? 'জলের ক্ষতি' : 'Water Damage Repair', price: '₹599-1999' },
+        i18n.language === 'hi' ? 'Screen Replacement' : i18n.language === 'bn' ? 'স্ক্রিন রিপ্লেসমেন্ট' : 'Screen Replacement',
+        i18n.language === 'hi' ? 'Battery Replacement' : i18n.language === 'bn' ? 'ব্যাটারি রিপ্লেসমেন্ট' : 'Battery Replacement',
+        i18n.language === 'hi' ? 'Charging Port' : i18n.language === 'bn' ? 'চার্জিং পোর্ট' : 'Charging Port Repair',
+        i18n.language === 'hi' ? 'Speaker/Mic Repair' : i18n.language === 'bn' ? 'স্পিকার/মাইক মেরামত' : 'Speaker/Mic Repair',
+        i18n.language === 'hi' ? 'Software Issues' : i18n.language === 'bn' ? 'সফটওয়্যার সমস্যা' : 'Software Issues',
+        i18n.language === 'hi' ? 'Water Damage' : i18n.language === 'bn' ? 'জলের ক্ষতি' : 'Water Damage Repair',
       ]
     },
     {
       name: i18n.language === 'hi' ? 'Digital Services' : i18n.language === 'bn' ? 'ডিজিটাল সার্ভিস' : 'Digital Services',
       description: i18n.language === 'hi' ? 'Website aur digital marketing' : i18n.language === 'bn' ? 'ওয়েবসাইট এবং ডিজিটাল মার্কেটিং' : 'Website and digital marketing',
-      startingPrice: 2999,
       color: 'from-purple-500 to-pink-500',
       features: [
-        { name: i18n.language === 'hi' ? 'Basic Website' : i18n.language === 'bn' ? 'বেসিক ওয়েবসাইট' : 'Basic Website', price: '₹2,999-9,999' },
-        { name: i18n.language === 'hi' ? 'E-commerce Site' : i18n.language === 'bn' ? 'ই-কমার্স সাইট' : 'E-commerce Website', price: '₹9,999-29,999' },
-        { name: i18n.language === 'hi' ? 'Logo Design' : i18n.language === 'bn' ? 'লোগো ডিজাইন' : 'Logo Design', price: '₹999-2,999' },
-        { name: i18n.language === 'hi' ? 'Social Media Setup' : i18n.language === 'bn' ? 'সোশ্যাল মিডিয়া সেটআপ' : 'Social Media Setup', price: '₹1,999-4,999' },
-        { name: i18n.language === 'hi' ? 'SEO Package' : i18n.language === 'bn' ? 'এসইও প্যাকেজ' : 'SEO Package', price: '₹2,999/mo' },
-        { name: i18n.language === 'hi' ? 'Google Ads Setup' : i18n.language === 'bn' ? 'গুগল অ্যাডস সেটআপ' : 'Google Ads Setup', price: '₹1,999+' },
+        i18n.language === 'hi' ? 'Basic Website' : i18n.language === 'bn' ? 'বেসিক ওয়েবসাইট' : 'Basic Website',
+        i18n.language === 'hi' ? 'E-commerce Site' : i18n.language === 'bn' ? 'ই-কমার্স সাইট' : 'E-commerce Website',
+        i18n.language === 'hi' ? 'Logo Design' : i18n.language === 'bn' ? 'লোগো ডিজাইন' : 'Logo Design',
+        i18n.language === 'hi' ? 'Social Media Setup' : i18n.language === 'bn' ? 'সোশ্যাল মিডিয়া সেটআপ' : 'Social Media Setup',
+        i18n.language === 'hi' ? 'SEO Package' : i18n.language === 'bn' ? 'এসইও প্যাকেজ' : 'SEO Package',
+        i18n.language === 'hi' ? 'Google Ads Setup' : i18n.language === 'bn' ? 'গুগল অ্যাডস সেটআপ' : 'Google Ads Setup',
       ]
     }
   ]
@@ -107,12 +104,12 @@ export function PricingPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/booking">
-                <Button size="lg" className="bg-white text-slate-900 hover:bg-white/90">
+                <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0">
                   {i18n.language === 'hi' ? 'Book Now' : i18n.language === 'bn' ? 'এখনই বুক করুন' : 'Book Now'}
                 </Button>
               </Link>
               <a href="tel:+919876543210">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
                   <Phone className="h-5 w-5 mr-2" />
                   {i18n.language === 'hi' ? 'Call for Quote' : i18n.language === 'bn' ? 'কোট জন্য কল করুন' : 'Call for Quote'}
                 </Button>
@@ -143,27 +140,21 @@ export function PricingPage() {
                 <div className={`p-6 bg-gradient-to-r ${plan.color} text-white`}>
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <p className="text-white/80 text-sm mb-4">{plan.description}</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-sm">
-                      {i18n.language === 'hi' ? 'Starting from' : i18n.language === 'bn' ? 'শুরু' : 'Starting from'}
-                    </span>
-                    <span className="text-4xl font-bold">₹{plan.startingPrice}</span>
-                  </div>
+                  <p className="text-sm text-white/90 mt-2">
+                    {i18n.language === 'hi' ? 'Quote ke liye call karein' : i18n.language === 'bn' ? 'কোটের জন্য কল করুন' : 'Call for a quote'}
+                  </p>
                 </div>
                 <div className="p-6">
                   <ul className="space-y-4">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Check className="h-5 w-5 text-green-500" />
-                          <span className="dark:text-white">{feature.name}</span>
-                        </div>
-                        <span className="text-sm font-semibold text-primary">{feature.price}</span>
+                      <li key={i} className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="dark:text-white">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Link to="/booking" className="block mt-6">
-                    <Button className="w-full" size="lg">
+                    <Button className="w-full bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white" size="lg">
                       {i18n.language === 'hi' ? 'Book Now' : i18n.language === 'bn' ? 'এখনই বুক করুন' : 'Book Now'}
                     </Button>
                   </Link>
@@ -242,7 +233,7 @@ export function PricingPage() {
                 </Button>
               </a>
               <Link to="/contact">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
                   {i18n.language === 'hi' ? 'Contact Us' : i18n.language === 'bn' ? 'যোগাযোগ করুন' : 'Contact Us'}
                 </Button>
               </Link>

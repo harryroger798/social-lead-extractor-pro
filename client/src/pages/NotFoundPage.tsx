@@ -64,7 +64,7 @@ export function NotFoundPage() {
                 size="lg" 
                 variant="outline"
                 onClick={() => window.history.back()}
-                className="gap-2 px-8 py-6 text-lg"
+                className="gap-2 px-8 py-6 text-lg border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <ArrowLeft className="h-5 w-5" />
                 {i18n.language === 'hi' ? 'Peeche Jao' :
