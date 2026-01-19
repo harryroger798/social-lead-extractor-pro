@@ -27,7 +27,7 @@ export function FloatingTechIcons({ variant = 'default' }: { variant?: 'default'
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {icons.map(({ Icon, delay, x, y, size }, index) => (
         <motion.div
           key={index}
@@ -104,7 +104,7 @@ export function GradientOrbs({ variant = 'default' }: { variant?: 'default' | 'h
   const orbs = orbConfigs[variant]
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {orbs.map((orb, index) => (
         <motion.div
           key={index}
@@ -146,7 +146,7 @@ export function DotGridPattern({
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <div 
         className={`absolute inset-0 ${opacityClasses[opacity]}`}
         style={{
@@ -169,7 +169,7 @@ export function CircuitPattern({ variant = 'default' }: { variant?: 'default' | 
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <svg className={`absolute inset-0 w-full h-full ${colorClasses[variant]}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="circuit" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
@@ -198,7 +198,7 @@ export function AnimatedLines({ color = 'default' }: { color?: 'default' | 'ligh
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {[...Array(5)].map((_, i) => (
         <motion.div
           key={i}
@@ -261,7 +261,7 @@ export function SparkleEffect() {
   }))
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {sparkles.map((sparkle) => (
         <motion.div
           key={sparkle.id}
@@ -298,7 +298,7 @@ export function MeshGradient({ variant = 'default' }: { variant?: 'default' | 'w
   }
 
   return (
-    <div className={`absolute inset-0 ${gradients[variant]}`} />
+    <div className={`absolute inset-0 z-0 ${gradients[variant]}`} />
   )
 }
 
@@ -320,7 +320,7 @@ export function FloatingParticles({ count = 30, color = 'default' }: { count?: n
   }))
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
