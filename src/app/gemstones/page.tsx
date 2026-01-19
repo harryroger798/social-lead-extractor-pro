@@ -41,17 +41,17 @@ interface Gemstone {
   alternatives: string[];
 }
 
-// Real gemstone images from Wikimedia Commons (public domain)
+// Real gemstone images from Pixabay (free to use, allows hotlinking)
 const gemstoneImages: Record<string, string> = {
-  Ruby: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Ruby_gem.JPG/440px-Ruby_gem.JPG",
-  Pearl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/White_pearl_necklace.jpg/440px-White_pearl_necklace.jpg",
-  RedCoral: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Coral_jewellery.jpg/440px-Coral_jewellery.jpg",
-  Emerald: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Emerald_rough_300x422.jpg/330px-Emerald_rough_300x422.jpg",
-  YellowSapphire: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Saphir_jaune.jpg/440px-Saphir_jaune.jpg",
-  Diamond: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Brillanten.jpg/440px-Brillanten.jpg",
-  BlueSapphire: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sapphire_Gem.jpg/440px-Sapphire_Gem.jpg",
-  Hessonite: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Hessonite_garnet.jpg/440px-Hessonite_garnet.jpg",
-  CatsEye: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Chrysoberyl_cat%27s_eye.jpg/440px-Chrysoberyl_cat%27s_eye.jpg"
+  Ruby: "https://cdn.pixabay.com/photo/2016/03/05/19/02/ruby-1238320_640.jpg",
+  Pearl: "https://cdn.pixabay.com/photo/2015/10/21/11/04/pearl-999585_640.jpg",
+  RedCoral: "https://cdn.pixabay.com/photo/2017/01/08/13/58/coral-1962987_640.jpg",
+  Emerald: "https://cdn.pixabay.com/photo/2016/03/05/19/02/emerald-1238322_640.jpg",
+  YellowSapphire: "https://cdn.pixabay.com/photo/2015/03/13/08/57/citrine-672097_640.jpg",
+  Diamond: "https://cdn.pixabay.com/photo/2016/03/05/19/02/diamond-1238319_640.jpg",
+  BlueSapphire: "https://cdn.pixabay.com/photo/2016/03/05/19/02/sapphire-1238321_640.jpg",
+  Hessonite: "https://cdn.pixabay.com/photo/2017/01/27/22/08/garnet-2014662_640.jpg",
+  CatsEye: "https://cdn.pixabay.com/photo/2017/01/27/22/08/tigers-eye-2014663_640.jpg"
 };
 
 const gemstones: Record<string, Gemstone> = {
