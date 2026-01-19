@@ -297,6 +297,11 @@ export default function GemstonesPage() {
     return gemstones[key]?.benefits || [];
   };
 
+  // Helper function to get translated color names
+  const getColorName = (color: string): string => {
+    return t(`gemstones.colors.${color.replace(/[\/\s]/g, '_')}`, color);
+  };
+
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCalculating(true);
@@ -530,8 +535,8 @@ export default function GemstonesPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline">{getPlanetName(gem.planet)}</Badge>
-                      <Badge variant="secondary">{gem.color}</Badge>
+                                            <Badge variant="outline">{getPlanetName(gem.planet)}</Badge>
+                                            <Badge variant="secondary">{getColorName(gem.color)}</Badge>
                     </div>
                     
                     {selectedGem === key && (

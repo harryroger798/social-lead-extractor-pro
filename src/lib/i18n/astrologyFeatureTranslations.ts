@@ -540,6 +540,18 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         Hessonite: "Hessonite (Gomed)",
         CatsEye: "Cat's Eye (Lehsunia)"
       },
+      // Gemstone colors
+      colors: {
+        Red: "Red",
+        "White_Cream": "White/Cream",
+        "Red_Orange": "Red/Orange",
+        Green: "Green",
+        Yellow: "Yellow",
+        "White_Colorless": "White/Colorless",
+        Blue: "Blue",
+        "Honey_Brown": "Honey/Brown",
+        "Greenish_Yellowish_with_chatoyancy": "Greenish/Yellowish with chatoyancy"
+      },
       // Gemstone benefits
       gemBenefits: {
         Ruby: ["Enhances leadership qualities", "Boosts confidence and self-esteem", "Improves relationship with father", "Brings fame and recognition", "Strengthens heart and spine"],
@@ -1180,6 +1192,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           Hessonite: "गोमेद",
           CatsEye: "लहसुनिया"
         },
+        colors: {
+          Red: "लाल",
+          "White_Cream": "सफेद/क्रीम",
+          "Red_Orange": "लाल/नारंगी",
+          Green: "हरा",
+          Yellow: "पीला",
+          "White_Colorless": "सफेद/रंगहीन",
+          Blue: "नीला",
+          "Honey_Brown": "शहद/भूरा",
+          "Greenish_Yellowish_with_chatoyancy": "हरा-पीला चमकदार"
+        },
         gemBenefits: {
           Ruby: ["नेतृत्व गुणों को बढ़ाता है", "आत्मविश्वास बढ़ाता है", "पिता के साथ संबंध सुधारता है", "प्रसिद्धि और मान्यता लाता है", "हृदय और रीढ़ को मजबूत करता है"],
           Pearl: ["मन और भावनाओं को शांत करता है", "माता के साथ संबंध सुधारता है", "अंतर्ज्ञान बढ़ाता है", "शांति और सद्भाव लाता है", "मानसिक स्वास्थ्य के लिए अच्छा"],
@@ -1816,6 +1839,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           BlueSapphire: "நீலம்",
           Hessonite: "கோமேதகம்",
           CatsEye: "வைடூரியம்"
+        },
+        colors: {
+          Red: "சிவப்பு",
+          "White_Cream": "வெள்ளை/கிரீம்",
+          "Red_Orange": "சிவப்பு/ஆரஞ்சு",
+          Green: "பச்சை",
+          Yellow: "மஞ்சள்",
+          "White_Colorless": "வெள்ளை/நிறமற்ற",
+          Blue: "நீலம்",
+          "Honey_Brown": "தேன்/பழுப்பு",
+          "Greenish_Yellowish_with_chatoyancy": "பச்சை-மஞ்சள் ஒளிரும்"
         },
         gemBenefits: {
           Ruby: ["தலைமைத்துவ குணங்களை மேம்படுத்துகிறது", "தன்னம்பிக்கையை அதிகரிக்கிறது", "தந்தையுடன் உறவை மேம்படுத்துகிறது", "புகழும் அங்கீகாரமும் தருகிறது", "இதயம் மற்றும் முதுகெலும்பை வலுப்படுத்துகிறது"],
@@ -2454,6 +2488,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           Hessonite: "గోమేధికం",
           CatsEye: "వైడూర్యం"
         },
+        colors: {
+          Red: "ఎరుపు",
+          "White_Cream": "తెలుపు/క్రీమ్",
+          "Red_Orange": "ఎరుపు/నారింజ",
+          Green: "ఆకుపచ్చ",
+          Yellow: "పసుపు",
+          "White_Colorless": "తెలుపు/రంగులేని",
+          Blue: "నీలం",
+          "Honey_Brown": "తేనె/గోధుమ",
+          "Greenish_Yellowish_with_chatoyancy": "ఆకుపచ్చ-పసుపు మెరిసే"
+        },
         gemBenefits: {
           Ruby: ["నాయకత్వ లక్షణాలను పెంచుతుంది", "ఆత్మవిశ్వాసాన్ని పెంచుతుంది", "తండ్రితో సంబంధాన్ని మెరుగుపరుస్తుంది", "కీర్తి మరియు గుర్తింపు తెస్తుంది", "గుండె మరియు వెన్నెముకను బలపరుస్తుంది"],
           Pearl: ["మనస్సు మరియు భావాలను శాంతపరుస్తుంది", "తల్లితో సంబంధాన్ని మెరుగుపరుస్తుంది", "అంతర్దృష్టిని పెంచుతుంది", "శాంతి మరియు సామరస్యాన్ని తెస్తుంది", "మానసిక ఆరోగ్యానికి మంచిది"],
@@ -3090,6 +3135,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           BlueSapphire: "নীলা",
           Hessonite: "গোমেদ",
           CatsEye: "বৈদূর্য"
+        },
+        colors: {
+          Red: "লাল",
+          "White_Cream": "সাদা/ক্রিম",
+          "Red_Orange": "লাল/কমলা",
+          Green: "সবুজ",
+          Yellow: "হলুদ",
+          "White_Colorless": "সাদা/বর্ণহীন",
+          Blue: "নীল",
+          "Honey_Brown": "মধু/বাদামী",
+          "Greenish_Yellowish_with_chatoyancy": "সবুজ-হলুদ ঝলমলে"
         },
         gemBenefits: {
           Ruby: ["নেতৃত্বের গুণাবলী বাড়ায়", "আত্মবিশ্বাস বাড়ায়", "পিতার সাথে সম্পর্ক উন্নত করে", "খ্যাতি ও স্বীকৃতি আনে", "হৃদয় ও মেরুদণ্ড শক্তিশালী করে"],
@@ -3728,6 +3784,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           Hessonite: "गोमेद",
           CatsEye: "लसूण्या"
         },
+        colors: {
+          Red: "लाल",
+          "White_Cream": "पांढरा/क्रीम",
+          "Red_Orange": "लाल/नारंगी",
+          Green: "हिरवा",
+          Yellow: "पिवळा",
+          "White_Colorless": "पांढरा/रंगहीन",
+          Blue: "निळा",
+          "Honey_Brown": "मध/तपकिरी",
+          "Greenish_Yellowish_with_chatoyancy": "हिरवा-पिवळा चमकदार"
+        },
         gemBenefits: {
           Ruby: ["नेतृत्व गुण वाढवते", "आत्मविश्वास वाढवते", "वडिलांशी संबंध सुधारते", "कीर्ती आणि मान्यता आणते", "हृदय आणि मणका मजबूत करते"],
           Pearl: ["मन आणि भावना शांत करते", "आईशी संबंध सुधारते", "अंतर्ज्ञान वाढवते", "शांती आणि सुसंवाद आणते", "मानसिक आरोग्यासाठी चांगले"],
@@ -4364,6 +4431,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           BlueSapphire: "નીલમ",
           Hessonite: "ગોમેદ",
           CatsEye: "લહસુનિયો"
+        },
+        colors: {
+          Red: "લાલ",
+          "White_Cream": "સફેદ/ક્રીમ",
+          "Red_Orange": "લાલ/નારંગી",
+          Green: "લીલો",
+          Yellow: "પીળો",
+          "White_Colorless": "સફેદ/રંગહીન",
+          Blue: "વાદળી",
+          "Honey_Brown": "મધ/ભૂરો",
+          "Greenish_Yellowish_with_chatoyancy": "લીલો-પીળો ચમકદાર"
         },
         gemBenefits: {
           Ruby: ["નેતૃત્વ ગુણો વધારે છે", "આત્મવિશ્વાસ વધારે છે", "પિતા સાથે સંબંધ સુધારે છે", "કીર્તિ અને માન્યતા લાવે છે", "હૃદય અને કરોડરજ્જુ મજબૂત કરે છે"],
@@ -5002,6 +5080,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           Hessonite: "ಗೋಮೇಧಿಕ",
           CatsEye: "ವೈಡೂರ್ಯ"
         },
+        colors: {
+          Red: "ಕೆಂಪು",
+          "White_Cream": "ಬಿಳಿ/ಕ್ರೀಮ್",
+          "Red_Orange": "ಕೆಂಪು/ಕಿತ್ತಳೆ",
+          Green: "ಹಸಿರು",
+          Yellow: "ಹಳದಿ",
+          "White_Colorless": "ಬಿಳಿ/ಬಣ್ಣರಹಿತ",
+          Blue: "ನೀಲಿ",
+          "Honey_Brown": "ಜೇನು/ಕಂದು",
+          "Greenish_Yellowish_with_chatoyancy": "ಹಸಿರು-ಹಳದಿ ಹೊಳೆಯುವ"
+        },
         gemBenefits: {
           Ruby: ["ನಾಯಕತ್ವ ಗುಣಗಳನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ", "ಆತ್ಮವಿಶ್ವಾಸ ಹೆಚ್ಚಿಸುತ್ತದೆ", "ತಂದೆಯೊಂದಿಗೆ ಸಂಬಂಧ ಸುಧಾರಿಸುತ್ತದೆ", "ಖ್ಯಾತಿ ಮತ್ತು ಮನ್ನಣೆ ತರುತ್ತದೆ", "ಹೃದಯ ಮತ್ತು ಬೆನ್ನುಮೂಳೆ ಬಲಪಡಿಸುತ್ತದೆ"],
           Pearl: ["ಮನಸ್ಸು ಮತ್ತು ಭಾವನೆಗಳನ್ನು ಶಾಂತಗೊಳಿಸುತ್ತದೆ", "ತಾಯಿಯೊಂದಿಗೆ ಸಂಬಂಧ ಸುಧಾರಿಸುತ್ತದೆ", "ಅಂತಃಪ್ರಜ್ಞೆ ಹೆಚ್ಚಿಸುತ್ತದೆ", "ಶಾಂತಿ ಮತ್ತು ಸಾಮರಸ್ಯ ತರುತ್ತದೆ", "ಮಾನಸಿಕ ಆರೋಗ್ಯಕ್ಕೆ ಒಳ್ಳೆಯದು"],
@@ -5639,6 +5728,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
           Hessonite: "ഗോമേദകം",
           CatsEye: "വൈഡൂര്യം"
         },
+        colors: {
+          Red: "ചുവപ്പ്",
+          "White_Cream": "വെള്ള/ക്രീം",
+          "Red_Orange": "ചുവപ്പ്/ഓറഞ്ച്",
+          Green: "പച്ച",
+          Yellow: "മഞ്ഞ",
+          "White_Colorless": "വെള്ള/നിറമില്ലാത്ത",
+          Blue: "നീല",
+          "Honey_Brown": "തേൻ/തവിട്ട്",
+          "Greenish_Yellowish_with_chatoyancy": "പച്ച-മഞ്ഞ തിളങ്ങുന്ന"
+        },
         gemBenefits: {
           Ruby: ["നേതൃത്വ ഗുണങ്ങൾ വർദ്ധിപ്പിക്കുന്നു", "ആത്മവിശ്വാസം വർദ്ധിപ്പിക്കുന്നു", "പിതാവുമായുള്ള ബന്ധം മെച്ചപ്പെടുത്തുന്നു", "പ്രശസ്തിയും അംഗീകാരവും നൽകുന്നു", "ഹൃദയവും നട്ടെല്ലും ശക്തിപ്പെടുത്തുന്നു"],
           Pearl: ["മനസ്സും വികാരങ്ങളും ശാന്തമാക്കുന്നു", "അമ്മയുമായുള്ള ബന്ധം മെച്ചപ്പെടുത്തുന്നു", "അന്തർജ്ഞാനം വർദ്ധിപ്പിക്കുന്നു", "സമാധാനവും ഐക്യവും നൽകുന്നു", "മാനസിക ആരോഗ്യത്തിന് നല്ലത്"],
@@ -6275,6 +6375,17 @@ export const astrologyFeatureTranslations: Record<Language, TranslationObject> =
         BlueSapphire: "ਨੀਲਮ",
         Hessonite: "ਗੋਮੇਦ",
         CatsEye: "ਲਹਸੁਨੀਆ"
+      },
+      colors: {
+        Red: "ਲਾਲ",
+        "White_Cream": "ਚਿੱਟਾ/ਕ੍ਰੀਮ",
+        "Red_Orange": "ਲਾਲ/ਸੰਤਰੀ",
+        Green: "ਹਰਾ",
+        Yellow: "ਪੀਲਾ",
+        "White_Colorless": "ਚਿੱਟਾ/ਰੰਗਹੀਣ",
+        Blue: "ਨੀਲਾ",
+        "Honey_Brown": "ਸ਼ਹਿਦ/ਭੂਰਾ",
+        "Greenish_Yellowish_with_chatoyancy": "ਹਰਾ-ਪੀਲਾ ਚਮਕਦਾਰ"
       },
       gemBenefits: {
         Ruby: ["ਲੀਡਰਸ਼ਿਪ ਗੁਣ ਵਧਾਉਂਦਾ ਹੈ", "ਆਤਮਵਿਸ਼ਵਾਸ ਵਧਾਉਂਦਾ ਹੈ", "ਪਿਤਾ ਨਾਲ ਰਿਸ਼ਤਾ ਸੁਧਾਰਦਾ ਹੈ", "ਸ਼ੋਹਰਤ ਅਤੇ ਮਾਨਤਾ ਲਿਆਉਂਦਾ ਹੈ", "ਦਿਲ ਅਤੇ ਰੀੜ੍ਹ ਦੀ ਹੱਡੀ ਮਜ਼ਬੂਤ ਕਰਦਾ ਹੈ"],
