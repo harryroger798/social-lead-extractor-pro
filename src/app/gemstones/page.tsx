@@ -43,10 +43,10 @@ interface Gemstone {
 
 // Real gemstone images from Unsplash (allows hotlinking via source.unsplash.com)
 const gemstoneImages: Record<string, string> = {
-  Ruby: "https://images.unsplash.com/photo-1551122087-f99a4f5e5e6b?w=400&h=400&fit=crop",
+  Ruby: "https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?w=400&h=400&fit=crop",
   Pearl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop",
   RedCoral: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&h=400&fit=crop",
-  Emerald: "https://images.unsplash.com/photo-1583937443566-6b087e0f2730?w=400&h=400&fit=crop",
+  Emerald: "https://images.unsplash.com/photo-1574170609679-47b7d85c8bc8?w=400&h=400&fit=crop",
   YellowSapphire: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop",
   Diamond: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=400&h=400&fit=crop",
   BlueSapphire: "https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=400&h=400&fit=crop",
