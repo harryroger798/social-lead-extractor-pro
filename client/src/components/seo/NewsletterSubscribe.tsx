@@ -41,17 +41,28 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
     setLoading(true)
 
     try {
-      // Simulate API call - in production, connect to email service
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch('/api/blog/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to subscribe')
+      }
       
       setSubscribed(true)
       setEmail('')
       
       toast({
         title: 'Subscribed!',
-        description: 'Thank you for subscribing to our newsletter.',
+        description: data.message || 'Thank you for subscribing to our newsletter.',
       })
-    } catch (error) {
+    }catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to subscribe. Please try again.',

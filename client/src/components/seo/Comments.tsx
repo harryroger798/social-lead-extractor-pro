@@ -108,13 +108,25 @@ export function Comments({ postId, className = '' }: CommentsProps) {
     setSubmitting(true)
 
     try {
-      // Create comment in Sanity with pending status
-      // Note: This requires a write token which should be handled by a backend API
-      // For now, we'll simulate the submission and show a success message
-      // In production, this would call a serverless function or backend API
-      
-      // Simulated API call - in production, replace with actual API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch('/api/blog/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          content: formData.content,
+          postId,
+          honeypot: formData.website
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to submit comment')
+      }
       
       setSubmitted(true)
       setFormData({ name: '', email: '', content: '', website: '' })
@@ -123,7 +135,7 @@ export function Comments({ postId, className = '' }: CommentsProps) {
         title: 'Comment submitted!',
         description: 'Your comment is awaiting moderation and will appear once approved.',
       })
-    } catch (error) {
+    }catch (error) {
       console.error('Error submitting comment:', error)
       toast({
         title: 'Error',
