@@ -205,7 +205,7 @@ export default function Home() {
     };
     
     if (shareUrls[platform]) {
-      window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+      window.open(shareUrls[platform], '_blank', 'width=600,height=400,noopener,noreferrer');
     }
   };
 
@@ -511,7 +511,10 @@ export default function Home() {
                         {t('homeRedesign.enterDetailsToReveal', 'Enter your details to reveal...')}
                       </p>
                     </div>
-                                        <Button className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600">
+                                        <Button 
+                                          className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
+                                          onClick={() => handleShare('twitter')}
+                                        >
                                           <Share2 className="mr-2 w-4 h-4" />
                                           {t('homeRedesign.shareCosmicDna', 'Share Your Cosmic DNA')}
                                         </Button>
@@ -707,6 +710,8 @@ export default function Home() {
                 size="sm"
                 className="border-white/30 bg-white/10 text-white hover:bg-white/20"
                 onClick={handleCopyLink}
+                aria-label={linkCopied ? t('homeRedesign.linkCopied', 'Link copied') : t('homeRedesign.copyLink', 'Copy link')}
+                title={linkCopied ? t('homeRedesign.linkCopied', 'Link copied') : t('homeRedesign.copyLink', 'Copy link')}
               >
                 {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
@@ -1063,6 +1068,7 @@ export default function Home() {
             <Button
               size="lg"
               className="rounded-full w-16 h-16 bg-gradient-to-br from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 shadow-2xl shadow-purple-500/30"
+              aria-label={t('homeRedesign.askTheStars', 'Ask the Stars')}
             >
               <Mic className="w-7 h-7 text-white" />
             </Button>
