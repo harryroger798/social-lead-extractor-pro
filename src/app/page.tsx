@@ -331,35 +331,35 @@ export default function Home() {
     },
   ];
 
-    // Dynamic year predictions - uses existing translation keys with 2026 suffix
+    // Dynamic year predictions - uses withCurrentYear() to replace {year} placeholder
     const yearlyPredictions = [
       {
-        title: t('home.horoscope2026Title', '2026 Horoscope'),
+        title: withCurrentYear(t('home.horoscope2026Title', '{year} Horoscope')),
         description: t('home.horoscope2026Desc', 'Yearly predictions for all 12 zodiac signs'),
         href: `/horoscope/${currentYear}`,
       },
       {
-        title: t('home.saturnTransitTitle', 'Saturn Transit 2026'),
+        title: withCurrentYear(t('home.saturnTransitTitle', 'Saturn Transit {year}')),
         description: t('home.saturnTransitDesc', 'Shani Gochar effects on your sign'),
         href: `/transits/saturn-transit-${currentYear}`,
       },
       {
-        title: t('home.jupiterTransitTitle', 'Jupiter Transit 2026'),
+        title: withCurrentYear(t('home.jupiterTransitTitle', 'Jupiter Transit {year}')),
         description: t('home.jupiterTransitDesc', 'Guru Gochar blessings and opportunities'),
         href: `/transits/jupiter-transit-${currentYear}`,
       },
       {
-        title: t('home.mercuryRetrogradeTitle', 'Mercury Retrograde 2026'),
+        title: withCurrentYear(t('home.mercuryRetrogradeTitle', 'Mercury Retrograde {year}')),
         description: t('home.mercuryRetrogradeDesc', 'Dates, effects, and survival guide'),
         href: `/transits/mercury-retrograde-${currentYear}`,
       },
       {
-        title: t('home.eclipsesTitle', 'Eclipses 2026'),
+        title: withCurrentYear(t('home.eclipsesTitle', 'Eclipses {year}')),
         description: t('home.eclipsesDesc', 'Solar & lunar eclipse dates and effects'),
         href: `/eclipses-${currentYear}`,
       },
       {
-        title: t('home.festivalCalendarTitle', 'Festival Calendar 2026'),
+        title: withCurrentYear(t('home.festivalCalendarTitle', 'Festival Calendar {year}')),
         description: t('home.festivalCalendarDesc', 'Hindu festivals and important dates'),
         href: `/festival-calendar-${currentYear}`,
       },
