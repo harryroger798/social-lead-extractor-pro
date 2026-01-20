@@ -5,11 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { getCurrentYear, withCurrentYear } from "@/lib/utils";
+import { withCurrentYear } from "@/lib/utils";
 
 export default function DisclaimerPage() {
   const { t } = useLanguage();
-  const currentYear = getCurrentYear();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

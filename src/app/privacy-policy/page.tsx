@@ -2,11 +2,10 @@
 
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { getCurrentYear, withCurrentYear } from "@/lib/utils";
+import { withCurrentYear } from "@/lib/utils";
 
 export default function PrivacyPolicyPage() {
   const { t } = useLanguage();
-  const currentYear = getCurrentYear();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
