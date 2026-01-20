@@ -229,26 +229,22 @@ export function BlogPostPage() {
               <TableOfContents content={post.body} className="mb-8" />
 
               {/* Blog Content */}
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                {post.body.split('\n').map((paragraph, index) => {
-                  if (paragraph.startsWith('# ')) {
-                    return <h1 key={index} id={`heading-${index}`} className="text-3xl font-bold mt-8 mb-4 scroll-mt-20">{paragraph.slice(2)}</h1>
-                  }
-                  if (paragraph.startsWith('## ')) {
-                    return <h2 key={index} id={`heading-${index}`} className="text-2xl font-bold mt-6 mb-3 scroll-mt-20">{paragraph.slice(3)}</h2>
-                  }
-                  if (paragraph.startsWith('### ')) {
-                    return <h3 key={index} id={`heading-${index}`} className="text-xl font-bold mt-4 mb-2 scroll-mt-20">{paragraph.slice(4)}</h3>
-                  }
-                  if (paragraph.startsWith('- ')) {
-                    return <li key={index} className="ml-4">{paragraph.slice(2)}</li>
-                  }
-                  if (paragraph.trim() === '') {
-                    return <br key={index} />
-                  }
-                  return <p key={index} className="mb-4 text-muted-foreground leading-relaxed">{paragraph}</p>
-                })}
-              </div>
+              <div 
+                className="prose prose-lg dark:prose-invert max-w-none
+                  prose-headings:scroll-mt-20
+                  prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-8 prose-h1:mb-4
+                  prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-6 prose-h2:mb-3
+                  prose-h3:text-xl prose-h3:font-bold prose-h3:mt-4 prose-h3:mb-2
+                  prose-p:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed
+                  prose-a:text-primary prose-a:hover:underline
+                  prose-img:rounded-lg prose-img:shadow-lg prose-img:my-6
+                  prose-table:border-collapse prose-table:w-full
+                  prose-th:bg-slate-100 prose-th:dark:bg-slate-700 prose-th:p-3 prose-th:text-left prose-th:border prose-th:border-slate-200 prose-th:dark:border-slate-600
+                  prose-td:p-3 prose-td:border prose-td:border-slate-200 prose-td:dark:border-slate-600
+                  prose-figure:my-6 prose-figcaption:text-center prose-figcaption:text-sm prose-figcaption:text-muted-foreground prose-figcaption:mt-2
+                  [&_.video-container]:my-6 [&_.video-container]:rounded-lg [&_.video-container]:overflow-hidden [&_.video-container]:shadow-lg"
+                dangerouslySetInnerHTML={{ __html: post.body }}
+              />
 
               {/* Social Share Buttons (Bottom of article) */}
               <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">

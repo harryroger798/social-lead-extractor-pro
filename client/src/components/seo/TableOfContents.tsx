@@ -20,26 +20,22 @@ export function TableOfContents({ content, className = '' }: TableOfContentsProp
 
   useEffect(() => {
     const headings: TOCItem[] = []
-    const lines = content.split('\n')
     
-    lines.forEach((line, index) => {
-      if (line.startsWith('# ')) {
+    // Parse HTML headings from content
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(content, 'text/html')
+    const headingElements = doc.querySelectorAll('h1, h2, h3')
+    
+    headingElements.forEach((heading, index) => {
+      const tagName = heading.tagName.toLowerCase()
+      const level = parseInt(tagName.charAt(1))
+      const text = heading.textContent?.trim() || ''
+      
+      if (text) {
         headings.push({
-          id: `heading-${index}`,
-          text: line.slice(2).trim(),
-          level: 1
-        })
-      } else if (line.startsWith('## ')) {
-        headings.push({
-          id: `heading-${index}`,
-          text: line.slice(3).trim(),
-          level: 2
-        })
-      } else if (line.startsWith('### ')) {
-        headings.push({
-          id: `heading-${index}`,
-          text: line.slice(4).trim(),
-          level: 3
+          id: `toc-heading-${index}`,
+          text,
+          level
         })
       }
     })
