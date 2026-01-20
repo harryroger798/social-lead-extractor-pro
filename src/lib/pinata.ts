@@ -1,8 +1,9 @@
 // Pinata IPFS Upload Utility
 // This file handles uploading certificate data to IPFS via Pinata
+// Note: This module should only be used in server-side code (API routes, server actions)
 
-const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
-const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY;
+const PINATA_API_KEY = process.env.PINATA_API_KEY;
+const PINATA_SECRET_KEY = process.env.PINATA_SECRET_KEY;
 
 interface CertificateData {
   certificateId: string;

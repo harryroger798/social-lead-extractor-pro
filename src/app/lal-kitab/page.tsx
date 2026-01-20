@@ -251,8 +251,8 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
     name: "Relative's Debt (Swajan Rina)",
     nameHindi: "स्वजन ऋण",
     description: "Debt related to relatives. May cause property disputes and family conflicts.",
-    isPresent: swajanCondition1,
-    severity: swajanCondition1 ? "medium" : "low",
+    isPresent: swajanCondition1 && swajanCondition2,
+    severity: swajanCondition1 && swajanCondition2 ? "medium" : "low",
     remedies: [
       "Help your relatives in need",
       "Donate red items on Tuesdays",

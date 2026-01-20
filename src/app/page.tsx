@@ -72,25 +72,6 @@ const testimonials = [
   },
 ];
 
-// Zodiac signs data for cosmic profile generation
-const zodiacSigns = [
-  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-];
-
-const yearPredictions = [
-  "A year of transformation and growth awaits you",
-  "Major career breakthroughs are written in your stars",
-  "Love and relationships will flourish this year",
-  "Financial abundance is aligned with your cosmic path",
-  "A journey of self-discovery will unfold",
-  "New opportunities will knock at your door",
-  "Your creativity will reach new heights",
-  "Health and wellness will be your focus",
-  "Travel and adventure are in your destiny",
-  "Spiritual awakening awaits you",
-];
-
 export default function Home() {
   const { t } = useLanguage();
   const [birthDate, setBirthDate] = useState("");
@@ -104,36 +85,51 @@ export default function Home() {
   const [todayEnergy, setTodayEnergy] = useState(0);
   const [luckyHours, setLuckyHours] = useState("");
   const [trendingTopic, setTrendingTopic] = useState("");
-  const cosmicCardRef = useRef<HTMLDivElement>(null);
+  const [starPositions, setStarPositions] = useState<Array<{left: number; top: number; delay: number; duration: number}>>([]);
   
   // Dynamic year - automatically updates each year
   const currentYear = getCurrentYear();
 
   // Initialize gamification and daily energy on mount
   useEffect(() => {
-    // Simulate daily streak from localStorage
-    const storedStreak = localStorage.getItem('cosmicStreak');
-    const lastVisit = localStorage.getItem('lastCosmicVisit');
-    const today = new Date().toDateString();
-    
-    if (lastVisit === today) {
-      setDailyStreak(storedStreak ? parseInt(storedStreak) : 1);
-    } else if (lastVisit) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      if (lastVisit === yesterday.toDateString()) {
-        const newStreak = (storedStreak ? parseInt(storedStreak) : 0) + 1;
-        setDailyStreak(newStreak);
-        localStorage.setItem('cosmicStreak', newStreak.toString());
+    // Simulate daily streak from localStorage with error handling
+    try {
+      const storedStreak = localStorage.getItem('cosmicStreak');
+      const lastVisit = localStorage.getItem('lastCosmicVisit');
+      const today = new Date().toDateString();
+      
+      if (lastVisit === today) {
+        setDailyStreak(storedStreak ? parseInt(storedStreak) : 1);
+      } else if (lastVisit) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (lastVisit === yesterday.toDateString()) {
+          const newStreak = (storedStreak ? parseInt(storedStreak) : 0) + 1;
+          setDailyStreak(newStreak);
+          localStorage.setItem('cosmicStreak', newStreak.toString());
+        } else {
+          setDailyStreak(1);
+          localStorage.setItem('cosmicStreak', '1');
+        }
       } else {
         setDailyStreak(1);
         localStorage.setItem('cosmicStreak', '1');
       }
-    } else {
+      localStorage.setItem('lastCosmicVisit', today);
+    } catch {
+      // localStorage access denied or unavailable - use default values
       setDailyStreak(1);
-      localStorage.setItem('cosmicStreak', '1');
     }
-    localStorage.setItem('lastCosmicVisit', today);
+    
+    // Generate star positions client-side to avoid hydration mismatch
+    setStarPositions(
+      Array.from({ length: 50 }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        delay: Math.random() * 3,
+        duration: 2 + Math.random() * 3,
+      }))
+    );
     
     // Calculate cosmic score based on current planetary positions (simplified)
     const dayOfYear = Math.floor((Date.now() - new Date(currentYear, 0, 0).getTime()) / 86400000);
@@ -184,12 +180,17 @@ export default function Home() {
     }
   };
 
-  // Copy link to clipboard
+  // Copy link to clipboard with error handling
   const handleCopyLink = () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+      })
+      .catch(() => {
+        // Clipboard access denied or unavailable - silent fail
+      });
   };
 
   // Share on social media
@@ -378,17 +379,17 @@ export default function Home() {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-30"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/50 to-slate-950"></div>
-          {/* Animated stars */}
+          {/* Animated stars - positions generated client-side to avoid hydration mismatch */}
           <div className="stars-container absolute inset-0">
-            {[...Array(50)].map((_, i) => (
+            {starPositions.map((pos, i) => (
               <div
                 key={i}
                 className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${2 + Math.random() * 3}s`,
+                  left: `${pos.left}%`,
+                  top: `${pos.top}%`,
+                  animationDelay: `${pos.delay}s`,
+                  animationDuration: `${pos.duration}s`,
                 }}
               />
             ))}
