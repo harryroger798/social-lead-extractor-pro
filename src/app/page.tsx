@@ -182,6 +182,16 @@ export default function Home() {
   const handleQuickStart = async () => {
     if (birthDate && birthTime && birthPlace) {
       setIsCalculating(true);
+      
+      // Parse date parts explicitly to avoid timezone issues with new Date("YYYY-MM-DD")
+      const [, birthMonthStr, birthDayStr] = birthDate.split("-");
+      const birthMonth = Number(birthMonthStr) - 1; // Convert to 0-indexed month
+      const birthDay = Number(birthDayStr);
+      
+      // Parse time parts explicitly
+      const [hourStr] = birthTime.split(":");
+      const birthHour = parseInt(hourStr, 10) || 0;
+      
       try {
         // Call the chart calculation API
         const response = await fetch("/api/calculate-chart", {
@@ -212,7 +222,7 @@ export default function Home() {
           t('homeRedesign.prediction4', 'Financial stability and abundance are on the horizon'),
           t('homeRedesign.prediction5', 'Love and harmony will bless your relationships'),
         ];
-        const predictionIndex = (new Date(birthDate).getMonth() + new Date().getDate()) % predictions.length;
+        const predictionIndex = (birthMonth + new Date().getDate()) % predictions.length;
 
         setCosmicProfile({
           sunSign: chartData.sun_sign || "Aries",
@@ -224,14 +234,15 @@ export default function Home() {
         console.error("Error calculating chart:", error);
         // Fallback to basic calculation if API fails
         const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-        const date = new Date(birthDate);
-        const month = date.getMonth();
-        const day = date.getDate();
+        
+        // Use pre-parsed date/time values (timezone-insensitive)
+        const month = birthMonth;
+        const day = birthDay;
         
         // Simple sun sign calculation
         const sunSignIndex = getSunSignIndex(month, day);
         const moonSignIndex = (sunSignIndex + Math.floor(day / 3)) % 12;
-        const risingSignIndex = (sunSignIndex + parseInt(birthTime.split(':')[0]) % 12) % 12;
+        const risingSignIndex = (sunSignIndex + (birthHour % 12)) % 12;
         
         const predictions = [
           t('homeRedesign.prediction1', 'A year of transformation and growth awaits you'),
