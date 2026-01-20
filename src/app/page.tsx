@@ -616,7 +616,7 @@ export default function Home() {
                       className="w-full mt-2 border-white/30 text-white hover:bg-white/10"
                       asChild
                     >
-                      <Link href={`/tools/kundli-calculator?date=${birthDate}&time=${birthTime}&place=${birthPlace}`}>
+                      <Link href={`/tools/kundli-calculator?date=${encodeURIComponent(birthDate)}&time=${encodeURIComponent(birthTime)}&place=${encodeURIComponent(birthPlace)}`}>
                         {t('homeRedesign.viewFullChart', 'View Full Birth Chart')}
                         <ArrowRight className="ml-2 w-4 h-4" />
                       </Link>
