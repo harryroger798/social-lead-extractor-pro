@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 export default function FestivalCalendar2026Page() {
   const { t } = useLanguage();
@@ -134,12 +135,12 @@ export default function FestivalCalendar2026Page() {
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('festivalCalendar.badge', '2026 Calendar')}</Badge>
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('festivalCalendar.badge', {year} Calendar')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('festivalCalendar.title', 'Hindu Festival Calendar 2026')}
+            {t('festivalCalendar.title', 'Hindu Festival Calendar {year}')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('festivalCalendar.subtitle', 'Complete list of Hindu festivals, fasts, and important dates for 2026. Plan your celebrations with accurate dates and timings.')}
+            {t('festivalCalendar.subtitle', 'Complete list of Hindu festivals, fasts, and important dates for {year}. Plan your celebrations with accurate dates and timings.')}
           </p>
         </div>
 
@@ -155,7 +156,7 @@ export default function FestivalCalendar2026Page() {
             <CardContent className="pt-6 text-center">
               <Moon className="w-12 h-12 mx-auto text-purple-600 mb-3" />
               <h3 className="text-3xl font-bold text-purple-700">4</h3>
-              <p className="text-gray-600">{t('festivalCalendar.eclipsesIn2026', 'Eclipses in 2026')}</p>
+              <p className="text-gray-600">{t('festivalCalendar.eclipsesIn2026', 'Eclipses in {year}')}</p>
             </CardContent>
           </Card>
           <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50">
@@ -178,7 +179,7 @@ export default function FestivalCalendar2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Moon className="w-5 h-5 text-amber-600" />
-              {t('festivalCalendar.eclipsesTitle', 'Eclipses in 2026 (Grahan)')}
+              {t('festivalCalendar.eclipsesTitle', 'Eclipses in {year} (Grahan)')}
             </CardTitle>
             <CardDescription>
               {t('festivalCalendar.eclipsesDesc', 'Solar and Lunar eclipses with visibility in India')}
@@ -275,9 +276,9 @@ export default function FestivalCalendar2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('festivalCalendar.horoscope2026', '2026 Horoscope')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('festivalCalendar.horoscope2026', '{year} Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                {t('festivalCalendar.horoscope2026Desc', 'Read your yearly horoscope predictions for 2026.')}
+                {t('festivalCalendar.horoscope2026Desc', 'Read your yearly horoscope predictions for {year}.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/horoscope/2026">
@@ -328,8 +329,8 @@ export default function FestivalCalendar2026Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: "Hindu Festival Calendar 2026 - Complete List of Festivals & Holidays",
-            description: "Complete Hindu festival calendar for 2026 with dates, timings, and significance",
+            headline: "Hindu Festival Calendar {year} - Complete List of Festivals & Holidays",
+            description: "Complete Hindu festival calendar for {year} with dates, timings, and significance",
             author: {
               "@type": "Organization",
               name: "VedicStarAstro",

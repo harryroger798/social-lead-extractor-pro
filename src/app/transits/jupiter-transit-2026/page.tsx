@@ -12,6 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 export default function JupiterTransit2026Page() {
   const { t } = useLanguage();
@@ -201,10 +202,10 @@ export default function JupiterTransit2026Page() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-amber-100 text-amber-800">{t('transits.badge', 'Planetary Transit')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('transits.jupiter.title', 'Jupiter Transit 2026 (Guru Gochar)')}
+            {t('transits.jupiter.title', 'Jupiter Transit {year} (Guru Gochar)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('transits.jupiter.subtitle', "Complete guide to Jupiter's transit in 2026. Discover how Guru Gochar brings blessings, expansion, and opportunities to your zodiac sign.")}
+            {t('transits.jupiter.subtitle', "Complete guide to Jupiter's transit in {year}. Discover how Guru Gochar brings blessings, expansion, and opportunities to your zodiac sign.")}
           </p>
         </div>
 
@@ -212,7 +213,7 @@ export default function JupiterTransit2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              {t('transits.jupiter.overview.title', 'Jupiter Transit Overview 2026')}
+              {t('transits.jupiter.overview.title', 'Jupiter Transit Overview {year}')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -261,7 +262,7 @@ export default function JupiterTransit2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-yellow-600" />
-              {t('transits.jupiter.importantDates', 'Important Dates in 2026')}
+              {t('transits.jupiter.importantDates', 'Important Dates in {year}')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -344,7 +345,7 @@ export default function JupiterTransit2026Page() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.saturn.title', 'Saturn Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.saturn.title', 'Saturn Transit {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.jupiter.related.saturn.description', "Balance Jupiter with Saturn's discipline.")}
               </p>
@@ -358,7 +359,7 @@ export default function JupiterTransit2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.mercury.title', 'Mercury Retrograde 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.mercury.title', 'Mercury Retrograde {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.jupiter.related.mercury.description', 'Navigate communication challenges.')}
               </p>
@@ -372,7 +373,7 @@ export default function JupiterTransit2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.horoscope.title', '2026 Horoscope')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.jupiter.related.horoscope.title', '{year} Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.jupiter.related.horoscope.description', 'Complete yearly predictions for your sign.')}
               </p>
@@ -395,7 +396,7 @@ export default function JupiterTransit2026Page() {
                 {t('transits.jupiter.understanding.para1', 'Jupiter (Brihaspati or Guru) is the most benefic planet in Vedic astrology, representing wisdom, expansion, fortune, and spiritual growth. Its transit through each zodiac sign lasts approximately one year and brings growth and opportunities to the areas of life governed by that sign.')}
               </p>
               <p className="text-gray-700 mb-4">
-                {t('transits.jupiter.understanding.para2', "In 2026, Jupiter's entry into Cancer is particularly auspicious as Jupiter is exalted (Uchcha) in this sign. This means Jupiter's positive qualities are at their maximum strength, bringing enhanced blessings for all zodiac signs.")}
+                {t('transits.jupiter.understanding.para2', "In {year}, Jupiter's entry into Cancer is particularly auspicious as Jupiter is exalted (Uchcha) in this sign. This means Jupiter's positive qualities are at their maximum strength, bringing enhanced blessings for all zodiac signs.")}
               </p>
               <p className="text-gray-700">
                 {t('transits.jupiter.understanding.para3', "Jupiter governs higher education, spirituality, children, wealth, and good fortune. Its transit is generally considered positive, though the specific effects depend on which house Jupiter transits in your birth chart. Embrace Jupiter's energy through learning, teaching, generosity, and spiritual practice.")}
@@ -411,8 +412,8 @@ export default function JupiterTransit2026Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: "Jupiter Transit 2026 - Effects on All Zodiac Signs",
-            description: "Complete guide to Jupiter Transit 2026 with predictions and remedies",
+            headline: "Jupiter Transit {year} - Effects on All Zodiac Signs",
+            description: "Complete guide to Jupiter Transit {year} with predictions and remedies",
             author: {
               "@type": "Organization",
               name: "VedicStarAstro",

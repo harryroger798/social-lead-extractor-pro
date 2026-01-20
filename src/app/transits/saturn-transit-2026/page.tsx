@@ -12,6 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 export default function SaturnTransit2026Page() {
   const { t } = useLanguage();
@@ -141,10 +142,10 @@ export default function SaturnTransit2026Page() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-blue-100 text-blue-800">{t('transits.badge', 'Planetary Transit')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('transits.saturn.title', 'Saturn Transit 2026 (Shani Gochar)')}
+            {t('transits.saturn.title', 'Saturn Transit {year} (Shani Gochar)')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('transits.saturn.subtitle', "Complete guide to Saturn's transit through Pisces in 2026. Understand how Shani Gochar affects your zodiac sign and learn effective remedies.")}
+            {t('transits.saturn.subtitle', "Complete guide to Saturn's transit through Pisces in {year}. Understand how Shani Gochar affects your zodiac sign and learn effective remedies.")}
           </p>
         </div>
 
@@ -152,7 +153,7 @@ export default function SaturnTransit2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
-              {t('transits.saturn.overview.title', 'Saturn Transit Overview 2026')}
+              {t('transits.saturn.overview.title', 'Saturn Transit Overview {year}')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -192,7 +193,7 @@ export default function SaturnTransit2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-amber-600" />
-              {t('transits.saturn.importantDates', 'Important Dates in 2026')}
+              {t('transits.saturn.importantDates', 'Important Dates in {year}')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -283,7 +284,7 @@ export default function SaturnTransit2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.saturn.related.jupiter.title', 'Jupiter Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.saturn.related.jupiter.title', 'Jupiter Transit {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.saturn.related.jupiter.description', "Balance Saturn with Jupiter's blessings.")}
               </p>
@@ -297,7 +298,7 @@ export default function SaturnTransit2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.saturn.related.horoscope.title', '2026 Horoscope')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.saturn.related.horoscope.title', '{year} Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.saturn.related.horoscope.description', 'Complete yearly predictions for your sign.')}
               </p>
@@ -336,8 +337,8 @@ export default function SaturnTransit2026Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: "Saturn Transit 2026 - Effects on All Zodiac Signs",
-            description: "Complete guide to Saturn Transit 2026 with predictions and remedies",
+            headline: "Saturn Transit {year} - Effects on All Zodiac Signs",
+            description: "Complete guide to Saturn Transit {year} with predictions and remedies",
             author: {
               "@type": "Organization",
               name: "VedicStarAstro",

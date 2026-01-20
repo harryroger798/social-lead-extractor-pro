@@ -13,6 +13,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 export default function MercuryRetrograde2026Page() {
   const { t } = useLanguage();
@@ -115,10 +116,10 @@ export default function MercuryRetrograde2026Page() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-purple-100 text-purple-800">{t('transits.mercuryRetrograde.badge', 'Planetary Retrograde')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('transits.mercuryRetrograde.title', 'Mercury Retrograde 2026')}
+            {t('transits.mercuryRetrograde.title', 'Mercury Retrograde {year}')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('transits.mercuryRetrograde.subtitle', 'Complete survival guide for Mercury Retrograde in 2026. Learn the dates, understand the effects, and navigate these periods successfully.')}
+            {t('transits.mercuryRetrograde.subtitle', 'Complete survival guide for Mercury Retrograde in {year}. Learn the dates, understand the effects, and navigate these periods successfully.')}
           </p>
         </div>
 
@@ -154,7 +155,7 @@ export default function MercuryRetrograde2026Page() {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('transits.mercury.periodsTitle', '2026 Mercury Retrograde Periods')}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('transits.mercury.periodsTitle', '{year} Mercury Retrograde Periods')}</h2>
         
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {retrogradePeriodsData.map((period, index) => (
@@ -248,7 +249,7 @@ export default function MercuryRetrograde2026Page() {
               {t('transits.mercury.effectsTitle', 'Effects by Zodiac Sign')}
             </CardTitle>
             <CardDescription>
-              {t('transits.mercury.effectsSubtitle', 'How Mercury Retrograde 2026 affects each sign')}
+              {t('transits.mercury.effectsSubtitle', 'How Mercury Retrograde {year} affects each sign')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -297,7 +298,7 @@ export default function MercuryRetrograde2026Page() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.saturn.title', 'Saturn Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.saturn.title', 'Saturn Transit {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.mercury.related.saturn.description', "Understand Saturn's major transit effects.")}
               </p>
@@ -311,7 +312,7 @@ export default function MercuryRetrograde2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.jupiter.title', 'Jupiter Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.jupiter.title', 'Jupiter Transit {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.mercury.related.jupiter.description', "Balance challenges with Jupiter's blessings.")}
               </p>
@@ -325,7 +326,7 @@ export default function MercuryRetrograde2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.eclipses.title', 'Eclipses 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('transits.mercury.related.eclipses.title', 'Eclipses {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transits.mercury.related.eclipses.description', 'Solar and lunar eclipse dates and effects.')}
               </p>
@@ -364,8 +365,8 @@ export default function MercuryRetrograde2026Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: "Mercury Retrograde 2026 - Dates, Effects & Survival Guide",
-            description: "Complete guide to Mercury Retrograde 2026 with dates and survival tips",
+            headline: "Mercury Retrograde {year} - Dates, Effects & Survival Guide",
+            description: "Complete guide to Mercury Retrograde {year} with dates and survival tips",
             author: {
               "@type": "Organization",
               name: "VedicStarAstro",

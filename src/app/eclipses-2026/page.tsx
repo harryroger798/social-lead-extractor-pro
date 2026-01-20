@@ -13,6 +13,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 const eclipses2026 = [
   {
@@ -24,7 +25,7 @@ const eclipses2026 = [
     nakshatra: "Uttara Phalguni",
     visibility: ["Americas", "Europe", "Africa", "Western Asia"],
     duration: "58 minutes (totality)",
-    description: "The first eclipse of 2026 is a total lunar eclipse visible across the Americas, Europe, and Africa. The Moon will turn a deep red color during totality.",
+    description: "The first eclipse of {year} is a total lunar eclipse visible across the Americas, Europe, and Africa. The Moon will turn a deep red color during totality.",
     effects: "Emotional intensity, health matters surface, service-related changes, analytical insights.",
   },
   {
@@ -48,7 +49,7 @@ const eclipses2026 = [
     nakshatra: "Shatabhisha",
     visibility: ["Americas", "Europe", "Africa", "Middle East"],
     duration: "63 minutes (totality)",
-    description: "The second total lunar eclipse of 2026, visible across much of the world. This is one of the longer total lunar eclipses.",
+    description: "The second total lunar eclipse of {year}, visible across much of the world. This is one of the longer total lunar eclipses.",
     effects: "Social changes, humanitarian concerns, technology disruptions, group dynamics shift.",
   },
   {
@@ -111,10 +112,10 @@ export default function Eclipses2026Page() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-indigo-100 text-indigo-800">{t('eclipses.badge', 'Celestial Events')}</Badge>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('eclipses.title', 'Solar & Lunar Eclipses 2026')}
+            {t('eclipses.title', 'Solar & Lunar Eclipses {year}')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('eclipses.subtitle', "Complete guide to all eclipses in 2026. Learn dates, timings, visibility, astrological effects, and important dos and don'ts during Grahan.")}
+            {t('eclipses.subtitle', "Complete guide to all eclipses in {year}. Learn dates, timings, visibility, astrological effects, and important dos and don'ts during Grahan.")}
           </p>
         </div>
 
@@ -122,7 +123,7 @@ export default function Eclipses2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-600" />
-              2026 Eclipse Overview
+              {year} Eclipse Overview
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -132,7 +133,7 @@ export default function Eclipses2026Page() {
                   <Sun className="w-6 h-6 text-amber-500" />
                   <h3 className="font-semibold text-amber-800">Solar Eclipses (Surya Grahan)</h3>
                 </div>
-                <p className="text-amber-700 mb-2">2 Solar Eclipses in 2026:</p>
+                <p className="text-amber-700 mb-2">2 Solar Eclipses in {year}:</p>
                 <ul className="text-sm text-amber-600 space-y-1">
                   <li>• March 17 - Partial Solar Eclipse</li>
                   <li>• September 12 - Annular Solar Eclipse</li>
@@ -143,7 +144,7 @@ export default function Eclipses2026Page() {
                   <Moon className="w-6 h-6 text-blue-500" />
                   <h3 className="font-semibold text-blue-800">Lunar Eclipses (Chandra Grahan)</h3>
                 </div>
-                <p className="text-blue-700 mb-2">2 Lunar Eclipses in 2026:</p>
+                <p className="text-blue-700 mb-2">2 Lunar Eclipses in {year}:</p>
                 <ul className="text-sm text-blue-600 space-y-1">
                   <li>• March 3 - Total Lunar Eclipse</li>
                   <li>• August 28 - Total Lunar Eclipse</li>
@@ -275,7 +276,7 @@ export default function Eclipses2026Page() {
               Eclipse Effects by Zodiac Sign
             </CardTitle>
             <CardDescription>
-              How the 2026 eclipses affect each zodiac sign
+              How the {year} eclipses affect each zodiac sign
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -293,7 +294,7 @@ export default function Eclipses2026Page() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">2026 Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{year} Horoscope</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Complete yearly predictions for your sign.
               </p>
@@ -307,7 +308,7 @@ export default function Eclipses2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Festival Calendar 2026</h3>
+              <h3 className="font-semibold text-lg mb-2">Festival Calendar {year}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 All Hindu festivals and important dates.
               </p>
@@ -370,8 +371,8 @@ export default function Eclipses2026Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: "Solar & Lunar Eclipses 2026 - Complete Guide",
-            description: "Complete guide to all eclipses in 2026 with dates, timings, and effects",
+            headline: "Solar & Lunar Eclipses {year} - Complete Guide",
+            description: "Complete guide to all eclipses in {year} with dates, timings, and effects",
             author: {
               "@type": "Organization",
               name: "VedicStarAstro",
