@@ -16,6 +16,7 @@ import { ActivityLogPage } from '@/pages/ActivityLogPage'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { PublicServicesPage } from '@/pages/public/ServicesPage'
+import { ServiceDetailPage } from '@/pages/public/ServiceDetailPage'
 import { AboutPage } from '@/pages/public/AboutPage'
 import { ContactPage } from '@/pages/public/ContactPage'
 import { BlogPage } from '@/pages/public/BlogPage'
@@ -46,6 +47,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/services" element={<PublicServicesPage />} />
+        <Route path="/services/:slug" element={<ServiceDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />

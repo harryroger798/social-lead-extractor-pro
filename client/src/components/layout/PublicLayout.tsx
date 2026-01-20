@@ -348,11 +348,11 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <div>
               <h3 className="font-semibold mb-4">{t('footer.services')}</h3>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.pcRepair')}</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.mobileRepair')}</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.laptopRepair')}</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.dataRecovery')}</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.webDevelopment')}</Link></li>
+                                <li><Link to="/services/pc" className="hover:text-white transition-colors">{t('footer.pcRepair')}</Link></li>
+                                <li><Link to="/services/mobile" className="hover:text-white transition-colors">{t('footer.mobileRepair')}</Link></li>
+                                <li><Link to="/services/laptop" className="hover:text-white transition-colors">{t('footer.laptopRepair')}</Link></li>
+                                <li><Link to="/services/data-recovery" className="hover:text-white transition-colors">{t('footer.dataRecovery')}</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.webDevelopment')}</Link></li>
               </ul>
             </div>
 
