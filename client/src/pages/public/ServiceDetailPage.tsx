@@ -374,12 +374,12 @@ export function ServiceDetailPage() {
                     <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
-                <a href="tel:+917003888936">
-                  <Button size="lg" variant="outline" className="gap-2 border-white/30 text-white hover:bg-white/10">
-                    <Phone className="h-5 w-5" />
-                    Call Now
-                  </Button>
-                </a>
+                                <a href="tel:+917003888936">
+                                  <Button size="lg" className="gap-2 bg-white text-slate-800 hover:bg-slate-100 border-0 shadow-lg">
+                                    <Phone className="h-5 w-5" />
+                                    Call Now
+                                  </Button>
+                                </a>
               </div>
             </motion.div>
             <motion.div
@@ -650,12 +650,12 @@ export function ServiceDetailPage() {
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
-              <a href="https://wa.me/917003888936?text=Hello! I need help with my device.">
-                <Button size="lg" variant="outline" className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg">
-                  <MessageCircle className="h-5 w-5" />
-                  WhatsApp Us
-                </Button>
-              </a>
+                            <a href="https://wa.me/917003888936?text=Hello! I need help with my device.">
+                              <Button size="lg" className="gap-2 bg-white text-slate-800 hover:bg-slate-100 border-0 shadow-lg px-8 py-6 text-lg">
+                                <MessageCircle className="h-5 w-5" />
+                                WhatsApp Us
+                              </Button>
+                            </a>
             </div>
           </motion.div>
         </div>
