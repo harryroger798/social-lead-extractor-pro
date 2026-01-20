@@ -94,7 +94,11 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
           className="flex-1"
           disabled={loading || subscribed}
         />
-        <Button type="submit" disabled={loading || subscribed}>
+        <Button 
+          type="submit" 
+          disabled={loading || subscribed}
+          aria-label={loading ? 'Subscribing...' : subscribed ? 'Subscribed' : 'Subscribe to newsletter'}
+        >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : subscribed ? (

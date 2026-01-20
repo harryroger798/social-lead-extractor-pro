@@ -26,6 +26,15 @@ export function BlogPostPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // useMemo must be called before any early returns to follow React hook rules
+  const sanitizedBody = useMemo(() => {
+    if (!post?.body) return ''
+    return DOMPurify.sanitize(post.body, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target']
+    })
+  }, [post?.body])
+
   useEffect(() => {
     async function fetchPost() {
       if (!slug) return
@@ -79,14 +88,6 @@ export function BlogPostPage() {
     const readingTime = Math.max(1, Math.ceil(wordCount / 200))
     const postUrl = `https://bytecare.shop/blog/${post.slug.current}`
     const categoryIds = post.categories?.map(c => c._id) || []
-
-    const sanitizedBody = useMemo(() => {
-      if (!post.body) return ''
-      return DOMPurify.sanitize(post.body, {
-        ADD_TAGS: ['iframe'],
-        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target']
-      })
-    }, [post.body])
 
     const breadcrumbItems = [
       { name: 'Blog', url: '/blog' },

@@ -1,10 +1,16 @@
 const express = require('express');
+const crypto = require('crypto');
 const { body, validationResult } = require('express-validator');
 const axios = require('axios');
 const { getSetting } = require('../database/db');
 const { asyncHandler, ValidationError } = require('../middleware/errorHandler');
 const { logger } = require('../middleware/errorHandler');
 const mailgunService = require('../services/mailgunService');
+
+// Hash email for logging to avoid PII exposure (GDPR/CCPA compliance)
+function hashEmail(email) {
+  return crypto.createHash('sha256').update(email).digest('hex').slice(0, 12);
+}
 
 const router = express.Router();
 
@@ -16,6 +22,7 @@ const SANITY_TOKEN = process.env.SANITY_API_TOKEN;
 // Only create sanityClient if token is available
 const sanityClient = SANITY_TOKEN ? axios.create({
   baseURL: `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/mutate/${SANITY_DATASET}`,
+  timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${SANITY_TOKEN}`
@@ -41,7 +48,7 @@ router.post('/comments', [
   const { name, email, content, postId, honeypot } = req.body;
 
   if (honeypot) {
-    logger.warn('Honeypot triggered - spam detected', { email, ip: req.ip });
+    logger.warn('Honeypot triggered - spam detected', { emailHash: hashEmail(email), ip: req.ip });
     return res.json({
       success: true,
       message: 'Comment submitted for review'
@@ -129,7 +136,8 @@ router.get('/comments/:postId', asyncHandler(async (req, res) => {
       {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 8000
       }
     );
 
@@ -163,7 +171,7 @@ router.post('/newsletter/subscribe', [
   const { email, honeypot } = req.body;
 
   if (honeypot) {
-    logger.warn('Newsletter honeypot triggered - spam detected', { email, ip: req.ip });
+    logger.warn('Newsletter honeypot triggered - spam detected', { emailHash: hashEmail(email), ip: req.ip });
     return res.json({
       success: true,
       message: 'Successfully subscribed to newsletter'
@@ -186,6 +194,7 @@ router.post('/newsletter/subscribe', [
 
     const client = axios.create({
       baseURL: `https://api.mailgun.net/v3/${mailgunDomain}`,
+      timeout: 8000,
       auth: {
         username: 'api',
         password: mailgunApiKey
@@ -205,7 +214,7 @@ router.post('/newsletter/subscribe', [
       }
     });
 
-    logger.info('Newsletter subscription welcome email sent', { email });
+    logger.info('Newsletter subscription welcome email sent', { emailHash: hashEmail(email) });
 
     res.json({
       success: true,
@@ -214,7 +223,7 @@ router.post('/newsletter/subscribe', [
   } catch (error) {
     logger.error('Failed to send newsletter welcome email', {
       error: error.message,
-      email
+      emailHash: hashEmail(email)
     });
     
     res.json({
