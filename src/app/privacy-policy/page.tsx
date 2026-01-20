@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-none pl-0 text-gray-700 mt-4 space-y-2">
               <li><strong>Email:</strong> contact@vedicstarastro.com</li>
-              <li><strong>Phone:</strong> +91 98765 43210</li>
+              <li><strong>Phone:</strong> +91 8884919349</li>
               <li><strong>Address:</strong> Bangalore, Karnataka, India</li>
             </ul>
           </section>

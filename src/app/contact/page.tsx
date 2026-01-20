@@ -30,16 +30,16 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: t('contact.callUs', 'Call Us'),
-      details: "+91 98765 43210",
+      details: "+91 8884919349",
       description: t('contact.callDesc', 'Mon-Sat, 9 AM - 8 PM IST'),
-      href: "tel:+919876543210",
+      href: "tel:+918884919349",
     },
     {
       icon: MessageSquare,
       title: t('contact.whatsapp', 'WhatsApp'),
-      details: "+91 98765 43210",
+      details: "+91 8884919349",
       description: t('contact.whatsappDesc', 'Quick responses on WhatsApp'),
-      href: "https://wa.me/919876543210",
+      href: "https://wa.me/918884919349",
     },
     {
       icon: MapPin,
@@ -124,7 +124,7 @@ export default function ContactPage() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="phone">{t('contact.phoneNumber', 'Phone Number')}</Label>
-                  <Input id="phone" type="tel" placeholder="+91 98765 43210" />
+                  <Input id="phone" type="tel" placeholder="+91 8884919349" />
                 </div>
                 
                 <div className="space-y-2">
@@ -220,7 +220,7 @@ export default function ContactPage() {
               "@type": "Organization",
               name: "VedicStarAstro",
               email: "contact@vedicstarastro.com",
-              telephone: "+91-9876543210",
+              telephone: "+91-8884919349",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Bangalore",

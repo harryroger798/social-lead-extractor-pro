@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,25 +52,31 @@ export default function AboutPage() {
 
   const team = [
     {
-      name: "Pt. Ramesh Sharma",
+      name: "Acharya Shridhar Khandal",
       role: t('about.founderRole', 'Founder & Chief Astrologer'),
-      experience: t('about.exp25', '25+ years'),
-      specialization: t('about.specKundli', 'Kundli Analysis, Career Predictions'),
-      bio: t('about.bioRamesh', 'A renowned Vedic astrologer trained in the traditional Gurukul system, Pt. Ramesh Sharma has dedicated his life to making authentic Jyotish accessible to the modern world.'),
+      experience: t('about.exp35', '35+ years'),
+      specialization: t('about.specAstroVastuPoojaGems', 'Astro, Vastu, Pooja & Gems'),
+      bio: t('about.bioShridhar', 'A renowned Vedic astrologer with 35 years of experience in Astrology, Vastu, Pooja, and Gemstone consultation. Based in Bengaluru, Acharya Shridhar has dedicated his life to making authentic Jyotish accessible to the modern world.'),
+      location: t('about.locationBengaluru', 'Bengaluru'),
+      image: "/images/astrologers/acharya-shridhar-khandal.png",
     },
     {
-      name: "Dr. Lakshmi Devi",
+      name: "Madhav Sharma",
       role: t('about.seniorRole', 'Senior Astrologer'),
       experience: t('about.exp20', '20+ years'),
-      specialization: t('about.specMarriage', 'Marriage Compatibility, Relationships'),
-      bio: t('about.bioLakshmi', 'With a Ph.D. in Sanskrit and specialization in Jaimini astrology, Dr. Lakshmi brings academic rigor to traditional astrological practice.'),
+      specialization: t('about.specAstroPoojaGems', 'Astro, Pooja & Gems'),
+      bio: t('about.bioMadhav', 'With 20 years of experience in Astrology, Pooja, and Gemstone consultation, Madhav Sharma brings deep expertise to traditional astrological practice from Jaipur.'),
+      location: t('about.locationJaipur', 'Jaipur'),
+      image: "/images/astrologers/madhav-sharma.png",
     },
     {
-      name: "Acharya Suresh Kumar",
+      name: "Raj Kumar Shastri",
       role: t('about.remediesRole', 'Remedies Specialist'),
-      experience: t('about.exp18', '18+ years'),
-      specialization: t('about.specDoshas', 'Doshas, Remedial Measures'),
-      bio: t('about.bioSuresh', 'An expert in Tantric remedies and gemstone therapy, Acharya Suresh has helped thousands overcome challenging planetary periods.'),
+      experience: t('about.exp16', '16+ years'),
+      specialization: t('about.specAstroVastuPooja', 'Astro, Vastu & Pooja'),
+      bio: t('about.bioRajKumar', 'An expert in Astrology, Vastu, and Pooja with 16 years of experience, Raj Kumar Shastri has helped thousands from Kolkata overcome challenging planetary periods.'),
+      location: t('about.locationKolkata', 'Kolkata (WB)'),
+      image: "/images/astrologers/raj-kumar-shastri.png",
     },
   ];
   return (
@@ -107,7 +114,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 text-gray-700">
                 <p>
-                  {t('about.storyP1', 'VedicStarAstro began in 2010 when our founder, Pt. Ramesh Sharma, recognized a growing disconnect between authentic Vedic astrology and the commercialized predictions flooding the internet. Having trained in the traditional Gurukul system under renowned masters, he saw the need for a platform that honored the depth and precision of Jyotish Shastra.')}
+                  {t('about.storyP1', 'VedicStarAstro began in 2010 when our founder, Acharya Shridhar Khandal, recognized a growing disconnect between authentic Vedic astrology and the commercialized predictions flooding the internet. Having trained in the traditional Gurukul system under renowned masters, he saw the need for a platform that honored the depth and precision of Jyotish Shastra.')}
                 </p>
                 <p>
                   {t('about.storyP2', 'What started as a small consultation practice in Bangalore has grown into a trusted platform serving clients across India and the world. Our team of verified astrologers follows strict ethical guidelines and undergoes rigorous testing to ensure the quality of their predictions.')}
@@ -171,11 +178,18 @@ export default function AboutPage() {
               <Card key={member.name} className="border-amber-100">
                 <CardContent className="pt-6">
                   <div className="text-center mb-4">
-                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-3xl font-bold mb-3">
-                      {member.name.charAt(0)}
+                    <div className="w-24 h-24 mx-auto rounded-full overflow-hidden mb-3">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="font-semibold text-gray-900">{member.name}</h3>
                     <p className="text-sm text-amber-600">{member.role}</p>
+                    <p className="text-xs text-gray-500">{member.location}</p>
                   </div>
                   
                   <div className="space-y-2 mb-4">
@@ -266,7 +280,7 @@ export default function AboutPage() {
               founders: [
                 {
                   "@type": "Person",
-                  name: "Pt. Ramesh Sharma",
+                  name: "Acharya Shridhar Khandal",
                   jobTitle: "Founder & Chief Astrologer",
                 },
               ],
