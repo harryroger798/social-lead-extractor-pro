@@ -623,8 +623,7 @@ export default function Home() {
                   
                   {cosmicProfile && (
                     <Button
-                      variant="outline"
-                      className="w-full mt-2 border-white/30 text-white hover:bg-white/10"
+                      className="w-full mt-2 bg-white text-amber-700 hover:bg-amber-50 border border-amber-200"
                       asChild
                     >
                       <Link href={`/tools/kundli-calculator?date=${encodeURIComponent(birthDate)}&time=${encodeURIComponent(birthTime)}&place=${encodeURIComponent(birthPlace)}`}>

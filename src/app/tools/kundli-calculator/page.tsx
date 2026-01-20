@@ -245,20 +245,24 @@ export default function KundliCalculatorPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const name = params.get('name');
+      const name = params.get('name') || '';
       const date = params.get('date');
       const time = params.get('time');
       const place = params.get('place');
       
-      if (name && date && time && place) {
+      // Pre-fill form if date, time, and place are provided (name is optional)
+      if (date && time && place) {
         const details = { name, date, time, place };
         setBirthDetails(details);
-        fetchChartFromBackend(details)
-          .then(chart => setChartData(chart))
-          .catch(err => {
-            console.error("Error loading chart from URL:", err);
-            setError("Unable to load chart. Please try again.");
-          });
+        // Only auto-calculate if name is also provided
+        if (name) {
+          fetchChartFromBackend(details)
+            .then(chart => setChartData(chart))
+            .catch(err => {
+              console.error("Error loading chart from URL:", err);
+              setError("Unable to load chart. Please try again.");
+            });
+        }
       }
     }
   }, []);
