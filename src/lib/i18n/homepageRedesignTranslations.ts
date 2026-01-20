@@ -67,7 +67,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "What should I know about my health?",
       
       // Gamification & Social Proof
-      liveNow: "Live Now",
       peopleChecking: "people checking their charts",
       trending: "Trending",
       trendingTopic: "Saturn Transit affecting Capricorns today",
@@ -95,9 +94,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "Start Your Cosmic Journey",
-      freeForever: "Free Forever",
+      freeForever: "Free forever. No credit card required.",
       noCardRequired: "No credit card required",
-      instantResults: "Instant results"
+      instantResults: "Instant results",
+      
+      // Missing keys for hero section
+      revealDestiny: "Reveal My Destiny",
+      sunSign: "Sun Sign",
+      moonSign: "Moon Sign",
+      risingSign: "Rising Sign",
+      enterDetailsToReveal: "Enter your details to reveal...",
+      birthPlacePlaceholder: "Enter city name",
+      liveNow: "{count} people checking charts now",
+      lifeJourneysBadge: "Your Life Journeys",
+      lifeJourneysTitle: "Explore Your Cosmic Path",
+      lifeJourneysDesc: "Choose your journey and discover what the stars reveal about your life",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "Love & Relationships",
+      loveJourneyDesc: "Find your ideal partner and relationship insights",
+      careerJourneyTitle: "Career & Wealth",
+      careerJourneyDesc: "Unlock your professional potential and financial growth",
+      dailyJourneyTitle: "Daily Guidance",
+      dailyJourneyDesc: "Get daily cosmic insights and auspicious timings",
+      deepDiveJourneyTitle: "Deep Dive",
+      deepDiveJourneyDesc: "Advanced tools for serious astrology enthusiasts",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "Horoscope Matching",
+      loveCompatibility: "Love Compatibility",
+      marriageTiming: "Marriage Timing",
+      financialAstrology: "Financial Astrology",
+      careerPredictions: "Career Predictions",
+      wealthTiming: "Wealth Timing",
+      dailyPanchang: "Daily Panchang",
+      dailyHoroscope: "Daily Horoscope",
+      voiceAstrologer: "Voice AI Astrologer",
+      fullKundli: "Full Kundli Analysis",
+      doshaAnalysis: "Dosha Analysis",
+      numerology: "Numerology"
     }
   },
   hi: {
@@ -161,7 +196,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "मुझे अपने स्वास्थ्य के बारे में क्या जानना चाहिए?",
       
       // Gamification & Social Proof
-      liveNow: "अभी लाइव",
       peopleChecking: "लोग अपनी कुंडली देख रहे हैं",
       trending: "ट्रेंडिंग",
       trendingTopic: "शनि गोचर आज मकर राशि को प्रभावित कर रहा है",
@@ -189,9 +223,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "अपनी ब्रह्मांडीय यात्रा शुरू करें",
-      freeForever: "हमेशा मुफ्त",
+      freeForever: "हमेशा मुफ्त। क्रेडिट कार्ड की आवश्यकता नहीं।",
       noCardRequired: "क्रेडिट कार्ड की आवश्यकता नहीं",
-      instantResults: "तुरंत परिणाम"
+      instantResults: "तुरंत परिणाम",
+      
+      // Missing keys for hero section
+      revealDestiny: "मेरी नियति प्रकट करें",
+      sunSign: "सूर्य राशि",
+      moonSign: "चंद्र राशि",
+      risingSign: "लग्न राशि",
+      enterDetailsToReveal: "प्रकट करने के लिए अपना विवरण दर्ज करें...",
+      birthPlacePlaceholder: "शहर का नाम दर्ज करें",
+      liveNow: "{count} लोग अभी कुंडली देख रहे हैं",
+      lifeJourneysBadge: "आपकी जीवन यात्राएं",
+      lifeJourneysTitle: "अपना ब्रह्मांडीय मार्ग खोजें",
+      lifeJourneysDesc: "अपनी यात्रा चुनें और जानें कि तारे आपके जीवन के बारे में क्या कहते हैं",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "प्रेम और रिश्ते",
+      loveJourneyDesc: "अपना आदर्श साथी और संबंध अंतर्दृष्टि खोजें",
+      careerJourneyTitle: "करियर और धन",
+      careerJourneyDesc: "अपनी पेशेवर क्षमता और वित्तीय विकास को अनलॉक करें",
+      dailyJourneyTitle: "दैनिक मार्गदर्शन",
+      dailyJourneyDesc: "दैनिक ब्रह्मांडीय अंतर्दृष्टि और शुभ समय प्राप्त करें",
+      deepDiveJourneyTitle: "गहन अध्ययन",
+      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोगों के लिए उन्नत उपकरण",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "कुंडली मिलान",
+      loveCompatibility: "प्रेम अनुकूलता",
+      marriageTiming: "विवाह मुहूर्त",
+      financialAstrology: "वित्तीय ज्योतिष",
+      careerPredictions: "करियर भविष्यवाणी",
+      wealthTiming: "धन समय",
+      dailyPanchang: "दैनिक पंचांग",
+      dailyHoroscope: "दैनिक राशिफल",
+      voiceAstrologer: "वॉयस AI ज्योतिषी",
+      fullKundli: "पूर्ण कुंडली विश्लेषण",
+      doshaAnalysis: "दोष विश्लेषण",
+      numerology: "अंकशास्त्र"
     }
   },
   ta: {
@@ -255,7 +325,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "என் ஆரோக்கியத்தைப் பற்றி நான் என்ன தெரிந்து கொள்ள வேண்டும்?",
       
       // Gamification & Social Proof
-      liveNow: "இப்போது நேரலை",
       peopleChecking: "பேர் தங்கள் ஜாதகங்களைப் பார்க்கிறார்கள்",
       trending: "டிரெண்டிங்",
       trendingTopic: "சனி கோசாரம் இன்று மகர ராசியை பாதிக்கிறது",
@@ -283,9 +352,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "உங்கள் அண்ட பயணத்தைத் தொடங்குங்கள்",
-      freeForever: "எப்போதும் இலவசம்",
+      freeForever: "எப்போதும் இலவசம். கிரெடிட் கார்டு தேவையில்லை.",
       noCardRequired: "கிரெடிட் கார்டு தேவையில்லை",
-      instantResults: "உடனடி முடிவுகள்"
+      instantResults: "உடனடி முடிவுகள்",
+      
+      // Missing keys for hero section
+      revealDestiny: "என் விதியை வெளிப்படுத்து",
+      sunSign: "சூரிய ராசி",
+      moonSign: "சந்திர ராசி",
+      risingSign: "லக்னம்",
+      enterDetailsToReveal: "வெளிப்படுத்த உங்கள் விவரங்களை உள்ளிடவும்...",
+      birthPlacePlaceholder: "நகரத்தின் பெயரை உள்ளிடவும்",
+      liveNow: "{count} பேர் இப்போது ஜாதகங்களைப் பார்க்கிறார்கள்",
+      lifeJourneysBadge: "உங்கள் வாழ்க்கை பயணங்கள்",
+      lifeJourneysTitle: "உங்கள் அண்ட பாதையை ஆராயுங்கள்",
+      lifeJourneysDesc: "உங்கள் பயணத்தைத் தேர்ந்தெடுத்து நட்சத்திரங்கள் உங்கள் வாழ்க்கையைப் பற்றி என்ன சொல்கின்றன என்பதைக் கண்டறியுங்கள்",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "காதல் மற்றும் உறவுகள்",
+      loveJourneyDesc: "உங்கள் சிறந்த துணையையும் உறவு நுண்ணறிவுகளையும் கண்டறியுங்கள்",
+      careerJourneyTitle: "தொழில் மற்றும் செல்வம்",
+      careerJourneyDesc: "உங்கள் தொழில்முறை திறனையும் நிதி வளர்ச்சியையும் திறக்கவும்",
+      dailyJourneyTitle: "தினசரி வழிகாட்டுதல்",
+      dailyJourneyDesc: "தினசரி அண்ட நுண்ணறிவுகளையும் நல்ல நேரங்களையும் பெறுங்கள்",
+      deepDiveJourneyTitle: "ஆழமான ஆய்வு",
+      deepDiveJourneyDesc: "தீவிர ஜோதிட ஆர்வலர்களுக்கான மேம்பட்ட கருவிகள்",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ஜாதக பொருத்தம்",
+      loveCompatibility: "காதல் பொருத்தம்",
+      marriageTiming: "திருமண முகூர்த்தம்",
+      financialAstrology: "நிதி ஜோதிடம்",
+      careerPredictions: "தொழில் கணிப்புகள்",
+      wealthTiming: "செல்வ நேரம்",
+      dailyPanchang: "தினசரி பஞ்சாங்கம்",
+      dailyHoroscope: "தினசரி ராசிபலன்",
+      voiceAstrologer: "குரல் AI ஜோதிடர்",
+      fullKundli: "முழு ஜாதக பகுப்பாய்வு",
+      doshaAnalysis: "தோஷ பகுப்பாய்வு",
+      numerology: "எண்கணிதம்"
     }
   },
   te: {
@@ -349,7 +454,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "నా ఆరోగ్యం గురించి నేను ఏమి తెలుసుకోవాలి?",
       
       // Gamification & Social Proof
-      liveNow: "ఇప్పుడు లైవ్",
       peopleChecking: "మంది తమ జాతకాలను చూస్తున్నారు",
       trending: "ట్రెండింగ్",
       trendingTopic: "శని గోచారం ఈరోజు మకర రాశిని ప్రభావితం చేస్తోంది",
@@ -377,9 +481,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "మీ విశ్వ ప్రయాణాన్ని ప్రారంభించండి",
-      freeForever: "ఎప్పటికీ ఉచితం",
+      freeForever: "ఎప్పటికీ ఉచితం. క్రెడిట్ కార్డ్ అవసరం లేదు.",
       noCardRequired: "క్రెడిట్ కార్డ్ అవసరం లేదు",
-      instantResults: "తక్షణ ఫలితాలు"
+      instantResults: "తక్షణ ఫలితాలు",
+      
+      // Missing keys for hero section
+      revealDestiny: "నా విధిని వెల్లడించు",
+      sunSign: "సూర్య రాశి",
+      moonSign: "చంద్ర రాశి",
+      risingSign: "లగ్నం",
+      enterDetailsToReveal: "వెల్లడించడానికి మీ వివరాలను నమోదు చేయండి...",
+      birthPlacePlaceholder: "నగరం పేరు నమోదు చేయండి",
+      liveNow: "{count} మంది ఇప్పుడు జాతకాలు చూస్తున్నారు",
+      lifeJourneysBadge: "మీ జీవిత ప్రయాణాలు",
+      lifeJourneysTitle: "మీ విశ్వ మార్గాన్ని అన్వేషించండి",
+      lifeJourneysDesc: "మీ ప్రయాణాన్ని ఎంచుకోండి మరియు నక్షత్రాలు మీ జీవితం గురించి ఏమి చెబుతాయో తెలుసుకోండి",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ప్రేమ మరియు సంబంధాలు",
+      loveJourneyDesc: "మీ ఆదర్శ భాగస్వామిని మరియు సంబంధ అంతర్దృష్టులను కనుగొనండి",
+      careerJourneyTitle: "కెరీర్ మరియు సంపద",
+      careerJourneyDesc: "మీ వృత్తిపరమైన సామర్థ్యాన్ని మరియు ఆర్థిక వృద్ధిని అన్‌లాక్ చేయండి",
+      dailyJourneyTitle: "రోజువారీ మార్గదర్శకత్వం",
+      dailyJourneyDesc: "రోజువారీ విశ్వ అంతర్దృష్టులు మరియు శుభ సమయాలను పొందండి",
+      deepDiveJourneyTitle: "లోతైన అధ్యయనం",
+      deepDiveJourneyDesc: "తీవ్రమైన జ్యోతిష్య ఔత్సాహికులకు అధునాతన సాధనాలు",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "జాతక మ్యాచింగ్",
+      loveCompatibility: "ప్రేమ అనుకూలత",
+      marriageTiming: "వివాహ ముహూర్తం",
+      financialAstrology: "ఆర్థిక జ్యోతిషం",
+      careerPredictions: "కెరీర్ అంచనాలు",
+      wealthTiming: "సంపద సమయం",
+      dailyPanchang: "రోజువారీ పంచాంగం",
+      dailyHoroscope: "రోజువారీ రాశిఫలం",
+      voiceAstrologer: "వాయిస్ AI జ్యోతిష్కుడు",
+      fullKundli: "పూర్తి జాతక విశ్లేషణ",
+      doshaAnalysis: "దోష విశ్లేషణ",
+      numerology: "సంఖ్యాశాస్త్రం"
     }
   },
   bn: {
@@ -443,7 +583,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "আমার স্বাস্থ্য সম্পর্কে আমার কী জানা উচিত?",
       
       // Gamification & Social Proof
-      liveNow: "এখন লাইভ",
       peopleChecking: "জন তাদের জন্মকুণ্ডলী দেখছেন",
       trending: "ট্রেন্ডিং",
       trendingTopic: "শনি গোচর আজ মকর রাশিকে প্রভাবিত করছে",
@@ -471,9 +610,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "আপনার মহাজাগতিক যাত্রা শুরু করুন",
-      freeForever: "চিরকাল বিনামূল্যে",
+      freeForever: "চিরকাল বিনামূল্যে। ক্রেডিট কার্ডের প্রয়োজন নেই।",
       noCardRequired: "ক্রেডিট কার্ডের প্রয়োজন নেই",
-      instantResults: "তাৎক্ষণিক ফলাফল"
+      instantResults: "তাৎক্ষণিক ফলাফল",
+      
+      // Missing keys for hero section
+      revealDestiny: "আমার ভাগ্য প্রকাশ করুন",
+      sunSign: "সূর্য রাশি",
+      moonSign: "চন্দ্র রাশি",
+      risingSign: "লগ্ন",
+      enterDetailsToReveal: "প্রকাশ করতে আপনার বিবরণ দিন...",
+      birthPlacePlaceholder: "শহরের নাম লিখুন",
+      liveNow: "{count} জন এখন জন্মকুণ্ডলী দেখছেন",
+      lifeJourneysBadge: "আপনার জীবন যাত্রা",
+      lifeJourneysTitle: "আপনার মহাজাগতিক পথ অন্বেষণ করুন",
+      lifeJourneysDesc: "আপনার যাত্রা বেছে নিন এবং তারারা আপনার জীবন সম্পর্কে কী বলে তা জানুন",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "প্রেম এবং সম্পর্ক",
+      loveJourneyDesc: "আপনার আদর্শ সঙ্গী এবং সম্পর্কের অন্তর্দৃষ্টি খুঁজুন",
+      careerJourneyTitle: "ক্যারিয়ার এবং সম্পদ",
+      careerJourneyDesc: "আপনার পেশাদার সম্ভাবনা এবং আর্থিক বৃদ্ধি আনলক করুন",
+      dailyJourneyTitle: "দৈনিক নির্দেশনা",
+      dailyJourneyDesc: "দৈনিক মহাজাগতিক অন্তর্দৃষ্টি এবং শুভ সময় পান",
+      deepDiveJourneyTitle: "গভীর অধ্যয়ন",
+      deepDiveJourneyDesc: "গুরুতর জ্যোতিষ উত্সাহীদের জন্য উন্নত সরঞ্জাম",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "কুণ্ডলী মিলান",
+      loveCompatibility: "প্রেম সামঞ্জস্য",
+      marriageTiming: "বিবাহ মুহূর্ত",
+      financialAstrology: "আর্থিক জ্যোতিষ",
+      careerPredictions: "ক্যারিয়ার ভবিষ্যদ্বাণী",
+      wealthTiming: "সম্পদ সময়",
+      dailyPanchang: "দৈনিক পঞ্চাঙ্গ",
+      dailyHoroscope: "দৈনিক রাশিফল",
+      voiceAstrologer: "ভয়েস AI জ্যোতিষী",
+      fullKundli: "সম্পূর্ণ কুণ্ডলী বিশ্লেষণ",
+      doshaAnalysis: "দোষ বিশ্লেষণ",
+      numerology: "সংখ্যাতত্ত্ব"
     }
   },
   mr: {
@@ -537,7 +712,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "माझ्या आरोग्याबद्दल मला काय माहित असले पाहिजे?",
       
       // Gamification & Social Proof
-      liveNow: "आता लाइव्ह",
       peopleChecking: "लोक त्यांच्या कुंडल्या पाहत आहेत",
       trending: "ट्रेंडिंग",
       trendingTopic: "शनि गोचर आज मकर राशीवर परिणाम करत आहे",
@@ -565,9 +739,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "तुमचा वैश्विक प्रवास सुरू करा",
-      freeForever: "कायमचे मोफत",
+      freeForever: "कायमचे मोफत. क्रेडिट कार्डची आवश्यकता नाही.",
       noCardRequired: "क्रेडिट कार्डची आवश्यकता नाही",
-      instantResults: "त्वरित परिणाम"
+      instantResults: "त्वरित परिणाम",
+      
+      // Missing keys for hero section
+      revealDestiny: "माझे नशीब प्रकट करा",
+      sunSign: "सूर्य राशी",
+      moonSign: "चंद्र राशी",
+      risingSign: "लग्न",
+      enterDetailsToReveal: "प्रकट करण्यासाठी तुमचे तपशील प्रविष्ट करा...",
+      birthPlacePlaceholder: "शहराचे नाव प्रविष्ट करा",
+      liveNow: "{count} लोक आता कुंडली पाहत आहेत",
+      lifeJourneysBadge: "तुमचे जीवन प्रवास",
+      lifeJourneysTitle: "तुमचा वैश्विक मार्ग शोधा",
+      lifeJourneysDesc: "तुमचा प्रवास निवडा आणि तारे तुमच्या जीवनाबद्दल काय सांगतात ते जाणून घ्या",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "प्रेम आणि नातेसंबंध",
+      loveJourneyDesc: "तुमचा आदर्श जोडीदार आणि नातेसंबंध अंतर्दृष्टी शोधा",
+      careerJourneyTitle: "करिअर आणि संपत्ती",
+      careerJourneyDesc: "तुमची व्यावसायिक क्षमता आणि आर्थिक वाढ अनलॉक करा",
+      dailyJourneyTitle: "दैनंदिन मार्गदर्शन",
+      dailyJourneyDesc: "दैनंदिन वैश्विक अंतर्दृष्टी आणि शुभ वेळा मिळवा",
+      deepDiveJourneyTitle: "सखोल अभ्यास",
+      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोकांसाठी प्रगत साधने",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "कुंडली जुळवणी",
+      loveCompatibility: "प्रेम सुसंगतता",
+      marriageTiming: "विवाह मुहूर्त",
+      financialAstrology: "आर्थिक ज्योतिष",
+      careerPredictions: "करिअर भविष्यवाणी",
+      wealthTiming: "संपत्ती वेळ",
+      dailyPanchang: "दैनंदिन पंचांग",
+      dailyHoroscope: "दैनंदिन राशीभविष्य",
+      voiceAstrologer: "व्हॉइस AI ज्योतिषी",
+      fullKundli: "संपूर्ण कुंडली विश्लेषण",
+      doshaAnalysis: "दोष विश्लेषण",
+      numerology: "अंकशास्त्र"
     }
   },
   gu: {
@@ -631,7 +841,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "મારા સ્વાસ્થ્ય વિશે મારે શું જાણવું જોઈએ?",
       
       // Gamification & Social Proof
-      liveNow: "હમણાં લાઇવ",
       peopleChecking: "લોકો તેમની કુંડળીઓ જોઈ રહ્યા છે",
       trending: "ટ્રેન્ડિંગ",
       trendingTopic: "શનિ ગોચર આજે મકર રાશિને અસર કરી રહ્યો છે",
@@ -659,9 +868,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "તમારી બ્રહ્માંડીય યાત્રા શરૂ કરો",
-      freeForever: "હંમેશા મફત",
+      freeForever: "હંમેશા મફત. ક્રેડિટ કાર્ડની જરૂર નથી.",
       noCardRequired: "ક્રેડિટ કાર્ડની જરૂર નથી",
-      instantResults: "તાત્કાલિક પરિણામો"
+      instantResults: "તાત્કાલિક પરિણામો",
+      
+      // Missing keys for hero section
+      revealDestiny: "મારું ભાગ્ય પ્રગટ કરો",
+      sunSign: "સૂર્ય રાશિ",
+      moonSign: "ચંદ્ર રાશિ",
+      risingSign: "લગ્ન",
+      enterDetailsToReveal: "પ્રગટ કરવા માટે તમારી વિગતો દાખલ કરો...",
+      birthPlacePlaceholder: "શહેરનું નામ દાખલ કરો",
+      liveNow: "{count} લોકો હમણાં કુંડળી જોઈ રહ્યા છે",
+      lifeJourneysBadge: "તમારી જીવન યાત્રાઓ",
+      lifeJourneysTitle: "તમારો બ્રહ્માંડીય માર્ગ શોધો",
+      lifeJourneysDesc: "તમારી યાત્રા પસંદ કરો અને તારાઓ તમારા જીવન વિશે શું કહે છે તે જાણો",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "પ્રેમ અને સંબંધો",
+      loveJourneyDesc: "તમારા આદર્શ સાથી અને સંબંધ અંતર્દૃષ્ટિ શોધો",
+      careerJourneyTitle: "કારકિર્દી અને સંપત્તિ",
+      careerJourneyDesc: "તમારી વ્યાવસાયિક ક્ષમતા અને નાણાકીય વૃદ્ધિ અનલૉક કરો",
+      dailyJourneyTitle: "દૈનિક માર્ગદર્શન",
+      dailyJourneyDesc: "દૈનિક બ્રહ્માંડીય અંતર્દૃષ્ટિ અને શુભ સમય મેળવો",
+      deepDiveJourneyTitle: "ઊંડો અભ્યાસ",
+      deepDiveJourneyDesc: "ગંભીર જ્યોતિષ ઉત્સાહીઓ માટે અદ્યતન સાધનો",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "કુંડળી મેળાપ",
+      loveCompatibility: "પ્રેમ સુસંગતતા",
+      marriageTiming: "લગ્ન મુહૂર્ત",
+      financialAstrology: "નાણાકીય જ્યોતિષ",
+      careerPredictions: "કારકિર્દી ભવિષ્યવાણી",
+      wealthTiming: "સંપત્તિ સમય",
+      dailyPanchang: "દૈનિક પંચાંગ",
+      dailyHoroscope: "દૈનિક રાશિફળ",
+      voiceAstrologer: "વૉઇસ AI જ્યોતિષી",
+      fullKundli: "સંપૂર્ણ કુંડળી વિશ્લેષણ",
+      doshaAnalysis: "દોષ વિશ્લેષણ",
+      numerology: "અંકશાસ્ત્ર"
     }
   },
   kn: {
@@ -725,7 +970,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "ನನ್ನ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ನಾನು ಏನು ತಿಳಿದುಕೊಳ್ಳಬೇಕು?",
       
       // Gamification & Social Proof
-      liveNow: "ಈಗ ಲೈವ್",
       peopleChecking: "ಜನರು ತಮ್ಮ ಜಾತಕಗಳನ್ನು ನೋಡುತ್ತಿದ್ದಾರೆ",
       trending: "ಟ್ರೆಂಡಿಂಗ್",
       trendingTopic: "ಶನಿ ಗೋಚಾರ ಇಂದು ಮಕರ ರಾಶಿಯನ್ನು ಪ್ರಭಾವಿಸುತ್ತಿದೆ",
@@ -753,9 +997,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "ನಿಮ್ಮ ವಿಶ್ವ ಪ್ರಯಾಣ ಪ್ರಾರಂಭಿಸಿ",
-      freeForever: "ಶಾಶ್ವತವಾಗಿ ಉಚಿತ",
+      freeForever: "ಶಾಶ್ವತವಾಗಿ ಉಚಿತ. ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅಗತ್ಯವಿಲ್ಲ.",
       noCardRequired: "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅಗತ್ಯವಿಲ್ಲ",
-      instantResults: "ತಕ್ಷಣ ಫಲಿತಾಂಶಗಳು"
+      instantResults: "ತಕ್ಷಣ ಫಲಿತಾಂಶಗಳು",
+      
+      // Missing keys for hero section
+      revealDestiny: "ನನ್ನ ವಿಧಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸಿ",
+      sunSign: "ಸೂರ್ಯ ರಾಶಿ",
+      moonSign: "ಚಂದ್ರ ರಾಶಿ",
+      risingSign: "ಲಗ್ನ",
+      enterDetailsToReveal: "ಬಹಿರಂಗಪಡಿಸಲು ನಿಮ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ...",
+      birthPlacePlaceholder: "ನಗರದ ಹೆಸರು ನಮೂದಿಸಿ",
+      liveNow: "{count} ಜನರು ಈಗ ಜಾತಕಗಳನ್ನು ನೋಡುತ್ತಿದ್ದಾರೆ",
+      lifeJourneysBadge: "ನಿಮ್ಮ ಜೀವನ ಪ್ರಯಾಣಗಳು",
+      lifeJourneysTitle: "ನಿಮ್ಮ ವಿಶ್ವ ಮಾರ್ಗವನ್ನು ಅನ್ವೇಷಿಸಿ",
+      lifeJourneysDesc: "ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ನಕ್ಷತ್ರಗಳು ನಿಮ್ಮ ಜೀವನದ ಬಗ್ಗೆ ಏನು ಹೇಳುತ್ತವೆ ಎಂದು ತಿಳಿಯಿರಿ",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ಪ್ರೀತಿ ಮತ್ತು ಸಂಬಂಧಗಳು",
+      loveJourneyDesc: "ನಿಮ್ಮ ಆದರ್ಶ ಸಂಗಾತಿ ಮತ್ತು ಸಂಬಂಧ ಒಳನೋಟಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ",
+      careerJourneyTitle: "ವೃತ್ತಿ ಮತ್ತು ಸಂಪತ್ತು",
+      careerJourneyDesc: "ನಿಮ್ಮ ವೃತ್ತಿಪರ ಸಾಮರ್ಥ್ಯ ಮತ್ತು ಆರ್ಥಿಕ ಬೆಳವಣಿಗೆಯನ್ನು ಅನ್ಲಾಕ್ ಮಾಡಿ",
+      dailyJourneyTitle: "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
+      dailyJourneyDesc: "ದೈನಂದಿನ ವಿಶ್ವ ಒಳನೋಟಗಳು ಮತ್ತು ಶುಭ ಸಮಯಗಳನ್ನು ಪಡೆಯಿರಿ",
+      deepDiveJourneyTitle: "ಆಳವಾದ ಅಧ್ಯಯನ",
+      deepDiveJourneyDesc: "ಗಂಭೀರ ಜ್ಯೋತಿಷ್ಯ ಉತ್ಸಾಹಿಗಳಿಗೆ ಸುಧಾರಿತ ಸಾಧನಗಳು",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ಜಾತಕ ಹೊಂದಾಣಿಕೆ",
+      loveCompatibility: "ಪ್ರೀತಿ ಹೊಂದಾಣಿಕೆ",
+      marriageTiming: "ವಿವಾಹ ಮುಹೂರ್ತ",
+      financialAstrology: "ಆರ್ಥಿಕ ಜ್ಯೋತಿಷ್ಯ",
+      careerPredictions: "ವೃತ್ತಿ ಭವಿಷ್ಯವಾಣಿ",
+      wealthTiming: "ಸಂಪತ್ತು ಸಮಯ",
+      dailyPanchang: "ದೈನಂದಿನ ಪಂಚಾಂಗ",
+      dailyHoroscope: "ದೈನಂದಿನ ರಾಶಿಫಲ",
+      voiceAstrologer: "ವಾಯ್ಸ್ AI ಜ್ಯೋತಿಷಿ",
+      fullKundli: "ಸಂಪೂರ್ಣ ಜಾತಕ ವಿಶ್ಲೇಷಣೆ",
+      doshaAnalysis: "ದೋಷ ವಿಶ್ಲೇಷಣೆ",
+      numerology: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ"
     }
   },
   ml: {
@@ -819,7 +1099,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "എന്റെ ആരോഗ്യത്തെക്കുറിച്ച് ഞാൻ എന്താണ് അറിയേണ്ടത്?",
       
       // Gamification & Social Proof
-      liveNow: "ഇപ്പോൾ ലൈവ്",
       peopleChecking: "പേർ അവരുടെ ജാതകങ്ങൾ പരിശോധിക്കുന്നു",
       trending: "ട്രെൻഡിംഗ്",
       trendingTopic: "ശനി ഗോചരം ഇന്ന് മകരം രാശിയെ ബാധിക്കുന്നു",
@@ -847,9 +1126,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "നിങ്ങളുടെ പ്രപഞ്ച യാത്ര ആരംഭിക്കുക",
-      freeForever: "എന്നേക്കും സൗജന്യം",
+      freeForever: "എന്നേക്കും സൗജന്യം. ക്രെഡിറ്റ് കാർഡ് ആവശ്യമില്ല.",
       noCardRequired: "ക്രെഡിറ്റ് കാർഡ് ആവശ്യമില്ല",
-      instantResults: "തൽക്ഷണ ഫലങ്ങൾ"
+      instantResults: "തൽക്ഷണ ഫലങ്ങൾ",
+      
+      // Missing keys for hero section
+      revealDestiny: "എന്റെ വിധി വെളിപ്പെടുത്തുക",
+      sunSign: "സൂര്യ രാശി",
+      moonSign: "ചന്ദ്ര രാശി",
+      risingSign: "ലഗ്നം",
+      enterDetailsToReveal: "വെളിപ്പെടുത്താൻ നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക...",
+      birthPlacePlaceholder: "നഗരത്തിന്റെ പേര് നൽകുക",
+      liveNow: "{count} പേർ ഇപ്പോൾ ജാതകങ്ങൾ നോക്കുന്നു",
+      lifeJourneysBadge: "നിങ്ങളുടെ ജീവിത യാത്രകൾ",
+      lifeJourneysTitle: "നിങ്ങളുടെ പ്രപഞ്ച പാത പര്യവേക്ഷണം ചെയ്യുക",
+      lifeJourneysDesc: "നിങ്ങളുടെ യാത്ര തിരഞ്ഞെടുത്ത് നക്ഷത്രങ്ങൾ നിങ്ങളുടെ ജീവിതത്തെക്കുറിച്ച് എന്താണ് പറയുന്നതെന്ന് കണ്ടെത്തുക",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "പ്രണയവും ബന്ധങ്ങളും",
+      loveJourneyDesc: "നിങ്ങളുടെ ആദർശ പങ്കാളിയെയും ബന്ധ ഉൾക്കാഴ്ചകളും കണ്ടെത്തുക",
+      careerJourneyTitle: "കരിയറും സമ്പത്തും",
+      careerJourneyDesc: "നിങ്ങളുടെ പ്രൊഫഷണൽ സാധ്യതയും സാമ്പത്തിക വളർച്ചയും അൺലോക്ക് ചെയ്യുക",
+      dailyJourneyTitle: "ദൈനംദിന മാർഗ്ഗനിർദ്ദേശം",
+      dailyJourneyDesc: "ദൈനംദിന പ്രപഞ്ച ഉൾക്കാഴ്ചകളും ശുഭ സമയങ്ങളും നേടുക",
+      deepDiveJourneyTitle: "ആഴത്തിലുള്ള പഠനം",
+      deepDiveJourneyDesc: "ഗുരുതരമായ ജ്യോതിഷ ആരാധകർക്കുള്ള വിപുലമായ ഉപകരണങ്ങൾ",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ജാതക പൊരുത്തം",
+      loveCompatibility: "പ്രണയ പൊരുത്തം",
+      marriageTiming: "വിവാഹ മുഹൂർത്തം",
+      financialAstrology: "സാമ്പത്തിക ജ്യോതിഷം",
+      careerPredictions: "കരിയർ പ്രവചനങ്ങൾ",
+      wealthTiming: "സമ്പത്ത് സമയം",
+      dailyPanchang: "ദൈനംദിന പഞ്ചാംഗം",
+      dailyHoroscope: "ദൈനംദിന രാശിഫലം",
+      voiceAstrologer: "വോയ്സ് AI ജ്യോതിഷി",
+      fullKundli: "പൂർണ്ണ ജാതക വിശകലനം",
+      doshaAnalysis: "ദോഷ വിശകലനം",
+      numerology: "സംഖ്യാശാസ്ത്രം"
     }
   },
   pa: {
@@ -913,7 +1228,6 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       questionHealth: "ਮੈਨੂੰ ਆਪਣੀ ਸਿਹਤ ਬਾਰੇ ਕੀ ਪਤਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ?",
       
       // Gamification & Social Proof
-      liveNow: "ਹੁਣੇ ਲਾਈਵ",
       peopleChecking: "ਲੋਕ ਆਪਣੀਆਂ ਕੁੰਡਲੀਆਂ ਦੇਖ ਰਹੇ ਹਨ",
       trending: "ਟ੍ਰੈਂਡਿੰਗ",
       trendingTopic: "ਸ਼ਨੀ ਗੋਚਰ ਅੱਜ ਮਕਰ ਰਾਸ਼ੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਰਿਹਾ ਹੈ",
@@ -941,9 +1255,45 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       
       // Call to Action
       startJourney: "ਆਪਣੀ ਬ੍ਰਹਿਮੰਡੀ ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ",
-      freeForever: "ਹਮੇਸ਼ਾ ਮੁਫ਼ਤ",
+      freeForever: "ਹਮੇਸ਼ਾ ਮੁਫ਼ਤ। ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਲੋੜ ਨਹੀਂ।",
       noCardRequired: "ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਲੋੜ ਨਹੀਂ",
-      instantResults: "ਤੁਰੰਤ ਨਤੀਜੇ"
+      instantResults: "ਤੁਰੰਤ ਨਤੀਜੇ",
+      
+      // Missing keys for hero section
+      revealDestiny: "ਮੇਰੀ ਕਿਸਮਤ ਪ੍ਰਗਟ ਕਰੋ",
+      sunSign: "ਸੂਰਜ ਰਾਸ਼ੀ",
+      moonSign: "ਚੰਦਰ ਰਾਸ਼ੀ",
+      risingSign: "ਲਗਨ",
+      enterDetailsToReveal: "ਪ੍ਰਗਟ ਕਰਨ ਲਈ ਆਪਣੇ ਵੇਰਵੇ ਦਰਜ ਕਰੋ...",
+      birthPlacePlaceholder: "ਸ਼ਹਿਰ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ",
+      liveNow: "{count} ਲੋਕ ਹੁਣੇ ਕੁੰਡਲੀਆਂ ਦੇਖ ਰਹੇ ਹਨ",
+      lifeJourneysBadge: "ਤੁਹਾਡੀਆਂ ਜੀਵਨ ਯਾਤਰਾਵਾਂ",
+      lifeJourneysTitle: "ਆਪਣਾ ਬ੍ਰਹਿਮੰਡੀ ਮਾਰਗ ਖੋਜੋ",
+      lifeJourneysDesc: "ਆਪਣੀ ਯਾਤਰਾ ਚੁਣੋ ਅਤੇ ਜਾਣੋ ਕਿ ਤਾਰੇ ਤੁਹਾਡੀ ਜ਼ਿੰਦਗੀ ਬਾਰੇ ਕੀ ਕਹਿੰਦੇ ਹਨ",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ਪਿਆਰ ਅਤੇ ਰਿਸ਼ਤੇ",
+      loveJourneyDesc: "ਆਪਣਾ ਆਦਰਸ਼ ਸਾਥੀ ਅਤੇ ਰਿਸ਼ਤੇ ਦੀ ਸੂਝ ਲੱਭੋ",
+      careerJourneyTitle: "ਕਰੀਅਰ ਅਤੇ ਦੌਲਤ",
+      careerJourneyDesc: "ਆਪਣੀ ਪੇਸ਼ੇਵਰ ਸਮਰੱਥਾ ਅਤੇ ਵਿੱਤੀ ਵਿਕਾਸ ਨੂੰ ਅਨਲੌਕ ਕਰੋ",
+      dailyJourneyTitle: "ਰੋਜ਼ਾਨਾ ਮਾਰਗਦਰਸ਼ਨ",
+      dailyJourneyDesc: "ਰੋਜ਼ਾਨਾ ਬ੍ਰਹਿਮੰਡੀ ਸੂਝ ਅਤੇ ਸ਼ੁਭ ਸਮੇਂ ਪ੍ਰਾਪਤ ਕਰੋ",
+      deepDiveJourneyTitle: "ਡੂੰਘਾ ਅਧਿਐਨ",
+      deepDiveJourneyDesc: "ਗੰਭੀਰ ਜੋਤਿਸ਼ ਉਤਸ਼ਾਹੀਆਂ ਲਈ ਉੱਨਤ ਸਾਧਨ",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ਕੁੰਡਲੀ ਮਿਲਾਨ",
+      loveCompatibility: "ਪਿਆਰ ਅਨੁਕੂਲਤਾ",
+      marriageTiming: "ਵਿਆਹ ਮੁਹੂਰਤ",
+      financialAstrology: "ਵਿੱਤੀ ਜੋਤਿਸ਼",
+      careerPredictions: "ਕਰੀਅਰ ਭਵਿੱਖਬਾਣੀ",
+      wealthTiming: "ਦੌਲਤ ਸਮਾਂ",
+      dailyPanchang: "ਰੋਜ਼ਾਨਾ ਪੰਚਾਂਗ",
+      dailyHoroscope: "ਰੋਜ਼ਾਨਾ ਰਾਸ਼ੀਫਲ",
+      voiceAstrologer: "ਵੌਇਸ AI ਜੋਤਿਸ਼ੀ",
+      fullKundli: "ਪੂਰੀ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ",
+      doshaAnalysis: "ਦੋਸ਼ ਵਿਸ਼ਲੇਸ਼ਣ",
+      numerology: "ਅੰਕ ਵਿਗਿਆਨ"
     }
   }
 };

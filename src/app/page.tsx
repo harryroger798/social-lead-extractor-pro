@@ -99,50 +99,50 @@ export default function Home() {
   const lifeJourneys = [
     {
       icon: Heart,
-      title: t('homepage.loveJourneyTitle', 'Love & Relationships'),
-      description: t('homepage.loveJourneyDesc', 'Compatibility, marriage timing, relationship insights'),
+      title: t('homeRedesign.loveJourneyTitle', 'Love & Relationships'),
+      description: t('homeRedesign.loveJourneyDesc', 'Compatibility, marriage timing, relationship insights'),
       color: 'from-pink-500 to-rose-500',
       bgColor: 'bg-pink-50',
       tools: [
-        { name: t('homepage.horoscopeMatching', 'Horoscope Matching'), href: '/tools/horoscope-matching' },
-        { name: t('homepage.loveCompatibility', 'Love Compatibility'), href: '/tools/love-calculator' },
-        { name: t('homepage.marriageTiming', 'Marriage Timing'), href: '/tools/muhurta-calculator' },
+        { name: t('homeRedesign.horoscopeMatching', 'Horoscope Matching'), href: '/tools/horoscope-matching' },
+        { name: t('homeRedesign.loveCompatibility', 'Love Compatibility'), href: '/tools/love-calculator' },
+        { name: t('homeRedesign.marriageTiming', 'Marriage Timing'), href: '/tools/muhurta-calculator' },
       ],
     },
     {
       icon: Briefcase,
-      title: t('homepage.careerJourneyTitle', 'Career & Wealth'),
-      description: t('homepage.careerJourneyDesc', 'Financial astrology, career predictions, wealth timing'),
+      title: t('homeRedesign.careerJourneyTitle', 'Career & Wealth'),
+      description: t('homeRedesign.careerJourneyDesc', 'Financial astrology, career predictions, wealth timing'),
       color: 'from-emerald-500 to-teal-500',
       bgColor: 'bg-emerald-50',
       tools: [
-        { name: t('homepage.financialAstrology', 'Financial Astrology'), href: '/tools/financial-astrology' },
-        { name: t('homepage.careerPredictions', 'Career Predictions'), href: '/horoscope/career' },
-        { name: t('homepage.wealthTiming', 'Wealth Timing'), href: '/tools/dasha-calculator' },
+        { name: t('homeRedesign.financialAstrology', 'Financial Astrology'), href: '/tools/financial-astrology' },
+        { name: t('homeRedesign.careerPredictions', 'Career Predictions'), href: '/horoscope/career' },
+        { name: t('homeRedesign.wealthTiming', 'Wealth Timing'), href: '/tools/dasha-calculator' },
       ],
     },
     {
       icon: Compass,
-      title: t('homepage.dailyJourneyTitle', 'Daily Guidance'),
-      description: t('homepage.dailyJourneyDesc', 'Panchang, daily horoscope, voice AI astrologer'),
+      title: t('homeRedesign.dailyJourneyTitle', 'Daily Guidance'),
+      description: t('homeRedesign.dailyJourneyDesc', 'Panchang, daily horoscope, voice AI astrologer'),
       color: 'from-violet-500 to-purple-500',
       bgColor: 'bg-violet-50',
       tools: [
-        { name: t('homepage.dailyPanchang', 'Daily Panchang'), href: '/panchang' },
-        { name: t('homepage.dailyHoroscope', 'Daily Horoscope'), href: '/horoscope/daily' },
-        { name: t('homepage.voiceAstrologer', 'Voice AI Astrologer'), href: '/voice-astrologer' },
+        { name: t('homeRedesign.dailyPanchang', 'Daily Panchang'), href: '/panchang' },
+        { name: t('homeRedesign.dailyHoroscope', 'Daily Horoscope'), href: '/horoscope/daily' },
+        { name: t('homeRedesign.voiceAstrologer', 'Voice AI Astrologer'), href: '/voice-astrologer' },
       ],
     },
     {
       icon: Brain,
-      title: t('homepage.deepDiveJourneyTitle', 'Deep Dive'),
-      description: t('homepage.deepDiveJourneyDesc', 'Advanced charts, doshas, remedies, numerology'),
+      title: t('homeRedesign.deepDiveJourneyTitle', 'Deep Dive'),
+      description: t('homeRedesign.deepDiveJourneyDesc', 'Advanced charts, doshas, remedies, numerology'),
       color: 'from-amber-500 to-orange-500',
       bgColor: 'bg-amber-50',
       tools: [
-        { name: t('homepage.fullKundli', 'Full Kundli Analysis'), href: '/tools/kundli-calculator' },
-        { name: t('homepage.doshaAnalysis', 'Dosha Analysis'), href: '/doshas' },
-        { name: t('homepage.numerology', 'Numerology'), href: '/tools/numerology' },
+        { name: t('homeRedesign.fullKundli', 'Full Kundli Analysis'), href: '/tools/kundli-calculator' },
+        { name: t('homeRedesign.doshaAnalysis', 'Dosha Analysis'), href: '/doshas' },
+        { name: t('homeRedesign.numerology', 'Numerology'), href: '/tools/numerology' },
       ],
     },
   ];
@@ -289,28 +289,28 @@ export default function Home() {
               {/* Live counter badge */}
               <Badge className="mb-6 bg-green-500/20 text-green-400 border-green-500/30 animate-pulse">
                 <Eye className="w-3 h-3 mr-1" />
-                {t('homepage.liveNow', '{count} people checking charts now').replace('{count}', liveCount.toLocaleString())}
+                {t('homeRedesign.liveNow', '{count} people checking charts now').replace('{count}', liveCount.toLocaleString())}
               </Badge>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                              {t('homepage.heroMainTitle', 'Discover What {year} Has in Store for You').replace('{year}', currentYear.toString())}
+                              {t('homeRedesign.heroMainTitle', 'Discover What {year} Has in Store for You').replace('{year}', currentYear.toString())}
                             </h1>
 
               <p className="text-xl md:text-2xl text-indigo-200 mb-8 max-w-xl">
-                {t('homepage.heroSubtitle', 'Your complete cosmic blueprint in 60 seconds. Free forever.')}
+                {t('homeRedesign.heroSubtitle', 'Your complete cosmic blueprint in 60 seconds. Free forever.')}
               </p>
 
               {/* 3-Field Quick Start Form */}
               <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6 max-w-md mx-auto lg:mx-0">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-white text-center lg:text-left">
-                    {t('homepage.heroFormTitle', 'Get Your Cosmic Profile')}
+                    {t('homeRedesign.heroFormTitle', 'Get Your Cosmic Profile')}
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
                       <Label htmlFor="birthDate" className="text-indigo-200 text-sm">
-                        {t('homepage.birthDate', 'Birth Date')}
+                        {t('homeRedesign.birthDate', 'Birth Date')}
                       </Label>
                       <Input
                         id="birthDate"
@@ -323,7 +323,7 @@ export default function Home() {
                     
                     <div>
                       <Label htmlFor="birthTime" className="text-indigo-200 text-sm">
-                        {t('homepage.birthTime', 'Birth Time')}
+                        {t('homeRedesign.birthTime', 'Birth Time')}
                       </Label>
                       <Input
                         id="birthTime"
@@ -336,14 +336,14 @@ export default function Home() {
                     
                     <div>
                       <Label htmlFor="birthPlace" className="text-indigo-200 text-sm">
-                        {t('homepage.birthPlace', 'Birth Place')}
+                        {t('homeRedesign.birthPlace', 'Birth Place')}
                       </Label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                           id="birthPlace"
                           type="text"
-                          placeholder={t('homepage.birthPlacePlaceholder', 'Enter city name')}
+                          placeholder={t('homeRedesign.birthPlacePlaceholder', 'Enter city name')}
                           value={birthPlace}
                           onChange={(e) => setBirthPlace(e.target.value)}
                           className="bg-white/10 border-white/30 text-white placeholder:text-gray-400 pl-10"
@@ -358,12 +358,12 @@ export default function Home() {
                     className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-lg py-6 disabled:opacity-50"
                   >
                     <Zap className="mr-2 w-5 h-5" />
-                    {t('homepage.revealDestiny', 'Reveal My Destiny')}
+                    {t('homeRedesign.revealDestiny', 'Reveal My Destiny')}
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
 
                   <p className="text-center text-xs text-indigo-300">
-                    {t('homepage.freeForever', 'Free forever. No credit card required.')}
+                    {t('homeRedesign.freeForever', 'Free forever. No credit card required.')}
                   </p>
                 </div>
               </Card>
@@ -382,24 +382,24 @@ export default function Home() {
                       <Star className="w-12 h-12 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-2">
-                      {t('homepage.cosmicProfileTitle', 'Your Cosmic DNA')}
+                      {t('homeRedesign.cosmicProfileTitle', 'Your Cosmic DNA')}
                     </h3>
                     <div className="space-y-2 text-indigo-200">
-                      <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homepage.sunSign', 'Sun Sign')}: ???</p>
-                      <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homepage.moonSign', 'Moon Sign')}: ???</p>
-                      <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homepage.risingSign', 'Rising Sign')}: ???</p>
+                      <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homeRedesign.sunSign', 'Sun Sign')}: ???</p>
+                      <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homeRedesign.moonSign', 'Moon Sign')}: ???</p>
+                      <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homeRedesign.risingSign', 'Rising Sign')}: ???</p>
                     </div>
                     <div className="mt-6 p-4 bg-white/10 rounded-lg">
                                             <p className="text-amber-300 font-semibold">
-                                              {withCurrentYear(t('homepage.predictionYear', '{year} Prediction'))}
+                                              {withCurrentYear(t('homeRedesign.predictionYear', '{year} Prediction'))}
                                             </p>
                       <p className="text-white text-sm mt-1">
-                        {t('homepage.enterDetailsToReveal', 'Enter your details to reveal...')}
+                        {t('homeRedesign.enterDetailsToReveal', 'Enter your details to reveal...')}
                       </p>
                     </div>
                                         <Button className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600">
                                           <Share2 className="mr-2 w-4 h-4" />
-                                          {t('homepage.shareCosmicDna', 'Share Your Cosmic DNA')}
+                                          {t('homeRedesign.shareCosmicDna', 'Share Your Cosmic DNA')}
                                         </Button>
                   </div>
                 </Card>
@@ -425,13 +425,13 @@ export default function Home() {
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
               <Compass className="w-3 h-3 mr-1" />
-              {t('homepage.lifeJourneysBadge', 'Your Life Journeys')}
+              {t('homeRedesign.lifeJourneysBadge', 'Your Life Journeys')}
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {t('homepage.lifeJourneysTitle', 'Explore Your Cosmic Path')}
+              {t('homeRedesign.lifeJourneysTitle', 'Explore Your Cosmic Path')}
             </h2>
             <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              {t('homepage.lifeJourneysDesc', 'Choose your journey and discover what the stars reveal about your life')}
+              {t('homeRedesign.lifeJourneysDesc', 'Choose your journey and discover what the stars reveal about your life')}
             </p>
           </div>
 
