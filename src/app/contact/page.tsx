@@ -44,9 +44,9 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: t('contact.visitUs', 'Visit Us'),
-      details: t('contact.location', 'Bangalore, Karnataka'),
+      details: t('contact.location', 'Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road, Bangalore - 560100'),
       description: t('contact.visitDesc', 'By appointment only'),
-      href: "#",
+      href: "https://maps.google.com/?q=Nakshatraveda+Astro+House+Begur+Koppa+Road+Bangalore+560100",
     },
   ];
 
@@ -223,8 +223,10 @@ export default function ContactPage() {
               telephone: "+91-8884919349",
               address: {
                 "@type": "PostalAddress",
+                streetAddress: "Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road",
                 addressLocality: "Bangalore",
                 addressRegion: "Karnataka",
+                postalCode: "560100",
                 addressCountry: "IN",
               },
             },

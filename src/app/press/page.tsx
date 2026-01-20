@@ -115,7 +115,7 @@ export default function PressPage() {
                   {t('press.aboutDesc2', 'Our platform features free tools like Kundli Calculator and Nakshatra Finder, along with paid consultations with verified astrologers who have 10-25+ years of experience.')}
                 </p>
                 <p className="text-gray-700">
-                  {t('press.aboutDesc3', 'Based in Bangalore, India, VedicStarAstro serves users across India and internationally, making authentic Vedic astrology accessible to everyone.')}
+                  {t('press.aboutDesc3', 'Based at Nakshatraveda Astro House, Bangalore, VedicStarAstro serves users across India and internationally, making authentic Vedic astrology accessible to everyone.')}
                 </p>
               </div>
             </div>

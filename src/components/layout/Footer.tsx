@@ -63,9 +63,9 @@ export function Footer() {
               {t('footer.tagline', 'Authentic Vedic Astrology services with expert astrologers. Get accurate Kundli analysis, Nakshatra insights, and personalized consultations.')}
             </p>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-amber-500" />
-                <span>{t('footer.location', 'Bangalore, Karnataka, India')}</span>
+              <div className="flex items-start gap-3 text-sm">
+                <MapPin className="w-4 h-4 text-amber-500 mt-1 flex-shrink-0" />
+                <span>{t('footer.location', 'Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road, Bangalore - 560100')}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-amber-500" />
