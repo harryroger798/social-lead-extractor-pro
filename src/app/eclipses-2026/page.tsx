@@ -123,7 +123,7 @@ export default function Eclipses2026Page() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-600" />
-              {year} Eclipse Overview
+              {withCurrentYear('{year} Eclipse Overview')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -133,7 +133,7 @@ export default function Eclipses2026Page() {
                   <Sun className="w-6 h-6 text-amber-500" />
                   <h3 className="font-semibold text-amber-800">Solar Eclipses (Surya Grahan)</h3>
                 </div>
-                <p className="text-amber-700 mb-2">2 Solar Eclipses in {year}:</p>
+                <p className="text-amber-700 mb-2">{withCurrentYear('2 Solar Eclipses in {year}:')}</p>
                 <ul className="text-sm text-amber-600 space-y-1">
                   <li>• March 17 - Partial Solar Eclipse</li>
                   <li>• September 12 - Annular Solar Eclipse</li>
@@ -144,7 +144,7 @@ export default function Eclipses2026Page() {
                   <Moon className="w-6 h-6 text-blue-500" />
                   <h3 className="font-semibold text-blue-800">Lunar Eclipses (Chandra Grahan)</h3>
                 </div>
-                <p className="text-blue-700 mb-2">2 Lunar Eclipses in {year}:</p>
+                <p className="text-blue-700 mb-2">{withCurrentYear('2 Lunar Eclipses in {year}:')}</p>
                 <ul className="text-sm text-blue-600 space-y-1">
                   <li>• March 3 - Total Lunar Eclipse</li>
                   <li>• August 28 - Total Lunar Eclipse</li>
@@ -276,7 +276,7 @@ export default function Eclipses2026Page() {
               Eclipse Effects by Zodiac Sign
             </CardTitle>
             <CardDescription>
-              How the {year} eclipses affect each zodiac sign
+              {withCurrentYear('How the {year} eclipses affect each zodiac sign')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -294,7 +294,7 @@ export default function Eclipses2026Page() {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{year} Horoscope</h3>
+              <h3 className="font-semibold text-lg mb-2">{withCurrentYear('{year} Horoscope')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Complete yearly predictions for your sign.
               </p>
@@ -308,7 +308,7 @@ export default function Eclipses2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Festival Calendar {year}</h3>
+              <h3 className="font-semibold text-lg mb-2">{withCurrentYear('Festival Calendar {year}')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 All Hindu festivals and important dates.
               </p>
