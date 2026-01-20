@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +9,8 @@ import {
   Newspaper,
   Download,
   Mail,
-  ExternalLink,
+  ChevronDown,
+  ChevronUp,
   Calendar,
   Users,
   Star,
@@ -16,33 +18,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getCurrentYear } from "@/lib/utils";
-
-// Dynamic year for press releases
-const currentYear = getCurrentYear();
-
-const pressReleases = [
-  {
-    id: 1,
-    title: "VedicStarAstro Launches AI-Powered Kundli Analysis",
-    date: `January ${currentYear}`,
-    excerpt:
-      "VedicStarAstro introduces advanced AI technology combined with traditional Vedic astrology for more accurate birth chart analysis.",
-  },
-  {
-    id: 2,
-    title: "VedicStarAstro Reaches 50,000 Users Milestone",
-    date: "December 2025",
-    excerpt:
-      "The platform celebrates serving over 50,000 users with free Kundli generation and expert consultations.",
-  },
-  {
-    id: 3,
-    title: "Partnership with Leading Vedic Astrology Institutions",
-    date: "November 2025",
-    excerpt:
-      "VedicStarAstro announces partnerships with traditional Jyotish institutions to ensure authenticity of services.",
-  },
-];
 
 const mediaFeatures = [
   {
@@ -64,6 +39,8 @@ const mediaFeatures = [
 
 export default function PressPage() {
   const { t } = useLanguage();
+  const [expandedRelease, setExpandedRelease] = useState<number | null>(null);
+  const currentYear = getCurrentYear();
 
   const stats = [
     { value: "50,000+", label: t('press.usersServed', 'Users Served'), icon: Users },
@@ -71,6 +48,34 @@ export default function PressPage() {
     { value: "4.8/5", label: t('press.userRating', 'User Rating'), icon: TrendingUp },
     { value: "2024", label: t('press.founded', 'Founded'), icon: Calendar },
   ];
+
+  const pressReleases = [
+    {
+      id: 1,
+      title: t('press.release1Title', 'VedicStarAstro Launches AI-Powered Kundli Analysis'),
+      date: `${t('press.january', 'January')} ${currentYear}`,
+      excerpt: t('press.release1Excerpt', 'VedicStarAstro introduces advanced AI technology combined with traditional Vedic astrology for more accurate birth chart analysis.'),
+      fullContent: t('press.release1Full', 'VedicStarAstro, the leading platform for authentic Vedic astrology services, today announced the launch of its revolutionary AI-powered Kundli analysis feature. This groundbreaking technology combines the ancient wisdom of Jyotish Shastra with cutting-edge artificial intelligence to provide users with more accurate and detailed birth chart interpretations. The new feature analyzes planetary positions, house placements, and dasha periods with unprecedented precision, offering personalized insights that were previously only available through in-person consultations with expert astrologers. Users can now receive comprehensive birth chart analysis within minutes, complete with detailed explanations of planetary influences and practical remedies.'),
+    },
+    {
+      id: 2,
+      title: t('press.release2Title', 'VedicStarAstro Reaches 50,000 Users Milestone'),
+      date: t('press.december2025', 'December 2025'),
+      excerpt: t('press.release2Excerpt', 'The platform celebrates serving over 50,000 users with free Kundli generation and expert consultations.'),
+      fullContent: t('press.release2Full', 'VedicStarAstro proudly announces reaching the milestone of 50,000 registered users, marking a significant achievement in making authentic Vedic astrology accessible to everyone. Since its launch in 2024, the platform has provided free Kundli generation services to thousands of users seeking guidance through traditional Jyotish wisdom. The platform has also facilitated over 10,000 expert consultations, connecting users with verified astrologers who have 10-25+ years of experience. This milestone reflects the growing trust in VedicStarAstro commitment to authenticity, accuracy, and user satisfaction. The company plans to expand its services further in the coming year.'),
+    },
+    {
+      id: 3,
+      title: t('press.release3Title', 'Partnership with Leading Vedic Astrology Institutions'),
+      date: t('press.november2025', 'November 2025'),
+      excerpt: t('press.release3Excerpt', 'VedicStarAstro announces partnerships with traditional Jyotish institutions to ensure authenticity of services.'),
+      fullContent: t('press.release3Full', 'VedicStarAstro has established strategic partnerships with several prestigious Vedic astrology institutions across India to enhance the authenticity and quality of its services. These partnerships include collaborations with traditional Jyotish schools in Varanasi, Ujjain, and other centers of Vedic learning. Through these partnerships, VedicStarAstro will offer certified courses, workshops, and advanced training programs for aspiring astrologers. The collaborations also ensure that all astrologers on the platform are verified by recognized institutions, maintaining the highest standards of traditional Jyotish practice while making these services accessible through modern technology.'),
+    },
+  ];
+
+  const toggleRelease = (id: number) => {
+    setExpandedRelease(expandedRelease === id ? null : id);
+  };
 
   return (
     <div className="py-12 lg:py-16">
@@ -151,19 +156,34 @@ export default function PressPage() {
             {pressReleases.map((release) => (
               <Card key={release.id} className="border-amber-100 hover:border-amber-300 transition-colors">
                 <CardContent className="pt-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Newspaper className="w-5 h-5 text-amber-600" />
-                        <span className="text-sm text-gray-500">{release.date}</span>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Newspaper className="w-5 h-5 text-amber-600" />
+                          <span className="text-sm text-gray-500">{release.date}</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{release.title}</h3>
+                        <p className="text-gray-600">{release.excerpt}</p>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{release.title}</h3>
-                      <p className="text-gray-600">{release.excerpt}</p>
+                      <Button 
+                        variant="outline" 
+                        className="border-amber-500 text-amber-600"
+                        onClick={() => toggleRelease(release.id)}
+                      >
+                        {expandedRelease === release.id ? t('press.showLess', 'Show Less') : t('press.readMore', 'Read More')}
+                        {expandedRelease === release.id ? (
+                          <ChevronUp className="w-4 h-4 ml-2" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 ml-2" />
+                        )}
+                      </Button>
                     </div>
-                    <Button variant="outline" className="border-amber-500 text-amber-600">
-                      {t('press.readMore', 'Read More')}
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
+                    {expandedRelease === release.id && (
+                      <div className="mt-4 pt-4 border-t border-amber-100">
+                        <p className="text-gray-700 leading-relaxed">{release.fullContent}</p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
