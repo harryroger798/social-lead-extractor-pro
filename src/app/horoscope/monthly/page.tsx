@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   Star,
   ArrowRight,
@@ -272,6 +273,7 @@ function getCurrentMonth() {
 
 export default function MonthlyHoroscopePage() {
   const { t } = useLanguage();
+  const currentYear = getCurrentYear();
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
   const prediction = selectedSign ? monthlyPredictions[selectedSign] : null;
   const signData = selectedSign ? zodiacSigns.find(s => s.name === selectedSign) : null;
@@ -470,19 +472,19 @@ export default function MonthlyHoroscopePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-amber-200 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('horoscope.yearlyHoroscope', '2026 Horoscope')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {t('horoscope.yearlyDesc', 'Your complete yearly predictions.')}
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/horoscope/2026">
-                  {t('horoscope.readYearly', 'Read Yearly')} <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+                    <Card className="border-amber-200 hover:shadow-lg transition-shadow">
+                      <CardContent className="pt-6">
+                        <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('horoscope.yearlyHoroscope', '{year} Horoscope'))}</h3>
+                        <p className="text-gray-600 text-sm mb-4">
+                          {t('horoscope.yearlyDesc', 'Your complete yearly predictions.')}
+                        </p>
+                        <Button variant="outline" className="w-full" asChild>
+                          <Link href={`/horoscope/${currentYear}`}>
+                            {t('horoscope.readYearly', 'Read Yearly')} <ArrowRight className="w-4 h-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
         </div>
       </div>
 
