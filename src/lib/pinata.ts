@@ -1,8 +1,8 @@
 // Pinata IPFS Upload Utility
 // This file handles uploading certificate data to IPFS via Pinata
 
-const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY || "a19dfcd1f7856428c46d";
-const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY || "ae619fc7f164e0b588a51ddf76f7b1b46ca6e829743619b52f5788dd94e99716";
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY;
 
 interface CertificateData {
   certificateId: string;
@@ -375,6 +375,12 @@ function generateCertificateHTML(certificateData: CertificateData): string {
 
 export async function uploadToIPFS(certificateData: CertificateData): Promise<string | null> {
   try {
+    // Check if API keys are configured
+    if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
+      console.error("Pinata API keys are not configured");
+      return null;
+    }
+
     // Upload JSON data to IPFS (JSON works reliably on Pinata's gateway)
     // HTML was causing issues with ipfs.io gateway timeouts
     const jsonData = {

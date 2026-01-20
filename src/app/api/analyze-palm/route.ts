@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Roboflow API configuration
 // Use Private API Key for server-side inference (not Publishable Key which is client-side only)
-const ROBOFLOW_API_KEY = process.env.ROBOFLOW_API_KEY || "zMz0kWTjOf514ZL88sz5";
+const ROBOFLOW_API_KEY = process.env.ROBOFLOW_API_KEY;
 const ROBOFLOW_MODEL_ID = "palmistry-g45zz/1"; // Using palmistry model with 6.7k images, detects: fate, head, heart, life
 
 interface RoboflowPrediction {
@@ -433,6 +433,14 @@ function generatePalmReading(predictions: RoboflowPrediction[], imageWidth: numb
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!ROBOFLOW_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: "ROBOFLOW_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { image } = body;
 

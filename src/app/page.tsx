@@ -696,7 +696,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-white/20 text-white hover:bg-white/10"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20"
                 onClick={() => handleShare('twitter')}
               >
                 {t('homeRedesign.shareOnTwitter', 'Share')}
@@ -704,7 +704,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-white/20 text-white hover:bg-white/10"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20"
                 onClick={handleCopyLink}
               >
                 {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -883,12 +883,12 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-                      <Badge className="mb-4 bg-amber-400 text-amber-900">{withCurrentYear(t('home.predictionsYearBadge', '{year} Predictions'))}</Badge>
+                      <Badge className="mb-4 bg-amber-400 text-amber-900">{t('home.predictions2026Badge', '2026 Predictions')}</Badge>
                       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        {withCurrentYear(t('home.predictionsYearTitle', 'What Does {year} Hold For You?'))}
+                        {t('home.predictions2026Title', 'What Does 2026 Hold For You?')}
                       </h2>
                       <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-                        {withCurrentYear(t('home.predictionsYearDesc', 'Explore detailed predictions, planetary transits, and cosmic events for {year}.'))}
+                        {t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for 2026.')}
                       </p>
                     </div>
           

@@ -166,7 +166,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   // 1. Pitri Rina (Father's Debt)
   const jupiterBadHouses = [3, 6, 7, 8, 10];
   const pitriCondition1 = jupiterBadHouses.includes(jupiter);
-  const pitriCondition2 = [2, 5, 9, 12].some(h => [mercury, venus, rahu, ketu].includes(h));
+  const pitriCondition2 = [mercury, venus, rahu, ketu].some(p => [2, 5, 9, 12].includes(p));
   debts.push({
     key: "pitriRina",
     name: "Father's Debt (Pitri Rina)",
@@ -205,7 +205,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   // 3. Stri Rina (Wife's/Woman's Debt)
   const venusBadHouses = [3, 4, 5, 6, 9, 10, 11];
   const striCondition1 = venusBadHouses.includes(venus);
-  const striCondition2 = [2, 7].some(h => [sun, moon, rahu].includes(h));
+  const striCondition2 = [sun, moon, rahu].some(p => [2, 7].includes(p));
   debts.push({
     key: "striRina",
     name: "Wife's Debt (Stri Rina)",
@@ -245,7 +245,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   // 5. Swajan Rina (Relative's Debt)
   const marsBadHouses = [2, 4, 5, 6, 9, 11, 12];
   const swajanCondition1 = marsBadHouses.includes(mars);
-  const swajanCondition2 = [mercury, ketu].includes(8);
+  const swajanCondition2 = [mercury, ketu].some(p => p === 8);
   debts.push({
     key: "swajanRina",
     name: "Relative's Debt (Swajan Rina)",
@@ -284,7 +284,7 @@ function calculateDebts(positions: PlanetPosition[]): Debt[] {
   // 7. Atyachar Rina (Cruelty Debt)
   const saturnBadHouses = [1, 2, 5, 6, 8, 9, 12];
   const atyacharCondition1 = saturnBadHouses.includes(saturn);
-  const atyacharCondition2 = [10, 12].some(h => [sun, moon, mars].includes(h));
+  const atyacharCondition2 = [sun, moon, mars].some(p => [10, 12].includes(p));
   debts.push({
     key: "atyacharRina",
     name: "Cruelty Debt (Atyachar Rina)",
