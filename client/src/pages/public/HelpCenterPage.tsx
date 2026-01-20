@@ -24,11 +24,11 @@ interface FAQItem {
   answer: string
 }
 
-function FAQAccordion({ items, category }: { items: FAQItem[], category: string }) {
+function FAQAccordion({ items, category, id }: { items: FAQItem[], category: string, id?: string }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" id={id}>
       <h3 className="text-xl font-bold dark:text-white mb-4">{category}</h3>
       {items.map((item, index) => (
         <motion.div
@@ -65,40 +65,53 @@ export function HelpCenterPage() {
   const { i18n } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
 
-  const categories = [
-    {
-      icon: Smartphone,
-      title: i18n.language === 'hi' ? 'Mobile Repair' : i18n.language === 'bn' ? 'মোবাইল মেরামত' : 'Mobile Repair',
-      description: i18n.language === 'hi' ? 'Phone repair ke baare mein' : i18n.language === 'bn' ? 'ফোন মেরামত সম্পর্কে' : 'About phone repairs'
-    },
-    {
-      icon: Monitor,
-      title: i18n.language === 'hi' ? 'PC/Laptop Repair' : i18n.language === 'bn' ? 'পিসি/ল্যাপটপ মেরামত' : 'PC/Laptop Repair',
-      description: i18n.language === 'hi' ? 'Computer repair ke baare mein' : i18n.language === 'bn' ? 'কম্পিউটার মেরামত সম্পর্কে' : 'About computer repairs'
-    },
-    {
-      icon: Globe,
-      title: i18n.language === 'hi' ? 'Digital Services' : i18n.language === 'bn' ? 'ডিজিটাল সার্ভিস' : 'Digital Services',
-      description: i18n.language === 'hi' ? 'Website aur marketing' : i18n.language === 'bn' ? 'ওয়েবসাইট এবং মার্কেটিং' : 'Website and marketing'
-    },
-    {
-      icon: CreditCard,
-      title: i18n.language === 'hi' ? 'Payment & Billing' : i18n.language === 'bn' ? 'পেমেন্ট এবং বিলিং' : 'Payment & Billing',
-      description: i18n.language === 'hi' ? 'Payment options' : i18n.language === 'bn' ? 'পেমেন্ট অপশন' : 'Payment options'
-    },
-    {
-      icon: Shield,
-      title: i18n.language === 'hi' ? 'Warranty & Returns' : i18n.language === 'bn' ? 'ওয়ারেন্টি এবং রিটার্ন' : 'Warranty & Returns',
-      description: i18n.language === 'hi' ? 'Warranty policy' : i18n.language === 'bn' ? 'ওয়ারেন্টি পলিসি' : 'Warranty policy'
-    },
-    {
-      icon: MapPin,
-      title: i18n.language === 'hi' ? 'Pickup & Delivery' : i18n.language === 'bn' ? 'পিকআপ এবং ডেলিভারি' : 'Pickup & Delivery',
-      description: i18n.language === 'hi' ? 'Home service' : i18n.language === 'bn' ? 'হোম সার্ভিস' : 'Home service'
-    }
-  ]
+    const categories = [
+      {
+        icon: Smartphone,
+        title: i18n.language === 'hi' ? 'Mobile Repair' : i18n.language === 'bn' ? 'মোবাইল মেরামত' : 'Mobile Repair',
+        description: i18n.language === 'hi' ? 'Phone repair ke baare mein' : i18n.language === 'bn' ? 'ফোন মেরামত সম্পর্কে' : 'About phone repairs',
+        sectionId: 'faq-mobile-repair'
+      },
+      {
+        icon: Monitor,
+        title: i18n.language === 'hi' ? 'PC/Laptop Repair' : i18n.language === 'bn' ? 'পিসি/ল্যাপটপ মেরামত' : 'PC/Laptop Repair',
+        description: i18n.language === 'hi' ? 'Computer repair ke baare mein' : i18n.language === 'bn' ? 'কম্পিউটার মেরামত সম্পর্কে' : 'About computer repairs',
+        sectionId: 'faq-pc-laptop'
+      },
+      {
+        icon: Globe,
+        title: i18n.language === 'hi' ? 'Digital Services' : i18n.language === 'bn' ? 'ডিজিটাল সার্ভিস' : 'Digital Services',
+        description: i18n.language === 'hi' ? 'Website aur marketing' : i18n.language === 'bn' ? 'ওয়েবসাইট এবং মার্কেটিং' : 'Website and marketing',
+        sectionId: 'faq-digital-services'
+      },
+      {
+        icon: CreditCard,
+        title: i18n.language === 'hi' ? 'Payment & Billing' : i18n.language === 'bn' ? 'পেমেন্ট এবং বিলিং' : 'Payment & Billing',
+        description: i18n.language === 'hi' ? 'Payment options' : i18n.language === 'bn' ? 'পেমেন্ট অপশন' : 'Payment options',
+        sectionId: 'faq-payment'
+      },
+      {
+        icon: Shield,
+        title: i18n.language === 'hi' ? 'Warranty & Returns' : i18n.language === 'bn' ? 'ওয়ারেন্টি এবং রিটার্ন' : 'Warranty & Returns',
+        description: i18n.language === 'hi' ? 'Warranty policy' : i18n.language === 'bn' ? 'ওয়ারেন্টি পলিসি' : 'Warranty policy',
+        sectionId: 'faq-warranty'
+      },
+      {
+        icon: MapPin,
+        title: i18n.language === 'hi' ? 'Pickup & Delivery' : i18n.language === 'bn' ? 'পিকআপ এবং ডেলিভারি' : 'Pickup & Delivery',
+        description: i18n.language === 'hi' ? 'Home service' : i18n.language === 'bn' ? 'হোম সার্ভিস' : 'Home service',
+        sectionId: 'faq-pickup-delivery'
+      }
+    ]
 
-  const generalFAQs: FAQItem[] = [
+      const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }
+
+    const generalFAQs: FAQItem[] = [
     {
       question: i18n.language === 'hi' ? 'Repair mein kitna time lagta hai?' : i18n.language === 'bn' ? 'মেরামতে কত সময় লাগে?' : 'How long does a repair take?',
       answer: i18n.language === 'hi' ? 'Zyada tar repairs 24-48 ghante mein ho jaate hain. Complex repairs mein 3-5 din lag sakte hain. Screen replacement jaise simple repairs same day bhi ho sakte hain.' : i18n.language === 'bn' ? 'বেশিরভাগ মেরামত ২৪-৪৮ ঘণ্টায় হয়ে যায়। জটিল মেরামতে ৩-৫ দিন লাগতে পারে। স্ক্রিন রিপ্লেসমেন্টের মতো সাধারণ মেরামত একই দিনে হতে পারে।' : 'Most repairs are completed within 24-48 hours. Complex repairs may take 3-5 days. Simple repairs like screen replacement can be done same day.'
@@ -348,12 +361,42 @@ export function HelpCenterPage() {
     {
       question: i18n.language === 'hi' ? 'Website maintenance karte ho?' : i18n.language === 'bn' ? 'ওয়েবসাইট মেইনটেন্যান্স করেন?' : 'Do you provide website maintenance?',
       answer: i18n.language === 'hi' ? 'Haan! Monthly maintenance packages available hain. Updates, security, backups, aur minor changes sab cover hota hai.' : i18n.language === 'bn' ? 'হ্যাঁ! মাসিক মেইনটেন্যান্স প্যাকেজ আছে। আপডেট, সিকিউরিটি, ব্যাকআপ, এবং মাইনর চেঞ্জ সব কভার হয়।' : 'Yes! Monthly maintenance packages available. Updates, security, backups, and minor changes all covered.'
-    }
-  ]
+      }
+    ]
 
-  return (
-    <PublicLayout>
-      {/* Hero Section */}
+      // Filter FAQs based on search query
+      const filterFAQs = (faqs: FAQItem[]) => {
+        if (!searchQuery.trim()) return faqs
+        const query = searchQuery.toLowerCase()
+        return faqs.filter(faq => 
+          faq.question.toLowerCase().includes(query) || 
+          faq.answer.toLowerCase().includes(query)
+        )
+      }
+
+      const filteredGeneralFAQs = filterFAQs(generalFAQs)
+      const filteredMobileRepairFAQs = filterFAQs(mobileRepairFAQs)
+      const filteredPcLaptopFAQs = filterFAQs(pcLaptopFAQs)
+      const filteredPaymentFAQs = filterFAQs(paymentFAQs)
+      const filteredWarrantyFAQs = filterFAQs(warrantyFAQs)
+      const filteredPickupDeliveryFAQs = filterFAQs(pickupDeliveryFAQs)
+      const filteredDigitalServicesFAQs = filterFAQs(digitalServicesFAQs)
+
+      const hasSearchResults = searchQuery.trim() && (
+        filteredGeneralFAQs.length > 0 ||
+        filteredMobileRepairFAQs.length > 0 ||
+        filteredPcLaptopFAQs.length > 0 ||
+        filteredPaymentFAQs.length > 0 ||
+        filteredWarrantyFAQs.length > 0 ||
+        filteredPickupDeliveryFAQs.length > 0 ||
+        filteredDigitalServicesFAQs.length > 0
+      )
+
+      const noSearchResults = searchQuery.trim() && !hasSearchResults
+
+    return (
+      <PublicLayout>
+        {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
         <FloatingParticles count={30} color="white" />
         <FloatingTechIcons variant="light" />
@@ -410,24 +453,25 @@ export function HelpCenterPage() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer group"
-              >
-                <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <category.icon className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold dark:text-white mb-2">{category.title}</h3>
-                <p className="text-muted-foreground">{category.description}</p>
-              </motion.div>
-            ))}
-          </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      {categories.map((category, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: index * 0.1 }}
+                          onClick={() => scrollToSection(category.sectionId)}
+                          className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer group"
+                        >
+                          <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                            <category.icon className="h-7 w-7 text-primary" />
+                          </div>
+                          <h3 className="text-xl font-bold dark:text-white mb-2">{category.title}</h3>
+                          <p className="text-muted-foreground">{category.description}</p>
+                        </motion.div>
+                      ))}
+                    </div>
         </div>
       </section>
 
@@ -450,36 +494,66 @@ export function HelpCenterPage() {
             </h2>
           </motion.div>
 
-                    <div className="max-w-3xl mx-auto space-y-8">
-                      <FAQAccordion 
-                        items={generalFAQs} 
-                        category={i18n.language === 'hi' ? 'General Questions' : i18n.language === 'bn' ? 'সাধারণ প্রশ্ন' : 'General Questions'} 
-                      />
-                      <FAQAccordion 
-                        items={mobileRepairFAQs} 
-                        category={i18n.language === 'hi' ? 'Mobile Repair' : i18n.language === 'bn' ? 'মোবাইল মেরামত' : 'Mobile Repair'} 
-                      />
-                      <FAQAccordion 
-                        items={pcLaptopFAQs} 
-                        category={i18n.language === 'hi' ? 'PC/Laptop Repair' : i18n.language === 'bn' ? 'পিসি/ল্যাপটপ মেরামত' : 'PC/Laptop Repair'} 
-                      />
-                      <FAQAccordion 
-                        items={paymentFAQs} 
-                        category={i18n.language === 'hi' ? 'Payment & Billing' : i18n.language === 'bn' ? 'পেমেন্ট এবং বিলিং' : 'Payment & Billing'} 
-                      />
-                      <FAQAccordion 
-                        items={warrantyFAQs} 
-                        category={i18n.language === 'hi' ? 'Warranty & Returns' : i18n.language === 'bn' ? 'ওয়ারেন্টি এবং রিটার্ন' : 'Warranty & Returns'} 
-                      />
-                      <FAQAccordion 
-                        items={pickupDeliveryFAQs} 
-                        category={i18n.language === 'hi' ? 'Pickup & Delivery' : i18n.language === 'bn' ? 'পিকআপ এবং ডেলিভারি' : 'Pickup & Delivery'} 
-                      />
-                      <FAQAccordion 
-                        items={digitalServicesFAQs} 
-                        category={i18n.language === 'hi' ? 'Digital Services' : i18n.language === 'bn' ? 'ডিজিটাল সার্ভিস' : 'Digital Services'} 
-                      />
-                    </div>
+                                        <div className="max-w-3xl mx-auto space-y-8">
+                                          {noSearchResults && (
+                                            <div className="text-center py-8">
+                                              <p className="text-muted-foreground text-lg">
+                                                {i18n.language === 'hi' ? 'Koi result nahi mila. Kuch aur search karein.' : 
+                                                 i18n.language === 'bn' ? 'কোনো ফলাফল পাওয়া যায়নি। অন্য কিছু সার্চ করুন।' : 
+                                                 'No results found. Try searching for something else.'}
+                                              </p>
+                                            </div>
+                                          )}
+                                          {filteredGeneralFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredGeneralFAQs} 
+                                              category={i18n.language === 'hi' ? 'General Questions' : i18n.language === 'bn' ? 'সাধারণ প্রশ্ন' : 'General Questions'}
+                                              id="faq-general"
+                                            />
+                                          )}
+                                          {filteredMobileRepairFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredMobileRepairFAQs} 
+                                              category={i18n.language === 'hi' ? 'Mobile Repair' : i18n.language === 'bn' ? 'মোবাইল মেরামত' : 'Mobile Repair'}
+                                              id="faq-mobile-repair"
+                                            />
+                                          )}
+                                          {filteredPcLaptopFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredPcLaptopFAQs} 
+                                              category={i18n.language === 'hi' ? 'PC/Laptop Repair' : i18n.language === 'bn' ? 'পিসি/ল্যাপটপ মেরামত' : 'PC/Laptop Repair'}
+                                              id="faq-pc-laptop"
+                                            />
+                                          )}
+                                          {filteredPaymentFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredPaymentFAQs} 
+                                              category={i18n.language === 'hi' ? 'Payment & Billing' : i18n.language === 'bn' ? 'পেমেন্ট এবং বিলিং' : 'Payment & Billing'}
+                                              id="faq-payment"
+                                            />
+                                          )}
+                                          {filteredWarrantyFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredWarrantyFAQs} 
+                                              category={i18n.language === 'hi' ? 'Warranty & Returns' : i18n.language === 'bn' ? 'ওয়ারেন্টি এবং রিটার্ন' : 'Warranty & Returns'}
+                                              id="faq-warranty"
+                                            />
+                                          )}
+                                          {filteredPickupDeliveryFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredPickupDeliveryFAQs} 
+                                              category={i18n.language === 'hi' ? 'Pickup & Delivery' : i18n.language === 'bn' ? 'পিকআপ এবং ডেলিভারি' : 'Pickup & Delivery'}
+                                              id="faq-pickup-delivery"
+                                            />
+                                          )}
+                                          {filteredDigitalServicesFAQs.length > 0 && (
+                                            <FAQAccordion 
+                                              items={filteredDigitalServicesFAQs} 
+                                              category={i18n.language === 'hi' ? 'Digital Services' : i18n.language === 'bn' ? 'ডিজিটাল সার্ভিস' : 'Digital Services'}
+                                              id="faq-digital-services"
+                                            />
+                                          )}
+                                        </div>
         </div>
       </section>
 
