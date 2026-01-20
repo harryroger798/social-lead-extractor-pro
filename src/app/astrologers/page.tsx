@@ -20,95 +20,139 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 const astrologers = [
   {
     id: 1,
-    name: "Pt. Ramesh Sharma",
-    title: "Chief Astrologer",
-    experience: "25+ years",
-    specializations: ["Kundli Analysis", "Career Predictions", "Muhurta"],
-    languages: ["Hindi", "English", "Sanskrit"],
+    name: "Acharya Shridhar Khandal",
+    title: "Astro, Vastu, Pooja & Gems",
+    experience: "35 years",
+    specializations: ["Astrology", "Vastu Shastra", "Pooja", "Gemstones"],
+    languages: ["Hindi", "English", "Kannada"],
     rating: 4.9,
-    consultations: 15000,
+    consultations: 20000,
     price: 1500,
     available: true,
-    bio: "A renowned Vedic astrologer trained in the traditional Gurukul system under Pt. Vishwanath Shastri. Specializes in Parashari and Jaimini systems with expertise in career and business astrology.",
-    education: "Jyotish Acharya from Banaras Hindu University",
+    location: "Bengaluru",
+    image: "/images/astrologers/acharya-shridhar-khandal.png",
+    bio: "With 35 years of experience, Acharya Shridhar Khandal is a master of Vedic astrology, Vastu Shastra, and gemstone therapy. His holistic approach combines traditional wisdom with practical remedies.",
+    education: "Jyotish Acharya, Vastu Expert",
   },
   {
     id: 2,
-    name: "Dr. Lakshmi Devi",
-    title: "Senior Astrologer",
-    experience: "20+ years",
-    specializations: ["Marriage Compatibility", "Relationships", "Muhurta"],
-    languages: ["Hindi", "English", "Tamil"],
+    name: "Banwari Dadich",
+    title: "Vastu & Pooja",
+    experience: "15 years",
+    specializations: ["Vastu Shastra", "Pooja", "Remedies"],
+    languages: ["Hindi", "English", "Kannada"],
     rating: 4.8,
-    consultations: 12000,
-    price: 1200,
+    consultations: 8000,
+    price: 1000,
     available: true,
-    bio: "Ph.D. in Sanskrit with specialization in Jaimini astrology. Expert in marriage compatibility analysis and relationship counseling through Vedic astrology.",
-    education: "Ph.D. Sanskrit, Jyotish Visharad",
+    location: "Bengaluru",
+    image: "/images/astrologers/banwari-dadich.png",
+    bio: "Banwari Dadich specializes in Vastu Shastra and traditional Pooja ceremonies. His expertise helps clients harmonize their living and working spaces.",
+    education: "Vastu Visharad, Pooja Specialist",
   },
   {
     id: 3,
-    name: "Acharya Suresh Kumar",
-    title: "Remedies Specialist",
-    experience: "18+ years",
-    specializations: ["Doshas", "Remedial Measures", "Gemstone Therapy"],
+    name: "Nemichand Shastri",
+    title: "Vastu & Pooja",
+    experience: "12 years",
+    specializations: ["Vastu Shastra", "Pooja", "Muhurta"],
     languages: ["Hindi", "English", "Kannada"],
-    rating: 4.9,
-    consultations: 10000,
-    price: 1000,
+    rating: 4.7,
+    consultations: 6000,
+    price: 900,
     available: true,
-    bio: "Expert in Tantric remedies and gemstone therapy. Has helped thousands overcome challenging planetary periods through effective remedial measures.",
-    education: "Jyotish Acharya, Certified Gemologist",
+    location: "Bengaluru",
+    image: "/images/astrologers/nemichand-shastri.png",
+    bio: "Nemichand Shastri brings 12 years of expertise in Vastu and Pooja services. He is known for his accurate Muhurta calculations and effective remedies.",
+    education: "Jyotish Visharad",
   },
   {
     id: 4,
-    name: "Pt. Arvind Mishra",
-    title: "Vastu & Astrology Expert",
-    experience: "22+ years",
-    specializations: ["Vastu Shastra", "Kundli Analysis", "Business Astrology"],
-    languages: ["Hindi", "English"],
-    rating: 4.7,
-    consultations: 8500,
-    price: 1300,
-    available: false,
-    bio: "Combined expertise in Vedic astrology and Vastu Shastra. Specializes in business astrology and property-related consultations.",
-    education: "Jyotish Ratna, Vastu Visharad",
+    name: "Vinod Shastri",
+    title: "Vastu & Pooja",
+    experience: "10 years",
+    specializations: ["Vastu Shastra", "Pooja", "Home Remedies"],
+    languages: ["Hindi", "English", "Marathi"],
+    rating: 4.6,
+    consultations: 5000,
+    price: 800,
+    available: true,
+    location: "Mumbai",
+    image: "/images/astrologers/vinod-shastri.png",
+    bio: "Based in Mumbai, Vinod Shastri offers expert Vastu consultations and Pooja services. His practical approach makes ancient wisdom accessible to modern clients.",
+    education: "Vastu Consultant, Pooja Expert",
   },
   {
     id: 5,
-    name: "Smt. Gayatri Sharma",
-    title: "Nakshatra Specialist",
-    experience: "15+ years",
-    specializations: ["Nakshatra Analysis", "Child Astrology", "Name Selection"],
-    languages: ["Hindi", "English", "Marathi"],
-    rating: 4.8,
-    consultations: 7000,
-    price: 900,
+    name: "Madhav Sharma",
+    title: "Astro, Pooja & Gems",
+    experience: "20 years",
+    specializations: ["Astrology", "Pooja", "Gemstones", "Kundli Analysis"],
+    languages: ["Hindi", "English", "Rajasthani"],
+    rating: 4.9,
+    consultations: 15000,
+    price: 1200,
     available: true,
-    bio: "Specializes in Nakshatra-based predictions and child astrology. Expert in selecting auspicious names based on birth charts.",
-    education: "Jyotish Visharad, Child Psychology Certification",
+    location: "Jaipur",
+    image: "/images/astrologers/madhav-sharma.png",
+    bio: "With 20 years of experience from Jaipur, Madhav Sharma is renowned for his accurate predictions and gemstone recommendations. His expertise spans Kundli analysis and traditional Pooja.",
+    education: "Jyotish Acharya, Gemologist",
   },
   {
     id: 6,
-    name: "Pt. Dinesh Joshi",
-    title: "KP Astrology Expert",
-    experience: "16+ years",
-    specializations: ["KP Astrology", "Prashna Kundli", "Stock Market"],
-    languages: ["Hindi", "English", "Gujarati"],
-    rating: 4.6,
-    consultations: 6000,
+    name: "Bajarangbali Dubey",
+    title: "Vastu & Pooja",
+    experience: "12 years",
+    specializations: ["Vastu Shastra", "Pooja", "Griha Pravesh"],
+    languages: ["Hindi", "English"],
+    rating: 4.7,
+    consultations: 7000,
+    price: 900,
+    available: true,
+    location: "New Delhi",
+    image: "/images/astrologers/bajarangbali-dubey.png",
+    bio: "Bajarangbali Dubey from New Delhi specializes in Vastu corrections and Pooja ceremonies. He is particularly known for Griha Pravesh and business establishment rituals.",
+    education: "Vastu Expert, Pooja Specialist",
+  },
+  {
+    id: 7,
+    name: "Raj Kumar Shastri",
+    title: "Astro, Vastu & Pooja",
+    experience: "16 years",
+    specializations: ["Astrology", "Vastu Shastra", "Pooja", "Marriage Matching"],
+    languages: ["Hindi", "English", "Bengali"],
+    rating: 4.8,
+    consultations: 10000,
     price: 1100,
     available: true,
-    bio: "Expert in Krishnamurti Paddhati (KP) astrology system. Specializes in Prashna Kundli and financial astrology for stock market predictions.",
-    education: "KP Astrology Certification, MBA Finance",
+    location: "Kolkata (WB)",
+    image: "/images/astrologers/raj-kumar-shastri.png",
+    bio: "Raj Kumar Shastri from Kolkata combines expertise in astrology, Vastu, and Pooja. His marriage matching consultations are highly sought after in Eastern India.",
+    education: "Jyotish Ratna, Vastu Visharad",
+  },
+  {
+    id: 8,
+    name: "Pankaj Shastri",
+    title: "Vastu & Pooja",
+    experience: "12 years",
+    specializations: ["Vastu Shastra", "Pooja", "Remedial Measures"],
+    languages: ["Hindi", "English"],
+    rating: 4.6,
+    consultations: 5500,
+    price: 850,
+    available: true,
+    location: "Bareilly (UP)",
+    image: "/images/astrologers/pankaj-shastri.png",
+    bio: "Pankaj Shastri from Bareilly offers comprehensive Vastu and Pooja services. His remedial measures have helped countless families overcome obstacles.",
+    education: "Vastu Consultant, Pooja Expert",
   },
 ];
 
 const stats = [
-  { value: "100+", label: "Expert Astrologers", icon: Users },
-  { value: "50,000+", label: "Consultations Done", icon: MessageCircle },
-  { value: "4.8/5", label: "Average Rating", icon: Star },
-  { value: "15+", label: "Years Avg Experience", icon: Award },
+  { value: "8", label: "Expert Astrologers", icon: Users },
+  { value: "76,500+", label: "Consultations Done", icon: MessageCircle },
+  { value: "4.7/5", label: "Average Rating", icon: Star },
+  { value: "16+", label: "Years Avg Experience", icon: Award },
 ];
 
 export default function AstrologersPage() {
@@ -145,11 +189,17 @@ export default function AstrologersPage() {
             <Card key={astrologer.id} className="border-amber-100 hover:border-amber-300 transition-colors">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                    {astrologer.name.charAt(0)}
+                  <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-amber-200">
+                    <Image
+                      src={astrologer.image}
+                      alt={astrologer.name}
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
                       {astrologer.available ? (
                         <Badge className="bg-green-100 text-green-700 text-xs">Available</Badge>
@@ -158,6 +208,7 @@ export default function AstrologersPage() {
                       )}
                     </div>
                     <p className="text-sm text-amber-600">{astrologer.title}</p>
+                    <p className="text-xs text-gray-500">{astrologer.location}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
