@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -121,7 +122,7 @@ const sampleWealthYogas: WealthYoga[] = [
 
 const sampleFinancialPeriods: FinancialPeriod[] = [
   {
-    year: 2026,
+    year: getCurrentYear(),
     quarter: "Q1 (Jan-Mar)",
     rating: 4,
     trend: "up",
@@ -133,7 +134,7 @@ const sampleFinancialPeriods: FinancialPeriod[] = [
     cautionsHindi: ["पैसे उधार देने से बचें", "साझेदारी में सावधान रहें"],
   },
   {
-    year: 2026,
+    year: getCurrentYear(),
     quarter: "Q2 (Apr-Jun)",
     rating: 3,
     trend: "stable",
@@ -145,7 +146,7 @@ const sampleFinancialPeriods: FinancialPeriod[] = [
     cautionsHindi: ["सट्टेबाजी से बचें", "ऋण न लें"],
   },
   {
-    year: 2026,
+    year: getCurrentYear(),
     quarter: "Q3 (Jul-Sep)",
     rating: 5,
     trend: "up",
@@ -157,7 +158,7 @@ const sampleFinancialPeriods: FinancialPeriod[] = [
     cautionsHindi: ["अधिक खर्च न करें", "आपातकालीन निधि बनाए रखें"],
   },
   {
-    year: 2026,
+    year: getCurrentYear(),
     quarter: "Q4 (Oct-Dec)",
     rating: 3,
     trend: "down",
@@ -186,8 +187,8 @@ const sampleInvestmentRecommendations: InvestmentRecommendation[] = [
     typeHindi: "रियल एस्टेट",
     icon: "realestate",
     suitability: "excellent",
-    timing: "2026-2028 is favorable",
-    timingHindi: "2026-2028 अनुकूल है",
+    timing: `${getCurrentYear()}-${getCurrentYear() + 2} is favorable`,
+    timingHindi: `${getCurrentYear()}-${getCurrentYear() + 2} अनुकूल है`,
     reason: "Strong 4th house with Jupiter aspect indicates property gains",
     reasonHindi: "गुरु दृष्टि के साथ मजबूत चौथा भाव संपत्ति लाभ दर्शाता है",
   },
@@ -440,7 +441,7 @@ export default function FinancialAstrologyPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-blue-600" />
-                  {t("financialAstrology.quarterlyForecast", "2026 Quarterly Financial Forecast")}
+                  {withCurrentYear(t("financialAstrology.quarterlyForecastYear", "{year} Quarterly Financial Forecast"))}
                 </CardTitle>
               </CardHeader>
               <CardContent>

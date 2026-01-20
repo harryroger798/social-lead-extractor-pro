@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,7 @@ interface ChineseZodiac {
   luckyFlowers: string[];
   career: string[];
   health: string;
-  prediction2026: string;
+  predictionYear: string;
 }
 
 const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 'years'>> = {
@@ -50,7 +51,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Lily", "African Violet"],
     career: ["Writer", "Broadcaster", "Actor", "Lawyer", "Politician"],
     health: "Generally good health, but watch for stress-related issues",
-    prediction2026: "2026 brings opportunities for career advancement. Focus on networking and building relationships. Financial gains are likely in the second half of the year."
+    predictionYear: "The current year brings opportunities for career advancement. Focus on networking and building relationships. Financial gains are likely in the second half of the year."
   },
   Ox: {
     animal: "Ox",
@@ -64,7 +65,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Tulip", "Evergreen"],
     career: ["Agriculture", "Manufacturing", "Engineering", "Real Estate"],
     health: "Strong constitution, but avoid overwork",
-    prediction2026: "A year of steady progress. Hard work will be rewarded. Be patient with slow-moving projects. Romance looks promising for singles."
+    predictionYear: "A year of steady progress. Hard work will be rewarded. Be patient with slow-moving projects. Romance looks promising for singles."
   },
   Tiger: {
     animal: "Tiger",
@@ -78,7 +79,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Yellow Lily", "Cineraria"],
     career: ["Advertising", "Travel", "Politics", "Entrepreneur"],
     health: "High energy but prone to accidents, be careful",
-    prediction2026: "An exciting year with new opportunities. Take calculated risks. Travel is favored. Watch your temper in relationships."
+    predictionYear: "An exciting year with new opportunities. Take calculated risks. Travel is favored. Watch your temper in relationships."
   },
   Rabbit: {
     animal: "Rabbit",
@@ -92,7 +93,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Plantain Lily", "Jasmine"],
     career: ["Art", "Music", "Literature", "Healthcare"],
     health: "Generally good, maintain emotional balance",
-    prediction2026: "A harmonious year ahead. Focus on home and family. Creative projects will flourish. Avoid major financial risks."
+    predictionYear: "A harmonious year ahead. Focus on home and family. Creative projects will flourish. Avoid major financial risks."
   },
   Dragon: {
     animal: "Dragon",
@@ -106,7 +107,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Bleeding Heart", "Dragon Flowers"],
     career: ["Architect", "Lawyer", "Engineer", "Broker"],
     health: "Strong vitality, watch for stress",
-    prediction2026: "A powerful year for Dragons. Leadership opportunities arise. Financial success is indicated. Be mindful of ego in relationships."
+    predictionYear: "A powerful year for Dragons. Leadership opportunities arise. Financial success is indicated. Be mindful of ego in relationships."
   },
   Snake: {
     animal: "Snake",
@@ -120,7 +121,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Orchid", "Cactus"],
     career: ["Scientist", "Analyst", "Investigator", "Painter"],
     health: "Prone to stress, practice relaxation",
-    prediction2026: "A year of transformation. Trust your intuition. Financial investments may pay off. Focus on self-improvement."
+    predictionYear: "A year of transformation. Trust your intuition. Financial investments may pay off. Focus on self-improvement."
   },
   Horse: {
     animal: "Horse",
@@ -134,7 +135,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Calla Lily", "Jasmine"],
     career: ["Performer", "Salesperson", "Journalist", "Translator"],
     health: "High energy, avoid overexertion",
-    prediction2026: "An active year with travel opportunities. Career changes are favorable. Romance is exciting but may be unstable."
+    predictionYear: "An active year with travel opportunities. Career changes are favorable. Romance is exciting but may be unstable."
   },
   Goat: {
     animal: "Goat",
@@ -148,7 +149,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Carnation", "Primrose"],
     career: ["Artist", "Musician", "Designer", "Florist"],
     health: "Sensitive constitution, maintain routine",
-    prediction2026: "A creative and peaceful year. Artistic pursuits are favored. Relationships deepen. Avoid financial speculation."
+    predictionYear: "A creative and peaceful year. Artistic pursuits are favored. Relationships deepen. Avoid financial speculation."
   },
   Monkey: {
     animal: "Monkey",
@@ -162,7 +163,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Chrysanthemum", "Crape Myrtle"],
     career: ["Accountant", "Scientist", "Engineer", "Stock Analyst"],
     health: "Generally good, watch nervous system",
-    prediction2026: "An intellectually stimulating year. Problem-solving skills shine. Business ventures are favorable. Be honest in relationships."
+    predictionYear: "An intellectually stimulating year. Problem-solving skills shine. Business ventures are favorable. Be honest in relationships."
   },
   Rooster: {
     animal: "Rooster",
@@ -176,7 +177,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Gladiola", "Impatiens"],
     career: ["Newsreader", "Salesperson", "Restaurant Owner", "Hairdresser"],
     health: "Good health, avoid stress",
-    prediction2026: "A year of recognition. Hard work pays off. Social life is active. Be diplomatic to avoid conflicts."
+    predictionYear: "A year of recognition. Hard work pays off. Social life is active. Be diplomatic to avoid conflicts."
   },
   Dog: {
     animal: "Dog",
@@ -190,7 +191,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Rose", "Cymbidium Orchid"],
     career: ["Police", "Scientist", "Counselor", "Professor"],
     health: "Generally good, watch for anxiety",
-    prediction2026: "A stable year with loyal friends. Career is steady. Focus on family relationships. Health needs attention."
+    predictionYear: "A stable year with loyal friends. Career is steady. Focus on family relationships. Health needs attention."
   },
   Pig: {
     animal: "Pig",
@@ -204,7 +205,7 @@ const zodiacAnimals: Record<string, Omit<ChineseZodiac, 'element' | 'yinYang' | 
     luckyFlowers: ["Hydrangea", "Daisy"],
     career: ["Entertainment", "Retail", "Hospitality", "Healthcare"],
     health: "Watch diet and exercise",
-    prediction2026: "A prosperous year. Financial luck is strong. Social life is vibrant. Be cautious with new partnerships."
+    predictionYear: "A prosperous year. Financial luck is strong. Social life is vibrant. Be cautious with new partnerships."
   }
 };
 
@@ -270,7 +271,7 @@ export default function ChineseAstrologyPage() {
               {t("chinese.title", "Chinese Zodiac")}
             </h1>
             <p className="text-lg text-red-100 max-w-2xl mx-auto">
-              {t("chinese.subtitle", "Discover your Chinese zodiac animal, element, and what the Year of the Snake (2026) holds for you.")}
+              {withCurrentYear(t("chinese.subtitleYear", "Discover your Chinese zodiac animal, element, and what the Year of the Snake ({year}) holds for you."))}
             </p>
           </div>
         </div>
@@ -381,7 +382,7 @@ export default function ChineseAstrologyPage() {
                     <TabsTrigger value="overview">{t("chinese.overview", "Overview")}</TabsTrigger>
                     <TabsTrigger value="compatibility">{t("chinese.compatibility", "Love")}</TabsTrigger>
                     <TabsTrigger value="career">{t("chinese.career", "Career")}</TabsTrigger>
-                    <TabsTrigger value="2026">{t("chinese.2026", "2026")}</TabsTrigger>
+                    <TabsTrigger value="currentYear">{getCurrentYear().toString()}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="overview">
@@ -508,19 +509,19 @@ export default function ChineseAstrologyPage() {
                     </Card>
                   </TabsContent>
 
-                  <TabsContent value="2026">
+                  <TabsContent value="currentYear">
                     <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <TrendingUp className="w-5 h-5 text-green-600" />
-                          {t("chinese.prediction2026", "Year of the Snake 2026 Prediction")}
+                          {withCurrentYear(t("chinese.predictionYearTitle", "Year of the Snake {year} Prediction"))}
                         </CardTitle>
                         <CardDescription>
                           {t("chinese.predictionFor", "Prediction for")} {result.animal}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-700 leading-relaxed">{result.prediction2026}</p>
+                        <p className="text-gray-700 leading-relaxed">{result.predictionYear}</p>
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -544,7 +545,7 @@ export default function ChineseAstrologyPage() {
                 {t("chinese.aboutText2", "Your Chinese zodiac sign is determined by your birth year according to the Chinese lunar calendar. Each animal sign has its own characteristics, strengths, weaknesses, and compatibility with other signs.")}
               </p>
               <p className="text-gray-600 mt-4">
-                {t("chinese.aboutText3", "2026 is the Year of the Snake, which begins on February 17, 2026. The Snake is associated with wisdom, intuition, and transformation. It's a year that favors careful planning, deep thinking, and strategic moves.")}
+                {withCurrentYear(t("chinese.aboutText3Year", "{year} is the Year of the Snake, which begins on February 17, {year}. The Snake is associated with wisdom, intuition, and transformation. It's a year that favors careful planning, deep thinking, and strategic moves."))}
               </p>
             </CardContent>
           </Card>
