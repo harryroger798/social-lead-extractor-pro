@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            build_cmd: build:linux
+            artifact_name: bytecare-desktop-linux
+            artifact_path: desktop/dist/*.AppImage
+          - os: windows-latest
+            build_cmd: build:win
+            artifact_name: bytecare-desktop-windows
+            artifact_path: desktop/dist/*.exe
+          - os: macos-latest
+            build_cmd: build:mac
+            artifact_name: bytecare-desktop-macos
+            artifact_path: desktop/dist/*.dmg
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd client && npm ci
+          cd ../desktop && npm ci
+
+      - name: Build client
+        run: cd client && npm run build
+
+      - name: Copy client build to desktop
+        run: |
+          mkdir -p desktop/renderer
+          cp -r client/dist/* desktop/renderer/
+        shell: bash
+
+      - name: Build desktop app
+        run: cd desktop && npm run ${{ matrix.build_cmd }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+
+  create-release:
+    needs: release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
