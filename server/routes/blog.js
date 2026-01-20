@@ -110,7 +110,7 @@ router.post('/comments', [
 router.get('/comments/:postId', asyncHandler(async (req, res) => {
   const { postId } = req.params;
 
-  // Validate postId format to prevent GROQ injection
+  // Validate postId format for basic sanity check
   if (!postId || !/^[a-zA-Z0-9_-]+$/.test(postId)) {
     return res.status(400).json({
       success: false,
@@ -119,10 +119,18 @@ router.get('/comments/:postId', asyncHandler(async (req, res) => {
   }
 
   try {
-    const query = encodeURIComponent(`*[_type == "comment" && post._ref == "${postId}" && status == "approved"] | order(createdAt desc) { _id, name, content, createdAt }`);
-    
-    const response = await axios.get(
-      `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${query}`
+    // Use parameterized query with POST to prevent GROQ injection
+    const response = await axios.post(
+      `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}`,
+      {
+        query: `*[_type == "comment" && post._ref == $postId && status == "approved"] | order(createdAt desc) { _id, name, content, createdAt }`,
+        params: { postId }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
 
     res.json({
