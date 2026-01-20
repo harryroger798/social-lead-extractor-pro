@@ -148,15 +148,23 @@ const astrologers = [
   },
 ];
 
-const stats = [
-  { value: "8", label: "Expert Astrologers", icon: Users },
-  { value: "76,500+", label: "Consultations Done", icon: MessageCircle },
-  { value: "4.7/5", label: "Average Rating", icon: Star },
-  { value: "16+", label: "Years Avg Experience", icon: Award },
+// Stats will use translation keys
+const getStats = (t: (key: string, fallback?: string) => string) => [
+  { value: "8", labelKey: "astrologers.expertAstrologers", label: t("astrologers.expertAstrologers", "Expert Astrologers"), icon: Users },
+  { value: "76,500+", labelKey: "astrologers.consultationsDone", label: t("astrologers.consultationsDone", "Consultations Done"), icon: MessageCircle },
+  { value: "4.7/5", labelKey: "astrologers.averageRating", label: t("astrologers.averageRating", "Average Rating"), icon: Star },
+  { value: "16+", labelKey: "astrologers.yearsAvgExperience", label: t("astrologers.yearsAvgExperience", "Years Avg Experience"), icon: Award },
 ];
+
+// WhatsApp number for booking
+const WHATSAPP_NUMBER = "918884919349";
+const getWhatsAppCallLink = () => `https://wa.me/${WHATSAPP_NUMBER}`;
+const getWhatsAppVideoLink = () => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("I would like to book a video consultation")}`;
+const getWhatsAppChatLink = () => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("I would like to chat with an astrologer")}`;
 
 export default function AstrologersPage() {
   const { t } = useLanguage();
+  const stats = getStats(t);
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -172,7 +180,7 @@ export default function AstrologersPage() {
 
         <div className="grid md:grid-cols-4 gap-6 mb-12">
           {stats.map((stat) => (
-            <Card key={stat.label} className="text-center border-amber-100">
+            <Card key={stat.labelKey} className="text-center border-amber-100">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
                   <stat.icon className="w-6 h-6 text-amber-600" />
@@ -202,9 +210,9 @@ export default function AstrologersPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
                       {astrologer.available ? (
-                        <Badge className="bg-green-100 text-green-700 text-xs">Available</Badge>
+                        <Badge className="bg-green-100 text-green-700 text-xs">{t('astrologers.available', 'Available')}</Badge>
                       ) : (
-                        <Badge className="bg-gray-100 text-gray-600 text-xs">Busy</Badge>
+                        <Badge className="bg-gray-100 text-gray-600 text-xs">{t('astrologers.busy', 'Busy')}</Badge>
                       )}
                     </div>
                     <p className="text-sm text-amber-600">{astrologer.title}</p>
@@ -215,7 +223,7 @@ export default function AstrologersPage() {
                         <span className="text-sm font-medium ml-1">{astrologer.rating}</span>
                       </div>
                       <span className="text-gray-300">|</span>
-                      <span className="text-sm text-gray-600">{astrologer.consultations.toLocaleString()} consultations</span>
+                      <span className="text-sm text-gray-600">{astrologer.consultations.toLocaleString()} {t('astrologers.consultations', 'consultations')}</span>
                     </div>
                   </div>
                 </div>
@@ -225,7 +233,7 @@ export default function AstrologersPage() {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-600">Experience:</span>
+                    <span className="text-gray-600">{t('astrologers.experience', 'Experience')}:</span>
                     <span className="font-medium">{astrologer.experience}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
@@ -245,18 +253,34 @@ export default function AstrologersPage() {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div>
                     <span className="text-lg font-bold text-amber-600">₹{astrologer.price}</span>
-                    <span className="text-sm text-gray-500">/session</span>
+                    <span className="text-sm text-gray-500">{t('astrologers.perSession', '/session')}</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="border-amber-500 text-amber-600">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-amber-500 text-amber-600"
+                      onClick={() => window.open(getWhatsAppCallLink(), '_blank', 'noopener,noreferrer')}
+                      aria-label={t('astrologers.call', 'Call')}
+                    >
                       <Phone className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" variant="outline" className="border-amber-500 text-amber-600">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-amber-500 text-amber-600"
+                      onClick={() => window.open(getWhatsAppVideoLink(), '_blank', 'noopener,noreferrer')}
+                      aria-label={t('astrologers.videoCall', 'Video Call')}
+                    >
                       <Video className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-500 hover:bg-amber-600 text-white"
+                      onClick={() => window.open(getWhatsAppChatLink(), '_blank', 'noopener,noreferrer')}
+                    >
                       <MessageCircle className="w-4 h-4 mr-1" />
-                      Chat
+                      {t('astrologers.chat', 'Chat')}
                     </Button>
                   </div>
                 </div>
@@ -268,7 +292,7 @@ export default function AstrologersPage() {
         <section className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 mb-12">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Why Choose Our Astrologers?
+              {t('astrologers.whyChooseTitle', 'Why Choose Our Astrologers?')}
             </h2>
           </div>
           
@@ -277,36 +301,36 @@ export default function AstrologersPage() {
               <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-3">
                 <CheckCircle className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Verified Experts</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('astrologers.verifiedExperts', 'Verified Experts')}</h3>
               <p className="text-sm text-gray-600">
-                All astrologers undergo rigorous verification and testing before joining our platform.
+                {t('astrologers.verifiedExpertsDesc', 'All astrologers undergo rigorous verification and testing before joining our platform.')}
               </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-3">
                 <Award className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Traditional Training</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('astrologers.traditionalTraining', 'Traditional Training')}</h3>
               <p className="text-sm text-gray-600">
-                Trained in classical Vedic texts and traditional Gurukul systems.
+                {t('astrologers.traditionalTrainingDesc', 'Trained in classical Vedic texts and traditional Gurukul systems.')}
               </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-3">
                 <Users className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Proven Track Record</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('astrologers.provenTrackRecord', 'Proven Track Record')}</h3>
               <p className="text-sm text-gray-600">
-                Thousands of satisfied clients with consistently high ratings.
+                {t('astrologers.provenTrackRecordDesc', 'Thousands of satisfied clients with consistently high ratings.')}
               </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-3">
                 <MessageCircle className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Multiple Languages</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('astrologers.multipleLanguages', 'Multiple Languages')}</h3>
               <p className="text-sm text-gray-600">
-                Consultations available in Hindi, English, and regional languages.
+                {t('astrologers.multipleLanguagesDesc', 'Consultations available in Hindi, English, and regional languages.')}
               </p>
             </div>
           </div>
@@ -314,17 +338,21 @@ export default function AstrologersPage() {
 
         <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Ready for Your Consultation?</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('astrologers.readyForConsultation', 'Ready for Your Consultation?')}</h2>
             <p className="mb-4 text-amber-100">
-              Book a session with our expert astrologers and get personalized guidance.
+              {t('astrologers.bookSessionDesc', 'Book a session with our expert astrologers and get personalized guidance.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                <Link href="/consultation">Book Consultation</Link>
+              <Button 
+                size="lg" 
+                className="bg-white text-amber-600 hover:bg-amber-50"
+                onClick={() => window.open(getWhatsAppChatLink(), '_blank', 'noopener,noreferrer')}
+              >
+                {t('astrologers.bookConsultation', 'Book Consultation')}
               </Button>
-                            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/tools/kundli-calculator">Try Free Kundli First</Link>
-                            </Button>
+              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                <Link href="/tools/kundli-calculator">{t('astrologers.tryFreeKundli', 'Try Free Kundli First')}</Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
