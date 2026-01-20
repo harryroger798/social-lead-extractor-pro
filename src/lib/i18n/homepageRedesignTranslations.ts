@@ -37,13 +37,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "Life Journeys",
       loveJourney: "Love & Relationships",
-      loveJourneyDesc: "Find your perfect match and relationship insights",
       careerJourney: "Career & Wealth",
-      careerJourneyDesc: "Unlock your professional potential and financial growth",
       dailyJourney: "Daily Guidance",
-      dailyJourneyDesc: "Get daily cosmic insights and auspicious timings",
       deepDiveJourney: "Deep Dive",
-      deepDiveJourneyDesc: "Advanced tools for serious astrology enthusiasts",
       exploreMore: "Explore More",
       
       // Today's Cosmic Energy Section
@@ -132,7 +128,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "Voice AI Astrologer",
       fullKundli: "Full Kundli Analysis",
       doshaAnalysis: "Dosha Analysis",
-      numerology: "Numerology"
+      numerology: "Numerology",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "Your Daily Cosmic Forecast",
+      energyHigh: "Excellent day ahead!",
+      energyMedium: "Good energy today",
+      energyLow: "Take it easy today",
+      cosmicAlignment: "Your cosmic alignment",
+      
+      // Phase 6: Gamification
+      achievements: "Achievements",
+      unlockBadges: "Unlock Cosmic Badges",
+      badgesDesc: "Complete cosmic activities to earn badges and track your spiritual journey",
+      badgeFirstChart: "First Chart",
+      badge7DayStreak: "7-Day Streak",
+      badgeMoonChild: "Moon Child",
+      badgeSunSeeker: "Sun Seeker",
+      badgeExplorer: "Explorer",
+      badgeCosmicMaster: "Cosmic Master",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "Share",
+      shareText: "Check out my cosmic profile on VedicStarAstro!",
+      
+      // Trending Topics
+      trendingSaturn: "Saturn Transit affecting Capricorns today",
+      trendingMercury: "Mercury Retrograde survival tips",
+      trendingFullMoon: "Full Moon energy peaks tonight",
+      trendingVenus: "Venus enters Pisces - Love is in the air",
+      trendingJupiter: "Jupiter brings luck to Fire signs"
     }
   },
   hi: {
@@ -166,13 +191,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "जीवन यात्राएं",
       loveJourney: "प्रेम और संबंध",
-      loveJourneyDesc: "अपना आदर्श साथी और संबंध अंतर्दृष्टि खोजें",
       careerJourney: "करियर और धन",
-      careerJourneyDesc: "अपनी पेशेवर क्षमता और वित्तीय विकास को अनलॉक करें",
       dailyJourney: "दैनिक मार्गदर्शन",
-      dailyJourneyDesc: "दैनिक ब्रह्मांडीय अंतर्दृष्टि और शुभ समय प्राप्त करें",
       deepDiveJourney: "गहन अध्ययन",
-      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोगों के लिए उन्नत उपकरण",
       exploreMore: "और जानें",
       
       // Today's Cosmic Energy Section
@@ -261,7 +282,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "वॉयस AI ज्योतिषी",
       fullKundli: "पूर्ण कुंडली विश्लेषण",
       doshaAnalysis: "दोष विश्लेषण",
-      numerology: "अंकशास्त्र"
+      numerology: "अंकशास्त्र",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "आपका दैनिक ब्रह्मांडीय पूर्वानुमान",
+      energyHigh: "आगे उत्कृष्ट दिन!",
+      energyMedium: "आज अच्छी ऊर्जा",
+      energyLow: "आज आराम से लें",
+      cosmicAlignment: "आपका ब्रह्मांडीय संरेखण",
+      
+      // Phase 6: Gamification
+      achievements: "उपलब्धियां",
+      unlockBadges: "ब्रह्मांडीय बैज अनलॉक करें",
+      badgesDesc: "बैज अर्जित करने के लिए ब्रह्मांडीय गतिविधियां पूरी करें",
+      badgeFirstChart: "पहली कुंडली",
+      badge7DayStreak: "7-दिन की स्ट्रीक",
+      badgeMoonChild: "चंद्र संतान",
+      badgeSunSeeker: "सूर्य साधक",
+      badgeExplorer: "खोजकर्ता",
+      badgeCosmicMaster: "ब्रह्मांडीय मास्टर",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "साझा करें",
+      shareText: "VedicStarAstro पर मेरी ब्रह्मांडीय प्रोफाइल देखें!",
+      
+      // Trending Topics
+      trendingSaturn: "शनि गोचर आज मकर राशि को प्रभावित कर रहा है",
+      trendingMercury: "बुध वक्री से बचने के उपाय",
+      trendingFullMoon: "आज रात पूर्णिमा की ऊर्जा चरम पर",
+      trendingVenus: "शुक्र मीन में - प्रेम हवा में है",
+      trendingJupiter: "बृहस्पति अग्नि राशियों को भाग्य दे रहा है"
     }
   },
   ta: {
@@ -295,13 +345,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "வாழ்க்கை பயணங்கள்",
       loveJourney: "காதல் & உறவுகள்",
-      loveJourneyDesc: "உங்கள் சரியான துணையையும் உறவு நுண்ணறிவுகளையும் கண்டறியுங்கள்",
       careerJourney: "தொழில் & செல்வம்",
-      careerJourneyDesc: "உங்கள் தொழில்முறை திறனையும் நிதி வளர்ச்சியையும் திறக்கவும்",
       dailyJourney: "தினசரி வழிகாட்டுதல்",
-      dailyJourneyDesc: "தினசரி அண்ட நுண்ணறிவுகளையும் நல்ல நேரங்களையும் பெறுங்கள்",
       deepDiveJourney: "ஆழமான ஆய்வு",
-      deepDiveJourneyDesc: "தீவிர ஜோதிட ஆர்வலர்களுக்கான மேம்பட்ட கருவிகள்",
       exploreMore: "மேலும் ஆராயுங்கள்",
       
       // Today's Cosmic Energy Section
@@ -390,7 +436,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "குரல் AI ஜோதிடர்",
       fullKundli: "முழு ஜாதக பகுப்பாய்வு",
       doshaAnalysis: "தோஷ பகுப்பாய்வு",
-      numerology: "எண்கணிதம்"
+      numerology: "எண்கணிதம்",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "உங்கள் தினசரி அண்ட முன்னறிவிப்பு",
+      energyHigh: "சிறந்த நாள் வரவிருக்கிறது!",
+      energyMedium: "இன்று நல்ல ஆற்றல்",
+      energyLow: "இன்று எளிதாக எடுத்துக்கொள்ளுங்கள்",
+      cosmicAlignment: "உங்கள் அண்ட சீரமைப்பு",
+      
+      // Phase 6: Gamification
+      achievements: "சாதனைகள்",
+      unlockBadges: "அண்ட பேட்ஜ்களை திறக்கவும்",
+      badgesDesc: "பேட்ஜ்களைப் பெற அண்ட செயல்பாடுகளை முடிக்கவும்",
+      badgeFirstChart: "முதல் ஜாதகம்",
+      badge7DayStreak: "7-நாள் தொடர்",
+      badgeMoonChild: "சந்திர குழந்தை",
+      badgeSunSeeker: "சூரிய தேடுபவர்",
+      badgeExplorer: "ஆராய்ச்சியாளர்",
+      badgeCosmicMaster: "அண்ட மாஸ்டர்",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "பகிர்",
+      shareText: "VedicStarAstro இல் எனது அண்ட சுயவிவரத்தைப் பாருங்கள்!",
+      
+      // Trending Topics
+      trendingSaturn: "சனி கோசாரம் இன்று மகர ராசியை பாதிக்கிறது",
+      trendingMercury: "புதன் வக்ரத்தில் இருந்து தப்பிக்கும் வழிகள்",
+      trendingFullMoon: "இன்றிரவு பௌர்ணமி ஆற்றல் உச்சத்தில்",
+      trendingVenus: "சுக்கிரன் மீனத்தில் - காதல் காற்றில் உள்ளது",
+      trendingJupiter: "குரு அக்னி ராசிகளுக்கு அதிர்ஷ்டம் தருகிறார்"
     }
   },
   te: {
@@ -424,13 +499,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "జీవిత ప్రయాణాలు",
       loveJourney: "ప్రేమ & సంబంధాలు",
-      loveJourneyDesc: "మీ సరైన జోడీని మరియు సంబంధ అంతర్దృష్టులను కనుగొనండి",
       careerJourney: "కెరీర్ & సంపద",
-      careerJourneyDesc: "మీ వృత్తిపరమైన సామర్థ్యాన్ని మరియు ఆర్థిక వృద్ధిని అన్‌లాక్ చేయండి",
       dailyJourney: "రోజువారీ మార్గదర్శకత్వం",
-      dailyJourneyDesc: "రోజువారీ విశ్వ అంతర్దృష్టులు మరియు శుభ సమయాలను పొందండి",
       deepDiveJourney: "లోతైన అధ్యయనం",
-      deepDiveJourneyDesc: "తీవ్రమైన జ్యోతిష్య ఔత్సాహికుల కోసం అధునాతన సాధనాలు",
       exploreMore: "మరింత అన్వేషించండి",
       
       // Today's Cosmic Energy Section
@@ -519,7 +590,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "వాయిస్ AI జ్యోతిష్కుడు",
       fullKundli: "పూర్తి జాతక విశ్లేషణ",
       doshaAnalysis: "దోష విశ్లేషణ",
-      numerology: "సంఖ్యాశాస్త్రం"
+      numerology: "సంఖ్యాశాస్త్రం",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "మీ రోజువారీ విశ్వ అంచనా",
+      energyHigh: "అద్భుతమైన రోజు ముందుంది!",
+      energyMedium: "ఈ రోజు మంచి శక్తి",
+      energyLow: "ఈ రోజు తేలికగా తీసుకోండి",
+      cosmicAlignment: "మీ విశ్వ సమలేఖనం",
+      
+      // Phase 6: Gamification
+      achievements: "సాధనలు",
+      unlockBadges: "విశ్వ బ్యాడ్జ్‌లను అన్‌లాక్ చేయండి",
+      badgesDesc: "బ్యాడ్జ్‌లను సంపాదించడానికి విశ్వ కార్యకలాపాలను పూర్తి చేయండి",
+      badgeFirstChart: "మొదటి చార్ట్",
+      badge7DayStreak: "7-రోజుల స్ట్రీక్",
+      badgeMoonChild: "చంద్ర బిడ్డ",
+      badgeSunSeeker: "సూర్య అన్వేషకుడు",
+      badgeExplorer: "అన్వేషకుడు",
+      badgeCosmicMaster: "విశ్వ మాస్టర్",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "షేర్ చేయండి",
+      shareText: "VedicStarAstro లో నా విశ్వ ప్రొఫైల్ చూడండి!",
+      
+      // Trending Topics
+      trendingSaturn: "శని గోచారం ఈ రోజు మకర రాశిని ప్రభావితం చేస్తోంది",
+      trendingMercury: "బుధ వక్రం నుండి బయటపడే చిట్కాలు",
+      trendingFullMoon: "ఈ రాత్రి పౌర్ణమి శక్తి గరిష్ఠంగా ఉంది",
+      trendingVenus: "శుక్రుడు మీనంలో - ప్రేమ గాలిలో ఉంది",
+      trendingJupiter: "గురుడు అగ్ని రాశులకు అదృష్టం తెస్తున్నాడు"
     }
   },
   bn: {
@@ -553,13 +653,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "জীবন যাত্রা",
       loveJourney: "প্রেম ও সম্পর্ক",
-      loveJourneyDesc: "আপনার আদর্শ সঙ্গী এবং সম্পর্কের অন্তর্দৃষ্টি খুঁজুন",
       careerJourney: "ক্যারিয়ার ও সম্পদ",
-      careerJourneyDesc: "আপনার পেশাদার সম্ভাবনা এবং আর্থিক বৃদ্ধি আনলক করুন",
       dailyJourney: "দৈনিক নির্দেশনা",
-      dailyJourneyDesc: "দৈনিক মহাজাগতিক অন্তর্দৃষ্টি এবং শুভ সময় পান",
       deepDiveJourney: "গভীর অধ্যয়ন",
-      deepDiveJourneyDesc: "গুরুতর জ্যোতিষ উত্সাহীদের জন্য উন্নত সরঞ্জাম",
       exploreMore: "আরও অন্বেষণ করুন",
       
       // Today's Cosmic Energy Section
@@ -648,7 +744,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "ভয়েস AI জ্যোতিষী",
       fullKundli: "সম্পূর্ণ কুণ্ডলী বিশ্লেষণ",
       doshaAnalysis: "দোষ বিশ্লেষণ",
-      numerology: "সংখ্যাতত্ত্ব"
+      numerology: "সংখ্যাতত্ত্ব",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "আপনার দৈনিক মহাজাগতিক পূর্বাভাস",
+      energyHigh: "চমৎকার দিন সামনে!",
+      energyMedium: "আজ ভালো শক্তি",
+      energyLow: "আজ সহজে নিন",
+      cosmicAlignment: "আপনার মহাজাগতিক সারিবদ্ধতা",
+      
+      // Phase 6: Gamification
+      achievements: "অর্জন",
+      unlockBadges: "মহাজাগতিক ব্যাজ আনলক করুন",
+      badgesDesc: "ব্যাজ অর্জন করতে মহাজাগতিক কার্যকলাপ সম্পূর্ণ করুন",
+      badgeFirstChart: "প্রথম চার্ট",
+      badge7DayStreak: "7-দিনের স্ট্রিক",
+      badgeMoonChild: "চন্দ্র সন্তান",
+      badgeSunSeeker: "সূর্য সন্ধানী",
+      badgeExplorer: "অনুসন্ধানকারী",
+      badgeCosmicMaster: "মহাজাগতিক মাস্টার",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "শেয়ার করুন",
+      shareText: "VedicStarAstro তে আমার মহাজাগতিক প্রোফাইল দেখুন!",
+      
+      // Trending Topics
+      trendingSaturn: "শনি গোচর আজ মকর রাশিকে প্রভাবিত করছে",
+      trendingMercury: "বুধ বক্রী থেকে বাঁচার উপায়",
+      trendingFullMoon: "আজ রাতে পূর্ণিমার শক্তি শীর্ষে",
+      trendingVenus: "শুক্র মীনে - প্রেম বাতাসে",
+      trendingJupiter: "বৃহস্পতি অগ্নি রাশিগুলিকে ভাগ্য দিচ্ছে"
     }
   },
   mr: {
@@ -682,13 +807,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "जीवन प्रवास",
       loveJourney: "प्रेम आणि नातेसंबंध",
-      loveJourneyDesc: "तुमचा योग्य जोडीदार आणि नातेसंबंध अंतर्दृष्टी शोधा",
       careerJourney: "करिअर आणि संपत्ती",
-      careerJourneyDesc: "तुमची व्यावसायिक क्षमता आणि आर्थिक वाढ अनलॉक करा",
       dailyJourney: "दैनिक मार्गदर्शन",
-      dailyJourneyDesc: "दैनिक वैश्विक अंतर्दृष्टी आणि शुभ वेळा मिळवा",
       deepDiveJourney: "सखोल अभ्यास",
-      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोकांसाठी प्रगत साधने",
       exploreMore: "अधिक शोधा",
       
       // Today's Cosmic Energy Section
@@ -777,7 +898,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "व्हॉइस AI ज्योतिषी",
       fullKundli: "संपूर्ण कुंडली विश्लेषण",
       doshaAnalysis: "दोष विश्लेषण",
-      numerology: "अंकशास्त्र"
+      numerology: "अंकशास्त्र",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "तुमचा दैनिक वैश्विक अंदाज",
+      energyHigh: "उत्कृष्ट दिवस पुढे!",
+      energyMedium: "आज चांगली ऊर्जा",
+      energyLow: "आज सहज घ्या",
+      cosmicAlignment: "तुमचे वैश्विक संरेखन",
+      
+      // Phase 6: Gamification
+      achievements: "उपलब्धी",
+      unlockBadges: "वैश्विक बॅज अनलॉक करा",
+      badgesDesc: "बॅज मिळवण्यासाठी वैश्विक क्रियाकलाप पूर्ण करा",
+      badgeFirstChart: "पहिली कुंडली",
+      badge7DayStreak: "7-दिवसांची स्ट्रीक",
+      badgeMoonChild: "चंद्र मूल",
+      badgeSunSeeker: "सूर्य शोधक",
+      badgeExplorer: "शोधक",
+      badgeCosmicMaster: "वैश्विक मास्टर",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "शेअर करा",
+      shareText: "VedicStarAstro वर माझी वैश्विक प्रोफाइल पहा!",
+      
+      // Trending Topics
+      trendingSaturn: "शनि गोचर आज मकर राशीवर परिणाम करत आहे",
+      trendingMercury: "बुध वक्री टाळण्याचे उपाय",
+      trendingFullMoon: "आज रात्री पौर्णिमेची ऊर्जा शिखरावर",
+      trendingVenus: "शुक्र मीनमध्ये - प्रेम हवेत आहे",
+      trendingJupiter: "गुरु अग्नि राशींना भाग्य देत आहे"
     }
   },
   gu: {
@@ -811,13 +961,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "જીવન યાત્રાઓ",
       loveJourney: "પ્રેમ અને સંબંધો",
-      loveJourneyDesc: "તમારા યોગ્ય સાથી અને સંબંધ આંતરદૃષ્ટિ શોધો",
       careerJourney: "કારકિર્દી અને સંપત્તિ",
-      careerJourneyDesc: "તમારી વ્યાવસાયિક ક્ષમતા અને નાણાકીય વૃદ્ધિ અનલૉક કરો",
       dailyJourney: "દૈનિક માર્ગદર્શન",
-      dailyJourneyDesc: "દૈનિક બ્રહ્માંડીય આંતરદૃષ્ટિ અને શુભ સમય મેળવો",
       deepDiveJourney: "ઊંડો અભ્યાસ",
-      deepDiveJourneyDesc: "ગંભીર જ્યોતિષ ઉત્સાહીઓ માટે અદ્યતન સાધનો",
       exploreMore: "વધુ શોધો",
       
       // Today's Cosmic Energy Section
@@ -906,7 +1052,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "વૉઇસ AI જ્યોતિષી",
       fullKundli: "સંપૂર્ણ કુંડળી વિશ્લેષણ",
       doshaAnalysis: "દોષ વિશ્લેષણ",
-      numerology: "અંકશાસ્ત્ર"
+      numerology: "અંકશાસ્ત્ર",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "તમારી દૈનિક બ્રહ્માંડીય આગાહી",
+      energyHigh: "ઉત્તમ દિવસ આગળ!",
+      energyMedium: "આજે સારી ઊર્જા",
+      energyLow: "આજે આરામથી લો",
+      cosmicAlignment: "તમારું બ્રહ્માંડીય સંરેખણ",
+      
+      // Phase 6: Gamification
+      achievements: "સિદ્ધિઓ",
+      unlockBadges: "બ્રહ્માંડીય બેજ અનલૉક કરો",
+      badgesDesc: "બેજ મેળવવા માટે બ્રહ્માંડીય પ્રવૃત્તિઓ પૂર્ણ કરો",
+      badgeFirstChart: "પ્રથમ કુંડળી",
+      badge7DayStreak: "7-દિવસની સ્ટ્રીક",
+      badgeMoonChild: "ચંદ્ર બાળક",
+      badgeSunSeeker: "સૂર્ય શોધક",
+      badgeExplorer: "સંશોધક",
+      badgeCosmicMaster: "બ્રહ્માંડીય માસ્ટર",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "શેર કરો",
+      shareText: "VedicStarAstro પર મારી બ્રહ્માંડીય પ્રોફાઇલ જુઓ!",
+      
+      // Trending Topics
+      trendingSaturn: "શનિ ગોચર આજે મકર રાશિને અસર કરી રહ્યો છે",
+      trendingMercury: "બુધ વક્રીથી બચવાના ઉપાયો",
+      trendingFullMoon: "આજે રાત્રે પૂર્ણિમાની ઊર્જા ટોચ પર",
+      trendingVenus: "શુક્ર મીનમાં - પ્રેમ હવામાં છે",
+      trendingJupiter: "ગુરુ અગ્નિ રાશિઓને ભાગ્ય આપી રહ્યા છે"
     }
   },
   kn: {
@@ -940,13 +1115,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "ಜೀವನ ಪ್ರಯಾಣಗಳು",
       loveJourney: "ಪ್ರೀತಿ ಮತ್ತು ಸಂಬಂಧಗಳು",
-      loveJourneyDesc: "ನಿಮ್ಮ ಸರಿಯಾದ ಜೋಡಿ ಮತ್ತು ಸಂಬಂಧ ಒಳನೋಟಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ",
       careerJourney: "ವೃತ್ತಿ ಮತ್ತು ಸಂಪತ್ತು",
-      careerJourneyDesc: "ನಿಮ್ಮ ವೃತ್ತಿಪರ ಸಾಮರ್ಥ್ಯ ಮತ್ತು ಆರ್ಥಿಕ ಬೆಳವಣಿಗೆಯನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
       dailyJourney: "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
-      dailyJourneyDesc: "ದೈನಂದಿನ ವಿಶ್ವ ಒಳನೋಟಗಳು ಮತ್ತು ಶುಭ ಸಮಯಗಳನ್ನು ಪಡೆಯಿರಿ",
       deepDiveJourney: "ಆಳವಾದ ಅಧ್ಯಯನ",
-      deepDiveJourneyDesc: "ಗಂಭೀರ ಜ್ಯೋತಿಷ್ಯ ಉತ್ಸಾಹಿಗಳಿಗೆ ಸುಧಾರಿತ ಸಾಧನಗಳು",
       exploreMore: "ಇನ್ನಷ್ಟು ಅನ್ವೇಷಿಸಿ",
       
       // Today's Cosmic Energy Section
@@ -1035,7 +1206,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "ವಾಯ್ಸ್ AI ಜ್ಯೋತಿಷಿ",
       fullKundli: "ಸಂಪೂರ್ಣ ಜಾತಕ ವಿಶ್ಲೇಷಣೆ",
       doshaAnalysis: "ದೋಷ ವಿಶ್ಲೇಷಣೆ",
-      numerology: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ"
+      numerology: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "ನಿಮ್ಮ ದೈನಂದಿನ ವಿಶ್ವ ಮುನ್ಸೂಚನೆ",
+      energyHigh: "ಅತ್ಯುತ್ತಮ ದಿನ ಮುಂದಿದೆ!",
+      energyMedium: "ಇಂದು ಒಳ್ಳೆಯ ಶಕ್ತಿ",
+      energyLow: "ಇಂದು ಸುಲಭವಾಗಿ ತೆಗೆದುಕೊಳ್ಳಿ",
+      cosmicAlignment: "ನಿಮ್ಮ ವಿಶ್ವ ಜೋಡಣೆ",
+      
+      // Phase 6: Gamification
+      achievements: "ಸಾಧನೆಗಳು",
+      unlockBadges: "ವಿಶ್ವ ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
+      badgesDesc: "ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಗಳಿಸಲು ವಿಶ್ವ ಚಟುವಟಿಕೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ",
+      badgeFirstChart: "ಮೊದಲ ಚಾರ್ಟ್",
+      badge7DayStreak: "7-ದಿನದ ಸ್ಟ್ರೀಕ್",
+      badgeMoonChild: "ಚಂದ್ರ ಮಗು",
+      badgeSunSeeker: "ಸೂರ್ಯ ಅನ್ವೇಷಕ",
+      badgeExplorer: "ಅನ್ವೇಷಕ",
+      badgeCosmicMaster: "ವಿಶ್ವ ಮಾಸ್ಟರ್",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "ಹಂಚಿಕೊಳ್ಳಿ",
+      shareText: "VedicStarAstro ನಲ್ಲಿ ನನ್ನ ವಿಶ್ವ ಪ್ರೊಫೈಲ್ ನೋಡಿ!",
+      
+      // Trending Topics
+      trendingSaturn: "ಶನಿ ಗೋಚಾರ ಇಂದು ಮಕರ ರಾಶಿಯನ್ನು ಪ್ರಭಾವಿಸುತ್ತಿದೆ",
+      trendingMercury: "ಬುಧ ವಕ್ರದಿಂದ ಬದುಕುಳಿಯುವ ಸಲಹೆಗಳು",
+      trendingFullMoon: "ಇಂದು ರಾತ್ರಿ ಹುಣ್ಣಿಮೆ ಶಕ್ತಿ ಉತ್ತುಂಗದಲ್ಲಿದೆ",
+      trendingVenus: "ಶುಕ್ರ ಮೀನದಲ್ಲಿ - ಪ್ರೀತಿ ಗಾಳಿಯಲ್ಲಿದೆ",
+      trendingJupiter: "ಗುರು ಅಗ್ನಿ ರಾಶಿಗಳಿಗೆ ಅದೃಷ್ಟ ತರುತ್ತಿದ್ದಾರೆ"
     }
   },
   ml: {
@@ -1069,13 +1269,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "ജീവിത യാത്രകൾ",
       loveJourney: "പ്രണയവും ബന്ധങ്ങളും",
-      loveJourneyDesc: "നിങ്ങളുടെ അനുയോജ്യമായ പങ്കാളിയെയും ബന്ധ ഉൾക്കാഴ്ചകളും കണ്ടെത്തുക",
       careerJourney: "കരിയറും സമ്പത്തും",
-      careerJourneyDesc: "നിങ്ങളുടെ പ്രൊഫഷണൽ കഴിവും സാമ്പത്തിക വളർച്ചയും അൺലോക്ക് ചെയ്യുക",
       dailyJourney: "ദൈനംദിന മാർഗ്ഗനിർദ്ദേശം",
-      dailyJourneyDesc: "ദൈനംദിന പ്രപഞ്ച ഉൾക്കാഴ്ചകളും ശുഭ സമയങ്ങളും നേടുക",
       deepDiveJourney: "ആഴത്തിലുള്ള പഠനം",
-      deepDiveJourneyDesc: "ഗൗരവമുള്ള ജ്യോതിഷ ആരാധകർക്കുള്ള വിപുലമായ ഉപകരണങ്ങൾ",
       exploreMore: "കൂടുതൽ പര്യവേക്ഷണം ചെയ്യുക",
       
       // Today's Cosmic Energy Section
@@ -1164,7 +1360,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "വോയ്സ് AI ജ്യോതിഷി",
       fullKundli: "പൂർണ്ണ ജാതക വിശകലനം",
       doshaAnalysis: "ദോഷ വിശകലനം",
-      numerology: "സംഖ്യാശാസ്ത്രം"
+      numerology: "സംഖ്യാശാസ്ത്രം",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "നിങ്ങളുടെ ദൈനംദിന പ്രപഞ്ച പ്രവചനം",
+      energyHigh: "മികച്ച ദിവസം മുന്നിൽ!",
+      energyMedium: "ഇന്ന് നല്ല ഊർജ്ജം",
+      energyLow: "ഇന്ന് എളുപ്പത്തിൽ എടുക്കുക",
+      cosmicAlignment: "നിങ്ങളുടെ പ്രപഞ്ച വിന്യാസം",
+      
+      // Phase 6: Gamification
+      achievements: "നേട്ടങ്ങൾ",
+      unlockBadges: "പ്രപഞ്ച ബാഡ്ജുകൾ അൺലോക്ക് ചെയ്യുക",
+      badgesDesc: "ബാഡ്ജുകൾ നേടാൻ പ്രപഞ്ച പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കുക",
+      badgeFirstChart: "ആദ്യ ചാർട്ട്",
+      badge7DayStreak: "7-ദിവസ സ്ട്രീക്ക്",
+      badgeMoonChild: "ചന്ദ്ര കുട്ടി",
+      badgeSunSeeker: "സൂര്യ അന്വേഷകൻ",
+      badgeExplorer: "പര്യവേക്ഷകൻ",
+      badgeCosmicMaster: "പ്രപഞ്ച മാസ്റ്റർ",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "പങ്കിടുക",
+      shareText: "VedicStarAstro യിൽ എന്റെ പ്രപഞ്ച പ്രൊഫൈൽ കാണുക!",
+      
+      // Trending Topics
+      trendingSaturn: "ശനി ഗോചരം ഇന്ന് മകരം രാശിയെ ബാധിക്കുന്നു",
+      trendingMercury: "ബുധ വക്രത്തിൽ നിന്ന് രക്ഷപ്പെടാനുള്ള വഴികൾ",
+      trendingFullMoon: "ഇന്ന് രാത്രി പൗർണ്ണമി ഊർജ്ജം ഉച്ചസ്ഥായിയിൽ",
+      trendingVenus: "ശുക്രൻ മീനത്തിൽ - പ്രണയം വായുവിൽ",
+      trendingJupiter: "വ്യാഴം അഗ്നി രാശികൾക്ക് ഭാഗ്യം നൽകുന്നു"
     }
   },
   pa: {
@@ -1198,13 +1423,9 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       // Life Journeys (Simplified Navigation)
       lifeJourneys: "ਜੀਵਨ ਯਾਤਰਾਵਾਂ",
       loveJourney: "ਪਿਆਰ ਅਤੇ ਰਿਸ਼ਤੇ",
-      loveJourneyDesc: "ਆਪਣਾ ਸਹੀ ਸਾਥੀ ਅਤੇ ਰਿਸ਼ਤੇ ਦੀ ਸੂਝ ਲੱਭੋ",
       careerJourney: "ਕਰੀਅਰ ਅਤੇ ਦੌਲਤ",
-      careerJourneyDesc: "ਆਪਣੀ ਪੇਸ਼ੇਵਰ ਸਮਰੱਥਾ ਅਤੇ ਵਿੱਤੀ ਵਿਕਾਸ ਨੂੰ ਅਨਲੌਕ ਕਰੋ",
       dailyJourney: "ਰੋਜ਼ਾਨਾ ਮਾਰਗਦਰਸ਼ਨ",
-      dailyJourneyDesc: "ਰੋਜ਼ਾਨਾ ਬ੍ਰਹਿਮੰਡੀ ਸੂਝ ਅਤੇ ਸ਼ੁਭ ਸਮੇਂ ਪ੍ਰਾਪਤ ਕਰੋ",
       deepDiveJourney: "ਡੂੰਘਾ ਅਧਿਐਨ",
-      deepDiveJourneyDesc: "ਗੰਭੀਰ ਜੋਤਿਸ਼ ਉਤਸ਼ਾਹੀਆਂ ਲਈ ਉੱਨਤ ਸਾਧਨ",
       exploreMore: "ਹੋਰ ਖੋਜੋ",
       
       // Today's Cosmic Energy Section
@@ -1293,7 +1514,36 @@ export const homepageRedesignTranslations: Record<Language, TranslationObject> =
       voiceAstrologer: "ਵੌਇਸ AI ਜੋਤਿਸ਼ੀ",
       fullKundli: "ਪੂਰੀ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ",
       doshaAnalysis: "ਦੋਸ਼ ਵਿਸ਼ਲੇਸ਼ਣ",
-      numerology: "ਅੰਕ ਵਿਗਿਆਨ"
+      numerology: "ਅੰਕ ਵਿਗਿਆਨ",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "ਤੁਹਾਡਾ ਰੋਜ਼ਾਨਾ ਬ੍ਰਹਿਮੰਡੀ ਅਨੁਮਾਨ",
+      energyHigh: "ਸ਼ਾਨਦਾਰ ਦਿਨ ਅੱਗੇ!",
+      energyMedium: "ਅੱਜ ਚੰਗੀ ਊਰਜਾ",
+      energyLow: "ਅੱਜ ਆਸਾਨੀ ਨਾਲ ਲਓ",
+      cosmicAlignment: "ਤੁਹਾਡੀ ਬ੍ਰਹਿਮੰਡੀ ਸੰਰੇਖਣ",
+      
+      // Phase 6: Gamification
+      achievements: "ਪ੍ਰਾਪਤੀਆਂ",
+      unlockBadges: "ਬ੍ਰਹਿਮੰਡੀ ਬੈਜ ਅਨਲੌਕ ਕਰੋ",
+      badgesDesc: "ਬੈਜ ਕਮਾਉਣ ਲਈ ਬ੍ਰਹਿਮੰਡੀ ਗਤੀਵਿਧੀਆਂ ਪੂਰੀਆਂ ਕਰੋ",
+      badgeFirstChart: "ਪਹਿਲੀ ਕੁੰਡਲੀ",
+      badge7DayStreak: "7-ਦਿਨ ਦੀ ਸਟ੍ਰੀਕ",
+      badgeMoonChild: "ਚੰਦਰ ਬੱਚਾ",
+      badgeSunSeeker: "ਸੂਰਜ ਖੋਜੀ",
+      badgeExplorer: "ਖੋਜੀ",
+      badgeCosmicMaster: "ਬ੍ਰਹਿਮੰਡੀ ਮਾਸਟਰ",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "ਸਾਂਝਾ ਕਰੋ",
+      shareText: "VedicStarAstro ਤੇ ਮੇਰੀ ਬ੍ਰਹਿਮੰਡੀ ਪ੍ਰੋਫਾਈਲ ਦੇਖੋ!",
+      
+      // Trending Topics
+      trendingSaturn: "ਸ਼ਨੀ ਗੋਚਰ ਅੱਜ ਮਕਰ ਰਾਸ਼ੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਰਿਹਾ ਹੈ",
+      trendingMercury: "ਬੁੱਧ ਵਕਰੀ ਤੋਂ ਬਚਣ ਦੇ ਤਰੀਕੇ",
+      trendingFullMoon: "ਅੱਜ ਰਾਤ ਪੂਰਨਮਾਸ਼ੀ ਦੀ ਊਰਜਾ ਸਿਖਰ 'ਤੇ",
+      trendingVenus: "ਸ਼ੁੱਕਰ ਮੀਨ ਵਿੱਚ - ਪਿਆਰ ਹਵਾ ਵਿੱਚ ਹੈ",
+      trendingJupiter: "ਗੁਰੂ ਅੱਗ ਰਾਸ਼ੀਆਂ ਨੂੰ ਕਿਸਮਤ ਦੇ ਰਿਹਾ ਹੈ"
     }
   }
 };

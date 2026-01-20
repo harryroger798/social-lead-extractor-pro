@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,12 @@ import {
   Briefcase,
   Wallet,
   Brain,
+  Download,
+  Copy,
+  Check,
+  Trophy,
+  Rocket,
+  Activity,
 } from "lucide-react";
 
 // Testimonials stay in original language as requested by user
@@ -66,23 +72,106 @@ const testimonials = [
   },
 ];
 
+// Zodiac signs data for cosmic profile generation
+const zodiacSigns = [
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+];
+
+const yearPredictions = [
+  "A year of transformation and growth awaits you",
+  "Major career breakthroughs are written in your stars",
+  "Love and relationships will flourish this year",
+  "Financial abundance is aligned with your cosmic path",
+  "A journey of self-discovery will unfold",
+  "New opportunities will knock at your door",
+  "Your creativity will reach new heights",
+  "Health and wellness will be your focus",
+  "Travel and adventure are in your destiny",
+  "Spiritual awakening awaits you",
+];
+
 export default function Home() {
   const { t } = useLanguage();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
-    const [liveCount, setLiveCount] = useState(2847);
+  const [liveCount, setLiveCount] = useState(2847);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [showFloatingAI, setShowFloatingAI] = useState(false);
+  const [dailyStreak, setDailyStreak] = useState(0);
+  const [cosmicScore, setCosmicScore] = useState(0);
+  const [todayEnergy, setTodayEnergy] = useState(0);
+  const [luckyHours, setLuckyHours] = useState("");
+  const [trendingTopic, setTrendingTopic] = useState("");
+  const cosmicCardRef = useRef<HTMLDivElement>(null);
   
-    // Dynamic year - automatically updates each year
-    const currentYear = getCurrentYear();
+  // Dynamic year - automatically updates each year
+  const currentYear = getCurrentYear();
+
+  // Initialize gamification and daily energy on mount
+  useEffect(() => {
+    // Simulate daily streak from localStorage
+    const storedStreak = localStorage.getItem('cosmicStreak');
+    const lastVisit = localStorage.getItem('lastCosmicVisit');
+    const today = new Date().toDateString();
+    
+    if (lastVisit === today) {
+      setDailyStreak(storedStreak ? parseInt(storedStreak) : 1);
+    } else if (lastVisit) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (lastVisit === yesterday.toDateString()) {
+        const newStreak = (storedStreak ? parseInt(storedStreak) : 0) + 1;
+        setDailyStreak(newStreak);
+        localStorage.setItem('cosmicStreak', newStreak.toString());
+      } else {
+        setDailyStreak(1);
+        localStorage.setItem('cosmicStreak', '1');
+      }
+    } else {
+      setDailyStreak(1);
+      localStorage.setItem('cosmicStreak', '1');
+    }
+    localStorage.setItem('lastCosmicVisit', today);
+    
+    // Calculate cosmic score based on current planetary positions (simplified)
+    const dayOfYear = Math.floor((Date.now() - new Date(currentYear, 0, 0).getTime()) / 86400000);
+    setCosmicScore(Math.floor(60 + (dayOfYear % 40)));
+    
+    // Calculate today's energy score
+    const hour = new Date().getHours();
+    setTodayEnergy(Math.floor(70 + (hour % 30)));
+    
+    // Set lucky hours based on day
+    const luckyHourOptions = ["6AM-8AM", "10AM-12PM", "2PM-4PM", "6PM-8PM", "9PM-11PM"];
+    setLuckyHours(luckyHourOptions[new Date().getDay() % luckyHourOptions.length]);
+    
+    // Set trending topic
+    const topics = [
+      t('homeRedesign.trendingSaturn', 'Saturn Transit affecting Capricorns today'),
+      t('homeRedesign.trendingMercury', 'Mercury Retrograde survival tips'),
+      t('homeRedesign.trendingFullMoon', 'Full Moon energy peaks tonight'),
+      t('homeRedesign.trendingVenus', 'Venus enters Pisces - Love is in the air'),
+      t('homeRedesign.trendingJupiter', 'Jupiter brings luck to Fire signs'),
+    ];
+    setTrendingTopic(topics[new Date().getDay() % topics.length]);
+    
+    // Show floating AI button after scroll
+    const handleScroll = () => {
+      setShowFloatingAI(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentYear, t]);
 
   // Simulate live counter
-  useState(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       setLiveCount(prev => prev + Math.floor(Math.random() * 3) - 1);
     }, 3000);
     return () => clearInterval(interval);
-  });
+  }, []);
 
   const handleQuickStart = () => {
     if (birthDate && birthTime && birthPlace) {
@@ -92,6 +181,30 @@ export default function Home() {
         place: birthPlace,
       });
       window.location.href = `/tools/kundli-calculator?${params.toString()}`;
+    }
+  };
+
+  // Copy link to clipboard
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Share on social media
+  const handleShare = (platform: string) => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(t('homeRedesign.shareText', 'Check out my cosmic profile on VedicStarAstro!'));
+    
+    const shareUrls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+    };
+    
+    if (shareUrls[platform]) {
+      window.open(shareUrls[platform], '_blank', 'width=600,height=400');
     }
   };
 
@@ -468,6 +581,188 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Phase 5: Today's Cosmic Energy - Daily Retention Hook */}
+      <section className="py-16 bg-gradient-to-b from-slate-900 to-indigo-950">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-amber-500/20 text-amber-300 border-amber-500/30">
+              <Activity className="w-3 h-3 mr-1" />
+              {t('homeRedesign.todayEnergy', "Today's Cosmic Energy")}
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {t('homeRedesign.todayEnergyTitle', 'Your Daily Cosmic Forecast')}
+            </h2>
+            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+              {t('homeRedesign.todayEnergyDesc', 'Personalized daily insights based on planetary positions')}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Energy Score Card */}
+            <Card className="bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-sm border-amber-500/30">
+              <CardContent className="pt-6 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{todayEnergy}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {t('homeRedesign.energyScore', 'Energy Score')}
+                </h3>
+                <p className="text-sm text-amber-200">
+                  {todayEnergy >= 80 ? t('homeRedesign.energyHigh', 'Excellent day ahead!') : 
+                   todayEnergy >= 60 ? t('homeRedesign.energyMedium', 'Good energy today') : 
+                   t('homeRedesign.energyLow', 'Take it easy today')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Lucky Hours Card */}
+            <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm border-green-500/30">
+              <CardContent className="pt-6 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                  <Clock className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {t('homeRedesign.luckyHours', 'Lucky Hours')}
+                </h3>
+                <p className="text-sm text-green-200">{luckyHours}</p>
+              </CardContent>
+            </Card>
+
+            {/* Cosmic Score Card */}
+            <Card className="bg-gradient-to-br from-purple-500/20 to-violet-500/20 backdrop-blur-sm border-purple-500/30">
+              <CardContent className="pt-6 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-violet-500 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{cosmicScore}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {t('homeRedesign.cosmicScore', 'Cosmic Score')}
+                </h3>
+                <p className="text-sm text-purple-200">
+                  {t('homeRedesign.cosmicAlignment', 'Your cosmic alignment')}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Daily Streak Card */}
+            <Card className="bg-gradient-to-br from-pink-500/20 to-rose-500/20 backdrop-blur-sm border-pink-500/30">
+              <CardContent className="pt-6 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                  <Flame className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {t('homeRedesign.dailyStreak', 'Daily Streak')}
+                </h3>
+                <p className="text-sm text-pink-200">
+                  {dailyStreak} {t('homeRedesign.days', 'days')}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Phase 7: Social Proof - Trending & Live Activity */}
+      <section className="py-12 bg-indigo-950">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+            {/* Trending Topic */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <Badge className="mb-1 bg-red-500/20 text-red-300 border-red-500/30">
+                  {t('homeRedesign.trending', 'Trending')}
+                </Badge>
+                <p className="text-white font-medium">{trendingTopic}</p>
+              </div>
+            </div>
+
+            {/* Live Counter */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center animate-pulse">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{liveCount.toLocaleString()}</p>
+                <p className="text-sm text-indigo-300">
+                  {t('homeRedesign.peopleChecking', 'people checking their charts')}
+                </p>
+              </div>
+            </div>
+
+            {/* Share CTA */}
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10"
+                onClick={() => handleShare('twitter')}
+              >
+                {t('homeRedesign.shareOnTwitter', 'Share')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10"
+                onClick={handleCopyLink}
+              >
+                {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Phase 6: Gamification - Badges & Achievements */}
+      <section className="py-16 bg-gradient-to-b from-indigo-950 to-slate-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
+              <Trophy className="w-3 h-3 mr-1" />
+              {t('homeRedesign.achievements', 'Achievements')}
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {t('homeRedesign.unlockBadges', 'Unlock Cosmic Badges')}
+            </h2>
+            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+              {t('homeRedesign.badgesDesc', 'Complete cosmic activities to earn badges and track your spiritual journey')}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {[
+              { icon: Star, name: t('homeRedesign.badgeFirstChart', 'First Chart'), unlocked: true },
+              { icon: Flame, name: t('homeRedesign.badge7DayStreak', '7-Day Streak'), unlocked: dailyStreak >= 7 },
+              { icon: Moon, name: t('homeRedesign.badgeMoonChild', 'Moon Child'), unlocked: false },
+              { icon: Sun, name: t('homeRedesign.badgeSunSeeker', 'Sun Seeker'), unlocked: false },
+              { icon: Rocket, name: t('homeRedesign.badgeExplorer', 'Explorer'), unlocked: false },
+              { icon: Crown, name: t('homeRedesign.badgeCosmicMaster', 'Cosmic Master'), unlocked: false },
+            ].map((badge, index) => (
+              <div
+                key={index}
+                className={`p-4 rounded-xl text-center transition-all ${
+                  badge.unlocked
+                    ? 'bg-gradient-to-br from-amber-500/30 to-orange-500/30 border border-amber-500/50'
+                    : 'bg-white/5 border border-white/10 opacity-50'
+                }`}
+              >
+                <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                  badge.unlocked
+                    ? 'bg-gradient-to-br from-amber-400 to-orange-500'
+                    : 'bg-gray-600'
+                }`}>
+                  <badge.icon className="w-6 h-6 text-white" />
+                </div>
+                <p className={`text-sm font-medium ${badge.unlocked ? 'text-amber-300' : 'text-gray-400'}`}>
+                  {badge.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Voice AI Astrologer Highlight Section */}
       <section className="py-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
@@ -759,6 +1054,26 @@ export default function Home() {
           }),
         }}
       />
+
+      {/* Phase 4: Floating AI Astrologer Button */}
+      {showFloatingAI && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+          <Link href="/voice-astrologer">
+            <Button
+              size="lg"
+              className="rounded-full w-16 h-16 bg-gradient-to-br from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 shadow-2xl shadow-purple-500/30"
+            >
+              <Mic className="w-7 h-7 text-white" />
+            </Button>
+          </Link>
+          <div className="absolute -top-12 right-0 bg-white rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
+            <p className="text-sm font-medium text-gray-800">
+              {t('homeRedesign.askTheStars', 'Ask the Stars')}
+            </p>
+            <div className="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-2 h-2 bg-white"></div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

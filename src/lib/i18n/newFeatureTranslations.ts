@@ -797,6 +797,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "மேம்படுத்தப்பட்ட AI",
       title: "AI ஜோதிடர் ப்ரோ",
       subtitle: "உங்கள் ஜாதகத்தால் இயக்கப்படும் தனிப்பயனாக்கப்பட்ட ஜோதிட வழிகாட்டுதலைப் பெறுங்கள்।"
+    },
+    home: {
+      voiceAiBadge: "புதியது - குரல் AI அம்சம்",
+      voiceAiTitle: "எங்கள் AI ஜோதிடரிடம் பேசுங்கள்",
+      voiceAiDesc: "இயற்கையான குரல் உரையாடல் மூலம் உடனடி வேத ஜோதிட வழிகாட்டுதலைப் பெறுங்கள். உங்கள் ஜாதகம், தொழில், உறவுகள் மற்றும் பலவற்றைப் பற்றி கேளுங்கள்!",
+      tryVoiceAi: "குரல் AI-ஐ இப்போது முயற்சிக்கவும்",
+      voiceAiFree: "தினமும் 5 இலவச நிமிடங்கள்"
     }
   },
   te: {
@@ -882,6 +889,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "మెరుగైన AI",
       title: "AI జ్యోతిష్కుడు ప్రో",
       subtitle: "మీ జన్మ చార్ట్ ద్వారా శక్తివంతమైన వ్యక్తిగతీకరించిన జ్యోతిష్య మార్గదర్శకత్వం పొందండి।"
+    },
+    home: {
+      voiceAiBadge: "కొత్త - వాయిస్ AI ఫీచర్",
+      voiceAiTitle: "మా AI జ్యోతిష్కుడితో మాట్లాడండి",
+      voiceAiDesc: "సహజ వాయిస్ సంభాషణ ద్వారా తక్షణ వేద జ్యోతిష్య మార్గదర్శకత్వం పొందండి. మీ జన్మ చార్ట్, కెరీర్, సంబంధాలు మరియు మరిన్ని గురించి అడగండి!",
+      tryVoiceAi: "వాయిస్ AI ఇప్పుడు ప్రయత్నించండి",
+      voiceAiFree: "రోజూ 5 ఉచిత నిమిషాలు"
     }
   },
   bn: {
@@ -967,6 +981,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "উন্নত AI",
       title: "AI জ্যোতিষী প্রো",
       subtitle: "আপনার জন্ম কুণ্ডলী দ্বারা চালিত ব্যক্তিগতকৃত জ্যোতিষ নির্দেশনা পান।"
+    },
+    home: {
+      voiceAiBadge: "নতুন - ভয়েস AI ফিচার",
+      voiceAiTitle: "আমাদের AI জ্যোতিষীর সাথে কথা বলুন",
+      voiceAiDesc: "প্রাকৃতিক ভয়েস কথোপকথনের মাধ্যমে তাৎক্ষণিক বৈদিক জ্যোতিষ নির্দেশনা পান। আপনার জন্ম কুণ্ডলী, ক্যারিয়ার, সম্পর্ক এবং আরও অনেক কিছু সম্পর্কে জিজ্ঞাসা করুন!",
+      tryVoiceAi: "এখনই ভয়েস AI চেষ্টা করুন",
+      voiceAiFree: "প্রতিদিন ৫ মিনিট বিনামূল্যে"
     }
   },
   mr: {
@@ -1052,6 +1073,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "वर्धित AI",
       title: "AI ज्योतिषी प्रो",
       subtitle: "तुमच्या जन्म कुंडलीद्वारे चालित वैयक्तिकृत ज्योतिषीय मार्गदर्शन मिळवा।"
+    },
+    home: {
+      voiceAiBadge: "नवीन - व्हॉइस AI वैशिष्ट्य",
+      voiceAiTitle: "आमच्या AI ज्योतिषीशी बोला",
+      voiceAiDesc: "नैसर्गिक आवाज संभाषणाद्वारे त्वरित वैदिक ज्योतिष मार्गदर्शन मिळवा. तुमची जन्म कुंडली, करिअर, नातेसंबंध आणि बरेच काही विचारा!",
+      tryVoiceAi: "आता व्हॉइस AI वापरून पहा",
+      voiceAiFree: "दररोज 5 मोफत मिनिटे"
     }
   },
   gu: {
@@ -1137,6 +1165,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "ઉન્નત AI",
       title: "AI જ્યોતિષી પ્રો",
       subtitle: "તમારી જન્મ કુંડળી દ્વારા સંચાલિત વ્યક્તિગત જ્યોતિષીય માર્ગદર્શન મેળવો।"
+    },
+    home: {
+      voiceAiBadge: "નવું - વૉઇસ AI ફીચર",
+      voiceAiTitle: "અમારા AI જ્યોતિષી સાથે વાત કરો",
+      voiceAiDesc: "કુદરતી અવાજ વાર્તાલાપ દ્વારા તાત્કાલિક વૈદિક જ્યોતિષ માર્ગદર્શન મેળવો. તમારી જન્મ કુંડળી, કારકિર્દી, સંબંધો અને વધુ વિશે પૂછો!",
+      tryVoiceAi: "હવે વૉઇસ AI અજમાવો",
+      voiceAiFree: "દરરોજ 5 મફત મિનિટ"
     }
   },
   kn: {
@@ -1222,6 +1257,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "ವರ್ಧಿತ AI",
       title: "AI ಜ್ಯೋತಿಷಿ ಪ್ರೊ",
       subtitle: "ನಿಮ್ಮ ಜನ್ಮ ಕುಂಡಲಿಯಿಂದ ಚಾಲಿತವಾದ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಜ್ಯೋತಿಷ್ಯ ಮಾರ್ಗದರ್ಶನವನ್ನು ಪಡೆಯಿರಿ।"
+    },
+    home: {
+      voiceAiBadge: "ಹೊಸದು - ವಾಯ್ಸ್ AI ವೈಶಿಷ್ಟ್ಯ",
+      voiceAiTitle: "ನಮ್ಮ AI ಜ್ಯೋತಿಷಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ",
+      voiceAiDesc: "ನೈಸರ್ಗಿಕ ಧ್ವನಿ ಸಂಭಾಷಣೆಯ ಮೂಲಕ ತಕ್ಷಣದ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಿರಿ. ನಿಮ್ಮ ಜನ್ಮ ಕುಂಡಲಿ, ವೃತ್ತಿ, ಸಂಬಂಧಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳ ಬಗ್ಗೆ ಕೇಳಿ!",
+      tryVoiceAi: "ಈಗ ವಾಯ್ಸ್ AI ಪ್ರಯತ್ನಿಸಿ",
+      voiceAiFree: "ಪ್ರತಿದಿನ 5 ಉಚಿತ ನಿಮಿಷಗಳು"
     }
   },
   ml: {
@@ -1307,6 +1349,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "മെച്ചപ്പെടുത്തിയ AI",
       title: "AI ജ്യോതിഷി പ്രോ",
       subtitle: "നിങ്ങളുടെ ജനന ചാർട്ട് ഉപയോഗിച്ച് പവർ ചെയ്ത വ്യക്തിഗതമാക്കിയ ജ്യോതിഷ മാർഗ്ഗനിർദ്ദേശം നേടുക।"
+    },
+    home: {
+      voiceAiBadge: "പുതിയത് - വോയ്സ് AI ഫീച്ചർ",
+      voiceAiTitle: "ഞങ്ങളുടെ AI ജ്യോതിഷിയോട് സംസാരിക്കുക",
+      voiceAiDesc: "സ്വാഭാവിക ശബ്ദ സംഭാഷണത്തിലൂടെ തൽക്ഷണ വേദ ജ്യോതിഷ മാർഗ്ഗനിർദ്ദേശം നേടുക. നിങ്ങളുടെ ജനന ചാർട്ട്, കരിയർ, ബന്ധങ്ങൾ എന്നിവയെക്കുറിച്ചും മറ്റും ചോദിക്കുക!",
+      tryVoiceAi: "ഇപ്പോൾ വോയ്സ് AI പരീക്ഷിക്കുക",
+      voiceAiFree: "ദിവസവും 5 സൗജന്യ മിനിറ്റ്"
     }
   },
   pa: {
@@ -1392,6 +1441,13 @@ export const newFeatureTranslations: Record<Language, TranslationObject> = {
       badge: "ਵਧੀਆ AI",
       title: "AI ਜੋਤਿਸ਼ੀ ਪ੍ਰੋ",
       subtitle: "ਆਪਣੀ ਜਨਮ ਕੁੰਡਲੀ ਦੁਆਰਾ ਸੰਚਾਲਿਤ ਵਿਅਕਤੀਗਤ ਜੋਤਿਸ਼ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ।"
+    },
+    home: {
+      voiceAiBadge: "ਨਵਾਂ - ਵੌਇਸ AI ਫੀਚਰ",
+      voiceAiTitle: "ਸਾਡੇ AI ਜੋਤਿਸ਼ੀ ਨਾਲ ਗੱਲ ਕਰੋ",
+      voiceAiDesc: "ਕੁਦਰਤੀ ਆਵਾਜ਼ ਗੱਲਬਾਤ ਰਾਹੀਂ ਤੁਰੰਤ ਵੈਦਿਕ ਜੋਤਿਸ਼ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ। ਆਪਣੀ ਜਨਮ ਕੁੰਡਲੀ, ਕੈਰੀਅਰ, ਰਿਸ਼ਤੇ ਅਤੇ ਹੋਰ ਬਾਰੇ ਪੁੱਛੋ!",
+      tryVoiceAi: "ਹੁਣੇ ਵੌਇਸ AI ਅਜ਼ਮਾਓ",
+      voiceAiFree: "ਰੋਜ਼ਾਨਾ 5 ਮੁਫ਼ਤ ਮਿੰਟ"
     }
   }
 };
