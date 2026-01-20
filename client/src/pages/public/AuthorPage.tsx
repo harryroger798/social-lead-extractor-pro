@@ -13,20 +13,22 @@ export function AuthorPage() {
   const [author, setAuthor] = useState<SanityAuthor | null>(null)
   const [posts, setPosts] = useState<SanityPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     async function fetchData() {
       if (!slug) return
       
       try {
+        setError(null)
         const [authorData, postsData] = await Promise.all([
           getAuthorBySlug(slug),
           getPostsByAuthor(slug)
         ])
         setAuthor(authorData)
         setPosts(postsData)
-      } catch (error) {
-        console.error('Error fetching author data:', error)
+      } catch (err) {
+        setError(err as Error)
       } finally {
         setLoading(false)
       }
@@ -40,6 +42,20 @@ export function AuthorPage() {
       <PublicLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </PublicLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <PublicLayout>
+        <div className="min-h-screen flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Author</h1>
+          <p className="text-muted-foreground mb-4">Failed to load author data. Please try again later.</p>
+          <Link to="/blog" className="text-primary hover:underline">
+            Back to Blog
+          </Link>
         </div>
       </PublicLayout>
     )

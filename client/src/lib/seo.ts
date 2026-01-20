@@ -342,9 +342,13 @@ export function updateMetaTags(seo: SEOData): void {
     if (seo.section) {
       updateOrCreateMeta('article:section', seo.section, true)
     }
+    document.querySelectorAll('meta[property="article:tag"]').forEach(el => el.remove())
     if (seo.tags?.length) {
       seo.tags.forEach(tag => {
-        updateOrCreateMeta('article:tag', tag, true)
+        const meta = document.createElement('meta')
+        meta.setAttribute('property', 'article:tag')
+        meta.content = tag
+        document.head.appendChild(meta)
       })
     }
   }

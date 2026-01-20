@@ -3,10 +3,11 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
 import { Calendar, User, ArrowLeft, Clock, Tag, ExternalLink, Loader2 } from 'lucide-react'
 import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles } from '@/components/ui/visual-enhancements'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPostBySlug, type SanityPost } from '@/lib/sanity'
 import { Button } from '@/components/ui/button'
+import DOMPurify from 'dompurify'
 import {
   SEOHead,
   SocialShareButtons,
@@ -77,6 +78,14 @@ export function BlogPostPage() {
     const readingTime = Math.ceil((post.body?.length || 0) / 1000)
     const postUrl = `https://bytecare.shop/blog/${post.slug.current}`
     const categoryIds = post.categories?.map(c => c._id) || []
+
+    const sanitizedBody = useMemo(() => {
+      if (!post.body) return ''
+      return DOMPurify.sanitize(post.body, {
+        ADD_TAGS: ['iframe'],
+        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target']
+      })
+    }, [post.body])
 
     const breadcrumbItems = [
       { name: 'Blog', url: '/blog' },
@@ -243,7 +252,7 @@ export function BlogPostPage() {
                   prose-td:p-3 prose-td:border prose-td:border-slate-200 prose-td:dark:border-slate-600
                   prose-figure:my-6 prose-figcaption:text-center prose-figcaption:text-sm prose-figcaption:text-muted-foreground prose-figcaption:mt-2
                   [&_.video-container]:my-6 [&_.video-container]:rounded-lg [&_.video-container]:overflow-hidden [&_.video-container]:shadow-lg"
-                dangerouslySetInnerHTML={{ __html: post.body }}
+                dangerouslySetInnerHTML={{ __html: sanitizedBody }}
               />
 
               {/* Social Share Buttons (Bottom of article) */}

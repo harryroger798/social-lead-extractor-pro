@@ -88,6 +88,10 @@ export function SEOHead({
     }
 
     if (type === 'article' && articleData) {
+      const datePublishedValue = articleData.datePublished || publishedAt
+      if (!datePublishedValue) {
+        console.warn('SEOHead: publishedAt is missing for article type. Using current date as fallback.')
+      }
       const fullArticleData: ArticleData = {
         headline: articleData.headline || title,
         description: articleData.description || description,
@@ -100,7 +104,7 @@ export function SEOHead({
           name: 'ByteCare',
           logo: 'https://bytecare.shop/images/favicon.png'
         },
-        datePublished: articleData.datePublished || publishedAt || new Date().toISOString(),
+        datePublished: datePublishedValue || new Date().toISOString(),
         dateModified: articleData.dateModified || modifiedAt,
         mainEntityOfPage: fullUrl
       }

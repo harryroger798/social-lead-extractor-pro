@@ -135,8 +135,9 @@ router.get('/comments/:postId', asyncHandler(async (req, res) => {
       postId
     });
     
-    res.json({
-      success: true,
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch comments',
       data: []
     });
   }

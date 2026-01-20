@@ -11,37 +11,38 @@ interface TOCItem {
 interface TableOfContentsProps {
   content: string
   className?: string
+  contentSelector?: string
 }
 
-export function TableOfContents({ content, className = '' }: TableOfContentsProps) {
+export function TableOfContents({ content, className = '', contentSelector = 'article' }: TableOfContentsProps) {
   const [isOpen, setIsOpen] = useState(true)
   const [activeId, setActiveId] = useState<string>('')
   const [items, setItems] = useState<TOCItem[]>([])
 
   useEffect(() => {
+    const container = document.querySelector(contentSelector)
+    if (!container) {
+      setItems([])
+      return
+    }
+
     const headings: TOCItem[] = []
-    
-    // Parse HTML headings from content
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(content, 'text/html')
-    const headingElements = doc.querySelectorAll('h1, h2, h3')
-    
+    const headingElements = Array.from(container.querySelectorAll('h1, h2, h3'))
+
     headingElements.forEach((heading, index) => {
-      const tagName = heading.tagName.toLowerCase()
-      const level = parseInt(tagName.charAt(1))
+      const level = parseInt(heading.tagName.charAt(1))
       const text = heading.textContent?.trim() || ''
-      
-      if (text) {
-        headings.push({
-          id: `toc-heading-${index}`,
-          text,
-          level
-        })
+      if (!text) return
+
+      if (!heading.id) {
+        heading.id = `toc-heading-${index}`
       }
+
+      headings.push({ id: heading.id, text, level })
     })
 
     setItems(headings)
-  }, [content])
+  }, [content, contentSelector])
 
   useEffect(() => {
     const observer = new IntersectionObserver(

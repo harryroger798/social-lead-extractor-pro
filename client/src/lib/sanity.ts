@@ -137,7 +137,10 @@ export async function getAuthorBySlug(slug: string): Promise<SanityAuthor | null
     name,
     slug,
     bio,
-    image
+    "image": {
+      "url": image.asset->url,
+      "alt": image.alt
+    }
   }`
   
   return sanityClient.fetch(query, { slug })
@@ -200,7 +203,10 @@ export async function getAllAuthors(): Promise<SanityAuthor[]> {
     name,
     slug,
     bio,
-    image
+    "image": {
+      "url": image.asset->url,
+      "alt": image.alt
+    }
   }`
   
   return sanityClient.fetch(query)

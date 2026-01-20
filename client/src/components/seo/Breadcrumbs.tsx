@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight, Home } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export interface BreadcrumbItem {
   name: string
@@ -12,8 +13,9 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
+  const { t } = useTranslation()
   const allItems: BreadcrumbItem[] = [
-    { name: 'Home', url: '/' },
+    { name: t('nav.home', 'Home'), url: '/' },
     ...items
   ]
 

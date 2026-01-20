@@ -16,7 +16,9 @@ export function RelatedPosts({ currentPostId, categoryIds, className = '' }: Rel
 
   useEffect(() => {
     async function fetchRelatedPosts() {
+      setLoading(true)
       if (!categoryIds.length) {
+        setPosts([])
         setLoading(false)
         return
       }
@@ -25,7 +27,7 @@ export function RelatedPosts({ currentPostId, categoryIds, className = '' }: Rel
         const relatedPosts = await getRelatedPosts(currentPostId, categoryIds, 3)
         setPosts(relatedPosts)
       } catch (error) {
-        console.error('Error fetching related posts:', error)
+        setPosts([])
       } finally {
         setLoading(false)
       }
