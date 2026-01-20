@@ -163,7 +163,7 @@ const getWhatsAppVideoLink = () => `https://wa.me/${WHATSAPP_NUMBER}?text=${enco
 const getWhatsAppChatLink = () => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("I would like to chat with an astrologer")}`;
 
 export default function AstrologersPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const stats = getStats(t);
   return (
     <div className="py-12 lg:py-16">
@@ -223,7 +223,7 @@ export default function AstrologersPage() {
                         <span className="text-sm font-medium ml-1">{astrologer.rating}</span>
                       </div>
                       <span className="text-gray-300">|</span>
-                      <span className="text-sm text-gray-600">{astrologer.consultations.toLocaleString()} {t('astrologers.consultations', 'consultations')}</span>
+                      <span className="text-sm text-gray-600">{new Intl.NumberFormat(language ?? undefined).format(astrologer.consultations)} {t('astrologers.consultations', 'consultations')}</span>
                     </div>
                   </div>
                 </div>
