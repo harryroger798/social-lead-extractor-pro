@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n";
 import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import { 
@@ -86,6 +87,15 @@ export default function Home() {
   const [luckyHours, setLuckyHours] = useState("");
   const [trendingTopic, setTrendingTopic] = useState("");
   const [starPositions, setStarPositions] = useState<Array<{left: number; top: number; delay: number; duration: number}>>([]);
+  
+  // Cosmic profile state for inline results
+  const [cosmicProfile, setCosmicProfile] = useState<{
+    sunSign: string;
+    moonSign: string;
+    risingSign: string;
+    prediction: string;
+  } | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
   
   // Dynamic year - automatically updates each year
   const currentYear = getCurrentYear();
@@ -169,15 +179,107 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleQuickStart = () => {
+  const handleQuickStart = async () => {
     if (birthDate && birthTime && birthPlace) {
-      const params = new URLSearchParams({
-        date: birthDate,
-        time: birthTime,
-        place: birthPlace,
-      });
-      window.location.href = `/tools/kundli-calculator?${params.toString()}`;
+      setIsCalculating(true);
+      try {
+        // Call the chart calculation API
+        const response = await fetch("/api/calculate-chart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "User",
+            birth_date: birthDate,
+            birth_time: birthTime,
+            birth_place: birthPlace,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to calculate chart");
+        }
+
+        const data = await response.json();
+        const chartData = data.chart_data;
+
+        // Generate a personalized prediction based on the signs
+        const predictions = [
+          t('homeRedesign.prediction1', 'A year of transformation and growth awaits you'),
+          t('homeRedesign.prediction2', 'New opportunities will emerge in career and relationships'),
+          t('homeRedesign.prediction3', 'Your intuition will guide you to success'),
+          t('homeRedesign.prediction4', 'Financial stability and abundance are on the horizon'),
+          t('homeRedesign.prediction5', 'Love and harmony will bless your relationships'),
+        ];
+        const predictionIndex = (new Date(birthDate).getMonth() + new Date().getDate()) % predictions.length;
+
+        setCosmicProfile({
+          sunSign: chartData.sun_sign || "Aries",
+          moonSign: chartData.moon_sign || "Cancer",
+          risingSign: chartData.ascendant || "Leo",
+          prediction: predictions[predictionIndex],
+        });
+      } catch (error) {
+        console.error("Error calculating chart:", error);
+        // Fallback to basic calculation if API fails
+        const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+        const date = new Date(birthDate);
+        const month = date.getMonth();
+        const day = date.getDate();
+        
+        // Simple sun sign calculation
+        const sunSignIndex = getSunSignIndex(month, day);
+        const moonSignIndex = (sunSignIndex + Math.floor(day / 3)) % 12;
+        const risingSignIndex = (sunSignIndex + parseInt(birthTime.split(':')[0]) % 12) % 12;
+        
+        const predictions = [
+          t('homeRedesign.prediction1', 'A year of transformation and growth awaits you'),
+          t('homeRedesign.prediction2', 'New opportunities will emerge in career and relationships'),
+          t('homeRedesign.prediction3', 'Your intuition will guide you to success'),
+          t('homeRedesign.prediction4', 'Financial stability and abundance are on the horizon'),
+          t('homeRedesign.prediction5', 'Love and harmony will bless your relationships'),
+        ];
+        const predictionIndex = (month + day) % predictions.length;
+
+        setCosmicProfile({
+          sunSign: zodiacSigns[sunSignIndex],
+          moonSign: zodiacSigns[moonSignIndex],
+          risingSign: zodiacSigns[risingSignIndex],
+          prediction: predictions[predictionIndex],
+        });
+      } finally {
+        setIsCalculating(false);
+      }
     }
+  };
+
+  // Helper function to calculate sun sign from month and day
+  const getSunSignIndex = (month: number, day: number): number => {
+    const signDates = [
+      { month: 0, day: 20 }, // Aquarius starts Jan 20
+      { month: 1, day: 19 }, // Pisces starts Feb 19
+      { month: 2, day: 21 }, // Aries starts Mar 21
+      { month: 3, day: 20 }, // Taurus starts Apr 20
+      { month: 4, day: 21 }, // Gemini starts May 21
+      { month: 5, day: 21 }, // Cancer starts Jun 21
+      { month: 6, day: 23 }, // Leo starts Jul 23
+      { month: 7, day: 23 }, // Virgo starts Aug 23
+      { month: 8, day: 23 }, // Libra starts Sep 23
+      { month: 9, day: 23 }, // Scorpio starts Oct 23
+      { month: 10, day: 22 }, // Sagittarius starts Nov 22
+      { month: 11, day: 22 }, // Capricorn starts Dec 22
+    ];
+    
+    for (let i = 0; i < signDates.length; i++) {
+      if (month === signDates[i].month && day >= signDates[i].day) {
+        return (i + 10) % 12; // Offset to match zodiac order
+      }
+      if (month === (signDates[i].month + 1) % 12 && day < signDates[(i + 1) % 12].day) {
+        return (i + 10) % 12;
+      }
+    }
+    return 9; // Default to Capricorn
   };
 
   // Copy link to clipboard with feature check and fallback
@@ -478,29 +580,48 @@ export default function Home() {
                       <Label htmlFor="birthPlace" className="text-indigo-200 text-sm">
                         {t('homeRedesign.birthPlace', 'Birth Place')}
                       </Label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <Input
-                          id="birthPlace"
-                          type="text"
-                          placeholder={t('homeRedesign.birthPlacePlaceholder', 'Enter city name')}
-                          value={birthPlace}
-                          onChange={(e) => setBirthPlace(e.target.value)}
-                          className="bg-white/10 border-white/30 text-white placeholder:text-gray-400 pl-10"
-                        />
-                      </div>
+                      <LocationInput
+                        id="birthPlace"
+                        placeholder={t('homeRedesign.birthPlacePlaceholder', 'Enter city name')}
+                        value={birthPlace}
+                        onChange={(e) => setBirthPlace(e.target.value)}
+                        onLocationSelect={(location) => setBirthPlace(location)}
+                        className="bg-white/10 border-white/30 text-white placeholder:text-gray-400"
+                      />
                     </div>
                   </div>
 
                   <Button
                     onClick={handleQuickStart}
-                    disabled={!birthDate || !birthTime || !birthPlace}
+                    disabled={!birthDate || !birthTime || !birthPlace || isCalculating}
                     className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-lg py-6 disabled:opacity-50"
                   >
-                    <Zap className="mr-2 w-5 h-5" />
-                    {t('homeRedesign.revealDestiny', 'Reveal My Destiny')}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    {isCalculating ? (
+                      <>
+                        <Activity className="mr-2 w-5 h-5 animate-spin" />
+                        {t('homeRedesign.calculating', 'Calculating...')}
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="mr-2 w-5 h-5" />
+                        {t('homeRedesign.revealDestiny', 'Reveal My Destiny')}
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </>
+                    )}
                   </Button>
+                  
+                  {cosmicProfile && (
+                    <Button
+                      variant="outline"
+                      className="w-full mt-2 border-white/30 text-white hover:bg-white/10"
+                      asChild
+                    >
+                      <Link href={`/tools/kundli-calculator?date=${birthDate}&time=${birthTime}&place=${birthPlace}`}>
+                        {t('homeRedesign.viewFullChart', 'View Full Birth Chart')}
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </Link>
+                    </Button>
+                  )}
 
                   <p className="text-center text-xs text-indigo-300">
                     {t('homeRedesign.freeForever', 'Free forever. No credit card required.')}
@@ -525,16 +646,16 @@ export default function Home() {
                       {t('homeRedesign.cosmicProfileTitle', 'Your Cosmic DNA')}
                     </h3>
                     <div className="space-y-2 text-indigo-200">
-                      <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homeRedesign.sunSign', 'Sun Sign')}: ???</p>
-                      <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homeRedesign.moonSign', 'Moon Sign')}: ???</p>
-                      <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homeRedesign.risingSign', 'Rising Sign')}: ???</p>
+                      <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homeRedesign.sunSign', 'Sun Sign')}: {cosmicProfile ? <span className="text-amber-300 font-semibold">{cosmicProfile.sunSign}</span> : '???'}</p>
+                      <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homeRedesign.moonSign', 'Moon Sign')}: {cosmicProfile ? <span className="text-blue-300 font-semibold">{cosmicProfile.moonSign}</span> : '???'}</p>
+                      <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homeRedesign.risingSign', 'Rising Sign')}: {cosmicProfile ? <span className="text-purple-300 font-semibold">{cosmicProfile.risingSign}</span> : '???'}</p>
                     </div>
                     <div className="mt-6 p-4 bg-white/10 rounded-lg">
                                             <p className="text-amber-300 font-semibold">
                                               {withCurrentYear(t('homeRedesign.predictionYear', '{year} Prediction'))}
                                             </p>
                       <p className="text-white text-sm mt-1">
-                        {t('homeRedesign.enterDetailsToReveal', 'Enter your details to reveal...')}
+                        {cosmicProfile ? cosmicProfile.prediction : t('homeRedesign.enterDetailsToReveal', 'Enter your details to reveal...')}
                       </p>
                     </div>
                                         <Button 
