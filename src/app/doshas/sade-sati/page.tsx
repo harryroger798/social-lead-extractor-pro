@@ -5,6 +5,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   ArrowRight,
   AlertTriangle,
@@ -261,7 +262,7 @@ export default function SadeSatiPage() {
 
         <Card className="border-indigo-200 mb-8">
           <CardHeader>
-            <CardTitle>{t('dosha.sadeSati.currentStatus', 'Current Sade Sati Status by Moon Sign (2026)')}</CardTitle>
+            <CardTitle>{withCurrentYear(t('dosha.sadeSati.currentStatusYear', 'Current Sade Sati Status by Moon Sign ({year})'))}</CardTitle>
             <CardDescription>
               {t('dosha.sadeSati.currentStatusDesc', 'Check your Moon sign to see your current Sade Sati status')}
             </CardDescription>
@@ -392,12 +393,12 @@ export default function SadeSatiPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('transit.saturnTransit2026', 'Saturn Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('transit.saturnTransitYear', 'Saturn Transit {year}'))}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('transit.saturnTransitDesc', 'Detailed Saturn transit predictions.')}
               </p>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/transits/saturn-transit-2026">
+                <Link href={`/transits/saturn-transit-${getCurrentYear()}`}>
                   {t('common.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>

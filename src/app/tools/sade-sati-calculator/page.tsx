@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { LocationInput } from "@/components/ui/location-input";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -451,12 +452,12 @@ export default function SadeSatiCalculatorPage() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('calculator.sadeSati.saturnTransit2026', 'Saturn Transit 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('calculator.sadeSati.saturnTransitYear', 'Saturn Transit {year}'))}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                {t('calculator.sadeSati.saturnTransit2026Desc', 'Detailed Saturn transit predictions for 2026.')}
+                {withCurrentYear(t('calculator.sadeSati.saturnTransitYearDesc', 'Detailed Saturn transit predictions for {year}.'))}
               </p>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/transits/saturn-transit-2026">
+                <Link href={`/transits/saturn-transit-${getCurrentYear()}`}>
                   {t('calculator.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
