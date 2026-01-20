@@ -15,12 +15,16 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear } from "@/lib/utils";
+
+// Dynamic year for press releases
+const currentYear = getCurrentYear();
 
 const pressReleases = [
   {
     id: 1,
     title: "VedicStarAstro Launches AI-Powered Kundli Analysis",
-    date: "January 2026",
+    date: `January ${currentYear}`,
     excerpt:
       "VedicStarAstro introduces advanced AI technology combined with traditional Vedic astrology for more accurate birth chart analysis.",
   },

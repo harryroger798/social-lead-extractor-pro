@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -563,12 +564,12 @@ export default function PanchangPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('panchang.festivalCalendar', 'Festival Calendar 2026')}</h3>
+              <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('panchang.festivalCalendarYear', 'Festival Calendar {year}'))}</h3>
               <p className="text-gray-600 text-sm mb-4">
-                {t('panchang.festivalCalendarDesc', 'Complete list of Hindu festivals, fasts, and important dates for 2026.')}
+                {withCurrentYear(t('panchang.festivalCalendarYearDesc', 'Complete list of Hindu festivals, fasts, and important dates for {year}.'))}
               </p>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/festival-calendar-2026">
+                <Link href={`/festival-calendar-${getCurrentYear()}`}>
                   {t('panchang.viewFestivals', 'View Festivals')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>

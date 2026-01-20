@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear } from "@/lib/utils";
 import { uploadToIPFS, getPublicIPFSUrl } from "@/lib/pinata";
 import { jsPDF } from "jspdf";
 import {
@@ -59,7 +60,7 @@ interface BlockchainCertificate {
 }
 
 const sampleCertificate: BlockchainCertificate = {
-  certificateId: "VSA-2026-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
+  certificateId: "VSA-" + getCurrentYear() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
   hash: "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(""),
   ipfsHash: "Qm" + Array.from({ length: 44 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 62)]).join(""),
   timestamp: new Date().toISOString(),
@@ -100,7 +101,7 @@ export default function BlockchainKundliPage() {
 
     try {
       // Generate certificate data
-      const certificateId = "VSA-2026-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const certificateId = "VSA-" + getCurrentYear() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase();
       const timestamp = new Date().toISOString();
       const hash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
       
@@ -136,7 +137,7 @@ export default function BlockchainKundliPage() {
       // Fallback to mock data if IPFS upload fails
       const newCertificate: BlockchainCertificate = {
         ...sampleCertificate,
-        certificateId: "VSA-2026-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
+        certificateId: "VSA-" + getCurrentYear() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
         hash: "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(""),
         ipfsHash: "Qm" + Array.from({ length: 44 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 62)]).join(""),
         timestamp: new Date().toISOString(),
