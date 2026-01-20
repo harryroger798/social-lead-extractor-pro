@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -134,11 +133,12 @@ export default function PressPage() {
                 </div>
               </div>
               <div className="mt-6">
-                <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                  <Link href="mailto:press@vedicstarastro.com">
-                    <Mail className="w-4 h-4 mr-2" />
-                    {t('press.contactPressTeam', 'Contact Press Team')}
-                  </Link>
+                <Button 
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => window.open('https://wa.me/918884919349?text=Hello, I am from the press and would like to contact the VedicStarAstro team.', '_blank', 'noopener,noreferrer')}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  {t('press.contactPressTeam', 'Contact Press Team')}
                 </Button>
               </div>
             </div>
@@ -223,11 +223,13 @@ export default function PressPage() {
                 <p className="mb-6 text-gray-300 max-w-2xl mx-auto">
                   {t('press.brandAssetsDesc', 'Download our official logos, brand guidelines, and high-resolution images for media use. Please follow our brand guidelines when using these assets.')}
                 </p>
-                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                  <Link href="mailto:press@vedicstarastro.com?subject=Press Kit Request">
-                    <Download className="w-4 h-4 mr-2" />
-                    {t('press.requestPressKit', 'Request Press Kit')}
-                  </Link>
+                <Button 
+                  size="lg" 
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => window.open('https://wa.me/918884919349?text=Hello, I would like to request the VedicStarAstro Press Kit.', '_blank', 'noopener,noreferrer')}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {t('press.requestPressKit', 'Request Press Kit')}
                 </Button>
               </div>
             </CardContent>
@@ -240,10 +242,11 @@ export default function PressPage() {
             <p className="text-gray-700 max-w-2xl mx-auto mb-6">
               {t('press.interviewRequestsDesc', 'Our founders and expert astrologers are available for interviews on topics including Vedic astrology, technology in traditional practices, and the future of spiritual wellness.')}
             </p>
-            <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
-              <Link href="mailto:press@vedicstarastro.com?subject=Interview Request">
-                {t('press.requestInterview', 'Request an Interview')}
-              </Link>
+            <Button 
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+              onClick={() => window.open('https://wa.me/918884919349?text=Hello, I would like to request an interview with VedicStarAstro team.', '_blank', 'noopener,noreferrer')}
+            >
+              {t('press.requestInterview', 'Request an Interview')}
             </Button>
           </div>
         </section>
