@@ -44,13 +44,6 @@ const pressReleases = [
   },
 ];
 
-const stats = [
-  { value: "50,000+", label: "Users Served", icon: Users },
-  { value: "100+", label: "Expert Astrologers", icon: Star },
-  { value: "4.8/5", label: "User Rating", icon: TrendingUp },
-  { value: "2024", label: "Founded", icon: Calendar },
-];
-
 const mediaFeatures = [
   {
     publication: "Times of India",
@@ -71,6 +64,14 @@ const mediaFeatures = [
 
 export default function PressPage() {
   const { t } = useLanguage();
+
+  const stats = [
+    { value: "50,000+", label: t('press.usersServed', 'Users Served'), icon: Users },
+    { value: "100+", label: t('press.expertAstrologers', 'Expert Astrologers'), icon: Star },
+    { value: "4.8/5", label: t('press.userRating', 'User Rating'), icon: TrendingUp },
+    { value: "2024", label: t('press.founded', 'Founded'), icon: Calendar },
+  ];
+
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -85,8 +86,8 @@ export default function PressPage() {
         </div>
 
         <div className="grid md:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="text-center border-amber-100">
+          {stats.map((stat, index) => (
+            <Card key={index} className="text-center border-amber-100">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
                   <stat.icon className="w-6 h-6 text-amber-600" />
@@ -101,29 +102,23 @@ export default function PressPage() {
         <section className="mb-16">
           <div className="grid lg:grid-cols-2 gap-8">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About VedicStarAstro</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('press.aboutTitle', 'About VedicStarAstro')}</h2>
               <div className="prose prose-gray">
                 <p className="text-gray-700 mb-4">
-                  VedicStarAstro is a leading online platform for authentic Vedic astrology services. 
-                  Founded in 2024, we combine ancient Jyotish Shastra wisdom with modern technology 
-                  to provide accurate birth chart analysis, personalized predictions, and expert 
-                  consultations.
+                  {t('press.aboutDesc1', 'VedicStarAstro is a leading online platform for authentic Vedic astrology services. Founded in 2024, we combine ancient Jyotish Shastra wisdom with modern technology to provide accurate birth chart analysis, personalized predictions, and expert consultations.')}
                 </p>
                 <p className="text-gray-700 mb-4">
-                  Our platform features free tools like Kundli Calculator and Nakshatra Finder, 
-                  along with paid consultations with verified astrologers who have 10-25+ years 
-                  of experience.
+                  {t('press.aboutDesc2', 'Our platform features free tools like Kundli Calculator and Nakshatra Finder, along with paid consultations with verified astrologers who have 10-25+ years of experience.')}
                 </p>
                 <p className="text-gray-700">
-                  Based in Bangalore, India, VedicStarAstro serves users across India and 
-                  internationally, making authentic Vedic astrology accessible to everyone.
+                  {t('press.aboutDesc3', 'Based in Bangalore, India, VedicStarAstro serves users across India and internationally, making authentic Vedic astrology accessible to everyone.')}
                 </p>
               </div>
             </div>
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Media Contact</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{t('press.mediaContact', 'Media Contact')}</h3>
               <p className="text-gray-700 mb-6">
-                For press inquiries, interviews, or media requests, please contact our communications team.
+                {t('press.mediaContactDesc', 'For press inquiries, interviews, or media requests, please contact our communications team.')}
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
@@ -137,7 +132,7 @@ export default function PressPage() {
                 <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
                   <Link href="mailto:press@vedicstarastro.com">
                     <Mail className="w-4 h-4 mr-2" />
-                    Contact Press Team
+                    {t('press.contactPressTeam', 'Contact Press Team')}
                   </Link>
                 </Button>
               </div>
@@ -148,7 +143,7 @@ export default function PressPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Press Releases
+              {t('press.pressReleases', 'Press Releases')}
             </h2>
           </div>
 
@@ -166,7 +161,7 @@ export default function PressPage() {
                       <p className="text-gray-600">{release.excerpt}</p>
                     </div>
                     <Button variant="outline" className="border-amber-500 text-amber-600">
-                      Read More
+                      {t('press.readMore', 'Read More')}
                       <ExternalLink className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -179,10 +174,10 @@ export default function PressPage() {
         <section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Media Coverage
+              {t('press.mediaCoverage', 'Media Coverage')}
             </h2>
             <p className="text-gray-600">
-              VedicStarAstro in the news
+              {t('press.mediaCoverageDesc', 'VedicStarAstro in the news')}
             </p>
           </div>
 
@@ -204,15 +199,14 @@ export default function PressPage() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Download className="w-12 h-12 mx-auto mb-4 text-amber-400" />
-                <h2 className="text-2xl font-bold mb-2">Brand Assets & Press Kit</h2>
+                <h2 className="text-2xl font-bold mb-2">{t('press.brandAssets', 'Brand Assets & Press Kit')}</h2>
                 <p className="mb-6 text-gray-300 max-w-2xl mx-auto">
-                  Download our official logos, brand guidelines, and high-resolution images 
-                  for media use. Please follow our brand guidelines when using these assets.
+                  {t('press.brandAssetsDesc', 'Download our official logos, brand guidelines, and high-resolution images for media use. Please follow our brand guidelines when using these assets.')}
                 </p>
                 <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
                   <Link href="mailto:press@vedicstarastro.com?subject=Press Kit Request">
                     <Download className="w-4 h-4 mr-2" />
-                    Request Press Kit
+                    {t('press.requestPressKit', 'Request Press Kit')}
                   </Link>
                 </Button>
               </div>
@@ -222,14 +216,13 @@ export default function PressPage() {
 
         <section>
           <div className="bg-amber-50 rounded-2xl p-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Interview Requests</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('press.interviewRequests', 'Interview Requests')}</h2>
             <p className="text-gray-700 max-w-2xl mx-auto mb-6">
-              Our founders and expert astrologers are available for interviews on topics including 
-              Vedic astrology, technology in traditional practices, and the future of spiritual wellness.
+              {t('press.interviewRequestsDesc', 'Our founders and expert astrologers are available for interviews on topics including Vedic astrology, technology in traditional practices, and the future of spiritual wellness.')}
             </p>
             <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
               <Link href="mailto:press@vedicstarastro.com?subject=Interview Request">
-                Request an Interview
+                {t('press.requestInterview', 'Request an Interview')}
               </Link>
             </Button>
           </div>
