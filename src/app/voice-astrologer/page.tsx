@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import Vapi from "@vapi-ai/web";
 import {
   Phone,
@@ -170,12 +171,15 @@ const getFirstMessage = (langCode: string): string => {
   return messages[langCode] || messages.en;
 };
 
+// Dynamic year for sample questions
+const currentYear = getCurrentYear();
+
 const sampleQuestions = [
   { en: "What does my birth chart say about my career?", hi: "मेरी जन्म कुंडली मेरे करियर के बारे में क्या कहती है?" },
   { en: "When is a good time for marriage?", hi: "विवाह के लिए अच्छा समय कब है?" },
   { en: "Tell me about my Dasha period", hi: "मुझे अपनी दशा अवधि के बारे में बताएं" },
   { en: "What are my lucky numbers?", hi: "मेरे भाग्यशाली अंक क्या हैं?" },
-  { en: "How will 2026 be for me?", hi: "2026 मेरे लिए कैसा रहेगा?" },
+  { en: `How will ${currentYear} be for me?`, hi: `${currentYear} मेरे लिए कैसा रहेगा?` },
 ];
 
 export default function VoiceAstrologerPage() {
