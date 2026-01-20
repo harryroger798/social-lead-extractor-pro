@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   Sun,
   Moon,
@@ -184,7 +185,7 @@ const planetData: PlanetPosition[] = [
 
 const upcomingTransits: TransitEvent[] = [
   {
-    date: "2026-01-25",
+    date: `${getCurrentYear()}-01-25`,
     event: "Sun enters Aquarius",
     eventHindi: "सूर्य कुंभ राशि में प्रवेश",
     planet: "Sun",
@@ -193,7 +194,7 @@ const upcomingTransits: TransitEvent[] = [
     descriptionHindi: "मानवतावादी कार्यों और नवाचार पर ध्यान केंद्रित",
   },
   {
-    date: "2026-02-03",
+    date: `${getCurrentYear()}-02-03`,
     event: "Venus enters Pisces (Exalted)",
     eventHindi: "शुक्र मीन राशि में (उच्च)",
     planet: "Venus",
@@ -202,7 +203,7 @@ const upcomingTransits: TransitEvent[] = [
     descriptionHindi: "प्रेम, रचनात्मकता और आध्यात्मिक विकास के लिए उत्तम समय",
   },
   {
-    date: "2026-02-14",
+    date: `${getCurrentYear()}-02-14`,
     event: "Mercury Retrograde begins",
     eventHindi: "बुध वक्री प्रारंभ",
     planet: "Mercury",
@@ -211,7 +212,7 @@ const upcomingTransits: TransitEvent[] = [
     descriptionHindi: "संचार की समीक्षा करें, नए अनुबंधों से बचें",
   },
   {
-    date: "2026-03-10",
+    date: `${getCurrentYear()}-03-10`,
     event: "Full Moon in Virgo",
     eventHindi: "कन्या राशि में पूर्णिमा",
     planet: "Moon",
@@ -220,7 +221,7 @@ const upcomingTransits: TransitEvent[] = [
     descriptionHindi: "स्वास्थ्य और सेवा के मामले पूर्ण होते हैं",
   },
   {
-    date: "2026-03-29",
+    date: `${getCurrentYear()}-03-29`,
     event: "Solar Eclipse in Aries",
     eventHindi: "मेष राशि में सूर्य ग्रहण",
     planet: "Sun",
@@ -505,21 +506,21 @@ export default function PlanetaryTrackerPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Link href="/transits/saturn-transit-2026" className="block">
+                <Link href={`/transits/saturn-transit-${getCurrentYear()}`} className="block">
                   <Button variant="outline" className="w-full justify-between">
-                    {t("planetaryTracker.saturnTransit2026", "Saturn Transit 2026")}
+                    {withCurrentYear(t("planetaryTracker.saturnTransitYear", "Saturn Transit {year}"))}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link href="/transits/jupiter-transit-2026" className="block">
+                <Link href={`/transits/jupiter-transit-${getCurrentYear()}`} className="block">
                   <Button variant="outline" className="w-full justify-between">
-                    {t("planetaryTracker.jupiterTransit2026", "Jupiter Transit 2026")}
+                    {withCurrentYear(t("planetaryTracker.jupiterTransitYear", "Jupiter Transit {year}"))}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link href="/mercury-retrograde-2026" className="block">
+                <Link href={`/mercury-retrograde-${getCurrentYear()}`} className="block">
                   <Button variant="outline" className="w-full justify-between">
-                    {t("planetaryTracker.mercuryRetrograde2026", "Mercury Retrograde 2026")}
+                    {withCurrentYear(t("planetaryTracker.mercuryRetrogradeYear", "Mercury Retrograde {year}"))}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>

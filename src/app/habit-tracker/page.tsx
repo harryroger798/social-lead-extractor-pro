@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear } from "@/lib/utils";
 import {
   Calendar,
   CheckCircle,
@@ -141,7 +142,7 @@ const sampleHabits: Habit[] = [
 
 const weekRecommendations: DayRecommendation[] = [
   {
-    date: "2026-01-18",
+    date: `${getCurrentYear()}-01-18`,
     dayName: "Sunday",
     dayNameHindi: "रविवार",
     planet: "Sun",
@@ -153,7 +154,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["अत्यधिक परिश्रम", "अहंकार संघर्ष"],
   },
   {
-    date: "2026-01-19",
+    date: `${getCurrentYear()}-01-19`,
     dayName: "Monday",
     dayNameHindi: "सोमवार",
     planet: "Moon",
@@ -165,7 +166,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["बड़े निर्णय", "टकराव"],
   },
   {
-    date: "2026-01-20",
+    date: `${getCurrentYear()}-01-20`,
     dayName: "Tuesday",
     dayNameHindi: "मंगलवार",
     planet: "Mars",
@@ -177,7 +178,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["बहस", "जोखिम भरे उद्यम"],
   },
   {
-    date: "2026-01-21",
+    date: `${getCurrentYear()}-01-21`,
     dayName: "Wednesday",
     dayNameHindi: "बुधवार",
     planet: "Mercury",
@@ -189,7 +190,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["दीर्घकालिक प्रतिबद्धताएं", "वक्री के दौरान अनुबंध पर हस्ताक्षर"],
   },
   {
-    date: "2026-01-22",
+    date: `${getCurrentYear()}-01-22`,
     dayName: "Thursday",
     dayNameHindi: "गुरुवार",
     planet: "Jupiter",
@@ -201,7 +202,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["अति भोग", "अत्यधिक खर्च"],
   },
   {
-    date: "2026-01-23",
+    date: `${getCurrentYear()}-01-23`,
     dayName: "Friday",
     dayNameHindi: "शुक्रवार",
     planet: "Venus",
@@ -213,7 +214,7 @@ const weekRecommendations: DayRecommendation[] = [
     avoidHindi: ["आलस्य", "अत्यधिक विलासिता"],
   },
   {
-    date: "2026-01-24",
+    date: `${getCurrentYear()}-01-24`,
     dayName: "Saturday",
     dayNameHindi: "शनिवार",
     planet: "Saturn",

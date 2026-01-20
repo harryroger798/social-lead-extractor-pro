@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear } from "@/lib/utils";
 import {
   Calendar,
   Clock,
@@ -116,7 +117,7 @@ const sampleDashaPeriods: DashaPeriod[] = [
 
 const sampleLifeEvents: LifeEvent[] = [
   {
-    year: 2026,
+    year: getCurrentYear(),
     month: 4,
     category: "career",
     title: "Career Advancement Opportunity",
@@ -129,7 +130,7 @@ const sampleLifeEvents: LifeEvent[] = [
     impact: "positive",
   },
   {
-    year: 2026,
+    year: getCurrentYear(),
     month: 8,
     category: "love",
     title: "Romantic Connection",
