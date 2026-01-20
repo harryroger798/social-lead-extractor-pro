@@ -224,15 +224,26 @@ router.post('/newsletter/subscribe', [
   }
 }));
 
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
+}
+
+function sanitizeColor(color) {
+  return /^#[0-9A-Fa-f]{6}$/.test(color) ? color : '#0EA5E9';
+}
+
 function generateWelcomeEmail(businessName, email) {
-  const themeColor = getSetting('theme_color') || '#0EA5E9';
+  const themeColor = sanitizeColor(getSetting('theme_color') || '#0EA5E9');
+  const safeName = escapeHtml(businessName);
   
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to ${businessName} Newsletter</title>
+  <title>Welcome to ${safeName} Newsletter</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f4f8;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f0f4f8;">
@@ -241,7 +252,7 @@ function generateWelcomeEmail(businessName, email) {
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="max-width: 560px; width: 100%;">
           <tr>
             <td style="background: linear-gradient(135deg, ${themeColor} 0%, #0369a1 100%); padding: 40px 30px; border-radius: 12px 12px 0 0; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Welcome to ${businessName}!</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Welcome to ${safeName}!</h1>
               <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">Thank you for subscribing to our newsletter</p>
             </td>
           </tr>
@@ -251,7 +262,7 @@ function generateWelcomeEmail(businessName, email) {
                 Hi there! 
               </p>
               <p style="margin: 0 0 20px 0; color: #64748b; font-size: 15px; line-height: 1.6;">
-                You've successfully subscribed to the ${businessName} newsletter. Here's what you can expect:
+                You've successfully subscribed to the ${safeName} newsletter. Here's what you can expect:
               </p>
               <ul style="margin: 0 0 25px 0; padding-left: 20px; color: #64748b; font-size: 15px; line-height: 1.8;">
                 <li>Latest tech tips and repair guides</li>
@@ -274,7 +285,7 @@ function generateWelcomeEmail(businessName, email) {
           <tr>
             <td style="background-color: #1e293b; padding: 25px 30px; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0 0 10px 0; color: #94a3b8; font-size: 13px;">
-                ${businessName} - Your Trusted Repair Partner
+                ${safeName} - Your Trusted Repair Partner
               </p>
               <p style="margin: 0; color: #64748b; font-size: 11px;">
                 Barrackpore, West Bengal, India

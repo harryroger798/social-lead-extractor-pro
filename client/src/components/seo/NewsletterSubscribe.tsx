@@ -12,6 +12,7 @@ interface NewsletterSubscribeProps {
 
 export function NewsletterSubscribe({ className = '', variant = 'default' }: NewsletterSubscribeProps) {
   const [email, setEmail] = useState('')
+  const [honeypot, setHoneypot] = useState('')
   const [loading, setLoading] = useState(false)
   const [subscribed, setSubscribed] = useState(false)
   const { toast } = useToast()
@@ -46,7 +47,7 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, honeypot }),
       })
 
       const data = await response.json()
@@ -76,6 +77,15 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
   if (variant === 'inline') {
     return (
       <form onSubmit={handleSubmit} className={`flex gap-2 ${className}`}>
+        <input
+          type="text"
+          name="website"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{ display: 'none' }}
+          tabIndex={-1}
+          autoComplete="off"
+        />
         <Input
           type="email"
           placeholder="Enter your email"
@@ -105,6 +115,15 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
           <span className="font-medium text-sm">Get tech tips in your inbox</span>
         </div>
         <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            type="text"
+            name="website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+          />
           <Input
             type="email"
             placeholder="your@email.com"
@@ -156,6 +175,15 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+              />
               <Input
                 type="email"
                 placeholder="Enter your email address"

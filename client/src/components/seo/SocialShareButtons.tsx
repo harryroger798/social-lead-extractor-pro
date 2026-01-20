@@ -5,8 +5,6 @@ import { useToast } from '@/hooks/use-toast'
 interface SocialShareButtonsProps {
   url: string
   title: string
-  description?: string
-  image?: string
   className?: string
   variant?: 'default' | 'compact' | 'floating'
 }
@@ -14,7 +12,6 @@ interface SocialShareButtonsProps {
 export function SocialShareButtons({
   url,
   title,
-  description: _description = '',
   className = '',
   variant = 'default'
 }: SocialShareButtonsProps) {
@@ -60,6 +57,7 @@ export function SocialShareButtons({
           className="rounded-full bg-green-500 hover:bg-green-600 text-white border-0 shadow-lg"
           onClick={() => handleShare('whatsapp')}
           title="Share on WhatsApp"
+          aria-label="Share on WhatsApp"
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
@@ -69,6 +67,7 @@ export function SocialShareButtons({
           className="rounded-full bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-lg"
           onClick={() => handleShare('facebook')}
           title="Share on Facebook"
+          aria-label="Share on Facebook"
         >
           <Facebook className="h-5 w-5" />
         </Button>
@@ -78,6 +77,7 @@ export function SocialShareButtons({
           className="rounded-full bg-sky-500 hover:bg-sky-600 text-white border-0 shadow-lg"
           onClick={() => handleShare('twitter')}
           title="Share on Twitter"
+          aria-label="Share on Twitter"
         >
           <Twitter className="h-5 w-5" />
         </Button>
@@ -87,6 +87,7 @@ export function SocialShareButtons({
           className="rounded-full bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-lg"
           onClick={() => handleShare('linkedin')}
           title="Share on LinkedIn"
+          aria-label="Share on LinkedIn"
         >
           <Linkedin className="h-5 w-5" />
         </Button>
@@ -96,6 +97,7 @@ export function SocialShareButtons({
           className="rounded-full bg-slate-600 hover:bg-slate-700 text-white border-0 shadow-lg"
           onClick={handleCopyLink}
           title="Copy link"
+          aria-label="Copy link"
         >
           <Link2 className="h-5 w-5" />
         </Button>
@@ -111,6 +113,7 @@ export function SocialShareButtons({
           onClick={() => handleShare('whatsapp')}
           className="p-2 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors"
           title="Share on WhatsApp"
+          aria-label="Share on WhatsApp"
         >
           <MessageCircle className="h-4 w-4" />
         </button>
@@ -118,6 +121,7 @@ export function SocialShareButtons({
           onClick={() => handleShare('facebook')}
           className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
           title="Share on Facebook"
+          aria-label="Share on Facebook"
         >
           <Facebook className="h-4 w-4" />
         </button>
@@ -125,6 +129,7 @@ export function SocialShareButtons({
           onClick={() => handleShare('twitter')}
           className="p-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white transition-colors"
           title="Share on Twitter"
+          aria-label="Share on Twitter"
         >
           <Twitter className="h-4 w-4" />
         </button>
@@ -132,6 +137,7 @@ export function SocialShareButtons({
           onClick={() => handleShare('linkedin')}
           className="p-2 rounded-full bg-blue-700 hover:bg-blue-800 text-white transition-colors"
           title="Share on LinkedIn"
+          aria-label="Share on LinkedIn"
         >
           <Linkedin className="h-4 w-4" />
         </button>
@@ -139,6 +145,7 @@ export function SocialShareButtons({
           onClick={handleCopyLink}
           className="p-2 rounded-full bg-slate-600 hover:bg-slate-700 text-white transition-colors"
           title="Copy link"
+          aria-label="Copy link"
         >
           <Link2 className="h-4 w-4" />
         </button>

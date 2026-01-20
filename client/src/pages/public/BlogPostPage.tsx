@@ -75,7 +75,8 @@ export function BlogPostPage() {
     )
   }
 
-    const readingTime = Math.ceil((post.body?.length || 0) / 1000)
+    const wordCount = post.body?.split(/\s+/).filter(Boolean).length || 0
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200))
     const postUrl = `https://bytecare.shop/blog/${post.slug.current}`
     const categoryIds = post.categories?.map(c => c._id) || []
 
@@ -129,7 +130,6 @@ export function BlogPostPage() {
           <SocialShareButtons
             url={postUrl}
             title={post.title}
-            description={post.excerpt}
             variant="floating"
           />
         </div>
@@ -261,7 +261,6 @@ export function BlogPostPage() {
                 <SocialShareButtons
                   url={postUrl}
                   title={post.title}
-                  description={post.excerpt}
                 />
               </div>
 
