@@ -1,0 +1,650 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Search, MoreHorizontal, Eye, Send, QrCode, CreditCard, Trash2, Plus, X, FileText, Sparkles } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
+import { invoicesApi, customersApi } from '@/lib/api'
+import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
+
+interface Customer {
+  id: number
+  name: string
+  phone: string
+  email: string
+}
+
+interface LineItem {
+  description: string
+  amount: number
+}
+
+interface Invoice {
+  id: number
+  invoice_number: string
+  repair_id: number
+  customer_id: number
+  customer_name: string
+  customer_phone: string
+  customer_email: string
+  subtotal: number
+  discount: number
+  gst_amount: number
+  total_amount: number
+  amount_paid: number
+  payment_status: string
+  due_date: string
+  created_at: string
+}
+
+export function InvoicesPage() {
+  const { i18n } = useTranslation()
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [qrDialogOpen, setQrDialogOpen] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('')
+  const [lineItems, setLineItems] = useState<LineItem[]>([{ description: '', amount: 0 }])
+  const [discount, setDiscount] = useState(0)
+  const [customerSearch, setCustomerSearch] = useState('')
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['invoices', search, statusFilter],
+    queryFn: () => invoicesApi.getAll({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 }),
+  })
+
+  const { data: customersData } = useQuery({
+    queryKey: ['customers', customerSearch],
+    queryFn: () => customersApi.getAll({ search: customerSearch, limit: 100 }),
+  })
+
+  const markPaidMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
+      invoicesApi.markPaid(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoices'] })
+      setPaymentDialogOpen(false)
+      setSelectedInvoice(null)
+      toast({ title: 'Payment recorded successfully' })
+    },
+    onError: () => {
+      toast({ variant: 'destructive', title: 'Failed to record payment' })
+    },
+  })
+
+    const sendEmailMutation = useMutation({
+      mutationFn: (id: number) => invoicesApi.sendEmail(id),
+      onSuccess: () => {
+        toast({ title: 'Invoice sent via email' })
+      },
+      onError: () => {
+        toast({ variant: 'destructive', title: 'Failed to send email' })
+      },
+    })
+
+        const deleteMutation = useMutation({
+          mutationFn: (id: number) => invoicesApi.delete(id),
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['invoices'] })
+            toast({ title: 'Invoice deleted successfully' })
+          },
+          onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete invoice' })
+          },
+        })
+
+      const createMutation = useMutation({
+        mutationFn: (data: Record<string, unknown>) => invoicesApi.create(data),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['invoices'] })
+          setCreateDialogOpen(false)
+          resetCreateForm()
+          toast({ title: 'Invoice created successfully' })
+        },
+        onError: () => {
+          toast({ variant: 'destructive', title: 'Failed to create invoice' })
+        },
+      })
+
+        const invoices = data?.data?.data || []
+        const customers = customersData?.data?.data || []
+
+      const resetCreateForm = () => {
+        setSelectedCustomerId('')
+        setLineItems([{ description: '', amount: 0 }])
+        setDiscount(0)
+        setCustomerSearch('')
+      }
+
+      const addLineItem = () => {
+        setLineItems([...lineItems, { description: '', amount: 0 }])
+      }
+
+      const removeLineItem = (index: number) => {
+        if (lineItems.length > 1) {
+          setLineItems(lineItems.filter((_, i) => i !== index))
+        }
+      }
+
+      const updateLineItem = (index: number, field: keyof LineItem, value: string | number) => {
+        const updated = [...lineItems]
+        if (field === 'amount') {
+          updated[index][field] = Number(value)
+        } else {
+          updated[index][field] = value as string
+        }
+        setLineItems(updated)
+      }
+
+      const subtotal = lineItems.reduce((sum, item) => sum + (item.amount || 0), 0)
+      const gstAmount = (subtotal - discount) * 0.18
+      const totalAmount = subtotal - discount + gstAmount
+
+      const handleCreateInvoice = () => {
+        if (!selectedCustomerId) {
+          toast({ variant: 'destructive', title: 'Please select a customer' })
+          return
+        }
+        if (lineItems.some(item => !item.description || item.amount <= 0)) {
+          toast({ variant: 'destructive', title: 'Please fill all line items with valid amounts' })
+          return
+        }
+        createMutation.mutate({
+          customer_id: parseInt(selectedCustomerId),
+          items: lineItems,
+          discount_amount: discount,
+        })
+      }
+
+  const handlePayment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!selectedInvoice) return
+    const formData = new FormData(e.currentTarget)
+    const paymentData = {
+      amount: Number(formData.get('amount')),
+      payment_method: formData.get('payment_method'),
+      reference_number: formData.get('reference_number'),
+    }
+    markPaidMutation.mutate({ id: selectedInvoice.id, data: paymentData })
+  }
+
+  const showQRCode = async (invoice: Invoice) => {
+    try {
+      const response = await invoicesApi.getPaymentQR(invoice.id)
+      setQrCodeUrl(response.data.data.qr_code)
+      setSelectedInvoice(invoice)
+      setQrDialogOpen(true)
+    } catch {
+      toast({ variant: 'destructive', title: 'Failed to generate QR code' })
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+            className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25"
+          >
+            <FileText className="h-6 w-6 text-white" />
+          </motion.div>
+          <div>
+            <h1 className="text-3xl font-bold dark:text-white">Invoices</h1>
+            <p className="text-muted-foreground flex items-center gap-2">
+              {i18n.language === 'hi' ? 'Invoices aur payments manage karein' :
+               i18n.language === 'bn' ? 'ইনভয়েস এবং পেমেন্ট পরিচালনা করুন' :
+               'Manage invoices and payments'}
+              <Sparkles className="h-4 w-4 text-primary" />
+            </p>
+          </div>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Button 
+            onClick={() => setCreateDialogOpen(true)}
+            className="gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/25"
+          >
+            <Plus className="h-4 w-4" />
+            Create Invoice
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      {/* Main Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card className="overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/70 dark:bg-slate-800/70">
+          <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-500" />
+          <CardHeader>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex-1 min-w-64">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={i18n.language === 'hi' ? 'Invoices khojein...' :
+                              i18n.language === 'bn' ? 'ইনভয়েস খুঁজুন...' :
+                              'Search invoices...'}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="unpaid">Unpaid</SelectItem>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex h-32 items-center justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent"
+                />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 dark:bg-slate-700/50">
+                    <TableHead className="font-semibold">Invoice #</TableHead>
+                    <TableHead className="font-semibold">Customer</TableHead>
+                    <TableHead className="font-semibold">Amount</TableHead>
+                    <TableHead className="font-semibold">Paid</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Due Date</TableHead>
+                    <TableHead className="font-semibold">Created</TableHead>
+                    <TableHead className="w-12"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12">
+                        <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
+                        <p className="text-muted-foreground">
+                          {i18n.language === 'hi' ? 'Koi invoice nahi mila' :
+                           i18n.language === 'bn' ? 'কোনো ইনভয়েস পাওয়া যায়নি' :
+                           'No invoices found'}
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    invoices.map((invoice: Invoice, index: number) => (
+                      <motion.tr
+                        key={invoice.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="border-b transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <TableCell className="font-semibold text-primary">{invoice.invoice_number}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium dark:text-white">{invoice.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{invoice.customer_phone}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-semibold">{formatCurrency(invoice.total_amount)}</TableCell>
+                        <TableCell className="text-green-600 dark:text-green-400">{formatCurrency(invoice.amount_paid || 0)}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(invoice.payment_status)}>
+                            {invoice.payment_status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(invoice.due_date)}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(invoice.created_at)}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-700">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setViewingInvoice(invoice)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              {invoice.payment_status !== 'paid' && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedInvoice(invoice)
+                                      setPaymentDialogOpen(true)
+                                    }}
+                                  >
+                                    <CreditCard className="mr-2 h-4 w-4" />
+                                    Record Payment
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => showQRCode(invoice)}>
+                                    <QrCode className="mr-2 h-4 w-4" />
+                                    Show QR Code
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {invoice.customer_email && (
+                                <DropdownMenuItem
+                                  onClick={() => sendEmailMutation.mutate(invoice.id)}
+                                >
+                                  <Send className="mr-2 h-4 w-4" />
+                                  Send Email
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this invoice?')) {
+                                    deleteMutation.mutate(invoice.id)
+                                  }
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </motion.tr>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <Dialog open={!!viewingInvoice} onOpenChange={() => setViewingInvoice(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Invoice Details - {viewingInvoice?.invoice_number}</DialogTitle>
+          </DialogHeader>
+          {viewingInvoice && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer</p>
+                  <p className="font-medium">{viewingInvoice.customer_name}</p>
+                  <p className="text-sm">{viewingInvoice.customer_phone}</p>
+                  {viewingInvoice.customer_email && (
+                    <p className="text-sm">{viewingInvoice.customer_email}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <Badge className={getStatusColor(viewingInvoice.payment_status)}>
+                    {viewingInvoice.payment_status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Due Date</p>
+                  <p className="font-medium">{formatDate(viewingInvoice.due_date)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Created</p>
+                  <p className="font-medium">{formatDate(viewingInvoice.created_at)}</p>
+                </div>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Subtotal</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.subtotal || 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Discount</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.discount || 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">GST</p>
+                    <p className="font-medium">{formatCurrency(viewingInvoice.gst_amount || 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total</p>
+                    <p className="text-lg font-bold">{formatCurrency(viewingInvoice.total_amount || 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Amount Paid</p>
+                    <p className="font-medium text-green-600">{formatCurrency(viewingInvoice.amount_paid || 0)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Balance Due</p>
+                    <p className="font-medium text-red-600">
+                      {formatCurrency((viewingInvoice.total_amount || 0) - (viewingInvoice.amount_paid || 0))}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Record Payment</DialogTitle>
+            <DialogDescription>
+              Record a payment for invoice {selectedInvoice?.invoice_number}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handlePayment}>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount *</Label>
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={selectedInvoice ? selectedInvoice.total_amount - selectedInvoice.amount_paid : 0}
+                  defaultValue={selectedInvoice ? selectedInvoice.total_amount - selectedInvoice.amount_paid : 0}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="payment_method">Payment Method *</Label>
+                <Select name="payment_method" required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="upi">UPI</SelectItem>
+                    <SelectItem value="card">Card</SelectItem>
+                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="cheque">Cheque</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="reference_number">Reference Number</Label>
+                <Input id="reference_number" name="reference_number" placeholder="Transaction ID / Cheque No." />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setPaymentDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={markPaidMutation.isPending}>
+                Record Payment
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Payment QR Code</DialogTitle>
+            <DialogDescription>
+              Scan to pay {formatCurrency(selectedInvoice ? selectedInvoice.total_amount - selectedInvoice.amount_paid : 0)}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            {qrCodeUrl && (
+              <img src={qrCodeUrl} alt="Payment QR Code" className="h-64 w-64" />
+            )}
+            <p className="text-center text-sm text-muted-foreground">
+              Invoice: {selectedInvoice?.invoice_number}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={createDialogOpen} onOpenChange={(open) => {
+        setCreateDialogOpen(open)
+        if (!open) resetCreateForm()
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Invoice</DialogTitle>
+            <DialogDescription>
+              Create a new invoice for a customer
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Customer *</Label>
+              <Input
+                placeholder="Search customers..."
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+                className="mb-2"
+              />
+              <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {customers.map((customer: Customer) => (
+                    <SelectItem key={customer.id} value={customer.id.toString()}>
+                      {customer.name} - {customer.phone}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Line Items *</Label>
+              {lineItems.map((item, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input
+                    placeholder="Description"
+                    value={item.description}
+                    onChange={(e) => updateLineItem(index, 'description', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    value={item.amount || ''}
+                    onChange={(e) => updateLineItem(index, 'amount', e.target.value)}
+                    className="w-32"
+                    min="0"
+                  />
+                  {lineItems.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeLineItem(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button type="button" variant="outline" size="sm" onClick={addLineItem}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="discount">Discount</Label>
+              <Input
+                id="discount"
+                type="number"
+                value={discount || ''}
+                onChange={(e) => setDiscount(Number(e.target.value))}
+                min="0"
+              />
+            </div>
+
+            <div className="rounded-lg bg-muted p-4">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>Subtotal:</div>
+                <div className="text-right">{formatCurrency(subtotal)}</div>
+                <div>Discount:</div>
+                <div className="text-right">-{formatCurrency(discount)}</div>
+                <div>GST (18%):</div>
+                <div className="text-right">{formatCurrency(gstAmount)}</div>
+                <div className="font-bold">Total:</div>
+                <div className="text-right font-bold">{formatCurrency(totalAmount)}</div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateInvoice} disabled={createMutation.isPending}>
+              Create Invoice
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
