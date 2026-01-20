@@ -25,6 +25,7 @@ const mailgunRoutes = require('./routes/omnisend'); // Using same route file, no
 const exportRoutes = require('./routes/exports');
 const backupRoutes = require('./routes/backup');
 const blogRoutes = require('./routes/blog');
+const bookingRoutes = require('./routes/bookings');
 
 const airtableSync = require('./services/airtableSync');
 
@@ -141,6 +142,7 @@ app.use('/api/mailgun', mailgunRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 app.use('/generated', express.static(path.join(__dirname, 'generated')));
 

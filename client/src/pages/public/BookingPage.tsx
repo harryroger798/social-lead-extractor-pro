@@ -9,13 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, CheckCircle, Smartphone, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react'
+import { Calendar, Clock, CheckCircle, Smartphone, ArrowRight, ArrowLeft, Sparkles, Loader2 } from 'lucide-react'
 import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, CircuitPattern, AnimatedLines } from '@/components/ui/visual-enhancements'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export function BookingPage() {
   const { t, i18n } = useTranslation()
   const { toast } = useToast()
   const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [bookingResult, setBookingResult] = useState<{
+    invoice_number: string
+    scheduled_date: string
+    scheduled_time: string
+  } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,13 +36,49 @@ export function BookingPage() {
     time: ''
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStep(3)
-    toast({
-      title: t('public.booking.bookingConfirmed'),
-      description: t('public.booking.bookingConfirmedDesc'),
-    })
+    setIsSubmitting(true)
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setBookingResult({
+          invoice_number: data.data.invoice_number,
+          scheduled_date: data.data.scheduled_date,
+          scheduled_time: data.data.scheduled_time,
+        })
+        setStep(3)
+        toast({
+          title: t('public.booking.bookingConfirmed'),
+          description: t('public.booking.bookingConfirmedDesc'),
+        })
+      } else {
+        toast({
+          title: i18n.language === 'hi' ? 'Error' : i18n.language === 'bn' ? 'ত্রুটি' : 'Error',
+          description: data.message || (i18n.language === 'hi' ? 'Booking mein error hua. Phir se try karein.' : i18n.language === 'bn' ? 'বুকিং এ সমস্যা হয়েছে। আবার চেষ্টা করুন।' : 'Failed to create booking. Please try again.'),
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      console.error('Booking error:', error)
+      toast({
+        title: i18n.language === 'hi' ? 'Error' : i18n.language === 'bn' ? 'ত্রুটি' : 'Error',
+        description: i18n.language === 'hi' ? 'Network error. Phir se try karein.' : i18n.language === 'bn' ? 'নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।' : 'Network error. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const timeSlots = [
@@ -328,10 +372,19 @@ export function BookingPage() {
                     <Button 
                       type="submit" 
                       className="flex-1 gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/25 py-6" 
-                      disabled={!formData.date || !formData.time}
+                      disabled={!formData.date || !formData.time || isSubmitting}
                     >
-                      {t('public.booking.confirmBooking')}
-                      <CheckCircle className="h-5 w-5" />
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          {i18n.language === 'hi' ? 'Processing...' : i18n.language === 'bn' ? 'প্রসেসিং...' : 'Processing...'}
+                        </>
+                      ) : (
+                        <>
+                          {t('public.booking.confirmBooking')}
+                          <CheckCircle className="h-5 w-5" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </form>
@@ -373,10 +426,15 @@ export function BookingPage() {
                     <h3 className="font-bold dark:text-white">{t('public.booking.bookingDetails')}</h3>
                   </div>
                   <div className="space-y-2 text-sm">
+                    {bookingResult && (
+                      <p className="dark:text-white text-lg font-semibold text-primary">
+                        <strong>{i18n.language === 'hi' ? 'Ticket #:' : i18n.language === 'bn' ? 'টিকেট #:' : 'Ticket #:'}</strong> {bookingResult.invoice_number}
+                      </p>
+                    )}
                     <p className="dark:text-white"><strong>{t('public.booking.yourName')}:</strong> {formData.name}</p>
                     <p className="dark:text-white"><strong>{t('public.booking.deviceType')}:</strong> {formData.deviceType}</p>
-                    <p className="dark:text-white"><strong>{t('public.booking.preferredDate')}:</strong> {formData.date}</p>
-                    <p className="dark:text-white"><strong>{t('public.booking.preferredTime')}:</strong> {formData.time}</p>
+                    <p className="dark:text-white"><strong>{t('public.booking.preferredDate')}:</strong> {bookingResult?.scheduled_date || formData.date}</p>
+                    <p className="dark:text-white"><strong>{t('public.booking.preferredTime')}:</strong> {bookingResult?.scheduled_time || formData.time}</p>
                   </div>
                 </div>
                 <Link to="/">
