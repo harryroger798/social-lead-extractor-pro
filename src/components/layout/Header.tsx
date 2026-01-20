@@ -7,9 +7,11 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useLanguage } from "@/lib/i18n";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 export function Header() {
   const { t } = useLanguage();
+  const currentYear = getCurrentYear();
   
   const navigation = [
     {
@@ -56,7 +58,7 @@ export function Header() {
       children: [
         { name: t('nav.dailyPanchang', 'Daily Panchang'), href: "/panchang", description: t('nav.dailyPanchangDesc', "Today's tithi, nakshatra & muhurat") },
         { name: t('nav.planetaryTracker', 'Planetary Tracker'), href: "/planetary-tracker", description: t('nav.planetaryTrackerDesc', 'Live planetary positions & transits') },
-        { name: t('nav.festivalCalendar2026', 'Festival Calendar 2026'), href: "/festival-calendar-2026", description: t('nav.festivalCalendar2026Desc', 'Hindu festivals & important dates') },
+        { name: withCurrentYear(t('nav.festivalCalendarYear', 'Festival Calendar {year}')), href: `/festival-calendar-${currentYear}`, description: t('nav.festivalCalendarYearDesc', 'Hindu festivals & important dates') },
       ],
     },
     {
@@ -67,11 +69,11 @@ export function Header() {
         { name: t('nav.dailyHoroscope', 'Daily Horoscope'), href: "/daily-horoscope", description: t('nav.dailyHoroscopeDesc', "Today's predictions") },
         { name: t('nav.weeklyHoroscope', 'Weekly Horoscope'), href: "/horoscope/weekly", description: t('nav.weeklyHoroscopeDesc', "This week's forecast") },
         { name: t('nav.monthlyHoroscope', 'Monthly Horoscope'), href: "/horoscope/monthly", description: t('nav.monthlyHoroscopeDesc', 'Monthly predictions') },
-        { name: t('nav.horoscope2026', '2026 Horoscope'), href: "/horoscope/2026", description: t('nav.horoscope2026Desc', 'Yearly predictions for 2026') },
-        { name: t('nav.saturnTransit2026', 'Saturn Transit 2026'), href: "/transits/saturn-transit-2026", description: t('nav.saturnTransit2026Desc', 'Shani Gochar effects') },
-        { name: t('nav.jupiterTransit2026', 'Jupiter Transit 2026'), href: "/transits/jupiter-transit-2026", description: t('nav.jupiterTransit2026Desc', 'Guru Gochar predictions') },
-        { name: t('nav.mercuryRetrograde', 'Mercury Retrograde'), href: "/transits/mercury-retrograde-2026", description: t('nav.mercuryRetrogradeDesc', 'Retrograde dates & survival guide') },
-        { name: t('nav.eclipses2026', 'Eclipses 2026'), href: "/eclipses-2026", description: t('nav.eclipses2026Desc', 'Solar & lunar eclipse guide') },
+        { name: withCurrentYear(t('nav.horoscopeYear', '{year} Horoscope')), href: `/horoscope/${currentYear}`, description: withCurrentYear(t('nav.horoscopeYearDesc', 'Yearly predictions for {year}')) },
+        { name: withCurrentYear(t('nav.saturnTransitYear', 'Saturn Transit {year}')), href: `/transits/saturn-transit-${currentYear}`, description: t('nav.saturnTransitYearDesc', 'Shani Gochar effects') },
+        { name: withCurrentYear(t('nav.jupiterTransitYear', 'Jupiter Transit {year}')), href: `/transits/jupiter-transit-${currentYear}`, description: t('nav.jupiterTransitYearDesc', 'Guru Gochar predictions') },
+        { name: t('nav.mercuryRetrograde', 'Mercury Retrograde'), href: `/transits/mercury-retrograde-${currentYear}`, description: t('nav.mercuryRetrogradeDesc', 'Retrograde dates & survival guide') },
+        { name: withCurrentYear(t('nav.eclipsesYear', 'Eclipses {year}')), href: `/eclipses-${currentYear}`, description: t('nav.eclipsesYearDesc', 'Solar & lunar eclipse guide') },
       ],
     },
         {

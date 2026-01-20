@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/lib/i18n";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import { 
   Star, 
   Calculator, 
@@ -24,6 +28,20 @@ import {
   AlertTriangle,
   Mic,
   Phone,
+  MapPin,
+  Zap,
+  TrendingUp,
+  Share2,
+  MessageCircle,
+  Flame,
+  Eye,
+  Gift,
+  Crown,
+  Target,
+  Compass,
+  Briefcase,
+  Wallet,
+  Brain,
 } from "lucide-react";
 
 // Testimonials stay in original language as requested by user
@@ -50,6 +68,84 @@ const testimonials = [
 
 export default function Home() {
   const { t } = useLanguage();
+  const [birthDate, setBirthDate] = useState("");
+  const [birthTime, setBirthTime] = useState("");
+  const [birthPlace, setBirthPlace] = useState("");
+    const [liveCount, setLiveCount] = useState(2847);
+  
+    // Dynamic year - automatically updates each year
+    const currentYear = getCurrentYear();
+
+  // Simulate live counter
+  useState(() => {
+    const interval = setInterval(() => {
+      setLiveCount(prev => prev + Math.floor(Math.random() * 3) - 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  });
+
+  const handleQuickStart = () => {
+    if (birthDate && birthTime && birthPlace) {
+      const params = new URLSearchParams({
+        date: birthDate,
+        time: birthTime,
+        place: birthPlace,
+      });
+      window.location.href = `/tools/kundli-calculator?${params.toString()}`;
+    }
+  };
+
+  // Life Journeys - 4 main categories replacing 8 dropdowns
+  const lifeJourneys = [
+    {
+      icon: Heart,
+      title: t('homepage.loveJourneyTitle', 'Love & Relationships'),
+      description: t('homepage.loveJourneyDesc', 'Compatibility, marriage timing, relationship insights'),
+      color: 'from-pink-500 to-rose-500',
+      bgColor: 'bg-pink-50',
+      tools: [
+        { name: t('homepage.horoscopeMatching', 'Horoscope Matching'), href: '/tools/horoscope-matching' },
+        { name: t('homepage.loveCompatibility', 'Love Compatibility'), href: '/tools/love-calculator' },
+        { name: t('homepage.marriageTiming', 'Marriage Timing'), href: '/tools/muhurta-calculator' },
+      ],
+    },
+    {
+      icon: Briefcase,
+      title: t('homepage.careerJourneyTitle', 'Career & Wealth'),
+      description: t('homepage.careerJourneyDesc', 'Financial astrology, career predictions, wealth timing'),
+      color: 'from-emerald-500 to-teal-500',
+      bgColor: 'bg-emerald-50',
+      tools: [
+        { name: t('homepage.financialAstrology', 'Financial Astrology'), href: '/tools/financial-astrology' },
+        { name: t('homepage.careerPredictions', 'Career Predictions'), href: '/horoscope/career' },
+        { name: t('homepage.wealthTiming', 'Wealth Timing'), href: '/tools/dasha-calculator' },
+      ],
+    },
+    {
+      icon: Compass,
+      title: t('homepage.dailyJourneyTitle', 'Daily Guidance'),
+      description: t('homepage.dailyJourneyDesc', 'Panchang, daily horoscope, voice AI astrologer'),
+      color: 'from-violet-500 to-purple-500',
+      bgColor: 'bg-violet-50',
+      tools: [
+        { name: t('homepage.dailyPanchang', 'Daily Panchang'), href: '/panchang' },
+        { name: t('homepage.dailyHoroscope', 'Daily Horoscope'), href: '/horoscope/daily' },
+        { name: t('homepage.voiceAstrologer', 'Voice AI Astrologer'), href: '/voice-astrologer' },
+      ],
+    },
+    {
+      icon: Brain,
+      title: t('homepage.deepDiveJourneyTitle', 'Deep Dive'),
+      description: t('homepage.deepDiveJourneyDesc', 'Advanced charts, doshas, remedies, numerology'),
+      color: 'from-amber-500 to-orange-500',
+      bgColor: 'bg-amber-50',
+      tools: [
+        { name: t('homepage.fullKundli', 'Full Kundli Analysis'), href: '/tools/kundli-calculator' },
+        { name: t('homepage.doshaAnalysis', 'Dosha Analysis'), href: '/doshas' },
+        { name: t('homepage.numerology', 'Numerology'), href: '/tools/numerology' },
+      ],
+    },
+  ];
 
   const features = [
     {
@@ -121,38 +217,39 @@ export default function Home() {
     },
   ];
 
-  const predictions2026 = [
-    {
-      title: t('home.horoscope2026Title', '2026 Horoscope'),
-      description: t('home.horoscope2026Desc', 'Yearly predictions for all 12 zodiac signs'),
-      href: "/horoscope/2026",
-    },
-    {
-      title: t('home.saturnTransitTitle', 'Saturn Transit 2026'),
-      description: t('home.saturnTransitDesc', 'Shani Gochar effects on your sign'),
-      href: "/transits/saturn-transit-2026",
-    },
-    {
-      title: t('home.jupiterTransitTitle', 'Jupiter Transit 2026'),
-      description: t('home.jupiterTransitDesc', 'Guru Gochar blessings and opportunities'),
-      href: "/transits/jupiter-transit-2026",
-    },
-    {
-      title: t('home.mercuryRetrogradeTitle', 'Mercury Retrograde 2026'),
-      description: t('home.mercuryRetrogradeDesc', 'Dates, effects, and survival guide'),
-      href: "/transits/mercury-retrograde-2026",
-    },
-    {
-      title: t('home.eclipsesTitle', 'Eclipses 2026'),
-      description: t('home.eclipsesDesc', 'Solar & lunar eclipse dates and effects'),
-      href: "/eclipses-2026",
-    },
-    {
-      title: t('home.festivalCalendarTitle', 'Festival Calendar 2026'),
-      description: t('home.festivalCalendarDesc', 'Hindu festivals and important dates'),
-      href: "/festival-calendar-2026",
-    },
-  ];
+    // Dynamic year predictions - automatically updates each year
+    const yearlyPredictions = [
+      {
+        title: withCurrentYear(t('home.horoscopeYearTitle', '{year} Horoscope')),
+        description: t('home.horoscopeYearDesc', 'Yearly predictions for all 12 zodiac signs'),
+        href: `/horoscope/${currentYear}`,
+      },
+      {
+        title: withCurrentYear(t('home.saturnTransitTitle', 'Saturn Transit {year}')),
+        description: t('home.saturnTransitDesc', 'Shani Gochar effects on your sign'),
+        href: `/transits/saturn-transit-${currentYear}`,
+      },
+      {
+        title: withCurrentYear(t('home.jupiterTransitTitle', 'Jupiter Transit {year}')),
+        description: t('home.jupiterTransitDesc', 'Guru Gochar blessings and opportunities'),
+        href: `/transits/jupiter-transit-${currentYear}`,
+      },
+      {
+        title: withCurrentYear(t('home.mercuryRetrogradeTitle', 'Mercury Retrograde {year}')),
+        description: t('home.mercuryRetrogradeDesc', 'Dates, effects, and survival guide'),
+        href: `/transits/mercury-retrograde-${currentYear}`,
+      },
+      {
+        title: withCurrentYear(t('home.eclipsesTitle', 'Eclipses {year}')),
+        description: t('home.eclipsesDesc', 'Solar & lunar eclipse dates and effects'),
+        href: `/eclipses-${currentYear}`,
+      },
+      {
+        title: withCurrentYear(t('home.festivalCalendarTitle', 'Festival Calendar {year}')),
+        description: t('home.festivalCalendarDesc', 'Hindu festivals and important dates'),
+        href: `/festival-calendar-${currentYear}`,
+      },
+    ];
 
   const stats = [
     { value: "50,000+", label: t('home.chartsGenerated', 'Charts Generated') },
@@ -162,57 +259,210 @@ export default function Home() {
   ];
   return (
     <>
-      <section className="relative overflow-hidden py-20 lg:py-28">
-        <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <Badge className="mb-4 bg-amber-100 text-amber-800 hover:bg-amber-100">
-              <Sparkles className="w-3 h-3 mr-1" />
-              {t('home.trustedBadge', 'Trusted by 50,000+ Users')}
-            </Badge>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              {t('home.heroTitle', 'Discover Your Destiny with')}{" "}
-              <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                {t('home.heroTitleHighlight', 'Authentic Vedic Astrology')}
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              {t('home.heroSubtitle', 'Get accurate Kundli analysis, Nakshatra insights, and personalized predictions from expert astrologers with 20+ years of experience in Jyotish Shastra.')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-lg px-8 py-6"
-                asChild
-              >
-                <Link href="/tools/kundli-calculator">
-                  {t('home.getFreeKundli', 'Get Free Kundli')}
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-amber-500 text-amber-700 hover:bg-amber-50 text-lg px-8 py-6"
-                asChild
-              >
-                <Link href="/consultation">
-                  {t('home.talkToAstrologer', 'Talk to Astrologer')}
-                </Link>
-              </Button>
+      {/* Phase 1: Redesigned Hero Section with Single Powerful Hook */}
+      <section className="relative overflow-hidden py-16 lg:py-24 min-h-[90vh] flex items-center bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-950">
+        {/* Animated starfield background */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/50 to-slate-950"></div>
+          {/* Animated stars */}
+          <div className="stars-container absolute inset-0">
+            {[...Array(50)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                  animationDuration: `${2 + Math.random() * 3}s`,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Main hook and form */}
+            <div className="text-center lg:text-left">
+              {/* Live counter badge */}
+              <Badge className="mb-6 bg-green-500/20 text-green-400 border-green-500/30 animate-pulse">
+                <Eye className="w-3 h-3 mr-1" />
+                {t('homepage.liveNow', '{count} people checking charts now').replace('{count}', liveCount.toLocaleString())}
+              </Badge>
+
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                              {t('homepage.heroMainTitle', 'Discover What {year} Has in Store for You').replace('{year}', currentYear.toString())}
+                            </h1>
+
+              <p className="text-xl md:text-2xl text-indigo-200 mb-8 max-w-xl">
+                {t('homepage.heroSubtitle', 'Your complete cosmic blueprint in 60 seconds. Free forever.')}
+              </p>
+
+              {/* 3-Field Quick Start Form */}
+              <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6 max-w-md mx-auto lg:mx-0">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white text-center lg:text-left">
+                    {t('homepage.heroFormTitle', 'Get Your Cosmic Profile')}
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="birthDate" className="text-indigo-200 text-sm">
+                        {t('homepage.birthDate', 'Birth Date')}
+                      </Label>
+                      <Input
+                        id="birthDate"
+                        type="date"
+                        value={birthDate}
+                        onChange={(e) => setBirthDate(e.target.value)}
+                        className="bg-white/10 border-white/30 text-white placeholder:text-gray-400"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="birthTime" className="text-indigo-200 text-sm">
+                        {t('homepage.birthTime', 'Birth Time')}
+                      </Label>
+                      <Input
+                        id="birthTime"
+                        type="time"
+                        value={birthTime}
+                        onChange={(e) => setBirthTime(e.target.value)}
+                        className="bg-white/10 border-white/30 text-white placeholder:text-gray-400"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="birthPlace" className="text-indigo-200 text-sm">
+                        {t('homepage.birthPlace', 'Birth Place')}
+                      </Label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          id="birthPlace"
+                          type="text"
+                          placeholder={t('homepage.birthPlacePlaceholder', 'Enter city name')}
+                          value={birthPlace}
+                          onChange={(e) => setBirthPlace(e.target.value)}
+                          className="bg-white/10 border-white/30 text-white placeholder:text-gray-400 pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleQuickStart}
+                    disabled={!birthDate || !birthTime || !birthPlace}
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-lg py-6 disabled:opacity-50"
+                  >
+                    <Zap className="mr-2 w-5 h-5" />
+                    {t('homepage.revealDestiny', 'Reveal My Destiny')}
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+
+                  <p className="text-center text-xs text-indigo-300">
+                    {t('homepage.freeForever', 'Free forever. No credit card required.')}
+                  </p>
+                </div>
+              </Card>
+            </div>
+
+            {/* Right side - Cosmic Profile Preview */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                {/* Glowing orb effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+                
+                {/* Preview card */}
+                <Card className="relative bg-gradient-to-br from-indigo-900/80 to-purple-900/80 backdrop-blur-md border-white/20 p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <div className="text-center">
+                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <Star className="w-12 h-12 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      {t('homepage.cosmicProfileTitle', 'Your Cosmic DNA')}
+                    </h3>
+                    <div className="space-y-2 text-indigo-200">
+                      <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homepage.sunSign', 'Sun Sign')}: ???</p>
+                      <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homepage.moonSign', 'Moon Sign')}: ???</p>
+                      <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homepage.risingSign', 'Rising Sign')}: ???</p>
+                    </div>
+                    <div className="mt-6 p-4 bg-white/10 rounded-lg">
+                                            <p className="text-amber-300 font-semibold">
+                                              {withCurrentYear(t('homepage.predictionYear', '{year} Prediction'))}
+                                            </p>
+                      <p className="text-white text-sm mt-1">
+                        {t('homepage.enterDetailsToReveal', 'Enter your details to reveal...')}
+                      </p>
+                    </div>
+                                        <Button className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600">
+                                          <Share2 className="mr-2 w-4 h-4" />
+                                          {t('homepage.shareCosmicDna', 'Share Your Cosmic DNA')}
+                                        </Button>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
-          
+
+          {/* Stats row */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-amber-400">{stat.value}</div>
-                <div className="text-sm text-gray-300 mt-1">{stat.label}</div>
+                <div className="text-sm text-indigo-300 mt-1">{stat.label}</div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Phase 3: Life Journeys - 4 Main Categories */}
+      <section className="py-16 bg-gradient-to-b from-slate-950 to-slate-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
+              <Compass className="w-3 h-3 mr-1" />
+              {t('homepage.lifeJourneysBadge', 'Your Life Journeys')}
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {t('homepage.lifeJourneysTitle', 'Explore Your Cosmic Path')}
+            </h2>
+            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+              {t('homepage.lifeJourneysDesc', 'Choose your journey and discover what the stars reveal about your life')}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {lifeJourneys.map((journey) => (
+              <Card 
+                key={journey.title} 
+                className="group bg-white/5 backdrop-blur-sm border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-300 overflow-hidden"
+              >
+                <CardHeader className="pb-2">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${journey.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <journey.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <CardTitle className="text-xl text-white">{journey.title}</CardTitle>
+                  <CardDescription className="text-indigo-300">{journey.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {journey.tools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={tool.href}
+                        className="flex items-center text-sm text-indigo-200 hover:text-amber-400 transition-colors"
+                      >
+                        <ArrowRight className="w-3 h-3 mr-2" />
+                        {tool.name}
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -338,17 +588,17 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-amber-400 text-amber-900">{t('home.predictions2026Badge', '2026 Predictions')}</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {t('home.predictions2026Title', 'What Does 2026 Hold For You?')}
-            </h2>
-            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              {t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for 2026.')}
-            </p>
-          </div>
+                      <Badge className="mb-4 bg-amber-400 text-amber-900">{withCurrentYear(t('home.predictionsYearBadge', '{year} Predictions'))}</Badge>
+                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                        {withCurrentYear(t('home.predictionsYearTitle', 'What Does {year} Hold For You?'))}
+                      </h2>
+                      <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+                        {withCurrentYear(t('home.predictionsYearDesc', 'Explore detailed predictions, planetary transits, and cosmic events for {year}.'))}
+                      </p>
+                    </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {predictions2026.map((item) => (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {yearlyPredictions.map((item) => (
               <Link 
                 key={item.title} 
                 href={item.href}

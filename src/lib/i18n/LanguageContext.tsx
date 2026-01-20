@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback, use
 import { Language, translations } from "./translations";
 import { newFeatureTranslations, deepMerge } from "./newFeatureTranslations";
 import { astrologyFeatureTranslations, deepMergeAstrology } from "./astrologyFeatureTranslations";
+import { homepageRedesignTranslations, deepMergeHomepage } from "./homepageRedesignTranslations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
 
@@ -73,7 +74,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
-    // Merge base translations with new feature translations and astrology feature translations
+    // Merge base translations with new feature translations, astrology feature translations, and homepage redesign translations
     const mergedTranslations = useMemo(() => {
       const merged: Record<Language, Record<string, unknown>> = {} as Record<Language, Record<string, unknown>>;
       for (const lang of VALID_LANGUAGES) {
@@ -81,9 +82,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           translations[lang] as Record<string, unknown>,
           newFeatureTranslations[lang] || {}
         );
-        merged[lang] = deepMergeAstrology(
+        const withAstrology = deepMergeAstrology(
           base,
           astrologyFeatureTranslations[lang] || {}
+        );
+        merged[lang] = deepMergeHomepage(
+          withAstrology,
+          homepageRedesignTranslations[lang] || {}
         );
       }
       return merged;
