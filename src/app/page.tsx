@@ -180,17 +180,43 @@ export default function Home() {
     }
   };
 
-  // Copy link to clipboard with error handling
+  // Copy link to clipboard with feature check and fallback
   const handleCopyLink = () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url)
-      .then(() => {
-        setLinkCopied(true);
-        setTimeout(() => setLinkCopied(false), 2000);
-      })
-      .catch(() => {
-        // Clipboard access denied or unavailable - silent fail
-      });
+    
+    // Feature check for clipboard API
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(url)
+        .then(() => {
+          setLinkCopied(true);
+          setTimeout(() => setLinkCopied(false), 2000);
+        })
+        .catch(() => {
+          // Clipboard access denied - try fallback
+          fallbackCopyToClipboard(url);
+        });
+    } else {
+      // Fallback for browsers without clipboard API
+      fallbackCopyToClipboard(url);
+    }
+  };
+
+  // Fallback copy method using temporary textarea
+  const fallbackCopyToClipboard = (text: string) => {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // Copy failed - silent fail
+    }
   };
 
   // Share on social media
@@ -889,12 +915,12 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-                      <Badge className="mb-4 bg-amber-400 text-amber-900">{t('home.predictions2026Badge', '2026 Predictions')}</Badge>
+                      <Badge className="mb-4 bg-amber-400 text-amber-900">{withCurrentYear(t('home.predictions2026Badge', '{year} Predictions'))}</Badge>
                       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        {t('home.predictions2026Title', 'What Does 2026 Hold For You?')}
+                        {withCurrentYear(t('home.predictions2026Title', 'What Does {year} Hold For You?'))}
                       </h2>
                       <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-                        {t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for 2026.')}
+                        {withCurrentYear(t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for {year}.'))}
                       </p>
                     </div>
           
