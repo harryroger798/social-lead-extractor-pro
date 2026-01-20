@@ -5,6 +5,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 import {
   Star,
   ArrowRight,
@@ -50,35 +51,36 @@ function RatingStars({ rating }: { rating: number }) {
 
 export default function Horoscope2026Page() {
   const { t } = useLanguage();
+  const currentYear = getCurrentYear();
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('horoscope.yearlyPredictions', 'Yearly Predictions')}</Badge>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            {t('horoscope.2026.title', '2026 Horoscope - Yearly Predictions')}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('horoscope.2026.subtitle', 'Discover what 2026 has in store for you. Read comprehensive yearly horoscope predictions for all 12 zodiac signs covering love, career, finance, and health.')}
-          </p>
-        </div>
+                <div className="text-center mb-12">
+                  <Badge className="mb-4 bg-amber-100 text-amber-800">{t('horoscope.yearlyPredictions', 'Yearly Predictions')}</Badge>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                    {withCurrentYear(t('horoscope.year.title', '{year} Horoscope - Yearly Predictions'))}
+                  </h1>
+                  <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                    {withCurrentYear(t('horoscope.year.subtitle', 'Discover what {year} has in store for you. Read comprehensive yearly horoscope predictions for all 12 zodiac signs covering love, career, finance, and health.'))}
+                  </p>
+                </div>
 
-        <Card className="border-amber-200 mb-8">
-          <CardHeader>
-            <CardTitle>{t('horoscope.2026.majorTransits', 'Major Planetary Transits in 2026')}</CardTitle>
-            <CardDescription>
-              {t('horoscope.2026.keyEvents', 'Key astrological events shaping the year ahead')}
-            </CardDescription>
-          </CardHeader>
+                <Card className="border-amber-200 mb-8">
+                  <CardHeader>
+                    <CardTitle>{withCurrentYear(t('horoscope.year.majorTransits', 'Major Planetary Transits in {year}'))}</CardTitle>
+                    <CardDescription>
+                      {t('horoscope.year.keyEvents', 'Key astrological events shaping the year ahead')}
+                    </CardDescription>
+                  </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               {majorTransitsData.map((transit, index) => (
-                <div key={index} className="bg-amber-50 rounded-lg p-4">
-                  <Badge className="bg-amber-500 mb-2">{t(`horoscope.2026.transits.${transit.key}.planet`, transit.key)}</Badge>
-                  <h3 className="font-semibold text-gray-900">{t(`horoscope.2026.transits.${transit.key}.event`, '')}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{t(`horoscope.2026.transits.${transit.key}.period`, '')}</p>
-                  <p className="text-sm text-amber-700">{t(`horoscope.2026.transits.${transit.key}.effect`, '')}</p>
-                </div>
+                                <div key={index} className="bg-amber-50 rounded-lg p-4">
+                                  <Badge className="bg-amber-500 mb-2">{t(`horoscope.year.transits.${transit.key}.planet`, transit.key)}</Badge>
+                                  <h3 className="font-semibold text-gray-900">{t(`horoscope.year.transits.${transit.key}.event`, '')}</h3>
+                                  <p className="text-sm text-gray-600 mb-2">{t(`horoscope.year.transits.${transit.key}.period`, '')}</p>
+                                  <p className="text-sm text-amber-700">{t(`horoscope.year.transits.${transit.key}.effect`, '')}</p>
+                                </div>
               ))}
             </div>
           </CardContent>
@@ -92,8 +94,8 @@ export default function Horoscope2026Page() {
                   <div className="flex items-center gap-3">
                     <span className="text-4xl">{sign.symbol}</span>
                     <div>
-                      <CardTitle className="text-xl">{t(`horoscope.2026.zodiac.${sign.key}.name`, sign.key)}</CardTitle>
-                      <p className="text-sm text-gray-500">{t(`horoscope.2026.zodiac.${sign.key}.hindi`, '')} | {sign.dates}</p>
+                                            <CardTitle className="text-xl">{t(`horoscope.year.zodiac.${sign.key}.name`, sign.key)}</CardTitle>
+                                            <p className="text-sm text-gray-500">{t(`horoscope.year.zodiac.${sign.key}.hindi`, '')} | {sign.dates}</p>
                     </div>
                   </div>
                   <Badge className={
@@ -102,48 +104,48 @@ export default function Horoscope2026Page() {
                     sign.element === "Air" ? "bg-cyan-500" :
                     "bg-blue-500"
                   }>
-                    {t(`horoscope.2026.elements.${sign.element.toLowerCase()}`, sign.element)}
+                    {t(`horoscope.year.elements.${sign.element.toLowerCase()}`, sign.element)}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 text-sm mb-4">{t(`horoscope.2026.zodiac.${sign.key}.overview`, '')}</p>
+                <p className="text-gray-600 text-sm mb-4">{t(`horoscope.year.zodiac.${sign.key}.overview`, '')}</p>
                 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-amber-600" />
-                    <span className="text-sm">{t('horoscope.2026.labels.overall', 'Overall')}</span>
+                    <span className="text-sm">{t('horoscope.year.labels.overall', 'Overall')}</span>
                     <RatingStars rating={sign.rating.overall} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-pink-500" />
-                    <span className="text-sm">{t('horoscope.2026.labels.love', 'Love')}</span>
+                    <span className="text-sm">{t('horoscope.year.labels.love', 'Love')}</span>
                     <RatingStars rating={sign.rating.love} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm">{t('horoscope.2026.labels.career', 'Career')}</span>
+                    <span className="text-sm">{t('horoscope.year.labels.career', 'Career')}</span>
                     <RatingStars rating={sign.rating.career} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Wallet className="w-4 h-4 text-green-500" />
-                    <span className="text-sm">{t('horoscope.2026.labels.finance', 'Finance')}</span>
+                    <span className="text-sm">{t('horoscope.year.labels.finance', 'Finance')}</span>
                     <RatingStars rating={sign.rating.finance} />
                   </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('horoscope.2026.highlights', '2026 Highlights')}</h4>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">{withCurrentYear(t('horoscope.year.highlights', '{year} Highlights'))}</h4>
                   <ul className="text-xs text-gray-600 space-y-1">
-                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight1`, '')}</li>
-                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight2`, '')}</li>
-                    <li>• {t(`horoscope.2026.zodiac.${sign.key}.highlight3`, '')}</li>
+                    <li>• {t(`horoscope.year.zodiac.${sign.key}.highlight1`, '')}</li>
+                    <li>• {t(`horoscope.year.zodiac.${sign.key}.highlight2`, '')}</li>
+                    <li>• {t(`horoscope.year.zodiac.${sign.key}.highlight3`, '')}</li>
                   </ul>
                 </div>
 
                 <Button variant="outline" className="w-full" asChild>
                   <Link href={`/horoscope/yearly/${sign.key}`}>
-                    {t('horoscope.2026.readFull', 'Read Full 2026 Horoscope')} <ArrowRight className="w-4 h-4 ml-2" />
+                    {withCurrentYear(t('horoscope.year.readFull', 'Read Full {year} Horoscope'))} <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
               </CardContent>
@@ -154,13 +156,13 @@ export default function Horoscope2026Page() {
         <div className="mt-12 grid md:grid-cols-4 gap-6">
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.saturnTransit', 'Saturn Transit 2026')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {t('horoscope.2026.cards.saturnDesc', 'Detailed Saturn transit predictions and effects.')}
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/transits/saturn-transit-2026">
-                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
+                            <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('horoscope.year.cards.saturnTransit', 'Saturn Transit {year}'))}</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                              {t('horoscope.year.cards.saturnDesc', 'Detailed Saturn transit predictions and effects.')}
+                            </p>
+                            <Button variant="outline" className="w-full" asChild>
+                              <Link href={`/transits/saturn-transit-${currentYear}`}>
+                  {t('horoscope.year.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -168,13 +170,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.jupiterTransit', 'Jupiter Transit 2026')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {t('horoscope.2026.cards.jupiterDesc', "Jupiter's movement and its impact on signs.")}
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/transits/jupiter-transit-2026">
-                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
+                            <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('horoscope.year.cards.jupiterTransit', 'Jupiter Transit {year}'))}</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                              {t('horoscope.year.cards.jupiterDesc', "Jupiter's movement and its impact on signs.")}
+                            </p>
+                            <Button variant="outline" className="w-full" asChild>
+                              <Link href={`/transits/jupiter-transit-${currentYear}`}>
+                  {t('horoscope.year.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -182,13 +184,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.mercuryRetrograde', 'Mercury Retrograde 2026')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {t('horoscope.2026.cards.mercuryDesc', 'Dates and survival guide for retrogrades.')}
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/transits/mercury-retrograde-2026">
-                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
+                            <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('horoscope.year.cards.mercuryRetrograde', 'Mercury Retrograde {year}'))}</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                              {t('horoscope.year.cards.mercuryDesc', 'Dates and survival guide for retrogrades.')}
+                            </p>
+                            <Button variant="outline" className="w-full" asChild>
+                              <Link href={`/transits/mercury-retrograde-${currentYear}`}>
+                  {t('horoscope.year.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -196,13 +198,13 @@ export default function Horoscope2026Page() {
 
           <Card className="border-amber-200 hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">{t('horoscope.2026.cards.eclipses', 'Eclipses 2026')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {t('horoscope.2026.cards.eclipsesDesc', 'Solar and lunar eclipse dates and effects.')}
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/eclipses-2026">
-                  {t('horoscope.2026.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
+                            <h3 className="font-semibold text-lg mb-2">{withCurrentYear(t('horoscope.year.cards.eclipses', 'Eclipses {year}'))}</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                              {t('horoscope.year.cards.eclipsesDesc', 'Solar and lunar eclipse dates and effects.')}
+                            </p>
+                            <Button variant="outline" className="w-full" asChild>
+                              <Link href={`/eclipses-${currentYear}`}>
+                  {t('horoscope.year.readMore', 'Read More')} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -212,44 +214,44 @@ export default function Horoscope2026Page() {
         <Card className="border-amber-200 bg-amber-50 mt-12">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {t('horoscope.2026.overviewTitle', '2026 Astrological Overview')}
+              {withCurrentYear(t('horoscope.year.overviewTitle', '{year} Astrological Overview'))}
             </h2>
             <div className="prose prose-amber max-w-none">
               <p className="text-gray-700 mb-4">
-                {t('horoscope.2026.overviewP1', '2026 promises to be a year of significant transformation and growth across all zodiac signs. With Saturn continuing its transit through Pisces, themes of spiritual discipline, karmic resolution, and compassionate service remain prominent throughout the year.')}
+                {withCurrentYear(t('horoscope.year.overviewP1', '{year} promises to be a year of significant transformation and growth across all zodiac signs. With Saturn continuing its transit through Pisces, themes of spiritual discipline, karmic resolution, and compassionate service remain prominent throughout the year.'))}
               </p>
               <p className="text-gray-700 mb-4">
-                {t('horoscope.2026.overviewP2', "Jupiter's movement brings expansion and opportunities, particularly in areas related to home, family, and emotional security. The Rahu-Ketu axis in Pisces-Virgo creates a tension between spiritual aspirations and practical responsibilities, encouraging balance between dreams and daily duties.")}
+                {t('horoscope.year.overviewP2', "Jupiter's movement brings expansion and opportunities, particularly in areas related to home, family, and emotional security. The Rahu-Ketu axis in Pisces-Virgo creates a tension between spiritual aspirations and practical responsibilities, encouraging balance between dreams and daily duties.")}
               </p>
               <p className="text-gray-700">
-                {t('horoscope.2026.overviewP3', 'The four eclipses in 2026 mark important turning points for collective and individual evolution. Pay attention to the eclipse dates and their effects on your specific zodiac sign for optimal planning and decision-making throughout the year.')}
+                {withCurrentYear(t('horoscope.year.overviewP3', 'The four eclipses in {year} mark important turning points for collective and individual evolution. Pay attention to the eclipse dates and their effects on your specific zodiac sign for optimal planning and decision-making throughout the year.'))}
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: "2026 Horoscope - Yearly Predictions for All Zodiac Signs",
-            description: "Complete 2026 horoscope predictions for all 12 zodiac signs",
-            author: {
-              "@type": "Organization",
-              name: "VedicStarAstro",
-            },
-            publisher: {
-              "@type": "Organization",
-              name: "VedicStarAstro",
-            },
-            datePublished: "2025-12-01",
-            dateModified: "2026-01-01",
-          }),
-        }}
-      />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: `${currentYear} Horoscope - Yearly Predictions for All Zodiac Signs`,
+                  description: `Complete ${currentYear} horoscope predictions for all 12 zodiac signs`,
+                  author: {
+                    "@type": "Organization",
+                    name: "VedicStarAstro",
+                  },
+                  publisher: {
+                    "@type": "Organization",
+                    name: "VedicStarAstro",
+                  },
+                  datePublished: `${currentYear - 1}-12-01`,
+                  dateModified: `${currentYear}-01-01`,
+                }),
+              }}
+            />
     </div>
   );
 }
