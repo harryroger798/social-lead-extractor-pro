@@ -111,7 +111,7 @@ export function PricingPage() {
                   {i18n.language === 'hi' ? 'Book Now' : i18n.language === 'bn' ? 'এখনই বুক করুন' : 'Book Now'}
                 </Button>
               </Link>
-              <a href="tel:+919876543210">
+              <a href="tel:+917003888936">
                 <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
                   <Phone className="h-5 w-5 mr-2" />
                   {i18n.language === 'hi' ? 'Call for Quote' : i18n.language === 'bn' ? 'কোট জন্য কল করুন' : 'Call for Quote'}

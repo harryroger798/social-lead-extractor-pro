@@ -99,10 +99,6 @@ export function LoginPage() {
               Sign In
             </Button>
           </form>
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo credentials:</p>
-            <p className="font-mono">harryroger798@gmail.com / 007JamesBond@@</p>
-          </div>
         </CardContent>
       </Card>
     </div>

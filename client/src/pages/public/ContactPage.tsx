@@ -12,7 +12,7 @@ import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, Cir
 
 const contactInfo = [
   { icon: MapPin, key: 'address', value: 'Barrackpore, West Bengal', color: 'from-blue-500 to-cyan-500' },
-  { icon: Phone, key: 'phoneNumber', value: '+91 98765 43210', color: 'from-green-500 to-emerald-500' },
+  { icon: Phone, key: 'phoneNumber', value: '+91 70038 88936', color: 'from-green-500 to-emerald-500' },
   { icon: Mail, key: 'emailAddress', value: 'harryroger798@gmail.com', color: 'from-purple-500 to-pink-500' },
   { icon: Clock, key: 'businessHours', value: '10:00 AM - 8:00 PM', color: 'from-orange-500 to-red-500' },
 ]
@@ -190,7 +190,7 @@ export function ContactPage() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="bg-white/50 dark:bg-slate-700/50 border-white/20 dark:border-slate-600"
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 70038 88936"
                   />
                 </motion.div>
 

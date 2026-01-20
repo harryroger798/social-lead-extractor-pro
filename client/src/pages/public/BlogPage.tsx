@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { motion } from 'framer-motion'
-import { Calendar, User, ArrowRight, BookOpen, Lightbulb, Wrench, Shield, Loader2 } from 'lucide-react'
+import { Calendar, User, ArrowRight, BookOpen, Lightbulb, Wrench, Shield, Loader2, Search, X } from 'lucide-react'
 import { GradientOrbs, FloatingTechIcons, DotGridPattern, FloatingParticles, AnimatedLines } from '@/components/ui/visual-enhancements'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -67,6 +67,8 @@ export function BlogPage() {
   const { t, i18n } = useTranslation()
   const [sanityPosts, setSanityPosts] = useState<SanityPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchPosts() {
@@ -84,6 +86,31 @@ export function BlogPage() {
   }, [])
 
   const hasSanityPosts = sanityPosts.length > 0
+
+  // Extract unique categories from posts
+  const categories = hasSanityPosts
+    ? Array.from(
+        new Map(
+          sanityPosts
+            .flatMap((post) => post.categories || [])
+            .map((cat) => [cat._id, cat])
+        ).values()
+      )
+    : []
+
+  // Filter posts based on search query and selected category
+  const filteredPosts = hasSanityPosts
+    ? sanityPosts.filter((post) => {
+        const matchesSearch =
+          searchQuery === '' ||
+          post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
+        const matchesCategory =
+          selectedCategory === null ||
+          (post.categories && post.categories.some((cat) => cat._id === selectedCategory))
+        return matchesSearch && matchesCategory
+      })
+    : []
 
     return (
       <PublicLayout>
@@ -131,6 +158,66 @@ export function BlogPage() {
         </div>
       </section>
 
+      {/* Search and Filter Section */}
+      <section className="relative py-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Search Bar */}
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={
+                  i18n.language === 'hi' ? 'Blog search karein...' :
+                  i18n.language === 'bn' ? 'ব্লগ খুঁজুন...' :
+                  'Search blogs...'
+                }
+                className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+
+            {/* Category Filter */}
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === null
+                      ? 'bg-primary text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {i18n.language === 'hi' ? 'Sabhi' : i18n.language === 'bn' ? 'সব' : 'All'}
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category._id}
+                    onClick={() => setSelectedCategory(category._id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category._id
+                        ? 'bg-primary text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {category.title}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Blog Posts Section */}
       <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-hidden">
         <GradientOrbs variant="subtle" />
@@ -146,7 +233,8 @@ export function BlogPage() {
           ) : (
             <div className="grid gap-8 md:grid-cols-2">
               {hasSanityPosts ? (
-                sanityPosts.map((post, index) => {
+                filteredPosts.length > 0 ? (
+                filteredPosts.map((post, index) => {
                   const IconComponent = iconPalette[index % iconPalette.length]
                   const colorClass = colorPalette[index % colorPalette.length]
                   
@@ -229,6 +317,33 @@ export function BlogPage() {
                     </motion.article>
                   )
                 })
+                ) : (
+                  <div className="col-span-2 text-center py-12">
+                    <Search className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                      {i18n.language === 'hi' ? 'Koi post nahi mila' :
+                       i18n.language === 'bn' ? 'কোনো পোস্ট পাওয়া যায়নি' :
+                       'No posts found'}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {i18n.language === 'hi' ? 'Apni search badlein ya filter hatayein' :
+                       i18n.language === 'bn' ? 'আপনার সার্চ পরিবর্তন করুন বা ফিল্টার সরান' :
+                       'Try changing your search or removing filters'}
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={() => {
+                        setSearchQuery('')
+                        setSelectedCategory(null)
+                      }}
+                    >
+                      {i18n.language === 'hi' ? 'Filter hatayein' :
+                       i18n.language === 'bn' ? 'ফিল্টার সরান' :
+                       'Clear filters'}
+                    </Button>
+                  </div>
+                )
               ) : (
                 fallbackBlogPosts.map((post, index) => (
                   <motion.article
