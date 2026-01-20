@@ -135,8 +135,8 @@ export function Comments({ postId, className = '' }: CommentsProps) {
         title: 'Comment submitted!',
         description: 'Your comment is awaiting moderation and will appear once approved.',
       })
-    }catch (error) {
-      console.error('Error submitting comment:', error)
+    } catch (error) {
+      // Error is handled by toast notification
       toast({
         title: 'Error',
         description: 'Failed to submit comment. Please try again.',

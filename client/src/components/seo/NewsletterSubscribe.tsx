@@ -62,7 +62,7 @@ export function NewsletterSubscribe({ className = '', variant = 'default' }: New
         title: 'Subscribed!',
         description: data.message || 'Thank you for subscribing to our newsletter.',
       })
-    }catch (error) {
+    } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to subscribe. Please try again.',

@@ -110,6 +110,14 @@ router.post('/comments', [
 router.get('/comments/:postId', asyncHandler(async (req, res) => {
   const { postId } = req.params;
 
+  // Validate postId format to prevent GROQ injection
+  if (!postId || !/^[a-zA-Z0-9_-]+$/.test(postId)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid post ID format'
+    });
+  }
+
   try {
     const query = encodeURIComponent(`*[_type == "comment" && post._ref == "${postId}" && status == "approved"] | order(createdAt desc) { _id, name, content, createdAt }`);
     
