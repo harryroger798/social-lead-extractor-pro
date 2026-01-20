@@ -17,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -38,9 +39,9 @@ const astrologyResponses: Record<string, string> = {
 
 To know your specific Moon sign influence, I'd need your birth details. Would you like to use our free Moon Sign Calculator?`,
 
-  saturn: `Saturn (Shani) transit is one of the most significant planetary movements in Vedic astrology. In 2026, Saturn continues its journey through Aquarius (Kumbha Rashi) before moving into Pisces.
+  saturn: `Saturn (Shani) transit is one of the most significant planetary movements in Vedic astrology. In the current year, Saturn continues its journey through Aquarius (Kumbha Rashi) before moving into Pisces.
 
-**Saturn Transit 2026 Effects:**
+**Saturn Transit Effects:**
 - **Career**: Saturn rewards hard work and discipline. Expect recognition if you've been putting in consistent effort
 - **Challenges**: Some signs may face obstacles that are actually opportunities for growth
 - **Karma**: Saturn is the karmic planet - past actions will show their results
@@ -76,7 +77,7 @@ Would you like to check if you have Mangal Dosha? Use our free Mangal Dosh Calcu
 
   marriage: `Astrology provides valuable insights for marriage timing and compatibility. Here's what to consider:
 
-**Best Times for Marriage in 2026:**
+**Best Times for Marriage:**
 - Avoid marriage during Mercury Retrograde periods (March 14-April 7, July 17-Aug 11, Nov 9-29)
 - Favorable months: February, May, November (check specific Muhurat)
 - Jupiter's aspect on the 7th house brings blessings
@@ -163,7 +164,7 @@ For personalized financial astrology guidance, our experts can analyze your birt
 - Gemstone recommendations
 
 **Popular Topics:**
-- Saturn Transit 2026 effects
+- Saturn Transit effects
 - Mangal Dosha remedies
 - Rahu-Ketu axis interpretation
 - Dasha period predictions
@@ -225,11 +226,12 @@ function getAstrologyResponse(question: string): string {
 
 export default function AIAstrologerPage() {
   const { t, language } = useLanguage();
+  const currentYear = getCurrentYear();
   
   // Suggested questions using t() function
   const suggestedQuestions = [
     t('aiAstrologer.questions.moonSign', 'What does my Moon sign say about my emotions?'),
-    t('aiAstrologer.questions.saturnTransit', 'How will Saturn transit affect my career in 2026?'),
+    withCurrentYear(t('aiAstrologer.questions.saturnTransit', 'How will Saturn transit affect my career in {year}?')),
     t('aiAstrologer.questions.mangalRemedies', 'What are the remedies for Mangal Dosha?'),
     t('aiAstrologer.questions.marriageTime', 'Is this a good time for marriage according to astrology?'),
     t('aiAstrologer.questions.rahu7thHouse', 'What does Rahu in the 7th house mean?'),
@@ -243,7 +245,7 @@ ${t('aiAstrologer.welcomeHelp', 'I can help you understand planetary influences,
 
 **${t('aiAstrologer.askMeAbout', 'Ask me about:')}**
 - ${t('aiAstrologer.topic1', 'Your Moon sign and emotional nature')}
-- ${t('aiAstrologer.topic2', 'Saturn transit effects for 2026')}
+- ${withCurrentYear(t('aiAstrologer.topic2', 'Saturn transit effects for {year}'))}
 - ${t('aiAstrologer.topic3', 'Mangal Dosha and marriage compatibility')}
 - ${t('aiAstrologer.topic4', 'Career and financial astrology')}
 - ${t('aiAstrologer.topic5', 'Remedies for planetary afflictions')}
