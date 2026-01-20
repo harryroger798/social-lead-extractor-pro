@@ -347,9 +347,13 @@ export default function KundliCalculatorPage() {
 
   const handleCopyLink = async () => {
     if (shareUrl) {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy link:', err);
+      }
     }
   };
 
