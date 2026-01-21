@@ -141,30 +141,26 @@ export default function BlogPostPage() {
             )}
           </header>
 
-          <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-amber-600 prose-strong:text-gray-900">
-            {post.body.split('\n\n').map((paragraph, index) => {
-              if (paragraph.startsWith('## ')) {
-                return <h2 key={index} className="text-2xl font-bold mt-8 mb-4">{paragraph.replace('## ', '')}</h2>;
-              }
-              if (paragraph.startsWith('### ')) {
-                return <h3 key={index} className="text-xl font-semibold mt-6 mb-3">{paragraph.replace('### ', '')}</h3>;
-              }
-              if (paragraph.startsWith('- ')) {
-                const items = paragraph.split('\n').filter(line => line.startsWith('- '));
-                return (
-                  <ul key={index} className="list-disc pl-6 my-4 space-y-2">
-                    {items.map((item, i) => (
-                      <li key={i} className="text-gray-700">{item.replace('- ', '')}</li>
-                    ))}
-                  </ul>
-                );
-              }
-              if (paragraph.trim()) {
-                return <p key={index} className="mb-4 leading-relaxed">{paragraph}</p>;
-              }
-              return null;
-            })}
-          </div>
+          <div 
+            className="prose prose-lg max-w-none 
+              prose-headings:text-gray-900 prose-headings:font-bold
+              prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4
+              prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
+              prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+              prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline
+              prose-strong:text-gray-900 prose-strong:font-semibold
+              prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4 prose-ul:space-y-2
+              prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4 prose-ol:space-y-2
+              prose-li:text-gray-700
+              prose-table:border-collapse prose-table:w-full prose-table:my-6
+              prose-th:bg-amber-50 prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold
+              prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2
+              prose-blockquote:border-l-4 prose-blockquote:border-amber-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
+              prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+              prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto"
+            dangerouslySetInnerHTML={{ __html: post.body }}
+          />
 
           {post.author && (
             <Card className="mt-12 border-amber-100">
