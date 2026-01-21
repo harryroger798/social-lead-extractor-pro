@@ -437,19 +437,19 @@ export default function BlogPostPage() {
                         line-height: 1.5;
                       }
                       .blog-content nav ul li::before {
-                        content: "\\2022";
+                        content: "•";
                         color: #f59e0b;
                         font-weight: bold;
                         display: inline-block;
-                        width: 1em;
-                        margin-left: -1em;
+                        width: 1.5em;
+                        margin-left: -1.5em;
                       }
                       .blog-content nav ul ul {
                         margin-top: 0.5rem;
                         padding-left: 1.5rem;
                       }
                       .blog-content nav ul ul li::before {
-                        content: "\\25E6";
+                        content: "◦";
                         color: #d97706;
                       }
                       .blog-content nav a {
