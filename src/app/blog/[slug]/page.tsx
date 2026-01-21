@@ -141,24 +141,133 @@ export default function BlogPostPage() {
             )}
           </header>
 
+          <style jsx global>{`
+            .blog-content {
+              font-size: 1.125rem;
+              line-height: 1.75;
+              color: #374151;
+            }
+            .blog-content h1 {
+              font-size: 2rem;
+              font-weight: 700;
+              color: #111827;
+              margin-top: 2.5rem;
+              margin-bottom: 1rem;
+              line-height: 1.25;
+            }
+            .blog-content h2 {
+              font-size: 1.5rem;
+              font-weight: 700;
+              color: #111827;
+              margin-top: 2rem;
+              margin-bottom: 1rem;
+              line-height: 1.3;
+              border-bottom: 2px solid #fbbf24;
+              padding-bottom: 0.5rem;
+            }
+            .blog-content h3 {
+              font-size: 1.25rem;
+              font-weight: 600;
+              color: #1f2937;
+              margin-top: 1.5rem;
+              margin-bottom: 0.75rem;
+              line-height: 1.4;
+            }
+            .blog-content p {
+              margin-bottom: 1.25rem;
+              line-height: 1.8;
+            }
+            .blog-content a {
+              color: #d97706;
+              text-decoration: underline;
+            }
+            .blog-content a:hover {
+              color: #b45309;
+            }
+            .blog-content strong {
+              font-weight: 600;
+              color: #111827;
+            }
+            .blog-content ul {
+              list-style-type: disc;
+              padding-left: 2rem;
+              margin-top: 1rem;
+              margin-bottom: 1.5rem;
+            }
+            .blog-content ol {
+              list-style-type: decimal;
+              padding-left: 2rem;
+              margin-top: 1rem;
+              margin-bottom: 1.5rem;
+            }
+            .blog-content li {
+              margin-bottom: 0.75rem;
+              padding-left: 0.5rem;
+              line-height: 1.7;
+            }
+            .blog-content table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 1.5rem;
+              margin-bottom: 1.5rem;
+              font-size: 1rem;
+            }
+            .blog-content th {
+              background-color: #fef3c7;
+              border: 1px solid #d1d5db;
+              padding: 0.75rem 1rem;
+              text-align: left;
+              font-weight: 600;
+              color: #111827;
+            }
+            .blog-content td {
+              border: 1px solid #d1d5db;
+              padding: 0.75rem 1rem;
+              vertical-align: top;
+            }
+            .blog-content tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            .blog-content blockquote {
+              border-left: 4px solid #f59e0b;
+              padding-left: 1.5rem;
+              margin: 1.5rem 0;
+              font-style: italic;
+              color: #4b5563;
+              background-color: #fffbeb;
+              padding: 1rem 1.5rem;
+              border-radius: 0 0.5rem 0.5rem 0;
+            }
+            .blog-content code {
+              background-color: #f3f4f6;
+              padding: 0.125rem 0.375rem;
+              border-radius: 0.25rem;
+              font-size: 0.875rem;
+              font-family: monospace;
+            }
+            .blog-content pre {
+              background-color: #1f2937;
+              color: #f3f4f6;
+              padding: 1rem;
+              border-radius: 0.5rem;
+              overflow-x: auto;
+              margin: 1.5rem 0;
+            }
+            .blog-content pre code {
+              background-color: transparent;
+              padding: 0;
+            }
+            .blog-content em {
+              font-style: italic;
+            }
+            .blog-content hr {
+              border: none;
+              border-top: 1px solid #e5e7eb;
+              margin: 2rem 0;
+            }
+          `}</style>
           <div 
-            className="prose prose-lg max-w-none 
-              prose-headings:text-gray-900 prose-headings:font-bold
-              prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4
-              prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-              prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-              prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-gray-900 prose-strong:font-semibold
-              prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4 prose-ul:space-y-2
-              prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4 prose-ol:space-y-2
-              prose-li:text-gray-700
-              prose-table:border-collapse prose-table:w-full prose-table:my-6
-              prose-th:bg-amber-50 prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold
-              prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2
-              prose-blockquote:border-l-4 prose-blockquote:border-amber-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
-              prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-              prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto"
+            className="blog-content max-w-none"
             dangerouslySetInnerHTML={{ __html: post.body }}
           />
 
