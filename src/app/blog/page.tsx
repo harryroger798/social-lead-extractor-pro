@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,15 +10,15 @@ import { Calendar, Clock, User, ArrowRight, Search, Tag, ChevronDown, X } from "
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getAllPosts, SanityPost } from "@/lib/sanity";
 
-const categories = [
-  { name: "Kundli & Birth Charts", count: 24, slug: "kundli" },
-  { name: "Nakshatras", count: 18, slug: "nakshatra" },
-  { name: "Kundli Milan & Horoscope Matching", count: 15, slug: "kundli-milan" },
-  { name: "Doshas & Remedies", count: 22, slug: "doshas" },
-  { name: "Navagraha & Planets", count: 12, slug: "navagraha" },
-  { name: "Career Astrology", count: 10, slug: "career-astrology" },
-  { name: "Relationship Astrology", count: 8, slug: "relationship-astrology" },
-  { name: "Muhurta & Auspicious Timing", count: 14, slug: "muhurta" },
+const categoryDefinitions = [
+  { name: "Kundli & Birth Charts", slug: "kundli" },
+  { name: "Nakshatras", slug: "nakshatra" },
+  { name: "Kundli Milan & Horoscope Matching", slug: "kundli-milan" },
+  { name: "Doshas & Remedies", slug: "doshas" },
+  { name: "Navagraha & Planets", slug: "navagraha" },
+  { name: "Career Astrology", slug: "career-astrology" },
+  { name: "Relationship Astrology", slug: "relationship-astrology" },
+  { name: "Muhurta & Auspicious Timing", slug: "muhurta" },
 ];
 
 function formatDate(dateString: string): string {
@@ -68,6 +68,16 @@ export default function BlogPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Calculate category counts dynamically from actual posts
+  const categories = useMemo(() => {
+    return categoryDefinitions.map(cat => ({
+      ...cat,
+      count: sanityPosts.filter(post => 
+        post.categories?.some(postCat => postCat.slug?.current === cat.slug)
+      ).length
+    }));
+  }, [sanityPosts]);
 
   // Filter posts by selected category
   const filteredPosts = selectedCategory
