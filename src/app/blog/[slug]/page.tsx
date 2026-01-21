@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen } from "lucide-react";
+import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getPostBySlug, SanityPost } from "@/lib/sanity";
 
@@ -30,30 +30,90 @@ export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
   
-  const [post, setPost] = useState<SanityPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const [post, setPost] = useState<SanityPost | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [tocExpanded, setTocExpanded] = useState(false);
 
-  useEffect(() => {
-    async function fetchPost() {
-      if (!slug) return;
+    useEffect(() => {
+      async function fetchPost() {
+        if (!slug) return;
       
-      try {
-        const fetchedPost = await getPostBySlug(slug);
-        if (fetchedPost) {
-          setPost(fetchedPost);
-        } else {
-          setError("Post not found");
+        try {
+          const fetchedPost = await getPostBySlug(slug);
+          if (fetchedPost) {
+            setPost(fetchedPost);
+          } else {
+            setError("Post not found");
+          }
+        } catch (err) {
+          console.error("Error fetching post:", err);
+          setError("Failed to load post");
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        console.error("Error fetching post:", err);
-        setError("Failed to load post");
-      } finally {
-        setLoading(false);
       }
-    }
-    fetchPost();
-  }, [slug]);
+      fetchPost();
+    }, [slug]);
+
+    // Effect to make TOC collapsible after content loads
+    useEffect(() => {
+      if (!post || loading) return;
+
+      // Find the TOC nav element and make it collapsible
+      const tocNav = document.querySelector('.blog-content nav.table-of-contents, .blog-content nav');
+      if (tocNav) {
+        // Check if already processed
+        if (tocNav.classList.contains('toc-processed')) return;
+        tocNav.classList.add('toc-processed');
+
+        // Get the h2 element (Table of Contents header)
+        const tocHeader = tocNav.querySelector('h2');
+        if (tocHeader) {
+          // Create wrapper for collapsible content
+          const tocContent = document.createElement('div');
+          tocContent.className = 'toc-content';
+        
+          // Move all content except h2 into the wrapper
+          const children = Array.from(tocNav.children);
+          children.forEach(child => {
+            if (child !== tocHeader) {
+              tocContent.appendChild(child);
+            }
+          });
+          tocNav.appendChild(tocContent);
+
+          // Add toggle icon to header
+          const toggleIcon = document.createElement('span');
+          toggleIcon.className = 'toc-toggle-icon';
+          toggleIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+          tocHeader.appendChild(toggleIcon);
+
+          // Make header clickable
+          tocHeader.style.cursor = 'pointer';
+          tocHeader.style.display = 'flex';
+          tocHeader.style.justifyContent = 'space-between';
+          tocHeader.style.alignItems = 'center';
+
+          // Set initial state (collapsed)
+          tocContent.style.maxHeight = '0';
+          tocContent.style.overflow = 'hidden';
+          tocContent.style.transition = 'max-height 0.3s ease-out';
+
+          // Toggle function
+          tocHeader.addEventListener('click', () => {
+            const isExpanded = tocContent.style.maxHeight !== '0px';
+            if (isExpanded) {
+              tocContent.style.maxHeight = '0';
+              toggleIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            } else {
+              tocContent.style.maxHeight = tocContent.scrollHeight + 'px';
+              toggleIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>`;
+            }
+          });
+        }
+      }
+    }, [post, loading]);
 
   if (loading) {
     return (
@@ -260,12 +320,83 @@ export default function BlogPostPage() {
             .blog-content em {
               font-style: italic;
             }
-            .blog-content hr {
-              border: none;
-              border-top: 1px solid #e5e7eb;
-              margin: 2rem 0;
-            }
-          `}</style>
+                      .blog-content hr {
+                        border: none;
+                        border-top: 1px solid #e5e7eb;
+                        margin: 2rem 0;
+                      }
+                      /* Table of Contents - Collapsible Styles */
+                      .blog-content nav,
+                      .blog-content nav.table-of-contents {
+                        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+                        border: 1px solid #fbbf24;
+                        border-radius: 0.75rem;
+                        padding: 1rem 1.5rem;
+                        margin: 1.5rem 0 2rem 0;
+                      }
+                      .blog-content nav h2 {
+                        font-size: 1.25rem;
+                        font-weight: 600;
+                        color: #92400e;
+                        margin: 0;
+                        padding: 0;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        user-select: none;
+                      }
+                      .blog-content nav h2:hover {
+                        color: #78350f;
+                      }
+                      .blog-content nav .toc-toggle-icon {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #d97706;
+                        transition: transform 0.3s ease;
+                      }
+                      .blog-content nav .toc-content {
+                        overflow: hidden;
+                        transition: max-height 0.3s ease-out;
+                      }
+                      .blog-content nav ul {
+                        margin: 0.75rem 0 0 0;
+                        padding-left: 1.25rem;
+                        list-style-type: none;
+                      }
+                      .blog-content nav ul li {
+                        margin-bottom: 0.5rem;
+                        padding-left: 0;
+                        line-height: 1.5;
+                      }
+                      .blog-content nav ul li::before {
+                        content: "\\2022";
+                        color: #f59e0b;
+                        font-weight: bold;
+                        display: inline-block;
+                        width: 1em;
+                        margin-left: -1em;
+                      }
+                      .blog-content nav ul ul {
+                        margin-top: 0.5rem;
+                        padding-left: 1.5rem;
+                      }
+                      .blog-content nav ul ul li::before {
+                        content: "\\25E6";
+                        color: #d97706;
+                      }
+                      .blog-content nav a {
+                        color: #b45309;
+                        text-decoration: none;
+                        font-size: 0.95rem;
+                      }
+                      .blog-content nav a:hover {
+                        color: #92400e;
+                        text-decoration: underline;
+                      }
+                    `}</style>
           <div 
             className="blog-content max-w-none"
             dangerouslySetInnerHTML={{ __html: post.body }}
