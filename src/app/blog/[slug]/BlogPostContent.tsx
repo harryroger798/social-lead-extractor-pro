@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import { SanityPost } from "@/lib/sanity";
+import CommentSection from "@/components/blog/CommentSection";
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -402,6 +403,9 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Comments Section */}
+        <CommentSection postId={post._id} />
       </div>
     </div>
   );
