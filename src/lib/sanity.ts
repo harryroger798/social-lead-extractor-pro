@@ -93,7 +93,7 @@ export async function getPostBySlug(slug: string): Promise<SanityPost | null> {
 
 // Get all translations of a post (including the post itself)
 export async function getPostTranslations(postId: string): Promise<SanityPost[]> {
-  const query = `*[_type == "post" && (_id == $postId || linkedPost._ref == $postId || ^.linkedPost._ref == _id)] {
+  const query = `*[_type == "post" && (_id == $postId || linkedPost._ref == $postId)] {
     _id,
     title,
     slug,

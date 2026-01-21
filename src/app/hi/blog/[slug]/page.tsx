@@ -144,11 +144,6 @@ export default async function HindiBlogPostPage({ params }: PageProps) {
           __html: JSON.stringify(generateJsonLd(post)),
         }}
       />
-      {/* Hreflang tags for language alternatives */}
-      <link rel="alternate" hrefLang="hi" href={`https://vedicstarastro.com/hi/blog/${post.slug.current}`} />
-      {post.linkedPost?.slug?.current && (
-        <link rel="alternate" hrefLang="en" href={`https://vedicstarastro.com/blog/${post.linkedPost.slug.current}`} />
-      )}
       <BlogPostContent post={post} language="hi" />
     </>
   );

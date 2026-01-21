@@ -39,7 +39,8 @@ export default function BlogPage() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const posts = await getAllPosts();
+        // Filter to only show English posts on the English blog page
+        const posts = await getAllPosts('en');
         setSanityPosts(posts);
       } catch (error) {
         console.error("Error fetching posts from Sanity:", error);

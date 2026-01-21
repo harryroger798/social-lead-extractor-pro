@@ -392,7 +392,9 @@ export default function BlogPostContent({ post, language = 'en' }: BlogPostConte
                     <User className="w-8 h-8 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">About the Author</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {language === 'hi' ? 'लेखक के बारे में' : 'About the Author'}
+                    </h3>
                     <p className="font-medium text-amber-600 mb-2">{post.author.name}</p>
                     {post.author.bio && (
                       <p className="text-gray-600 text-sm">{post.author.bio}</p>
