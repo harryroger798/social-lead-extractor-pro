@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Calendar, Clock, User, ArrowRight, Search, Tag, ChevronDown, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { getAllPosts, SanityPost } from "@/lib/sanity";
+import { getAllPosts, SanityPost, formatDate } from "@/lib/sanity";
 
 const categoryDefinitions = [
   { name: "Kundli & Birth Charts", slug: "kundli" },
@@ -20,15 +20,6 @@ const categoryDefinitions = [
   { name: "Relationship Astrology", slug: "relationship-astrology" },
   { name: "Muhurta & Auspicious Timing", slug: "muhurta" },
 ];
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
 
 function estimateReadTime(body: string): number {
   const wordsPerMinute = 200;
@@ -42,6 +33,7 @@ export default function BlogPage() {
   const [loading, setLoading] = useState(true);
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,12 +71,29 @@ export default function BlogPage() {
     }));
   }, [sanityPosts]);
 
-  // Filter posts by selected category
-  const filteredPosts = selectedCategory
-    ? sanityPosts.filter(post => 
+  // Filter posts by selected category and search query
+  const filteredPosts = useMemo(() => {
+    let posts = sanityPosts;
+    
+    // Filter by category
+    if (selectedCategory) {
+      posts = posts.filter(post => 
         post.categories?.some(cat => cat.slug?.current === selectedCategory)
-      )
-    : sanityPosts;
+      );
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      posts = posts.filter(post => 
+        post.title.toLowerCase().includes(query) ||
+        post.excerpt?.toLowerCase().includes(query) ||
+        post.body?.toLowerCase().includes(query)
+      );
+    }
+    
+    return posts;
+  }, [sanityPosts, selectedCategory, searchQuery]);
 
   const displayPosts = filteredPosts.length > 0 ? filteredPosts : [];
 
@@ -106,8 +115,10 @@ export default function BlogPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
-              placeholder="Search articles..."
+              placeholder={t("blog.searchPlaceholder", "Search articles...")}
               className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="relative" ref={dropdownRef}>

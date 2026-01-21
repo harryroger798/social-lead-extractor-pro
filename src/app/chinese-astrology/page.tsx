@@ -224,6 +224,18 @@ function getChineseZodiac(year: number): { animal: string; element: string; yinY
   };
 }
 
+function getCurrentYearZodiac(): string {
+  const currentYear = getCurrentYear();
+  const { animal } = getChineseZodiac(currentYear);
+  return animal;
+}
+
+function withCurrentYearAndZodiac(text: string): string {
+  const currentYear = getCurrentYear();
+  const zodiac = getCurrentYearZodiac();
+  return text.replace(/\{year\}/g, currentYear.toString()).replace(/\{zodiac\}/g, zodiac);
+}
+
 export default function ChineseAstrologyPage() {
   const { t } = useLanguage();
   const [birthYear, setBirthYear] = useState("");
@@ -281,7 +293,7 @@ export default function ChineseAstrologyPage() {
               {t("chinese.title", "Chinese Zodiac")}
             </h1>
             <p className="text-lg text-red-100 max-w-2xl mx-auto">
-              {withCurrentYear(t("chinese.subtitleYear", "Discover your Chinese zodiac animal, element, and what the Year of the Snake ({year}) holds for you."))}
+              {withCurrentYearAndZodiac(t("chinese.subtitleYear", "Discover your Chinese zodiac animal, element, and what the Year of the {zodiac} ({year}) holds for you."))}
             </p>
           </div>
         </div>
@@ -524,7 +536,7 @@ export default function ChineseAstrologyPage() {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <TrendingUp className="w-5 h-5 text-green-600" />
-                          {withCurrentYear(t("chinese.predictionYearTitle", "Year of the Snake {year} Prediction"))}
+                          {withCurrentYearAndZodiac(t("chinese.predictionYearTitle", "Year of the {zodiac} {year} Prediction"))}
                         </CardTitle>
                         <CardDescription>
                           {t("chinese.predictionFor", "Prediction for")} {result.animal}
@@ -555,7 +567,7 @@ export default function ChineseAstrologyPage() {
                 {t("chinese.aboutText2", "Your Chinese zodiac sign is determined by your birth year according to the Chinese lunar calendar. Each animal sign has its own characteristics, strengths, weaknesses, and compatibility with other signs.")}
               </p>
               <p className="text-gray-600 mt-4">
-                {withCurrentYear(t("chinese.aboutText3Year", "{year} is the Year of the Snake, which begins on February 17, {year}. The Snake is associated with wisdom, intuition, and transformation. It's a year that favors careful planning, deep thinking, and strategic moves."))}
+                {withCurrentYearAndZodiac(t("chinese.aboutText3Year", "{year} is the Year of the {zodiac}. The {zodiac} is associated with wisdom, intuition, and transformation. It's a year that favors careful planning, deep thinking, and strategic moves."))}
               </p>
             </CardContent>
           </Card>

@@ -455,6 +455,7 @@ export default function PlanetaryTrackerPage() {
                       {new Date(transit.date).toLocaleDateString(language === "hi" ? "hi-IN" : "en-US", {
                         month: "short",
                         day: "numeric",
+                        timeZone: "UTC",
                       })}
                     </div>
                   </div>

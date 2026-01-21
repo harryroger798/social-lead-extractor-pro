@@ -79,3 +79,12 @@ export async function getPostBySlug(slug: string): Promise<SanityPost | null> {
   
   return sanityClient.fetch(query, { slug })
 }
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString)
+  return date.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
