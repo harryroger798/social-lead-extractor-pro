@@ -15,6 +15,12 @@ export interface SanityPost {
   excerpt: string
   status: string
   publishedAt: string
+  language?: string
+  linkedPost?: {
+    _id: string
+    slug: { current: string }
+    language: string
+  }
   featuredImage?: {
     url: string
     alt: string
@@ -40,8 +46,9 @@ export interface SanityPost {
   externalLinks?: string[]
 }
 
-export async function getAllPosts(): Promise<SanityPost[]> {
-  const query = `*[_type == "post" && status == "published"] | order(publishedAt desc) {
+export async function getAllPosts(language?: string): Promise<SanityPost[]> {
+  const languageFilter = language ? ` && language == "${language}"` : ''
+  const query = `*[_type == "post" && status == "published"${languageFilter}] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -49,6 +56,8 @@ export async function getAllPosts(): Promise<SanityPost[]> {
     excerpt,
     status,
     publishedAt,
+    language,
+    "linkedPost": linkedPost->{_id, slug, language},
     featuredImage,
     seo,
     "author": author->{_id, name, slug, bio},
@@ -69,6 +78,8 @@ export async function getPostBySlug(slug: string): Promise<SanityPost | null> {
     excerpt,
     status,
     publishedAt,
+    language,
+    "linkedPost": linkedPost->{_id, slug, language},
     featuredImage,
     seo,
     "author": author->{_id, name, slug, bio},
@@ -78,6 +89,19 @@ export async function getPostBySlug(slug: string): Promise<SanityPost | null> {
   }`
   
   return sanityClient.fetch(query, { slug })
+}
+
+// Get all translations of a post (including the post itself)
+export async function getPostTranslations(postId: string): Promise<SanityPost[]> {
+  const query = `*[_type == "post" && (_id == $postId || linkedPost._ref == $postId || ^.linkedPost._ref == _id)] {
+    _id,
+    title,
+    slug,
+    language,
+    status
+  }`
+  
+  return sanityClient.fetch(query, { postId })
 }
 
 export function formatDate(dateString: string): string {

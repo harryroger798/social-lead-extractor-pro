@@ -12,6 +12,34 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'language',
+      title: 'Language',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'English', value: 'en'},
+          {title: 'Hindi', value: 'hi'},
+          {title: 'Tamil', value: 'ta'},
+          {title: 'Telugu', value: 'te'},
+          {title: 'Bengali', value: 'bn'},
+          {title: 'Marathi', value: 'mr'},
+          {title: 'Gujarati', value: 'gu'},
+          {title: 'Kannada', value: 'kn'},
+          {title: 'Malayalam', value: 'ml'},
+          {title: 'Punjabi', value: 'pa'},
+        ],
+      },
+      initialValue: 'en',
+      description: 'Language of this blog post',
+    }),
+    defineField({
+      name: 'linkedPost',
+      title: 'Linked Translation',
+      type: 'reference',
+      to: [{type: 'post'}],
+      description: 'Link to the same post in another language (for hreflang SEO)',
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
@@ -136,11 +164,13 @@ export default defineType({
       title: 'title',
       author: 'author.name',
       status: 'status',
+      language: 'language',
     },
     prepare(selection) {
-      const {title, author, status} = selection
+      const {title, author, status, language} = selection
+      const langLabel = language ? language.toUpperCase() : 'EN'
       return {
-        title: title,
+        title: `[${langLabel}] ${title}`,
         subtitle: `${status === 'published' ? 'Published' : 'Draft'} | ${author || 'No author'}`,
       }
     },

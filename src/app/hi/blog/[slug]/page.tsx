@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getPostBySlug } from "@/lib/sanity";
-import BlogPostContent from "./BlogPostContent";
+import BlogPostContent from "@/app/blog/[slug]/BlogPostContent";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -16,24 +16,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return {
-      title: "Article Not Found | VedicStarAstro",
-      description: "The article you're looking for doesn't exist.",
+      title: "लेख नहीं मिला | VedicStarAstro",
+      description: "आप जो लेख खोज रहे हैं वह मौजूद नहीं है।",
     };
   }
 
   const metaTitle = post.seo?.metaTitle || post.title;
   const metaDescription = post.seo?.metaDescription || post.excerpt || "";
   const keywords = post.seo?.keywords?.join(", ") || "";
-  const canonicalUrl = `https://vedicstarastro.com/blog/${post.slug.current}`;
+  const canonicalUrl = `https://vedicstarastro.com/hi/blog/${post.slug.current}`;
   
   // Build alternate language links for hreflang
   const alternateLanguages: Record<string, string> = {
-    'en': canonicalUrl,
+    'hi': canonicalUrl,
   };
   
-  // If there's a linked Hindi post, add it
+  // If there's a linked English post, add it
   if (post.linkedPost?.slug?.current) {
-    alternateLanguages['hi'] = `https://vedicstarastro.com/hi/blog/${post.linkedPost.slug.current}`;
+    alternateLanguages['en'] = `https://vedicstarastro.com/blog/${post.linkedPost.slug.current}`;
   }
 
   return {
@@ -51,6 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "article",
       url: canonicalUrl,
       siteName: "VedicStarAstro",
+      locale: "hi_IN",
       images: post.featuredImage?.url
         ? [
             {
@@ -61,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         : [],
       publishedTime: post.publishedAt,
       authors: post.author?.name ? [post.author.name] : [],
-      section: post.categories?.[0]?.title || "Vedic Astrology",
+      section: post.categories?.[0]?.title || "वैदिक ज्योतिष",
     },
     twitter: {
       card: "summary_large_image",
@@ -103,15 +104,15 @@ function generateJsonLd(post: NonNullable<Awaited<ReturnType<typeof getPostBySlu
     dateModified: post.publishedAt,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://vedicstarastro.com/blog/${post.slug.current}`,
+      "@id": `https://vedicstarastro.com/hi/blog/${post.slug.current}`,
     },
     keywords: post.seo?.keywords?.join(", ") || "",
-    articleSection: post.categories?.[0]?.title || "Vedic Astrology",
-    inLanguage: "en-IN",
+    articleSection: post.categories?.[0]?.title || "वैदिक ज्योतिष",
+    inLanguage: "hi-IN",
   };
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
+export default async function HindiBlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
@@ -120,12 +121,12 @@ export default async function BlogPostPage({ params }: PageProps) {
       <div className="py-12 lg:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Article Not Found</h1>
-            <p className="text-gray-500 mb-6">The article you&apos;re looking for doesn&apos;t exist.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">लेख नहीं मिला</h1>
+            <p className="text-gray-500 mb-6">आप जो लेख खोज रहे हैं वह मौजूद नहीं है।</p>
             <Button asChild>
-              <Link href="/blog">
+              <Link href="/hi/blog">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blog
+                ब्लॉग पर वापस जाएं
               </Link>
             </Button>
           </div>
@@ -143,7 +144,12 @@ export default async function BlogPostPage({ params }: PageProps) {
           __html: JSON.stringify(generateJsonLd(post)),
         }}
       />
-      <BlogPostContent post={post} />
+      {/* Hreflang tags for language alternatives */}
+      <link rel="alternate" hrefLang="hi" href={`https://vedicstarastro.com/hi/blog/${post.slug.current}`} />
+      {post.linkedPost?.slug?.current && (
+        <link rel="alternate" hrefLang="en" href={`https://vedicstarastro.com/blog/${post.linkedPost.slug.current}`} />
+      )}
+      <BlogPostContent post={post} language="hi" />
     </>
   );
 }

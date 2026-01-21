@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Calendar, Clock, User, ArrowRight, Search, Tag, ChevronDown, X } from "lucide-react";
+import { Calendar, Clock, User, ArrowRight, Search, Tag, ChevronDown, X, Globe } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getAllPosts, SanityPost, formatDate } from "@/lib/sanity";
 
@@ -109,6 +109,15 @@ export default function BlogPage() {
             Explore articles, guides, and insights on Vedic astrology. Learn from our expert 
             astrologers about Kundli interpretation, planetary transits, and effective remedies.
           </p>
+          {/* Language Toggle */}
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <Globe className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-amber-600 font-medium">English</span>
+            <span className="text-gray-300">|</span>
+            <Link href="/hi/blog" className="text-sm text-gray-500 hover:text-amber-600">
+              हिंदी
+            </Link>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 mb-12 max-w-2xl mx-auto">

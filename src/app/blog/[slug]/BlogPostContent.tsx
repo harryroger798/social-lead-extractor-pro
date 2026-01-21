@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen } from "lucide-react";
+import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen, Globe } from "lucide-react";
 import { SanityPost } from "@/lib/sanity";
 import CommentSection from "@/components/blog/CommentSection";
 
@@ -26,9 +26,10 @@ function estimateReadTime(body: string): number {
 
 interface BlogPostContentProps {
   post: SanityPost;
+  language?: string;
 }
 
-export default function BlogPostContent({ post }: BlogPostContentProps) {
+export default function BlogPostContent({ post, language = 'en' }: BlogPostContentProps) {
   // Effect to make TOC collapsible after content loads
   useEffect(() => {
     // Find the TOC nav element and make it collapsible
@@ -100,14 +101,44 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-8 flex items-center justify-between">
           <Link 
-            href="/blog" 
+            href={language === 'hi' ? "/hi/blog" : "/blog"} 
             className="inline-flex items-center text-amber-600 hover:text-amber-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
+            {language === 'hi' ? 'ब्लॉग पर वापस जाएं' : 'Back to Blog'}
           </Link>
+          
+          {/* Language Toggle */}
+          <div className="flex items-center gap-2 text-sm">
+            <Globe className="w-4 h-4 text-gray-500" />
+            {language === 'hi' ? (
+              <>
+                {post.linkedPost?.slug?.current ? (
+                  <Link href={`/blog/${post.linkedPost.slug.current}`} className="text-gray-500 hover:text-amber-600">
+                    English
+                  </Link>
+                ) : (
+                  <span className="text-gray-400">English</span>
+                )}
+                <span className="text-gray-300">|</span>
+                <span className="text-amber-600 font-medium">हिंदी</span>
+              </>
+            ) : (
+              <>
+                <span className="text-amber-600 font-medium">English</span>
+                <span className="text-gray-300">|</span>
+                {post.linkedPost?.slug?.current ? (
+                  <Link href={`/hi/blog/${post.linkedPost.slug.current}`} className="text-gray-500 hover:text-amber-600">
+                    हिंदी
+                  </Link>
+                ) : (
+                  <span className="text-gray-400">हिंदी</span>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         <article>
@@ -375,9 +406,9 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <Button variant="outline" asChild>
-                <Link href="/blog">
+                <Link href={language === 'hi' ? "/hi/blog" : "/blog"}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  More Articles
+                  {language === 'hi' ? 'और लेख पढ़ें' : 'More Articles'}
                 </Link>
               </Button>
               <div className="flex items-center gap-2">
@@ -392,13 +423,17 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
         <Card className="mt-12 border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50">
           <CardContent className="p-6 text-center">
             <BookOpen className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-            <h3 className="font-semibold text-gray-900 mb-2">Get Your Free Kundli Analysis</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              {language === 'hi' ? 'अपनी मुफ्त कुंडली विश्लेषण प्राप्त करें' : 'Get Your Free Kundli Analysis'}
+            </h3>
             <p className="text-gray-600 mb-4">
-              Discover your birth chart and planetary positions with our free Kundli calculator.
+              {language === 'hi' 
+                ? 'हमारे मुफ्त कुंडली कैलकुलेटर से अपनी जन्म कुंडली और ग्रहों की स्थिति जानें।'
+                : 'Discover your birth chart and planetary positions with our free Kundli calculator.'}
             </p>
             <Button className="bg-gradient-to-r from-amber-500 to-orange-600" asChild>
               <Link href="/tools/kundli-calculator">
-                Generate Free Kundli
+                {language === 'hi' ? 'मुफ्त कुंडली बनाएं' : 'Generate Free Kundli'}
               </Link>
             </Button>
           </CardContent>
