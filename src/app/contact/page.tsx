@@ -1,0 +1,238 @@
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  MessageSquare,
+  Send,
+} from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+
+export default function ContactPage() {
+  const { t } = useLanguage();
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: t('contact.emailUs', 'Email Us'),
+      details: "contact@vedicstarastro.com",
+      description: t('contact.emailDesc', "We'll respond within 24 hours"),
+      href: "mailto:contact@vedicstarastro.com",
+    },
+    {
+      icon: Phone,
+      title: t('contact.callUs', 'Call Us'),
+      details: "+91 8884919349",
+      description: t('contact.callDesc', 'Mon-Sat, 9 AM - 8 PM IST'),
+      href: "tel:+918884919349",
+    },
+    {
+      icon: MessageSquare,
+      title: t('contact.whatsapp', 'WhatsApp'),
+      details: "+91 8884919349",
+      description: t('contact.whatsappDesc', 'Quick responses on WhatsApp'),
+      href: "https://wa.me/918884919349",
+    },
+    {
+      icon: MapPin,
+      title: t('contact.visitUs', 'Visit Us'),
+      details: t('contact.location', 'Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road, Bangalore - 560100'),
+      description: t('contact.visitDesc', 'By appointment only'),
+      href: "https://maps.google.com/?q=Nakshatraveda+Astro+House+Begur+Koppa+Road+Bangalore+560100",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: t('contact.faq1Q', 'How do I book a consultation?'),
+      answer: t('contact.faq1A', 'You can book a consultation through our website by visiting the Consultation page and selecting your preferred astrologer and time slot.'),
+    },
+    {
+      question: t('contact.faq2Q', 'What information do I need for a reading?'),
+      answer: t('contact.faq2A', "You'll need your exact date, time, and place of birth. If you don't know your exact birth time, let us know and we can help with birth time rectification."),
+    },
+    {
+      question: t('contact.faq3Q', 'Do you offer refunds?'),
+      answer: t('contact.faq3A', "Yes, we offer a 100% satisfaction guarantee. If you're not satisfied with your consultation, contact us within 24 hours for a full refund."),
+    },
+    {
+      question: t('contact.faq4Q', 'Can I reschedule my appointment?'),
+      answer: t('contact.faq4A', 'Yes, you can reschedule your appointment up to 4 hours before the scheduled time through your account or by contacting us.'),
+    },
+  ];
+  return (
+    <div className="py-12 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <Badge className="mb-4 bg-amber-100 text-amber-800">{t('contact.badge', 'Contact')}</Badge>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            {t('contact.title', 'Get in Touch')}
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {t('contact.subtitle', "Have questions about our services or need help with your consultation? We're here to assist you on your astrological journey.")}
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {contactInfo.map((info) => (
+            <Card key={info.title} className="border-amber-100 hover:border-amber-300 transition-colors">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+                  <info.icon className="w-6 h-6 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">{info.title}</h3>
+                <a 
+                  href={info.href}
+                  className="text-amber-600 hover:text-amber-700 font-medium block mb-1"
+                >
+                  {info.details}
+                </a>
+                <p className="text-sm text-gray-500">{info.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          <Card className="border-amber-200">
+            <CardHeader>
+              <CardTitle>{t('contact.sendMessage', 'Send Us a Message')}</CardTitle>
+              <CardDescription>
+                {t('contact.formDesc', "Fill out the form below and we'll get back to you within 24 hours.")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">{t('contact.fullName', 'Full Name')}</Label>
+                    <Input id="name" placeholder={t('contact.namePlaceholder', 'Your name')} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t('contact.email', 'Email')}</Label>
+                    <Input id="email" type="email" placeholder={t('contact.emailPlaceholder', 'your@email.com')} required />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phone">{t('contact.phoneNumber', 'Phone Number')}</Label>
+                  <Input id="phone" type="tel" placeholder="+91 8884919349" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="subject">{t('contact.subject', 'Subject')}</Label>
+                  <Input id="subject" placeholder={t('contact.subjectPlaceholder', 'How can we help?')} required />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="message">{t('contact.message', 'Message')}</Label>
+                  <textarea
+                    id="message"
+                    className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder={t('contact.messagePlaceholder', 'Tell us more about your inquiry...')}
+                    required
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
+                  <Send className="w-4 h-4 mr-2" />
+                  {t('contact.sendBtn', 'Send Message')}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-6">
+            <Card className="border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Clock className="w-6 h-6 text-amber-600" />
+                  <h3 className="font-semibold text-gray-900">{t('contact.businessHours', 'Business Hours')}</h3>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('contact.monSat', 'Monday - Saturday')}</span>
+                    <span className="font-medium">{t('contact.monSatTime', '9:00 AM - 8:00 PM IST')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('contact.sunday', 'Sunday')}</span>
+                    <span className="font-medium">{t('contact.sundayTime', '10:00 AM - 6:00 PM IST')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('contact.consultations', 'Consultations')}</span>
+                    <span className="font-medium">{t('contact.consultationsTime', '24/7 (By Appointment)')}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-100">
+              <CardHeader>
+                <CardTitle className="text-lg">{t('contact.faqTitle', 'Frequently Asked Questions')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <div key={index}>
+                      <h4 className="font-medium text-gray-900 mb-1">{faq.question}</h4>
+                      <p className="text-sm text-gray-600">{faq.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+          <CardContent className="pt-6 text-center">
+            <h2 className="text-2xl font-bold mb-2">{t('contact.readyTitle', 'Ready for Your Consultation?')}</h2>
+            <p className="mb-4 text-amber-100">
+              {t('contact.readyDesc', 'Book a session with our expert astrologers and get personalized guidance.')}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                <Link href="/consultation">{t('contact.bookConsultation', 'Book Consultation')}</Link>
+              </Button>
+                            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                              <Link href="/tools/kundli-calculator">{t('contact.tryFreeKundli', 'Try Free Kundli')}</Link>
+                            </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            mainEntity: {
+              "@type": "Organization",
+              name: "VedicStarAstro",
+              email: "contact@vedicstarastro.com",
+              telephone: "+91-8884919349",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road",
+                addressLocality: "Bangalore",
+                addressRegion: "Karnataka",
+                postalCode: "560100",
+                addressCountry: "IN",
+              },
+            },
+          }),
+        }}
+      />
+    </div>
+  );
+}

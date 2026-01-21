@@ -1,0 +1,1565 @@
+// Homepage Redesign Translations for VedicStarAstro
+// This file contains translations for the redesigned homepage with viral features
+
+import { Language } from "./translations";
+
+type TranslationObject = Record<string, unknown>;
+
+export const homepageRedesignTranslations: Record<Language, TranslationObject> = {
+  en: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "Discover What {year} Has in Store for You",
+      heroSubtitle: "Enter your birth details and get your personalized cosmic profile in 60 seconds",
+      heroFormTitle: "Get Your Free Cosmic Reading",
+      
+      // Birth Form Fields
+      birthDate: "Birth Date",
+      birthTime: "Birth Time",
+      birthPlace: "Birth Place",
+      selectDate: "Select date",
+      selectTime: "Select time",
+      enterCity: "Enter city name",
+      generateProfile: "Generate My Cosmic Profile",
+      generating: "Generating...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "Your Cosmic Profile",
+      cosmicDna: "Your Cosmic DNA",
+      shareCosmicDna: "Share Your Cosmic DNA",
+      predictionYear: "Your {year} Prediction",
+      downloadCard: "Download Card",
+      shareOnSocial: "Share on Social",
+      copyLink: "Copy Link",
+      linkCopied: "Link Copied!",
+      scanToView: "Scan to view full reading",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "Life Journeys",
+      loveJourney: "Love & Relationships",
+      careerJourney: "Career & Wealth",
+      dailyJourney: "Daily Guidance",
+      deepDiveJourney: "Deep Dive",
+      exploreMore: "Explore More",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "Today's Cosmic Energy",
+      todayEnergyDesc: "Personalized daily insights based on planetary positions",
+      energyScore: "Energy Score",
+      luckyHours: "Lucky Hours",
+      todayMood: "Today's Mood",
+      planetaryInfluence: "Planetary Influence",
+      enterBirthDetails: "Enter your birth details above to see personalized energy",
+      
+      // AI Astrologer Hub
+      askTheStars: "Ask the Stars",
+      aiHubTitle: "Your Personal AI Astrologer",
+      aiHubDesc: "Get instant answers to any astrology question",
+      askAnything: "Ask anything about your future...",
+      popularQuestions: "Popular Questions",
+      questionCareer: "What does my chart say about my career?",
+      questionLove: "When will I find love?",
+      questionFinance: "How can I improve my finances?",
+      questionHealth: "What should I know about my health?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "people checking their charts",
+      trending: "Trending",
+      trendingTopic: "Saturn Transit affecting Capricorns today",
+      cosmicScore: "Cosmic Score",
+      dailyStreak: "Daily Streak",
+      days: "days",
+      unlockBadge: "Unlock your first badge!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "Compatibility Check",
+      compatibilityDesc: "See your cosmic compatibility with anyone",
+      yourBirthday: "Your Birthday",
+      theirBirthday: "Their Birthday",
+      checkCompatibility: "Check Compatibility",
+      
+      // Visual Elements
+      starfieldTitle: "Explore the Cosmos",
+      particleEffect: "Cosmic particles",
+      
+      // Stats with Animation
+      liveStats: "Live Statistics",
+      chartsToday: "Charts generated today",
+      activeUsers: "Active users now",
+      questionsAnswered: "Questions answered",
+      
+      // Call to Action
+      startJourney: "Start Your Cosmic Journey",
+      freeForever: "Free forever. No credit card required.",
+      noCardRequired: "No credit card required",
+      instantResults: "Instant results",
+      
+      // Missing keys for hero section
+      revealDestiny: "Reveal My Destiny",
+      sunSign: "Sun Sign",
+      moonSign: "Moon Sign",
+      risingSign: "Rising Sign",
+      enterDetailsToReveal: "Enter your details to reveal...",
+      birthPlacePlaceholder: "Enter city name",
+      liveNow: "{count} people checking charts now",
+      lifeJourneysBadge: "Your Life Journeys",
+      lifeJourneysTitle: "Explore Your Cosmic Path",
+      lifeJourneysDesc: "Choose your journey and discover what the stars reveal about your life",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "Love & Relationships",
+      loveJourneyDesc: "Find your ideal partner and relationship insights",
+      careerJourneyTitle: "Career & Wealth",
+      careerJourneyDesc: "Unlock your professional potential and financial growth",
+      dailyJourneyTitle: "Daily Guidance",
+      dailyJourneyDesc: "Get daily cosmic insights and auspicious timings",
+      deepDiveJourneyTitle: "Deep Dive",
+      deepDiveJourneyDesc: "Advanced tools for serious astrology enthusiasts",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "Horoscope Matching",
+      loveCompatibility: "Love Compatibility",
+      marriageTiming: "Marriage Timing",
+      financialAstrology: "Financial Astrology",
+      careerPredictions: "Career Predictions",
+      wealthTiming: "Wealth Timing",
+      dailyPanchang: "Daily Panchang",
+      dailyHoroscope: "Daily Horoscope",
+      voiceAstrologer: "Voice AI Astrologer",
+      fullKundli: "Full Kundli Analysis",
+      doshaAnalysis: "Dosha Analysis",
+      numerology: "Numerology",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "Your Daily Cosmic Forecast",
+      energyHigh: "Excellent day ahead!",
+      energyMedium: "Good energy today",
+      energyLow: "Take it easy today",
+      cosmicAlignment: "Your cosmic alignment",
+      
+      // Phase 6: Gamification
+      achievements: "Achievements",
+      unlockBadges: "Unlock Cosmic Badges",
+      badgesDesc: "Complete cosmic activities to earn badges and track your spiritual journey",
+      badgeFirstChart: "First Chart",
+      badge7DayStreak: "7-Day Streak",
+      badgeMoonChild: "Moon Child",
+      badgeSunSeeker: "Sun Seeker",
+      badgeExplorer: "Explorer",
+      badgeCosmicMaster: "Cosmic Master",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "Share",
+      shareText: "Check out my cosmic profile on VedicStarAstro!",
+      
+      // Trending Topics
+      trendingSaturn: "Saturn Transit affecting Capricorns today",
+      trendingMercury: "Mercury Retrograde survival tips",
+      trendingFullMoon: "Full Moon energy peaks tonight",
+      trendingVenus: "Venus enters Pisces - Love is in the air",
+      trendingJupiter: "Jupiter brings luck to Fire signs"
+    }
+  },
+  hi: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "जानें {year} आपके लिए क्या लेकर आया है",
+      heroSubtitle: "अपना जन्म विवरण दर्ज करें और 60 सेकंड में अपनी व्यक्तिगत ब्रह्मांडीय प्रोफाइल प्राप्त करें",
+      heroFormTitle: "अपना मुफ्त ब्रह्मांडीय पठन प्राप्त करें",
+      
+      // Birth Form Fields
+      birthDate: "जन्म तिथि",
+      birthTime: "जन्म समय",
+      birthPlace: "जन्म स्थान",
+      selectDate: "तिथि चुनें",
+      selectTime: "समय चुनें",
+      enterCity: "शहर का नाम दर्ज करें",
+      generateProfile: "मेरी ब्रह्मांडीय प्रोफाइल बनाएं",
+      generating: "बना रहे हैं...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "आपकी ब्रह्मांडीय प्रोफाइल",
+      cosmicDna: "आपका ब्रह्मांडीय DNA",
+      shareCosmicDna: "अपना ब्रह्मांडीय DNA साझा करें",
+      predictionYear: "आपकी {year} भविष्यवाणी",
+      downloadCard: "कार्ड डाउनलोड करें",
+      shareOnSocial: "सोशल पर साझा करें",
+      copyLink: "लिंक कॉपी करें",
+      linkCopied: "लिंक कॉपी हो गया!",
+      scanToView: "पूर्ण पठन देखने के लिए स्कैन करें",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "जीवन यात्राएं",
+      loveJourney: "प्रेम और संबंध",
+      careerJourney: "करियर और धन",
+      dailyJourney: "दैनिक मार्गदर्शन",
+      deepDiveJourney: "गहन अध्ययन",
+      exploreMore: "और जानें",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "आज की ब्रह्मांडीय ऊर्जा",
+      todayEnergyDesc: "ग्रहों की स्थिति के आधार पर व्यक्तिगत दैनिक अंतर्दृष्टि",
+      energyScore: "ऊर्जा स्कोर",
+      luckyHours: "भाग्यशाली घंटे",
+      todayMood: "आज का मूड",
+      planetaryInfluence: "ग्रहों का प्रभाव",
+      enterBirthDetails: "व्यक्तिगत ऊर्जा देखने के लिए ऊपर अपना जन्म विवरण दर्ज करें",
+      
+      // AI Astrologer Hub
+      askTheStars: "तारों से पूछें",
+      aiHubTitle: "आपका व्यक्तिगत AI ज्योतिषी",
+      aiHubDesc: "किसी भी ज्योतिष प्रश्न का तुरंत उत्तर पाएं",
+      askAnything: "अपने भविष्य के बारे में कुछ भी पूछें...",
+      popularQuestions: "लोकप्रिय प्रश्न",
+      questionCareer: "मेरी कुंडली मेरे करियर के बारे में क्या कहती है?",
+      questionLove: "मुझे प्यार कब मिलेगा?",
+      questionFinance: "मैं अपनी वित्तीय स्थिति कैसे सुधार सकता हूं?",
+      questionHealth: "मुझे अपने स्वास्थ्य के बारे में क्या जानना चाहिए?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "लोग अपनी कुंडली देख रहे हैं",
+      trending: "ट्रेंडिंग",
+      trendingTopic: "शनि गोचर आज मकर राशि को प्रभावित कर रहा है",
+      cosmicScore: "ब्रह्मांडीय स्कोर",
+      dailyStreak: "दैनिक स्ट्रीक",
+      days: "दिन",
+      unlockBadge: "अपना पहला बैज अनलॉक करें!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "अनुकूलता जांच",
+      compatibilityDesc: "किसी के साथ भी अपनी ब्रह्मांडीय अनुकूलता देखें",
+      yourBirthday: "आपका जन्मदिन",
+      theirBirthday: "उनका जन्मदिन",
+      checkCompatibility: "अनुकूलता जांचें",
+      
+      // Visual Elements
+      starfieldTitle: "ब्रह्मांड का अन्वेषण करें",
+      particleEffect: "ब्रह्मांडीय कण",
+      
+      // Stats with Animation
+      liveStats: "लाइव आंकड़े",
+      chartsToday: "आज बनाई गई कुंडलियां",
+      activeUsers: "अभी सक्रिय उपयोगकर्ता",
+      questionsAnswered: "उत्तर दिए गए प्रश्न",
+      
+      // Call to Action
+      startJourney: "अपनी ब्रह्मांडीय यात्रा शुरू करें",
+      freeForever: "हमेशा मुफ्त। क्रेडिट कार्ड की आवश्यकता नहीं।",
+      noCardRequired: "क्रेडिट कार्ड की आवश्यकता नहीं",
+      instantResults: "तुरंत परिणाम",
+      
+      // Missing keys for hero section
+      revealDestiny: "मेरी नियति प्रकट करें",
+      sunSign: "सूर्य राशि",
+      moonSign: "चंद्र राशि",
+      risingSign: "लग्न राशि",
+      enterDetailsToReveal: "प्रकट करने के लिए अपना विवरण दर्ज करें...",
+      birthPlacePlaceholder: "शहर का नाम दर्ज करें",
+      liveNow: "{count} लोग अभी कुंडली देख रहे हैं",
+      lifeJourneysBadge: "आपकी जीवन यात्राएं",
+      lifeJourneysTitle: "अपना ब्रह्मांडीय मार्ग खोजें",
+      lifeJourneysDesc: "अपनी यात्रा चुनें और जानें कि तारे आपके जीवन के बारे में क्या कहते हैं",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "प्रेम और रिश्ते",
+      loveJourneyDesc: "अपना आदर्श साथी और संबंध अंतर्दृष्टि खोजें",
+      careerJourneyTitle: "करियर और धन",
+      careerJourneyDesc: "अपनी पेशेवर क्षमता और वित्तीय विकास को अनलॉक करें",
+      dailyJourneyTitle: "दैनिक मार्गदर्शन",
+      dailyJourneyDesc: "दैनिक ब्रह्मांडीय अंतर्दृष्टि और शुभ समय प्राप्त करें",
+      deepDiveJourneyTitle: "गहन अध्ययन",
+      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोगों के लिए उन्नत उपकरण",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "कुंडली मिलान",
+      loveCompatibility: "प्रेम अनुकूलता",
+      marriageTiming: "विवाह मुहूर्त",
+      financialAstrology: "वित्तीय ज्योतिष",
+      careerPredictions: "करियर भविष्यवाणी",
+      wealthTiming: "धन समय",
+      dailyPanchang: "दैनिक पंचांग",
+      dailyHoroscope: "दैनिक राशिफल",
+      voiceAstrologer: "वॉयस AI ज्योतिषी",
+      fullKundli: "पूर्ण कुंडली विश्लेषण",
+      doshaAnalysis: "दोष विश्लेषण",
+      numerology: "अंकशास्त्र",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "आपका दैनिक ब्रह्मांडीय पूर्वानुमान",
+      energyHigh: "आगे उत्कृष्ट दिन!",
+      energyMedium: "आज अच्छी ऊर्जा",
+      energyLow: "आज आराम से लें",
+      cosmicAlignment: "आपका ब्रह्मांडीय संरेखण",
+      
+      // Phase 6: Gamification
+      achievements: "उपलब्धियां",
+      unlockBadges: "ब्रह्मांडीय बैज अनलॉक करें",
+      badgesDesc: "बैज अर्जित करने के लिए ब्रह्मांडीय गतिविधियां पूरी करें",
+      badgeFirstChart: "पहली कुंडली",
+      badge7DayStreak: "7-दिन की स्ट्रीक",
+      badgeMoonChild: "चंद्र संतान",
+      badgeSunSeeker: "सूर्य साधक",
+      badgeExplorer: "खोजकर्ता",
+      badgeCosmicMaster: "ब्रह्मांडीय मास्टर",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "साझा करें",
+      shareText: "VedicStarAstro पर मेरी ब्रह्मांडीय प्रोफाइल देखें!",
+      
+      // Trending Topics
+      trendingSaturn: "शनि गोचर आज मकर राशि को प्रभावित कर रहा है",
+      trendingMercury: "बुध वक्री से बचने के उपाय",
+      trendingFullMoon: "आज रात पूर्णिमा की ऊर्जा चरम पर",
+      trendingVenus: "शुक्र मीन में - प्रेम हवा में है",
+      trendingJupiter: "बृहस्पति अग्नि राशियों को भाग्य दे रहा है"
+    }
+  },
+  ta: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} உங்களுக்கு என்ன வைத்திருக்கிறது என்பதைக் கண்டறியுங்கள்",
+      heroSubtitle: "உங்கள் பிறப்பு விவரங்களை உள்ளிட்டு 60 வினாடிகளில் உங்கள் தனிப்பயனாக்கப்பட்ட அண்ட சுயவிவரத்தைப் பெறுங்கள்",
+      heroFormTitle: "உங்கள் இலவச அண்ட வாசிப்பைப் பெறுங்கள்",
+      
+      // Birth Form Fields
+      birthDate: "பிறந்த தேதி",
+      birthTime: "பிறந்த நேரம்",
+      birthPlace: "பிறந்த இடம்",
+      selectDate: "தேதியைத் தேர்ந்தெடுக்கவும்",
+      selectTime: "நேரத்தைத் தேர்ந்தெடுக்கவும்",
+      enterCity: "நகரத்தின் பெயரை உள்ளிடவும்",
+      generateProfile: "எனது அண்ட சுயவிவரத்தை உருவாக்கு",
+      generating: "உருவாக்குகிறது...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "உங்கள் அண்ட சுயவிவரம்",
+      cosmicDna: "உங்கள் அண்ட DNA",
+      shareCosmicDna: "உங்கள் அண்ட DNA-ஐ பகிரவும்",
+      predictionYear: "உங்கள் {year} கணிப்பு",
+      downloadCard: "அட்டையைப் பதிவிறக்கவும்",
+      shareOnSocial: "சமூக வலைத்தளத்தில் பகிரவும்",
+      copyLink: "இணைப்பை நகலெடுக்கவும்",
+      linkCopied: "இணைப்பு நகலெடுக்கப்பட்டது!",
+      scanToView: "முழு வாசிப்பைக் காண ஸ்கேன் செய்யவும்",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "வாழ்க்கை பயணங்கள்",
+      loveJourney: "காதல் & உறவுகள்",
+      careerJourney: "தொழில் & செல்வம்",
+      dailyJourney: "தினசரி வழிகாட்டுதல்",
+      deepDiveJourney: "ஆழமான ஆய்வு",
+      exploreMore: "மேலும் ஆராயுங்கள்",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "இன்றைய அண்ட ஆற்றல்",
+      todayEnergyDesc: "கிரக நிலைகளின் அடிப்படையில் தனிப்பயனாக்கப்பட்ட தினசரி நுண்ணறிவுகள்",
+      energyScore: "ஆற்றல் மதிப்பெண்",
+      luckyHours: "அதிர்ஷ்ட நேரங்கள்",
+      todayMood: "இன்றைய மனநிலை",
+      planetaryInfluence: "கிரக தாக்கம்",
+      enterBirthDetails: "தனிப்பயனாக்கப்பட்ட ஆற்றலைக் காண மேலே உங்கள் பிறப்பு விவரங்களை உள்ளிடவும்",
+      
+      // AI Astrologer Hub
+      askTheStars: "நட்சத்திரங்களிடம் கேளுங்கள்",
+      aiHubTitle: "உங்கள் தனிப்பட்ட AI ஜோதிடர்",
+      aiHubDesc: "எந்த ஜோதிட கேள்விக்கும் உடனடி பதில்களைப் பெறுங்கள்",
+      askAnything: "உங்கள் எதிர்காலத்தைப் பற்றி எதையும் கேளுங்கள்...",
+      popularQuestions: "பிரபலமான கேள்விகள்",
+      questionCareer: "என் ஜாதகம் என் தொழில் பற்றி என்ன சொல்கிறது?",
+      questionLove: "நான் எப்போது காதலைக் கண்டுபிடிப்பேன்?",
+      questionFinance: "என் நிதி நிலையை எப்படி மேம்படுத்துவது?",
+      questionHealth: "என் ஆரோக்கியத்தைப் பற்றி நான் என்ன தெரிந்து கொள்ள வேண்டும்?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "பேர் தங்கள் ஜாதகங்களைப் பார்க்கிறார்கள்",
+      trending: "டிரெண்டிங்",
+      trendingTopic: "சனி கோசாரம் இன்று மகர ராசியை பாதிக்கிறது",
+      cosmicScore: "அண்ட மதிப்பெண்",
+      dailyStreak: "தினசரி தொடர்",
+      days: "நாட்கள்",
+      unlockBadge: "உங்கள் முதல் பேட்ஜைத் திறக்கவும்!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "பொருத்த சோதனை",
+      compatibilityDesc: "யாருடனும் உங்கள் அண்ட பொருத்தத்தைப் பாருங்கள்",
+      yourBirthday: "உங்கள் பிறந்தநாள்",
+      theirBirthday: "அவர்களின் பிறந்தநாள்",
+      checkCompatibility: "பொருத்தத்தைச் சரிபார்க்கவும்",
+      
+      // Visual Elements
+      starfieldTitle: "அண்டத்தை ஆராயுங்கள்",
+      particleEffect: "அண்ட துகள்கள்",
+      
+      // Stats with Animation
+      liveStats: "நேரடி புள்ளிவிவரங்கள்",
+      chartsToday: "இன்று உருவாக்கப்பட்ட ஜாதகங்கள்",
+      activeUsers: "இப்போது செயலில் உள்ள பயனர்கள்",
+      questionsAnswered: "பதிலளிக்கப்பட்ட கேள்விகள்",
+      
+      // Call to Action
+      startJourney: "உங்கள் அண்ட பயணத்தைத் தொடங்குங்கள்",
+      freeForever: "எப்போதும் இலவசம். கிரெடிட் கார்டு தேவையில்லை.",
+      noCardRequired: "கிரெடிட் கார்டு தேவையில்லை",
+      instantResults: "உடனடி முடிவுகள்",
+      
+      // Missing keys for hero section
+      revealDestiny: "என் விதியை வெளிப்படுத்து",
+      sunSign: "சூரிய ராசி",
+      moonSign: "சந்திர ராசி",
+      risingSign: "லக்னம்",
+      enterDetailsToReveal: "வெளிப்படுத்த உங்கள் விவரங்களை உள்ளிடவும்...",
+      birthPlacePlaceholder: "நகரத்தின் பெயரை உள்ளிடவும்",
+      liveNow: "{count} பேர் இப்போது ஜாதகங்களைப் பார்க்கிறார்கள்",
+      lifeJourneysBadge: "உங்கள் வாழ்க்கை பயணங்கள்",
+      lifeJourneysTitle: "உங்கள் அண்ட பாதையை ஆராயுங்கள்",
+      lifeJourneysDesc: "உங்கள் பயணத்தைத் தேர்ந்தெடுத்து நட்சத்திரங்கள் உங்கள் வாழ்க்கையைப் பற்றி என்ன சொல்கின்றன என்பதைக் கண்டறியுங்கள்",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "காதல் மற்றும் உறவுகள்",
+      loveJourneyDesc: "உங்கள் சிறந்த துணையையும் உறவு நுண்ணறிவுகளையும் கண்டறியுங்கள்",
+      careerJourneyTitle: "தொழில் மற்றும் செல்வம்",
+      careerJourneyDesc: "உங்கள் தொழில்முறை திறனையும் நிதி வளர்ச்சியையும் திறக்கவும்",
+      dailyJourneyTitle: "தினசரி வழிகாட்டுதல்",
+      dailyJourneyDesc: "தினசரி அண்ட நுண்ணறிவுகளையும் நல்ல நேரங்களையும் பெறுங்கள்",
+      deepDiveJourneyTitle: "ஆழமான ஆய்வு",
+      deepDiveJourneyDesc: "தீவிர ஜோதிட ஆர்வலர்களுக்கான மேம்பட்ட கருவிகள்",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ஜாதக பொருத்தம்",
+      loveCompatibility: "காதல் பொருத்தம்",
+      marriageTiming: "திருமண முகூர்த்தம்",
+      financialAstrology: "நிதி ஜோதிடம்",
+      careerPredictions: "தொழில் கணிப்புகள்",
+      wealthTiming: "செல்வ நேரம்",
+      dailyPanchang: "தினசரி பஞ்சாங்கம்",
+      dailyHoroscope: "தினசரி ராசிபலன்",
+      voiceAstrologer: "குரல் AI ஜோதிடர்",
+      fullKundli: "முழு ஜாதக பகுப்பாய்வு",
+      doshaAnalysis: "தோஷ பகுப்பாய்வு",
+      numerology: "எண்கணிதம்",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "உங்கள் தினசரி அண்ட முன்னறிவிப்பு",
+      energyHigh: "சிறந்த நாள் வரவிருக்கிறது!",
+      energyMedium: "இன்று நல்ல ஆற்றல்",
+      energyLow: "இன்று எளிதாக எடுத்துக்கொள்ளுங்கள்",
+      cosmicAlignment: "உங்கள் அண்ட சீரமைப்பு",
+      
+      // Phase 6: Gamification
+      achievements: "சாதனைகள்",
+      unlockBadges: "அண்ட பேட்ஜ்களை திறக்கவும்",
+      badgesDesc: "பேட்ஜ்களைப் பெற அண்ட செயல்பாடுகளை முடிக்கவும்",
+      badgeFirstChart: "முதல் ஜாதகம்",
+      badge7DayStreak: "7-நாள் தொடர்",
+      badgeMoonChild: "சந்திர குழந்தை",
+      badgeSunSeeker: "சூரிய தேடுபவர்",
+      badgeExplorer: "ஆராய்ச்சியாளர்",
+      badgeCosmicMaster: "அண்ட மாஸ்டர்",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "பகிர்",
+      shareText: "VedicStarAstro இல் எனது அண்ட சுயவிவரத்தைப் பாருங்கள்!",
+      
+      // Trending Topics
+      trendingSaturn: "சனி கோசாரம் இன்று மகர ராசியை பாதிக்கிறது",
+      trendingMercury: "புதன் வக்ரத்தில் இருந்து தப்பிக்கும் வழிகள்",
+      trendingFullMoon: "இன்றிரவு பௌர்ணமி ஆற்றல் உச்சத்தில்",
+      trendingVenus: "சுக்கிரன் மீனத்தில் - காதல் காற்றில் உள்ளது",
+      trendingJupiter: "குரு அக்னி ராசிகளுக்கு அதிர்ஷ்டம் தருகிறார்"
+    }
+  },
+  te: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} మీ కోసం ఏమి దాచిపెట్టిందో తెలుసుకోండి",
+      heroSubtitle: "మీ జన్మ వివరాలను నమోదు చేసి 60 సెకన్లలో మీ వ్యక్తిగత విశ్వ ప్రొఫైల్‌ను పొందండి",
+      heroFormTitle: "మీ ఉచిత విశ్వ పఠనాన్ని పొందండి",
+      
+      // Birth Form Fields
+      birthDate: "జన్మ తేదీ",
+      birthTime: "జన్మ సమయం",
+      birthPlace: "జన్మ స్థలం",
+      selectDate: "తేదీని ఎంచుకోండి",
+      selectTime: "సమయాన్ని ఎంచుకోండి",
+      enterCity: "నగరం పేరు నమోదు చేయండి",
+      generateProfile: "నా విశ్వ ప్రొఫైల్‌ను రూపొందించు",
+      generating: "రూపొందిస్తోంది...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "మీ విశ్వ ప్రొఫైల్",
+      cosmicDna: "మీ విశ్వ DNA",
+      shareCosmicDna: "మీ విశ్వ DNA ను షేర్ చేయండి",
+      predictionYear: "మీ {year} అంచనా",
+      downloadCard: "కార్డ్ డౌన్‌లోడ్ చేయండి",
+      shareOnSocial: "సోషల్‌లో షేర్ చేయండి",
+      copyLink: "లింక్ కాపీ చేయండి",
+      linkCopied: "లింక్ కాపీ అయింది!",
+      scanToView: "పూర్తి పఠనాన్ని చూడటానికి స్కాన్ చేయండి",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "జీవిత ప్రయాణాలు",
+      loveJourney: "ప్రేమ & సంబంధాలు",
+      careerJourney: "కెరీర్ & సంపద",
+      dailyJourney: "రోజువారీ మార్గదర్శకత్వం",
+      deepDiveJourney: "లోతైన అధ్యయనం",
+      exploreMore: "మరింత అన్వేషించండి",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "నేటి విశ్వ శక్తి",
+      todayEnergyDesc: "గ్రహ స్థానాల ఆధారంగా వ్యక్తిగత రోజువారీ అంతర్దృష్టులు",
+      energyScore: "శక్తి స్కోర్",
+      luckyHours: "అదృష్ట గంటలు",
+      todayMood: "నేటి మూడ్",
+      planetaryInfluence: "గ్రహ ప్రభావం",
+      enterBirthDetails: "వ్యక్తిగత శక్తిని చూడటానికి పైన మీ జన్మ వివరాలను నమోదు చేయండి",
+      
+      // AI Astrologer Hub
+      askTheStars: "నక్షత్రాలను అడగండి",
+      aiHubTitle: "మీ వ్యక్తిగత AI జ్యోతిష్కుడు",
+      aiHubDesc: "ఏదైనా జ్యోతిష్య ప్రశ్నకు తక్షణ సమాధానాలు పొందండి",
+      askAnything: "మీ భవిష్యత్తు గురించి ఏదైనా అడగండి...",
+      popularQuestions: "ప్రసిద్ధ ప్రశ్నలు",
+      questionCareer: "నా జాతకం నా కెరీర్ గురించి ఏమి చెబుతుంది?",
+      questionLove: "నాకు ప్రేమ ఎప్పుడు దొరుకుతుంది?",
+      questionFinance: "నా ఆర్థిక పరిస్థితిని ఎలా మెరుగుపరచుకోవాలి?",
+      questionHealth: "నా ఆరోగ్యం గురించి నేను ఏమి తెలుసుకోవాలి?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "మంది తమ జాతకాలను చూస్తున్నారు",
+      trending: "ట్రెండింగ్",
+      trendingTopic: "శని గోచారం ఈరోజు మకర రాశిని ప్రభావితం చేస్తోంది",
+      cosmicScore: "విశ్వ స్కోర్",
+      dailyStreak: "రోజువారీ స్ట్రీక్",
+      days: "రోజులు",
+      unlockBadge: "మీ మొదటి బ్యాడ్జ్‌ను అన్‌లాక్ చేయండి!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "అనుకూలత తనిఖీ",
+      compatibilityDesc: "ఎవరితోనైనా మీ విశ్వ అనుకూలతను చూడండి",
+      yourBirthday: "మీ పుట్టినరోజు",
+      theirBirthday: "వారి పుట్టినరోజు",
+      checkCompatibility: "అనుకూలతను తనిఖీ చేయండి",
+      
+      // Visual Elements
+      starfieldTitle: "విశ్వాన్ని అన్వేషించండి",
+      particleEffect: "విశ్వ కణాలు",
+      
+      // Stats with Animation
+      liveStats: "లైవ్ గణాంకాలు",
+      chartsToday: "ఈరోజు రూపొందించిన జాతకాలు",
+      activeUsers: "ఇప్పుడు యాక్టివ్ యూజర్లు",
+      questionsAnswered: "సమాధానమిచ్చిన ప్రశ్నలు",
+      
+      // Call to Action
+      startJourney: "మీ విశ్వ ప్రయాణాన్ని ప్రారంభించండి",
+      freeForever: "ఎప్పటికీ ఉచితం. క్రెడిట్ కార్డ్ అవసరం లేదు.",
+      noCardRequired: "క్రెడిట్ కార్డ్ అవసరం లేదు",
+      instantResults: "తక్షణ ఫలితాలు",
+      
+      // Missing keys for hero section
+      revealDestiny: "నా విధిని వెల్లడించు",
+      sunSign: "సూర్య రాశి",
+      moonSign: "చంద్ర రాశి",
+      risingSign: "లగ్నం",
+      enterDetailsToReveal: "వెల్లడించడానికి మీ వివరాలను నమోదు చేయండి...",
+      birthPlacePlaceholder: "నగరం పేరు నమోదు చేయండి",
+      liveNow: "{count} మంది ఇప్పుడు జాతకాలు చూస్తున్నారు",
+      lifeJourneysBadge: "మీ జీవిత ప్రయాణాలు",
+      lifeJourneysTitle: "మీ విశ్వ మార్గాన్ని అన్వేషించండి",
+      lifeJourneysDesc: "మీ ప్రయాణాన్ని ఎంచుకోండి మరియు నక్షత్రాలు మీ జీవితం గురించి ఏమి చెబుతాయో తెలుసుకోండి",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ప్రేమ మరియు సంబంధాలు",
+      loveJourneyDesc: "మీ ఆదర్శ భాగస్వామిని మరియు సంబంధ అంతర్దృష్టులను కనుగొనండి",
+      careerJourneyTitle: "కెరీర్ మరియు సంపద",
+      careerJourneyDesc: "మీ వృత్తిపరమైన సామర్థ్యాన్ని మరియు ఆర్థిక వృద్ధిని అన్‌లాక్ చేయండి",
+      dailyJourneyTitle: "రోజువారీ మార్గదర్శకత్వం",
+      dailyJourneyDesc: "రోజువారీ విశ్వ అంతర్దృష్టులు మరియు శుభ సమయాలను పొందండి",
+      deepDiveJourneyTitle: "లోతైన అధ్యయనం",
+      deepDiveJourneyDesc: "తీవ్రమైన జ్యోతిష్య ఔత్సాహికులకు అధునాతన సాధనాలు",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "జాతక మ్యాచింగ్",
+      loveCompatibility: "ప్రేమ అనుకూలత",
+      marriageTiming: "వివాహ ముహూర్తం",
+      financialAstrology: "ఆర్థిక జ్యోతిషం",
+      careerPredictions: "కెరీర్ అంచనాలు",
+      wealthTiming: "సంపద సమయం",
+      dailyPanchang: "రోజువారీ పంచాంగం",
+      dailyHoroscope: "రోజువారీ రాశిఫలం",
+      voiceAstrologer: "వాయిస్ AI జ్యోతిష్కుడు",
+      fullKundli: "పూర్తి జాతక విశ్లేషణ",
+      doshaAnalysis: "దోష విశ్లేషణ",
+      numerology: "సంఖ్యాశాస్త్రం",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "మీ రోజువారీ విశ్వ అంచనా",
+      energyHigh: "అద్భుతమైన రోజు ముందుంది!",
+      energyMedium: "ఈ రోజు మంచి శక్తి",
+      energyLow: "ఈ రోజు తేలికగా తీసుకోండి",
+      cosmicAlignment: "మీ విశ్వ సమలేఖనం",
+      
+      // Phase 6: Gamification
+      achievements: "సాధనలు",
+      unlockBadges: "విశ్వ బ్యాడ్జ్‌లను అన్‌లాక్ చేయండి",
+      badgesDesc: "బ్యాడ్జ్‌లను సంపాదించడానికి విశ్వ కార్యకలాపాలను పూర్తి చేయండి",
+      badgeFirstChart: "మొదటి చార్ట్",
+      badge7DayStreak: "7-రోజుల స్ట్రీక్",
+      badgeMoonChild: "చంద్ర బిడ్డ",
+      badgeSunSeeker: "సూర్య అన్వేషకుడు",
+      badgeExplorer: "అన్వేషకుడు",
+      badgeCosmicMaster: "విశ్వ మాస్టర్",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "షేర్ చేయండి",
+      shareText: "VedicStarAstro లో నా విశ్వ ప్రొఫైల్ చూడండి!",
+      
+      // Trending Topics
+      trendingSaturn: "శని గోచారం ఈ రోజు మకర రాశిని ప్రభావితం చేస్తోంది",
+      trendingMercury: "బుధ వక్రం నుండి బయటపడే చిట్కాలు",
+      trendingFullMoon: "ఈ రాత్రి పౌర్ణమి శక్తి గరిష్ఠంగా ఉంది",
+      trendingVenus: "శుక్రుడు మీనంలో - ప్రేమ గాలిలో ఉంది",
+      trendingJupiter: "గురుడు అగ్ని రాశులకు అదృష్టం తెస్తున్నాడు"
+    }
+  },
+  bn: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} আপনার জন্য কী নিয়ে এসেছে তা জানুন",
+      heroSubtitle: "আপনার জন্ম বিবরণ দিন এবং 60 সেকেন্ডে আপনার ব্যক্তিগত মহাজাগতিক প্রোফাইল পান",
+      heroFormTitle: "আপনার বিনামূল্যে মহাজাগতিক পাঠ পান",
+      
+      // Birth Form Fields
+      birthDate: "জন্ম তারিখ",
+      birthTime: "জন্ম সময়",
+      birthPlace: "জন্মস্থান",
+      selectDate: "তারিখ নির্বাচন করুন",
+      selectTime: "সময় নির্বাচন করুন",
+      enterCity: "শহরের নাম লিখুন",
+      generateProfile: "আমার মহাজাগতিক প্রোফাইল তৈরি করুন",
+      generating: "তৈরি হচ্ছে...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "আপনার মহাজাগতিক প্রোফাইল",
+      cosmicDna: "আপনার মহাজাগতিক DNA",
+      shareCosmicDna: "আপনার মহাজাগতিক DNA শেয়ার করুন",
+      predictionYear: "আপনার {year} ভবিষ্যদ্বাণী",
+      downloadCard: "কার্ড ডাউনলোড করুন",
+      shareOnSocial: "সোশ্যালে শেয়ার করুন",
+      copyLink: "লিংক কপি করুন",
+      linkCopied: "লিংক কপি হয়েছে!",
+      scanToView: "সম্পূর্ণ পাঠ দেখতে স্ক্যান করুন",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "জীবন যাত্রা",
+      loveJourney: "প্রেম ও সম্পর্ক",
+      careerJourney: "ক্যারিয়ার ও সম্পদ",
+      dailyJourney: "দৈনিক নির্দেশনা",
+      deepDiveJourney: "গভীর অধ্যয়ন",
+      exploreMore: "আরও অন্বেষণ করুন",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "আজকের মহাজাগতিক শক্তি",
+      todayEnergyDesc: "গ্রহের অবস্থানের উপর ভিত্তি করে ব্যক্তিগত দৈনিক অন্তর্দৃষ্টি",
+      energyScore: "শক্তি স্কোর",
+      luckyHours: "ভাগ্যবান ঘন্টা",
+      todayMood: "আজকের মেজাজ",
+      planetaryInfluence: "গ্রহের প্রভাব",
+      enterBirthDetails: "ব্যক্তিগত শক্তি দেখতে উপরে আপনার জন্ম বিবরণ দিন",
+      
+      // AI Astrologer Hub
+      askTheStars: "তারাদের জিজ্ঞাসা করুন",
+      aiHubTitle: "আপনার ব্যক্তিগত AI জ্যোতিষী",
+      aiHubDesc: "যেকোনো জ্যোতিষ প্রশ্নের তাৎক্ষণিক উত্তর পান",
+      askAnything: "আপনার ভবিষ্যত সম্পর্কে কিছু জিজ্ঞাসা করুন...",
+      popularQuestions: "জনপ্রিয় প্রশ্ন",
+      questionCareer: "আমার জন্মকুণ্ডলী আমার ক্যারিয়ার সম্পর্কে কী বলে?",
+      questionLove: "আমি কখন প্রেম পাব?",
+      questionFinance: "আমি কীভাবে আমার আর্থিক অবস্থা উন্নত করতে পারি?",
+      questionHealth: "আমার স্বাস্থ্য সম্পর্কে আমার কী জানা উচিত?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "জন তাদের জন্মকুণ্ডলী দেখছেন",
+      trending: "ট্রেন্ডিং",
+      trendingTopic: "শনি গোচর আজ মকর রাশিকে প্রভাবিত করছে",
+      cosmicScore: "মহাজাগতিক স্কোর",
+      dailyStreak: "দৈনিক স্ট্রিক",
+      days: "দিন",
+      unlockBadge: "আপনার প্রথম ব্যাজ আনলক করুন!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "সামঞ্জস্য পরীক্ষা",
+      compatibilityDesc: "যেকোনো ব্যক্তির সাথে আপনার মহাজাগতিক সামঞ্জস্য দেখুন",
+      yourBirthday: "আপনার জন্মদিন",
+      theirBirthday: "তাদের জন্মদিন",
+      checkCompatibility: "সামঞ্জস্য পরীক্ষা করুন",
+      
+      // Visual Elements
+      starfieldTitle: "মহাবিশ্ব অন্বেষণ করুন",
+      particleEffect: "মহাজাগতিক কণা",
+      
+      // Stats with Animation
+      liveStats: "লাইভ পরিসংখ্যান",
+      chartsToday: "আজ তৈরি জন্মকুণ্ডলী",
+      activeUsers: "এখন সক্রিয় ব্যবহারকারী",
+      questionsAnswered: "উত্তর দেওয়া প্রশ্ন",
+      
+      // Call to Action
+      startJourney: "আপনার মহাজাগতিক যাত্রা শুরু করুন",
+      freeForever: "চিরকাল বিনামূল্যে। ক্রেডিট কার্ডের প্রয়োজন নেই।",
+      noCardRequired: "ক্রেডিট কার্ডের প্রয়োজন নেই",
+      instantResults: "তাৎক্ষণিক ফলাফল",
+      
+      // Missing keys for hero section
+      revealDestiny: "আমার ভাগ্য প্রকাশ করুন",
+      sunSign: "সূর্য রাশি",
+      moonSign: "চন্দ্র রাশি",
+      risingSign: "লগ্ন",
+      enterDetailsToReveal: "প্রকাশ করতে আপনার বিবরণ দিন...",
+      birthPlacePlaceholder: "শহরের নাম লিখুন",
+      liveNow: "{count} জন এখন জন্মকুণ্ডলী দেখছেন",
+      lifeJourneysBadge: "আপনার জীবন যাত্রা",
+      lifeJourneysTitle: "আপনার মহাজাগতিক পথ অন্বেষণ করুন",
+      lifeJourneysDesc: "আপনার যাত্রা বেছে নিন এবং তারারা আপনার জীবন সম্পর্কে কী বলে তা জানুন",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "প্রেম এবং সম্পর্ক",
+      loveJourneyDesc: "আপনার আদর্শ সঙ্গী এবং সম্পর্কের অন্তর্দৃষ্টি খুঁজুন",
+      careerJourneyTitle: "ক্যারিয়ার এবং সম্পদ",
+      careerJourneyDesc: "আপনার পেশাদার সম্ভাবনা এবং আর্থিক বৃদ্ধি আনলক করুন",
+      dailyJourneyTitle: "দৈনিক নির্দেশনা",
+      dailyJourneyDesc: "দৈনিক মহাজাগতিক অন্তর্দৃষ্টি এবং শুভ সময় পান",
+      deepDiveJourneyTitle: "গভীর অধ্যয়ন",
+      deepDiveJourneyDesc: "গুরুতর জ্যোতিষ উত্সাহীদের জন্য উন্নত সরঞ্জাম",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "কুণ্ডলী মিলান",
+      loveCompatibility: "প্রেম সামঞ্জস্য",
+      marriageTiming: "বিবাহ মুহূর্ত",
+      financialAstrology: "আর্থিক জ্যোতিষ",
+      careerPredictions: "ক্যারিয়ার ভবিষ্যদ্বাণী",
+      wealthTiming: "সম্পদ সময়",
+      dailyPanchang: "দৈনিক পঞ্চাঙ্গ",
+      dailyHoroscope: "দৈনিক রাশিফল",
+      voiceAstrologer: "ভয়েস AI জ্যোতিষী",
+      fullKundli: "সম্পূর্ণ কুণ্ডলী বিশ্লেষণ",
+      doshaAnalysis: "দোষ বিশ্লেষণ",
+      numerology: "সংখ্যাতত্ত্ব",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "আপনার দৈনিক মহাজাগতিক পূর্বাভাস",
+      energyHigh: "চমৎকার দিন সামনে!",
+      energyMedium: "আজ ভালো শক্তি",
+      energyLow: "আজ সহজে নিন",
+      cosmicAlignment: "আপনার মহাজাগতিক সারিবদ্ধতা",
+      
+      // Phase 6: Gamification
+      achievements: "অর্জন",
+      unlockBadges: "মহাজাগতিক ব্যাজ আনলক করুন",
+      badgesDesc: "ব্যাজ অর্জন করতে মহাজাগতিক কার্যকলাপ সম্পূর্ণ করুন",
+      badgeFirstChart: "প্রথম চার্ট",
+      badge7DayStreak: "7-দিনের স্ট্রিক",
+      badgeMoonChild: "চন্দ্র সন্তান",
+      badgeSunSeeker: "সূর্য সন্ধানী",
+      badgeExplorer: "অনুসন্ধানকারী",
+      badgeCosmicMaster: "মহাজাগতিক মাস্টার",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "শেয়ার করুন",
+      shareText: "VedicStarAstro তে আমার মহাজাগতিক প্রোফাইল দেখুন!",
+      
+      // Trending Topics
+      trendingSaturn: "শনি গোচর আজ মকর রাশিকে প্রভাবিত করছে",
+      trendingMercury: "বুধ বক্রী থেকে বাঁচার উপায়",
+      trendingFullMoon: "আজ রাতে পূর্ণিমার শক্তি শীর্ষে",
+      trendingVenus: "শুক্র মীনে - প্রেম বাতাসে",
+      trendingJupiter: "বৃহস্পতি অগ্নি রাশিগুলিকে ভাগ্য দিচ্ছে"
+    }
+  },
+  mr: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} तुमच्यासाठी काय घेऊन आले आहे ते जाणून घ्या",
+      heroSubtitle: "तुमचे जन्म तपशील प्रविष्ट करा आणि 60 सेकंदात तुमचे वैयक्तिक वैश्विक प्रोफाइल मिळवा",
+      heroFormTitle: "तुमचे मोफत वैश्विक वाचन मिळवा",
+      
+      // Birth Form Fields
+      birthDate: "जन्म तारीख",
+      birthTime: "जन्म वेळ",
+      birthPlace: "जन्मस्थान",
+      selectDate: "तारीख निवडा",
+      selectTime: "वेळ निवडा",
+      enterCity: "शहराचे नाव प्रविष्ट करा",
+      generateProfile: "माझे वैश्विक प्रोफाइल तयार करा",
+      generating: "तयार करत आहे...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "तुमचे वैश्विक प्रोफाइल",
+      cosmicDna: "तुमचा वैश्विक DNA",
+      shareCosmicDna: "तुमचा वैश्विक DNA शेअर करा",
+      predictionYear: "तुमचे {year} भविष्य",
+      downloadCard: "कार्ड डाउनलोड करा",
+      shareOnSocial: "सोशलवर शेअर करा",
+      copyLink: "लिंक कॉपी करा",
+      linkCopied: "लिंक कॉपी झाली!",
+      scanToView: "संपूर्ण वाचन पाहण्यासाठी स्कॅन करा",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "जीवन प्रवास",
+      loveJourney: "प्रेम आणि नातेसंबंध",
+      careerJourney: "करिअर आणि संपत्ती",
+      dailyJourney: "दैनिक मार्गदर्शन",
+      deepDiveJourney: "सखोल अभ्यास",
+      exploreMore: "अधिक शोधा",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "आजची वैश्विक ऊर्जा",
+      todayEnergyDesc: "ग्रहांच्या स्थानांवर आधारित वैयक्तिक दैनिक अंतर्दृष्टी",
+      energyScore: "ऊर्जा स्कोअर",
+      luckyHours: "भाग्यशाली तास",
+      todayMood: "आजचा मूड",
+      planetaryInfluence: "ग्रहांचा प्रभाव",
+      enterBirthDetails: "वैयक्तिक ऊर्जा पाहण्यासाठी वर तुमचे जन्म तपशील प्रविष्ट करा",
+      
+      // AI Astrologer Hub
+      askTheStars: "ताऱ्यांना विचारा",
+      aiHubTitle: "तुमचा वैयक्तिक AI ज्योतिषी",
+      aiHubDesc: "कोणत्याही ज्योतिष प्रश्नाचे त्वरित उत्तर मिळवा",
+      askAnything: "तुमच्या भविष्याबद्दल काहीही विचारा...",
+      popularQuestions: "लोकप्रिय प्रश्न",
+      questionCareer: "माझी कुंडली माझ्या करिअरबद्दल काय सांगते?",
+      questionLove: "मला प्रेम कधी मिळेल?",
+      questionFinance: "मी माझी आर्थिक स्थिती कशी सुधारू शकतो?",
+      questionHealth: "माझ्या आरोग्याबद्दल मला काय माहित असले पाहिजे?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "लोक त्यांच्या कुंडल्या पाहत आहेत",
+      trending: "ट्रेंडिंग",
+      trendingTopic: "शनि गोचर आज मकर राशीवर परिणाम करत आहे",
+      cosmicScore: "वैश्विक स्कोअर",
+      dailyStreak: "दैनिक स्ट्रीक",
+      days: "दिवस",
+      unlockBadge: "तुमचा पहिला बॅज अनलॉक करा!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "सुसंगतता तपासणी",
+      compatibilityDesc: "कोणाशीही तुमची वैश्विक सुसंगतता पहा",
+      yourBirthday: "तुमचा वाढदिवस",
+      theirBirthday: "त्यांचा वाढदिवस",
+      checkCompatibility: "सुसंगतता तपासा",
+      
+      // Visual Elements
+      starfieldTitle: "विश्व शोधा",
+      particleEffect: "वैश्विक कण",
+      
+      // Stats with Animation
+      liveStats: "लाइव्ह आकडेवारी",
+      chartsToday: "आज तयार केलेल्या कुंडल्या",
+      activeUsers: "आता सक्रिय वापरकर्ते",
+      questionsAnswered: "उत्तर दिलेले प्रश्न",
+      
+      // Call to Action
+      startJourney: "तुमचा वैश्विक प्रवास सुरू करा",
+      freeForever: "कायमचे मोफत. क्रेडिट कार्डची आवश्यकता नाही.",
+      noCardRequired: "क्रेडिट कार्डची आवश्यकता नाही",
+      instantResults: "त्वरित परिणाम",
+      
+      // Missing keys for hero section
+      revealDestiny: "माझे नशीब प्रकट करा",
+      sunSign: "सूर्य राशी",
+      moonSign: "चंद्र राशी",
+      risingSign: "लग्न",
+      enterDetailsToReveal: "प्रकट करण्यासाठी तुमचे तपशील प्रविष्ट करा...",
+      birthPlacePlaceholder: "शहराचे नाव प्रविष्ट करा",
+      liveNow: "{count} लोक आता कुंडली पाहत आहेत",
+      lifeJourneysBadge: "तुमचे जीवन प्रवास",
+      lifeJourneysTitle: "तुमचा वैश्विक मार्ग शोधा",
+      lifeJourneysDesc: "तुमचा प्रवास निवडा आणि तारे तुमच्या जीवनाबद्दल काय सांगतात ते जाणून घ्या",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "प्रेम आणि नातेसंबंध",
+      loveJourneyDesc: "तुमचा आदर्श जोडीदार आणि नातेसंबंध अंतर्दृष्टी शोधा",
+      careerJourneyTitle: "करिअर आणि संपत्ती",
+      careerJourneyDesc: "तुमची व्यावसायिक क्षमता आणि आर्थिक वाढ अनलॉक करा",
+      dailyJourneyTitle: "दैनंदिन मार्गदर्शन",
+      dailyJourneyDesc: "दैनंदिन वैश्विक अंतर्दृष्टी आणि शुभ वेळा मिळवा",
+      deepDiveJourneyTitle: "सखोल अभ्यास",
+      deepDiveJourneyDesc: "गंभीर ज्योतिष उत्साही लोकांसाठी प्रगत साधने",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "कुंडली जुळवणी",
+      loveCompatibility: "प्रेम सुसंगतता",
+      marriageTiming: "विवाह मुहूर्त",
+      financialAstrology: "आर्थिक ज्योतिष",
+      careerPredictions: "करिअर भविष्यवाणी",
+      wealthTiming: "संपत्ती वेळ",
+      dailyPanchang: "दैनंदिन पंचांग",
+      dailyHoroscope: "दैनंदिन राशीभविष्य",
+      voiceAstrologer: "व्हॉइस AI ज्योतिषी",
+      fullKundli: "संपूर्ण कुंडली विश्लेषण",
+      doshaAnalysis: "दोष विश्लेषण",
+      numerology: "अंकशास्त्र",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "तुमचा दैनिक वैश्विक अंदाज",
+      energyHigh: "उत्कृष्ट दिवस पुढे!",
+      energyMedium: "आज चांगली ऊर्जा",
+      energyLow: "आज सहज घ्या",
+      cosmicAlignment: "तुमचे वैश्विक संरेखन",
+      
+      // Phase 6: Gamification
+      achievements: "उपलब्धी",
+      unlockBadges: "वैश्विक बॅज अनलॉक करा",
+      badgesDesc: "बॅज मिळवण्यासाठी वैश्विक क्रियाकलाप पूर्ण करा",
+      badgeFirstChart: "पहिली कुंडली",
+      badge7DayStreak: "7-दिवसांची स्ट्रीक",
+      badgeMoonChild: "चंद्र मूल",
+      badgeSunSeeker: "सूर्य शोधक",
+      badgeExplorer: "शोधक",
+      badgeCosmicMaster: "वैश्विक मास्टर",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "शेअर करा",
+      shareText: "VedicStarAstro वर माझी वैश्विक प्रोफाइल पहा!",
+      
+      // Trending Topics
+      trendingSaturn: "शनि गोचर आज मकर राशीवर परिणाम करत आहे",
+      trendingMercury: "बुध वक्री टाळण्याचे उपाय",
+      trendingFullMoon: "आज रात्री पौर्णिमेची ऊर्जा शिखरावर",
+      trendingVenus: "शुक्र मीनमध्ये - प्रेम हवेत आहे",
+      trendingJupiter: "गुरु अग्नि राशींना भाग्य देत आहे"
+    }
+  },
+  gu: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} તમારા માટે શું લાવ્યું છે તે જાણો",
+      heroSubtitle: "તમારી જન્મ વિગતો દાખલ કરો અને 60 સેકન્ડમાં તમારી વ્યક્તિગત બ્રહ્માંડીય પ્રોફાઇલ મેળવો",
+      heroFormTitle: "તમારું મફત બ્રહ્માંડીય વાંચન મેળવો",
+      
+      // Birth Form Fields
+      birthDate: "જન્મ તારીખ",
+      birthTime: "જન્મ સમય",
+      birthPlace: "જન્મ સ્થળ",
+      selectDate: "તારીખ પસંદ કરો",
+      selectTime: "સમય પસંદ કરો",
+      enterCity: "શહેરનું નામ દાખલ કરો",
+      generateProfile: "મારી બ્રહ્માંડીય પ્રોફાઇલ બનાવો",
+      generating: "બનાવી રહ્યા છીએ...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "તમારી બ્રહ્માંડીય પ્રોફાઇલ",
+      cosmicDna: "તમારો બ્રહ્માંડીય DNA",
+      shareCosmicDna: "તમારો બ્રહ્માંડીય DNA શેર કરો",
+      predictionYear: "તમારી {year} આગાહી",
+      downloadCard: "કાર્ડ ડાઉનલોડ કરો",
+      shareOnSocial: "સોશિયલ પર શેર કરો",
+      copyLink: "લિંક કોપી કરો",
+      linkCopied: "લિંક કોપી થઈ!",
+      scanToView: "સંપૂર્ણ વાંચન જોવા સ્કેન કરો",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "જીવન યાત્રાઓ",
+      loveJourney: "પ્રેમ અને સંબંધો",
+      careerJourney: "કારકિર્દી અને સંપત્તિ",
+      dailyJourney: "દૈનિક માર્ગદર્શન",
+      deepDiveJourney: "ઊંડો અભ્યાસ",
+      exploreMore: "વધુ શોધો",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "આજની બ્રહ્માંડીય ઊર્જા",
+      todayEnergyDesc: "ગ્રહોની સ્થિતિના આધારે વ્યક્તિગત દૈનિક આંતરદૃષ્ટિ",
+      energyScore: "ઊર્જા સ્કોર",
+      luckyHours: "નસીબદાર કલાકો",
+      todayMood: "આજનો મૂડ",
+      planetaryInfluence: "ગ્રહોનો પ્રભાવ",
+      enterBirthDetails: "વ્યક્તિગત ઊર્જા જોવા ઉપર તમારી જન્મ વિગતો દાખલ કરો",
+      
+      // AI Astrologer Hub
+      askTheStars: "તારાઓને પૂછો",
+      aiHubTitle: "તમારા વ્યક્તિગત AI જ્યોતિષી",
+      aiHubDesc: "કોઈપણ જ્યોતિષ પ્રશ્નના તાત્કાલિક જવાબો મેળવો",
+      askAnything: "તમારા ભવિષ્ય વિશે કંઈપણ પૂછો...",
+      popularQuestions: "લોકપ્રિય પ્રશ્નો",
+      questionCareer: "મારી કુંડળી મારી કારકિર્દી વિશે શું કહે છે?",
+      questionLove: "મને પ્રેમ ક્યારે મળશે?",
+      questionFinance: "હું મારી નાણાકીય સ્થિતિ કેવી રીતે સુધારી શકું?",
+      questionHealth: "મારા સ્વાસ્થ્ય વિશે મારે શું જાણવું જોઈએ?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "લોકો તેમની કુંડળીઓ જોઈ રહ્યા છે",
+      trending: "ટ્રેન્ડિંગ",
+      trendingTopic: "શનિ ગોચર આજે મકર રાશિને અસર કરી રહ્યો છે",
+      cosmicScore: "બ્રહ્માંડીય સ્કોર",
+      dailyStreak: "દૈનિક સ્ટ્રીક",
+      days: "દિવસો",
+      unlockBadge: "તમારો પહેલો બેજ અનલૉક કરો!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "સુસંગતતા તપાસ",
+      compatibilityDesc: "કોઈની સાથે પણ તમારી બ્રહ્માંડીય સુસંગતતા જુઓ",
+      yourBirthday: "તમારો જન્મદિવસ",
+      theirBirthday: "તેમનો જન્મદિવસ",
+      checkCompatibility: "સુસંગતતા તપાસો",
+      
+      // Visual Elements
+      starfieldTitle: "બ્રહ્માંડ શોધો",
+      particleEffect: "બ્રહ્માંડીય કણો",
+      
+      // Stats with Animation
+      liveStats: "લાઇવ આંકડા",
+      chartsToday: "આજે બનાવેલી કુંડળીઓ",
+      activeUsers: "હમણાં સક્રિય વપરાશકર્તાઓ",
+      questionsAnswered: "જવાબ આપેલા પ્રશ્નો",
+      
+      // Call to Action
+      startJourney: "તમારી બ્રહ્માંડીય યાત્રા શરૂ કરો",
+      freeForever: "હંમેશા મફત. ક્રેડિટ કાર્ડની જરૂર નથી.",
+      noCardRequired: "ક્રેડિટ કાર્ડની જરૂર નથી",
+      instantResults: "તાત્કાલિક પરિણામો",
+      
+      // Missing keys for hero section
+      revealDestiny: "મારું ભાગ્ય પ્રગટ કરો",
+      sunSign: "સૂર્ય રાશિ",
+      moonSign: "ચંદ્ર રાશિ",
+      risingSign: "લગ્ન",
+      enterDetailsToReveal: "પ્રગટ કરવા માટે તમારી વિગતો દાખલ કરો...",
+      birthPlacePlaceholder: "શહેરનું નામ દાખલ કરો",
+      liveNow: "{count} લોકો હમણાં કુંડળી જોઈ રહ્યા છે",
+      lifeJourneysBadge: "તમારી જીવન યાત્રાઓ",
+      lifeJourneysTitle: "તમારો બ્રહ્માંડીય માર્ગ શોધો",
+      lifeJourneysDesc: "તમારી યાત્રા પસંદ કરો અને તારાઓ તમારા જીવન વિશે શું કહે છે તે જાણો",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "પ્રેમ અને સંબંધો",
+      loveJourneyDesc: "તમારા આદર્શ સાથી અને સંબંધ અંતર્દૃષ્ટિ શોધો",
+      careerJourneyTitle: "કારકિર્દી અને સંપત્તિ",
+      careerJourneyDesc: "તમારી વ્યાવસાયિક ક્ષમતા અને નાણાકીય વૃદ્ધિ અનલૉક કરો",
+      dailyJourneyTitle: "દૈનિક માર્ગદર્શન",
+      dailyJourneyDesc: "દૈનિક બ્રહ્માંડીય અંતર્દૃષ્ટિ અને શુભ સમય મેળવો",
+      deepDiveJourneyTitle: "ઊંડો અભ્યાસ",
+      deepDiveJourneyDesc: "ગંભીર જ્યોતિષ ઉત્સાહીઓ માટે અદ્યતન સાધનો",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "કુંડળી મેળાપ",
+      loveCompatibility: "પ્રેમ સુસંગતતા",
+      marriageTiming: "લગ્ન મુહૂર્ત",
+      financialAstrology: "નાણાકીય જ્યોતિષ",
+      careerPredictions: "કારકિર્દી ભવિષ્યવાણી",
+      wealthTiming: "સંપત્તિ સમય",
+      dailyPanchang: "દૈનિક પંચાંગ",
+      dailyHoroscope: "દૈનિક રાશિફળ",
+      voiceAstrologer: "વૉઇસ AI જ્યોતિષી",
+      fullKundli: "સંપૂર્ણ કુંડળી વિશ્લેષણ",
+      doshaAnalysis: "દોષ વિશ્લેષણ",
+      numerology: "અંકશાસ્ત્ર",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "તમારી દૈનિક બ્રહ્માંડીય આગાહી",
+      energyHigh: "ઉત્તમ દિવસ આગળ!",
+      energyMedium: "આજે સારી ઊર્જા",
+      energyLow: "આજે આરામથી લો",
+      cosmicAlignment: "તમારું બ્રહ્માંડીય સંરેખણ",
+      
+      // Phase 6: Gamification
+      achievements: "સિદ્ધિઓ",
+      unlockBadges: "બ્રહ્માંડીય બેજ અનલૉક કરો",
+      badgesDesc: "બેજ મેળવવા માટે બ્રહ્માંડીય પ્રવૃત્તિઓ પૂર્ણ કરો",
+      badgeFirstChart: "પ્રથમ કુંડળી",
+      badge7DayStreak: "7-દિવસની સ્ટ્રીક",
+      badgeMoonChild: "ચંદ્ર બાળક",
+      badgeSunSeeker: "સૂર્ય શોધક",
+      badgeExplorer: "સંશોધક",
+      badgeCosmicMaster: "બ્રહ્માંડીય માસ્ટર",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "શેર કરો",
+      shareText: "VedicStarAstro પર મારી બ્રહ્માંડીય પ્રોફાઇલ જુઓ!",
+      
+      // Trending Topics
+      trendingSaturn: "શનિ ગોચર આજે મકર રાશિને અસર કરી રહ્યો છે",
+      trendingMercury: "બુધ વક્રીથી બચવાના ઉપાયો",
+      trendingFullMoon: "આજે રાત્રે પૂર્ણિમાની ઊર્જા ટોચ પર",
+      trendingVenus: "શુક્ર મીનમાં - પ્રેમ હવામાં છે",
+      trendingJupiter: "ગુરુ અગ્નિ રાશિઓને ભાગ્ય આપી રહ્યા છે"
+    }
+  },
+  kn: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} ನಿಮಗಾಗಿ ಏನು ತಂದಿದೆ ಎಂದು ತಿಳಿಯಿರಿ",
+      heroSubtitle: "ನಿಮ್ಮ ಜನ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ ಮತ್ತು 60 ಸೆಕೆಂಡುಗಳಲ್ಲಿ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ವಿಶ್ವ ಪ್ರೊಫೈಲ್ ಪಡೆಯಿರಿ",
+      heroFormTitle: "ನಿಮ್ಮ ಉಚಿತ ವಿಶ್ವ ಓದುವಿಕೆ ಪಡೆಯಿರಿ",
+      
+      // Birth Form Fields
+      birthDate: "ಜನ್ಮ ದಿನಾಂಕ",
+      birthTime: "ಜನ್ಮ ಸಮಯ",
+      birthPlace: "ಜನ್ಮ ಸ್ಥಳ",
+      selectDate: "ದಿನಾಂಕ ಆಯ್ಕೆಮಾಡಿ",
+      selectTime: "ಸಮಯ ಆಯ್ಕೆಮಾಡಿ",
+      enterCity: "ನಗರದ ಹೆಸರು ನಮೂದಿಸಿ",
+      generateProfile: "ನನ್ನ ವಿಶ್ವ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ",
+      generating: "ರಚಿಸಲಾಗುತ್ತಿದೆ...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "ನಿಮ್ಮ ವಿಶ್ವ ಪ್ರೊಫೈಲ್",
+      cosmicDna: "ನಿಮ್ಮ ವಿಶ್ವ DNA",
+      shareCosmicDna: "ನಿಮ್ಮ ವಿಶ್ವ DNA ಹಂಚಿಕೊಳ್ಳಿ",
+      predictionYear: "ನಿಮ್ಮ {year} ಭವಿಷ್ಯ",
+      downloadCard: "ಕಾರ್ಡ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+      shareOnSocial: "ಸೋಶಿಯಲ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ",
+      copyLink: "ಲಿಂಕ್ ನಕಲಿಸಿ",
+      linkCopied: "ಲಿಂಕ್ ನಕಲಾಗಿದೆ!",
+      scanToView: "ಸಂಪೂರ್ಣ ಓದುವಿಕೆ ನೋಡಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "ಜೀವನ ಪ್ರಯಾಣಗಳು",
+      loveJourney: "ಪ್ರೀತಿ ಮತ್ತು ಸಂಬಂಧಗಳು",
+      careerJourney: "ವೃತ್ತಿ ಮತ್ತು ಸಂಪತ್ತು",
+      dailyJourney: "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
+      deepDiveJourney: "ಆಳವಾದ ಅಧ್ಯಯನ",
+      exploreMore: "ಇನ್ನಷ್ಟು ಅನ್ವೇಷಿಸಿ",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "ಇಂದಿನ ವಿಶ್ವ ಶಕ್ತಿ",
+      todayEnergyDesc: "ಗ್ರಹ ಸ್ಥಾನಗಳ ಆಧಾರದ ಮೇಲೆ ವೈಯಕ್ತಿಕ ದೈನಂದಿನ ಒಳನೋಟಗಳು",
+      energyScore: "ಶಕ್ತಿ ಸ್ಕೋರ್",
+      luckyHours: "ಅದೃಷ್ಟದ ಗಂಟೆಗಳು",
+      todayMood: "ಇಂದಿನ ಮೂಡ್",
+      planetaryInfluence: "ಗ್ರಹಗಳ ಪ್ರಭಾವ",
+      enterBirthDetails: "ವೈಯಕ್ತಿಕ ಶಕ್ತಿ ನೋಡಲು ಮೇಲೆ ನಿಮ್ಮ ಜನ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ",
+      
+      // AI Astrologer Hub
+      askTheStars: "ನಕ್ಷತ್ರಗಳನ್ನು ಕೇಳಿ",
+      aiHubTitle: "ನಿಮ್ಮ ವೈಯಕ್ತಿಕ AI ಜ್ಯೋತಿಷಿ",
+      aiHubDesc: "ಯಾವುದೇ ಜ್ಯೋತಿಷ್ಯ ಪ್ರಶ್ನೆಗೆ ತಕ್ಷಣ ಉತ್ತರಗಳನ್ನು ಪಡೆಯಿರಿ",
+      askAnything: "ನಿಮ್ಮ ಭವಿಷ್ಯದ ಬಗ್ಗೆ ಏನಾದರೂ ಕೇಳಿ...",
+      popularQuestions: "ಜನಪ್ರಿಯ ಪ್ರಶ್ನೆಗಳು",
+      questionCareer: "ನನ್ನ ಜಾತಕ ನನ್ನ ವೃತ್ತಿಯ ಬಗ್ಗೆ ಏನು ಹೇಳುತ್ತದೆ?",
+      questionLove: "ನನಗೆ ಪ್ರೀತಿ ಯಾವಾಗ ಸಿಗುತ್ತದೆ?",
+      questionFinance: "ನನ್ನ ಆರ್ಥಿಕ ಸ್ಥಿತಿಯನ್ನು ಹೇಗೆ ಸುಧಾರಿಸಬಹುದು?",
+      questionHealth: "ನನ್ನ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ನಾನು ಏನು ತಿಳಿದುಕೊಳ್ಳಬೇಕು?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "ಜನರು ತಮ್ಮ ಜಾತಕಗಳನ್ನು ನೋಡುತ್ತಿದ್ದಾರೆ",
+      trending: "ಟ್ರೆಂಡಿಂಗ್",
+      trendingTopic: "ಶನಿ ಗೋಚಾರ ಇಂದು ಮಕರ ರಾಶಿಯನ್ನು ಪ್ರಭಾವಿಸುತ್ತಿದೆ",
+      cosmicScore: "ವಿಶ್ವ ಸ್ಕೋರ್",
+      dailyStreak: "ದೈನಂದಿನ ಸ್ಟ್ರೀಕ್",
+      days: "ದಿನಗಳು",
+      unlockBadge: "ನಿಮ್ಮ ಮೊದಲ ಬ್ಯಾಡ್ಜ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "ಹೊಂದಾಣಿಕೆ ಪರಿಶೀಲನೆ",
+      compatibilityDesc: "ಯಾರೊಂದಿಗಾದರೂ ನಿಮ್ಮ ವಿಶ್ವ ಹೊಂದಾಣಿಕೆ ನೋಡಿ",
+      yourBirthday: "ನಿಮ್ಮ ಹುಟ್ಟುಹಬ್ಬ",
+      theirBirthday: "ಅವರ ಹುಟ್ಟುಹಬ್ಬ",
+      checkCompatibility: "ಹೊಂದಾಣಿಕೆ ಪರಿಶೀಲಿಸಿ",
+      
+      // Visual Elements
+      starfieldTitle: "ವಿಶ್ವವನ್ನು ಅನ್ವೇಷಿಸಿ",
+      particleEffect: "ವಿಶ್ವ ಕಣಗಳು",
+      
+      // Stats with Animation
+      liveStats: "ಲೈವ್ ಅಂಕಿಅಂಶಗಳು",
+      chartsToday: "ಇಂದು ರಚಿಸಿದ ಜಾತಕಗಳು",
+      activeUsers: "ಈಗ ಸಕ್ರಿಯ ಬಳಕೆದಾರರು",
+      questionsAnswered: "ಉತ್ತರಿಸಿದ ಪ್ರಶ್ನೆಗಳು",
+      
+      // Call to Action
+      startJourney: "ನಿಮ್ಮ ವಿಶ್ವ ಪ್ರಯಾಣ ಪ್ರಾರಂಭಿಸಿ",
+      freeForever: "ಶಾಶ್ವತವಾಗಿ ಉಚಿತ. ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅಗತ್ಯವಿಲ್ಲ.",
+      noCardRequired: "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅಗತ್ಯವಿಲ್ಲ",
+      instantResults: "ತಕ್ಷಣ ಫಲಿತಾಂಶಗಳು",
+      
+      // Missing keys for hero section
+      revealDestiny: "ನನ್ನ ವಿಧಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸಿ",
+      sunSign: "ಸೂರ್ಯ ರಾಶಿ",
+      moonSign: "ಚಂದ್ರ ರಾಶಿ",
+      risingSign: "ಲಗ್ನ",
+      enterDetailsToReveal: "ಬಹಿರಂಗಪಡಿಸಲು ನಿಮ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ...",
+      birthPlacePlaceholder: "ನಗರದ ಹೆಸರು ನಮೂದಿಸಿ",
+      liveNow: "{count} ಜನರು ಈಗ ಜಾತಕಗಳನ್ನು ನೋಡುತ್ತಿದ್ದಾರೆ",
+      lifeJourneysBadge: "ನಿಮ್ಮ ಜೀವನ ಪ್ರಯಾಣಗಳು",
+      lifeJourneysTitle: "ನಿಮ್ಮ ವಿಶ್ವ ಮಾರ್ಗವನ್ನು ಅನ್ವೇಷಿಸಿ",
+      lifeJourneysDesc: "ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ನಕ್ಷತ್ರಗಳು ನಿಮ್ಮ ಜೀವನದ ಬಗ್ಗೆ ಏನು ಹೇಳುತ್ತವೆ ಎಂದು ತಿಳಿಯಿರಿ",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ಪ್ರೀತಿ ಮತ್ತು ಸಂಬಂಧಗಳು",
+      loveJourneyDesc: "ನಿಮ್ಮ ಆದರ್ಶ ಸಂಗಾತಿ ಮತ್ತು ಸಂಬಂಧ ಒಳನೋಟಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ",
+      careerJourneyTitle: "ವೃತ್ತಿ ಮತ್ತು ಸಂಪತ್ತು",
+      careerJourneyDesc: "ನಿಮ್ಮ ವೃತ್ತಿಪರ ಸಾಮರ್ಥ್ಯ ಮತ್ತು ಆರ್ಥಿಕ ಬೆಳವಣಿಗೆಯನ್ನು ಅನ್ಲಾಕ್ ಮಾಡಿ",
+      dailyJourneyTitle: "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
+      dailyJourneyDesc: "ದೈನಂದಿನ ವಿಶ್ವ ಒಳನೋಟಗಳು ಮತ್ತು ಶುಭ ಸಮಯಗಳನ್ನು ಪಡೆಯಿರಿ",
+      deepDiveJourneyTitle: "ಆಳವಾದ ಅಧ್ಯಯನ",
+      deepDiveJourneyDesc: "ಗಂಭೀರ ಜ್ಯೋತಿಷ್ಯ ಉತ್ಸಾಹಿಗಳಿಗೆ ಸುಧಾರಿತ ಸಾಧನಗಳು",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ಜಾತಕ ಹೊಂದಾಣಿಕೆ",
+      loveCompatibility: "ಪ್ರೀತಿ ಹೊಂದಾಣಿಕೆ",
+      marriageTiming: "ವಿವಾಹ ಮುಹೂರ್ತ",
+      financialAstrology: "ಆರ್ಥಿಕ ಜ್ಯೋತಿಷ್ಯ",
+      careerPredictions: "ವೃತ್ತಿ ಭವಿಷ್ಯವಾಣಿ",
+      wealthTiming: "ಸಂಪತ್ತು ಸಮಯ",
+      dailyPanchang: "ದೈನಂದಿನ ಪಂಚಾಂಗ",
+      dailyHoroscope: "ದೈನಂದಿನ ರಾಶಿಫಲ",
+      voiceAstrologer: "ವಾಯ್ಸ್ AI ಜ್ಯೋತಿಷಿ",
+      fullKundli: "ಸಂಪೂರ್ಣ ಜಾತಕ ವಿಶ್ಲೇಷಣೆ",
+      doshaAnalysis: "ದೋಷ ವಿಶ್ಲೇಷಣೆ",
+      numerology: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "ನಿಮ್ಮ ದೈನಂದಿನ ವಿಶ್ವ ಮುನ್ಸೂಚನೆ",
+      energyHigh: "ಅತ್ಯುತ್ತಮ ದಿನ ಮುಂದಿದೆ!",
+      energyMedium: "ಇಂದು ಒಳ್ಳೆಯ ಶಕ್ತಿ",
+      energyLow: "ಇಂದು ಸುಲಭವಾಗಿ ತೆಗೆದುಕೊಳ್ಳಿ",
+      cosmicAlignment: "ನಿಮ್ಮ ವಿಶ್ವ ಜೋಡಣೆ",
+      
+      // Phase 6: Gamification
+      achievements: "ಸಾಧನೆಗಳು",
+      unlockBadges: "ವಿಶ್ವ ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
+      badgesDesc: "ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಗಳಿಸಲು ವಿಶ್ವ ಚಟುವಟಿಕೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ",
+      badgeFirstChart: "ಮೊದಲ ಚಾರ್ಟ್",
+      badge7DayStreak: "7-ದಿನದ ಸ್ಟ್ರೀಕ್",
+      badgeMoonChild: "ಚಂದ್ರ ಮಗು",
+      badgeSunSeeker: "ಸೂರ್ಯ ಅನ್ವೇಷಕ",
+      badgeExplorer: "ಅನ್ವೇಷಕ",
+      badgeCosmicMaster: "ವಿಶ್ವ ಮಾಸ್ಟರ್",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "ಹಂಚಿಕೊಳ್ಳಿ",
+      shareText: "VedicStarAstro ನಲ್ಲಿ ನನ್ನ ವಿಶ್ವ ಪ್ರೊಫೈಲ್ ನೋಡಿ!",
+      
+      // Trending Topics
+      trendingSaturn: "ಶನಿ ಗೋಚಾರ ಇಂದು ಮಕರ ರಾಶಿಯನ್ನು ಪ್ರಭಾವಿಸುತ್ತಿದೆ",
+      trendingMercury: "ಬುಧ ವಕ್ರದಿಂದ ಬದುಕುಳಿಯುವ ಸಲಹೆಗಳು",
+      trendingFullMoon: "ಇಂದು ರಾತ್ರಿ ಹುಣ್ಣಿಮೆ ಶಕ್ತಿ ಉತ್ತುಂಗದಲ್ಲಿದೆ",
+      trendingVenus: "ಶುಕ್ರ ಮೀನದಲ್ಲಿ - ಪ್ರೀತಿ ಗಾಳಿಯಲ್ಲಿದೆ",
+      trendingJupiter: "ಗುರು ಅಗ್ನಿ ರಾಶಿಗಳಿಗೆ ಅದೃಷ್ಟ ತರುತ್ತಿದ್ದಾರೆ"
+    }
+  },
+  ml: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} നിങ്ങൾക്കായി എന്താണ് കരുതിവച്ചിരിക്കുന്നതെന്ന് കണ്ടെത്തുക",
+      heroSubtitle: "നിങ്ങളുടെ ജനന വിവരങ്ങൾ നൽകി 60 സെക്കൻഡിൽ നിങ്ങളുടെ വ്യക്തിഗത പ്രപഞ്ച പ്രൊഫൈൽ നേടുക",
+      heroFormTitle: "നിങ്ങളുടെ സൗജന്യ പ്രപഞ്ച വായന നേടുക",
+      
+      // Birth Form Fields
+      birthDate: "ജനന തീയതി",
+      birthTime: "ജനന സമയം",
+      birthPlace: "ജനന സ്ഥലം",
+      selectDate: "തീയതി തിരഞ്ഞെടുക്കുക",
+      selectTime: "സമയം തിരഞ്ഞെടുക്കുക",
+      enterCity: "നഗരത്തിന്റെ പേര് നൽകുക",
+      generateProfile: "എന്റെ പ്രപഞ്ച പ്രൊഫൈൽ സൃഷ്ടിക്കുക",
+      generating: "സൃഷ്ടിക്കുന്നു...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "നിങ്ങളുടെ പ്രപഞ്ച പ്രൊഫൈൽ",
+      cosmicDna: "നിങ്ങളുടെ പ്രപഞ്ച DNA",
+      shareCosmicDna: "നിങ്ങളുടെ പ്രപഞ്ച DNA പങ്കിടുക",
+      predictionYear: "നിങ്ങളുടെ {year} പ്രവചനം",
+      downloadCard: "കാർഡ് ഡൗൺലോഡ് ചെയ്യുക",
+      shareOnSocial: "സോഷ്യലിൽ പങ്കിടുക",
+      copyLink: "ലിങ്ക് പകർത്തുക",
+      linkCopied: "ലിങ്ക് പകർത്തി!",
+      scanToView: "പൂർണ്ണ വായന കാണാൻ സ്കാൻ ചെയ്യുക",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "ജീവിത യാത്രകൾ",
+      loveJourney: "പ്രണയവും ബന്ധങ്ങളും",
+      careerJourney: "കരിയറും സമ്പത്തും",
+      dailyJourney: "ദൈനംദിന മാർഗ്ഗനിർദ്ദേശം",
+      deepDiveJourney: "ആഴത്തിലുള്ള പഠനം",
+      exploreMore: "കൂടുതൽ പര്യവേക്ഷണം ചെയ്യുക",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "ഇന്നത്തെ പ്രപഞ്ച ഊർജ്ജം",
+      todayEnergyDesc: "ഗ്രഹ സ്ഥാനങ്ങളെ അടിസ്ഥാനമാക്കിയുള്ള വ്യക്തിഗത ദൈനംദിന ഉൾക്കാഴ്ചകൾ",
+      energyScore: "ഊർജ്ജ സ്കോർ",
+      luckyHours: "ഭാഗ്യ മണിക്കൂറുകൾ",
+      todayMood: "ഇന്നത്തെ മൂഡ്",
+      planetaryInfluence: "ഗ്രഹ സ്വാധീനം",
+      enterBirthDetails: "വ്യക്തിഗത ഊർജ്ജം കാണാൻ മുകളിൽ നിങ്ങളുടെ ജനന വിവരങ്ങൾ നൽകുക",
+      
+      // AI Astrologer Hub
+      askTheStars: "നക്ഷത്രങ്ങളോട് ചോദിക്കുക",
+      aiHubTitle: "നിങ്ങളുടെ വ്യക്തിഗത AI ജ്യോതിഷി",
+      aiHubDesc: "ഏതെങ്കിലും ജ്യോതിഷ ചോദ്യത്തിന് തൽക്ഷണ ഉത്തരങ്ങൾ നേടുക",
+      askAnything: "നിങ്ങളുടെ ഭാവിയെക്കുറിച്ച് എന്തും ചോദിക്കുക...",
+      popularQuestions: "ജനപ്രിയ ചോദ്യങ്ങൾ",
+      questionCareer: "എന്റെ ജാതകം എന്റെ കരിയറിനെക്കുറിച്ച് എന്താണ് പറയുന്നത്?",
+      questionLove: "എനിക്ക് പ്രണയം എപ്പോൾ കിട്ടും?",
+      questionFinance: "എന്റെ സാമ്പത്തിക സ്ഥിതി എങ്ങനെ മെച്ചപ്പെടുത്താം?",
+      questionHealth: "എന്റെ ആരോഗ്യത്തെക്കുറിച്ച് ഞാൻ എന്താണ് അറിയേണ്ടത്?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "പേർ അവരുടെ ജാതകങ്ങൾ പരിശോധിക്കുന്നു",
+      trending: "ട്രെൻഡിംഗ്",
+      trendingTopic: "ശനി ഗോചരം ഇന്ന് മകരം രാശിയെ ബാധിക്കുന്നു",
+      cosmicScore: "പ്രപഞ്ച സ്കോർ",
+      dailyStreak: "ദൈനംദിന സ്ട്രീക്ക്",
+      days: "ദിവസങ്ങൾ",
+      unlockBadge: "നിങ്ങളുടെ ആദ്യ ബാഡ്ജ് അൺലോക്ക് ചെയ്യുക!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "അനുയോജ്യത പരിശോധന",
+      compatibilityDesc: "ആരുമായും നിങ്ങളുടെ പ്രപഞ്ച അനുയോജ്യത കാണുക",
+      yourBirthday: "നിങ്ങളുടെ ജന്മദിനം",
+      theirBirthday: "അവരുടെ ജന്മദിനം",
+      checkCompatibility: "അനുയോജ്യത പരിശോധിക്കുക",
+      
+      // Visual Elements
+      starfieldTitle: "പ്രപഞ്ചം പര്യവേക്ഷണം ചെയ്യുക",
+      particleEffect: "പ്രപഞ്ച കണങ്ങൾ",
+      
+      // Stats with Animation
+      liveStats: "ലൈവ് സ്ഥിതിവിവരക്കണക്കുകൾ",
+      chartsToday: "ഇന്ന് സൃഷ്ടിച്ച ജാതകങ്ങൾ",
+      activeUsers: "ഇപ്പോൾ സജീവ ഉപയോക്താക്കൾ",
+      questionsAnswered: "ഉത്തരം നൽകിയ ചോദ്യങ്ങൾ",
+      
+      // Call to Action
+      startJourney: "നിങ്ങളുടെ പ്രപഞ്ച യാത്ര ആരംഭിക്കുക",
+      freeForever: "എന്നേക്കും സൗജന്യം. ക്രെഡിറ്റ് കാർഡ് ആവശ്യമില്ല.",
+      noCardRequired: "ക്രെഡിറ്റ് കാർഡ് ആവശ്യമില്ല",
+      instantResults: "തൽക്ഷണ ഫലങ്ങൾ",
+      
+      // Missing keys for hero section
+      revealDestiny: "എന്റെ വിധി വെളിപ്പെടുത്തുക",
+      sunSign: "സൂര്യ രാശി",
+      moonSign: "ചന്ദ്ര രാശി",
+      risingSign: "ലഗ്നം",
+      enterDetailsToReveal: "വെളിപ്പെടുത്താൻ നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക...",
+      birthPlacePlaceholder: "നഗരത്തിന്റെ പേര് നൽകുക",
+      liveNow: "{count} പേർ ഇപ്പോൾ ജാതകങ്ങൾ നോക്കുന്നു",
+      lifeJourneysBadge: "നിങ്ങളുടെ ജീവിത യാത്രകൾ",
+      lifeJourneysTitle: "നിങ്ങളുടെ പ്രപഞ്ച പാത പര്യവേക്ഷണം ചെയ്യുക",
+      lifeJourneysDesc: "നിങ്ങളുടെ യാത്ര തിരഞ്ഞെടുത്ത് നക്ഷത്രങ്ങൾ നിങ്ങളുടെ ജീവിതത്തെക്കുറിച്ച് എന്താണ് പറയുന്നതെന്ന് കണ്ടെത്തുക",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "പ്രണയവും ബന്ധങ്ങളും",
+      loveJourneyDesc: "നിങ്ങളുടെ ആദർശ പങ്കാളിയെയും ബന്ധ ഉൾക്കാഴ്ചകളും കണ്ടെത്തുക",
+      careerJourneyTitle: "കരിയറും സമ്പത്തും",
+      careerJourneyDesc: "നിങ്ങളുടെ പ്രൊഫഷണൽ സാധ്യതയും സാമ്പത്തിക വളർച്ചയും അൺലോക്ക് ചെയ്യുക",
+      dailyJourneyTitle: "ദൈനംദിന മാർഗ്ഗനിർദ്ദേശം",
+      dailyJourneyDesc: "ദൈനംദിന പ്രപഞ്ച ഉൾക്കാഴ്ചകളും ശുഭ സമയങ്ങളും നേടുക",
+      deepDiveJourneyTitle: "ആഴത്തിലുള്ള പഠനം",
+      deepDiveJourneyDesc: "ഗുരുതരമായ ജ്യോതിഷ ആരാധകർക്കുള്ള വിപുലമായ ഉപകരണങ്ങൾ",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ജാതക പൊരുത്തം",
+      loveCompatibility: "പ്രണയ പൊരുത്തം",
+      marriageTiming: "വിവാഹ മുഹൂർത്തം",
+      financialAstrology: "സാമ്പത്തിക ജ്യോതിഷം",
+      careerPredictions: "കരിയർ പ്രവചനങ്ങൾ",
+      wealthTiming: "സമ്പത്ത് സമയം",
+      dailyPanchang: "ദൈനംദിന പഞ്ചാംഗം",
+      dailyHoroscope: "ദൈനംദിന രാശിഫലം",
+      voiceAstrologer: "വോയ്സ് AI ജ്യോതിഷി",
+      fullKundli: "പൂർണ്ണ ജാതക വിശകലനം",
+      doshaAnalysis: "ദോഷ വിശകലനം",
+      numerology: "സംഖ്യാശാസ്ത്രം",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "നിങ്ങളുടെ ദൈനംദിന പ്രപഞ്ച പ്രവചനം",
+      energyHigh: "മികച്ച ദിവസം മുന്നിൽ!",
+      energyMedium: "ഇന്ന് നല്ല ഊർജ്ജം",
+      energyLow: "ഇന്ന് എളുപ്പത്തിൽ എടുക്കുക",
+      cosmicAlignment: "നിങ്ങളുടെ പ്രപഞ്ച വിന്യാസം",
+      
+      // Phase 6: Gamification
+      achievements: "നേട്ടങ്ങൾ",
+      unlockBadges: "പ്രപഞ്ച ബാഡ്ജുകൾ അൺലോക്ക് ചെയ്യുക",
+      badgesDesc: "ബാഡ്ജുകൾ നേടാൻ പ്രപഞ്ച പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കുക",
+      badgeFirstChart: "ആദ്യ ചാർട്ട്",
+      badge7DayStreak: "7-ദിവസ സ്ട്രീക്ക്",
+      badgeMoonChild: "ചന്ദ്ര കുട്ടി",
+      badgeSunSeeker: "സൂര്യ അന്വേഷകൻ",
+      badgeExplorer: "പര്യവേക്ഷകൻ",
+      badgeCosmicMaster: "പ്രപഞ്ച മാസ്റ്റർ",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "പങ്കിടുക",
+      shareText: "VedicStarAstro യിൽ എന്റെ പ്രപഞ്ച പ്രൊഫൈൽ കാണുക!",
+      
+      // Trending Topics
+      trendingSaturn: "ശനി ഗോചരം ഇന്ന് മകരം രാശിയെ ബാധിക്കുന്നു",
+      trendingMercury: "ബുധ വക്രത്തിൽ നിന്ന് രക്ഷപ്പെടാനുള്ള വഴികൾ",
+      trendingFullMoon: "ഇന്ന് രാത്രി പൗർണ്ണമി ഊർജ്ജം ഉച്ചസ്ഥായിയിൽ",
+      trendingVenus: "ശുക്രൻ മീനത്തിൽ - പ്രണയം വായുവിൽ",
+      trendingJupiter: "വ്യാഴം അഗ്നി രാശികൾക്ക് ഭാഗ്യം നൽകുന്നു"
+    }
+  },
+  pa: {
+    homeRedesign: {
+      // New Hero Section - Single Powerful Hook
+      heroMainTitle: "{year} ਤੁਹਾਡੇ ਲਈ ਕੀ ਲੈ ਕੇ ਆਇਆ ਹੈ ਜਾਣੋ",
+      heroSubtitle: "ਆਪਣੇ ਜਨਮ ਵੇਰਵੇ ਦਰਜ ਕਰੋ ਅਤੇ 60 ਸਕਿੰਟਾਂ ਵਿੱਚ ਆਪਣੀ ਨਿੱਜੀ ਬ੍ਰਹਿਮੰਡੀ ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਾਪਤ ਕਰੋ",
+      heroFormTitle: "ਆਪਣੀ ਮੁਫ਼ਤ ਬ੍ਰਹਿਮੰਡੀ ਰੀਡਿੰਗ ਪ੍ਰਾਪਤ ਕਰੋ",
+      
+      // Birth Form Fields
+      birthDate: "ਜਨਮ ਮਿਤੀ",
+      birthTime: "ਜਨਮ ਸਮਾਂ",
+      birthPlace: "ਜਨਮ ਸਥਾਨ",
+      selectDate: "ਮਿਤੀ ਚੁਣੋ",
+      selectTime: "ਸਮਾਂ ਚੁਣੋ",
+      enterCity: "ਸ਼ਹਿਰ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ",
+      generateProfile: "ਮੇਰੀ ਬ੍ਰਹਿਮੰਡੀ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ",
+      generating: "ਬਣਾ ਰਹੇ ਹਾਂ...",
+      
+      // Cosmic Profile Card (Viral Element)
+      cosmicProfileTitle: "ਤੁਹਾਡੀ ਬ੍ਰਹਿਮੰਡੀ ਪ੍ਰੋਫਾਈਲ",
+      cosmicDna: "ਤੁਹਾਡਾ ਬ੍ਰਹਿਮੰਡੀ DNA",
+      shareCosmicDna: "ਆਪਣਾ ਬ੍ਰਹਿਮੰਡੀ DNA ਸਾਂਝਾ ਕਰੋ",
+      predictionYear: "ਤੁਹਾਡੀ {year} ਭਵਿੱਖਬਾਣੀ",
+      downloadCard: "ਕਾਰਡ ਡਾਊਨਲੋਡ ਕਰੋ",
+      shareOnSocial: "ਸੋਸ਼ਲ 'ਤੇ ਸਾਂਝਾ ਕਰੋ",
+      copyLink: "ਲਿੰਕ ਕਾਪੀ ਕਰੋ",
+      linkCopied: "ਲਿੰਕ ਕਾਪੀ ਹੋ ਗਈ!",
+      scanToView: "ਪੂਰੀ ਰੀਡਿੰਗ ਦੇਖਣ ਲਈ ਸਕੈਨ ਕਰੋ",
+      
+      // Life Journeys (Simplified Navigation)
+      lifeJourneys: "ਜੀਵਨ ਯਾਤਰਾਵਾਂ",
+      loveJourney: "ਪਿਆਰ ਅਤੇ ਰਿਸ਼ਤੇ",
+      careerJourney: "ਕਰੀਅਰ ਅਤੇ ਦੌਲਤ",
+      dailyJourney: "ਰੋਜ਼ਾਨਾ ਮਾਰਗਦਰਸ਼ਨ",
+      deepDiveJourney: "ਡੂੰਘਾ ਅਧਿਐਨ",
+      exploreMore: "ਹੋਰ ਖੋਜੋ",
+      
+      // Today's Cosmic Energy Section
+      todayEnergy: "ਅੱਜ ਦੀ ਬ੍ਰਹਿਮੰਡੀ ਊਰਜਾ",
+      todayEnergyDesc: "ਗ੍ਰਹਿਆਂ ਦੀਆਂ ਸਥਿਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਨਿੱਜੀ ਰੋਜ਼ਾਨਾ ਸੂਝ",
+      energyScore: "ਊਰਜਾ ਸਕੋਰ",
+      luckyHours: "ਖੁਸ਼ਕਿਸਮਤ ਘੰਟੇ",
+      todayMood: "ਅੱਜ ਦਾ ਮੂਡ",
+      planetaryInfluence: "ਗ੍ਰਹਿਆਂ ਦਾ ਪ੍ਰਭਾਵ",
+      enterBirthDetails: "ਨਿੱਜੀ ਊਰਜਾ ਦੇਖਣ ਲਈ ਉੱਪਰ ਆਪਣੇ ਜਨਮ ਵੇਰਵੇ ਦਰਜ ਕਰੋ",
+      
+      // AI Astrologer Hub
+      askTheStars: "ਤਾਰਿਆਂ ਨੂੰ ਪੁੱਛੋ",
+      aiHubTitle: "ਤੁਹਾਡਾ ਨਿੱਜੀ AI ਜੋਤਿਸ਼ੀ",
+      aiHubDesc: "ਕਿਸੇ ਵੀ ਜੋਤਿਸ਼ ਸਵਾਲ ਦਾ ਤੁਰੰਤ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ",
+      askAnything: "ਆਪਣੇ ਭਵਿੱਖ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ...",
+      popularQuestions: "ਪ੍ਰਸਿੱਧ ਸਵਾਲ",
+      questionCareer: "ਮੇਰੀ ਕੁੰਡਲੀ ਮੇਰੇ ਕਰੀਅਰ ਬਾਰੇ ਕੀ ਕਹਿੰਦੀ ਹੈ?",
+      questionLove: "ਮੈਨੂੰ ਪਿਆਰ ਕਦੋਂ ਮਿਲੇਗਾ?",
+      questionFinance: "ਮੈਂ ਆਪਣੀ ਵਿੱਤੀ ਸਥਿਤੀ ਕਿਵੇਂ ਸੁਧਾਰ ਸਕਦਾ ਹਾਂ?",
+      questionHealth: "ਮੈਨੂੰ ਆਪਣੀ ਸਿਹਤ ਬਾਰੇ ਕੀ ਪਤਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ?",
+      
+      // Gamification & Social Proof
+      peopleChecking: "ਲੋਕ ਆਪਣੀਆਂ ਕੁੰਡਲੀਆਂ ਦੇਖ ਰਹੇ ਹਨ",
+      trending: "ਟ੍ਰੈਂਡਿੰਗ",
+      trendingTopic: "ਸ਼ਨੀ ਗੋਚਰ ਅੱਜ ਮਕਰ ਰਾਸ਼ੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਰਿਹਾ ਹੈ",
+      cosmicScore: "ਬ੍ਰਹਿਮੰਡੀ ਸਕੋਰ",
+      dailyStreak: "ਰੋਜ਼ਾਨਾ ਸਟ੍ਰੀਕ",
+      days: "ਦਿਨ",
+      unlockBadge: "ਆਪਣਾ ਪਹਿਲਾ ਬੈਜ ਅਨਲੌਕ ਕਰੋ!",
+      
+      // Viral Compatibility Check
+      compatibilityCheck: "ਅਨੁਕੂਲਤਾ ਜਾਂਚ",
+      compatibilityDesc: "ਕਿਸੇ ਨਾਲ ਵੀ ਆਪਣੀ ਬ੍ਰਹਿਮੰਡੀ ਅਨੁਕੂਲਤਾ ਦੇਖੋ",
+      yourBirthday: "ਤੁਹਾਡਾ ਜਨਮਦਿਨ",
+      theirBirthday: "ਉਨ੍ਹਾਂ ਦਾ ਜਨਮਦਿਨ",
+      checkCompatibility: "ਅਨੁਕੂਲਤਾ ਜਾਂਚੋ",
+      
+      // Visual Elements
+      starfieldTitle: "ਬ੍ਰਹਿਮੰਡ ਦੀ ਖੋਜ ਕਰੋ",
+      particleEffect: "ਬ੍ਰਹਿਮੰਡੀ ਕਣ",
+      
+      // Stats with Animation
+      liveStats: "ਲਾਈਵ ਅੰਕੜੇ",
+      chartsToday: "ਅੱਜ ਬਣਾਈਆਂ ਕੁੰਡਲੀਆਂ",
+      activeUsers: "ਹੁਣੇ ਸਰਗਰਮ ਉਪਭੋਗਤਾ",
+      questionsAnswered: "ਜਵਾਬ ਦਿੱਤੇ ਸਵਾਲ",
+      
+      // Call to Action
+      startJourney: "ਆਪਣੀ ਬ੍ਰਹਿਮੰਡੀ ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ",
+      freeForever: "ਹਮੇਸ਼ਾ ਮੁਫ਼ਤ। ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਲੋੜ ਨਹੀਂ।",
+      noCardRequired: "ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਲੋੜ ਨਹੀਂ",
+      instantResults: "ਤੁਰੰਤ ਨਤੀਜੇ",
+      
+      // Missing keys for hero section
+      revealDestiny: "ਮੇਰੀ ਕਿਸਮਤ ਪ੍ਰਗਟ ਕਰੋ",
+      sunSign: "ਸੂਰਜ ਰਾਸ਼ੀ",
+      moonSign: "ਚੰਦਰ ਰਾਸ਼ੀ",
+      risingSign: "ਲਗਨ",
+      enterDetailsToReveal: "ਪ੍ਰਗਟ ਕਰਨ ਲਈ ਆਪਣੇ ਵੇਰਵੇ ਦਰਜ ਕਰੋ...",
+      birthPlacePlaceholder: "ਸ਼ਹਿਰ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ",
+      liveNow: "{count} ਲੋਕ ਹੁਣੇ ਕੁੰਡਲੀਆਂ ਦੇਖ ਰਹੇ ਹਨ",
+      lifeJourneysBadge: "ਤੁਹਾਡੀਆਂ ਜੀਵਨ ਯਾਤਰਾਵਾਂ",
+      lifeJourneysTitle: "ਆਪਣਾ ਬ੍ਰਹਿਮੰਡੀ ਮਾਰਗ ਖੋਜੋ",
+      lifeJourneysDesc: "ਆਪਣੀ ਯਾਤਰਾ ਚੁਣੋ ਅਤੇ ਜਾਣੋ ਕਿ ਤਾਰੇ ਤੁਹਾਡੀ ਜ਼ਿੰਦਗੀ ਬਾਰੇ ਕੀ ਕਹਿੰਦੇ ਹਨ",
+      
+      // Life Journeys - Card Titles
+      loveJourneyTitle: "ਪਿਆਰ ਅਤੇ ਰਿਸ਼ਤੇ",
+      loveJourneyDesc: "ਆਪਣਾ ਆਦਰਸ਼ ਸਾਥੀ ਅਤੇ ਰਿਸ਼ਤੇ ਦੀ ਸੂਝ ਲੱਭੋ",
+      careerJourneyTitle: "ਕਰੀਅਰ ਅਤੇ ਦੌਲਤ",
+      careerJourneyDesc: "ਆਪਣੀ ਪੇਸ਼ੇਵਰ ਸਮਰੱਥਾ ਅਤੇ ਵਿੱਤੀ ਵਿਕਾਸ ਨੂੰ ਅਨਲੌਕ ਕਰੋ",
+      dailyJourneyTitle: "ਰੋਜ਼ਾਨਾ ਮਾਰਗਦਰਸ਼ਨ",
+      dailyJourneyDesc: "ਰੋਜ਼ਾਨਾ ਬ੍ਰਹਿਮੰਡੀ ਸੂਝ ਅਤੇ ਸ਼ੁਭ ਸਮੇਂ ਪ੍ਰਾਪਤ ਕਰੋ",
+      deepDiveJourneyTitle: "ਡੂੰਘਾ ਅਧਿਐਨ",
+      deepDiveJourneyDesc: "ਗੰਭੀਰ ਜੋਤਿਸ਼ ਉਤਸ਼ਾਹੀਆਂ ਲਈ ਉੱਨਤ ਸਾਧਨ",
+      
+      // Life Journeys - Link Texts
+      horoscopeMatching: "ਕੁੰਡਲੀ ਮਿਲਾਨ",
+      loveCompatibility: "ਪਿਆਰ ਅਨੁਕੂਲਤਾ",
+      marriageTiming: "ਵਿਆਹ ਮੁਹੂਰਤ",
+      financialAstrology: "ਵਿੱਤੀ ਜੋਤਿਸ਼",
+      careerPredictions: "ਕਰੀਅਰ ਭਵਿੱਖਬਾਣੀ",
+      wealthTiming: "ਦੌਲਤ ਸਮਾਂ",
+      dailyPanchang: "ਰੋਜ਼ਾਨਾ ਪੰਚਾਂਗ",
+      dailyHoroscope: "ਰੋਜ਼ਾਨਾ ਰਾਸ਼ੀਫਲ",
+      voiceAstrologer: "ਵੌਇਸ AI ਜੋਤਿਸ਼ੀ",
+      fullKundli: "ਪੂਰੀ ਕੁੰਡਲੀ ਵਿਸ਼ਲੇਸ਼ਣ",
+      doshaAnalysis: "ਦੋਸ਼ ਵਿਸ਼ਲੇਸ਼ਣ",
+      numerology: "ਅੰਕ ਵਿਗਿਆਨ",
+      
+      // Phase 5: Today's Cosmic Energy
+      todayEnergyTitle: "ਤੁਹਾਡਾ ਰੋਜ਼ਾਨਾ ਬ੍ਰਹਿਮੰਡੀ ਅਨੁਮਾਨ",
+      energyHigh: "ਸ਼ਾਨਦਾਰ ਦਿਨ ਅੱਗੇ!",
+      energyMedium: "ਅੱਜ ਚੰਗੀ ਊਰਜਾ",
+      energyLow: "ਅੱਜ ਆਸਾਨੀ ਨਾਲ ਲਓ",
+      cosmicAlignment: "ਤੁਹਾਡੀ ਬ੍ਰਹਿਮੰਡੀ ਸੰਰੇਖਣ",
+      
+      // Phase 6: Gamification
+      achievements: "ਪ੍ਰਾਪਤੀਆਂ",
+      unlockBadges: "ਬ੍ਰਹਿਮੰਡੀ ਬੈਜ ਅਨਲੌਕ ਕਰੋ",
+      badgesDesc: "ਬੈਜ ਕਮਾਉਣ ਲਈ ਬ੍ਰਹਿਮੰਡੀ ਗਤੀਵਿਧੀਆਂ ਪੂਰੀਆਂ ਕਰੋ",
+      badgeFirstChart: "ਪਹਿਲੀ ਕੁੰਡਲੀ",
+      badge7DayStreak: "7-ਦਿਨ ਦੀ ਸਟ੍ਰੀਕ",
+      badgeMoonChild: "ਚੰਦਰ ਬੱਚਾ",
+      badgeSunSeeker: "ਸੂਰਜ ਖੋਜੀ",
+      badgeExplorer: "ਖੋਜੀ",
+      badgeCosmicMaster: "ਬ੍ਰਹਿਮੰਡੀ ਮਾਸਟਰ",
+      
+      // Phase 7: Social Proof
+      shareOnTwitter: "ਸਾਂਝਾ ਕਰੋ",
+      shareText: "VedicStarAstro ਤੇ ਮੇਰੀ ਬ੍ਰਹਿਮੰਡੀ ਪ੍ਰੋਫਾਈਲ ਦੇਖੋ!",
+      
+      // Trending Topics
+      trendingSaturn: "ਸ਼ਨੀ ਗੋਚਰ ਅੱਜ ਮਕਰ ਰਾਸ਼ੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਰਿਹਾ ਹੈ",
+      trendingMercury: "ਬੁੱਧ ਵਕਰੀ ਤੋਂ ਬਚਣ ਦੇ ਤਰੀਕੇ",
+      trendingFullMoon: "ਅੱਜ ਰਾਤ ਪੂਰਨਮਾਸ਼ੀ ਦੀ ਊਰਜਾ ਸਿਖਰ 'ਤੇ",
+      trendingVenus: "ਸ਼ੁੱਕਰ ਮੀਨ ਵਿੱਚ - ਪਿਆਰ ਹਵਾ ਵਿੱਚ ਹੈ",
+      trendingJupiter: "ਗੁਰੂ ਅੱਗ ਰਾਸ਼ੀਆਂ ਨੂੰ ਕਿਸਮਤ ਦੇ ਰਿਹਾ ਹੈ"
+    }
+  }
+};
+
+// Deep merge function to combine translation objects
+export function deepMergeHomepage(target: TranslationObject, source: TranslationObject): TranslationObject {
+  const result = { ...target };
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMergeHomepage(
+        (result[key] as TranslationObject) || {},
+        source[key] as TranslationObject
+      );
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
