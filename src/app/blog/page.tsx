@@ -299,16 +299,18 @@ export default function BlogPage() {
                       <CardContent>
                         <div className="space-y-2">
                           {categories.map((category) => (
-                            <Link
+                            <button
                               key={category.slug}
-                              href={`/blog/category/${category.slug}`}
-                              className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-amber-50 transition-colors"
+                              onClick={() => setSelectedCategory(category.slug)}
+                              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg hover:bg-amber-50 transition-colors ${
+                                selectedCategory === category.slug ? "bg-amber-50 text-amber-700" : ""
+                              }`}
                             >
                               <span className="text-gray-700">{category.name}</span>
                               <Badge variant="secondary" className="bg-gray-100">
                                 {category.count}
                               </Badge>
-                            </Link>
+                            </button>
                           ))}
                         </div>
                       </CardContent>

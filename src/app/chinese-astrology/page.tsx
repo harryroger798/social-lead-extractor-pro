@@ -233,13 +233,23 @@ export default function ChineseAstrologyPage() {
 
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const year = parseInt(birthYear);
+    if (isNaN(year) || year < 1900 || year > 2100) {
+      return;
+    }
+    
     setIsCalculating(true);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const year = parseInt(birthYear);
     const zodiac = getChineseZodiac(year);
     const animalData = zodiacAnimals[zodiac.animal];
+    
+    if (!animalData) {
+      setIsCalculating(false);
+      return;
+    }
     
     setResult({
       ...animalData,

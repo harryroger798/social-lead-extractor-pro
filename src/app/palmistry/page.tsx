@@ -330,8 +330,22 @@ export default function PalmistryPage() {
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check file type
       if (!file.type.startsWith("image/")) {
         setAnalysisError(t("palmistry.analyze.invalidFile", "Please upload a valid image file (JPG, PNG, etc.)"));
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+      
+      // Check file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      if (file.size > maxSize) {
+        setAnalysisError(t("palmistry.analyze.fileTooLarge", "File size exceeds 10MB limit. Please upload a smaller image."));
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         return;
       }
       

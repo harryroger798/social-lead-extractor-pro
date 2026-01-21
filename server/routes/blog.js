@@ -14,7 +14,7 @@ function hashEmail(email) {
 
 const router = express.Router();
 
-const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID || '75uz5ykn';
+const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID || '5q99si1y';
 const SANITY_DATASET = process.env.SANITY_DATASET || 'production';
 const SANITY_API_VERSION = process.env.SANITY_API_VERSION || '2024-01-01';
 const SANITY_TOKEN = process.env.SANITY_API_TOKEN;

@@ -58,7 +58,8 @@ interface ChartData {
 
 // Helper function to calculate Tropical sign from Sidereal sign
 // Tropical is approximately one sign ahead of Sidereal (due to ~24° ayanamsa)
-function getTropicalFromSidereal(siderealSign: string): string {
+function getTropicalFromSidereal(siderealSign: string | undefined): string {
+  if (!siderealSign) return "Unknown";
   const signs = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"

@@ -518,7 +518,7 @@ export default function PlanetaryTrackerPage() {
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link href={`/mercury-retrograde-${getCurrentYear()}`} className="block">
+                <Link href={`/transits/mercury-retrograde-${getCurrentYear()}`} className="block">
                   <Button variant="outline" className="w-full justify-between">
                     {withCurrentYear(t("planetaryTracker.mercuryRetrogradeYear", "Mercury Retrograde {year}"))}
                     <ArrowRight className="w-4 h-4" />
