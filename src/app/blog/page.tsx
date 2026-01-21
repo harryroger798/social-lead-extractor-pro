@@ -190,10 +190,10 @@ export default function BlogPage() {
           <>
             <section className="mb-16">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Latest Articles</h2>
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-3 gap-6 items-stretch">
                 {displayPosts.slice(0, 3).map((post) => (
-                  <Card key={post._id} className="group hover:shadow-lg transition-all duration-300 border-amber-100 hover:border-amber-300 overflow-hidden">
-                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-orange-100 relative">
+                  <Card key={post._id} className="group hover:shadow-lg transition-all duration-300 border-amber-100 hover:border-amber-300 overflow-hidden flex flex-col h-full">
+                    <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-orange-100 relative flex-shrink-0">
                       {post.featuredImage?.url ? (
                         <img 
                           src={post.featuredImage.url} 
@@ -209,13 +209,13 @@ export default function BlogPage() {
                         {post.categories?.[0]?.title || "Astrology"}
                       </Badge>
                     </div>
-                    <CardHeader>
+                    <CardHeader className="flex-grow">
                       <CardTitle className="text-lg group-hover:text-amber-600 transition-colors line-clamp-2">
                         <Link href={`/blog/${post.slug.current}`}>{post.title}</Link>
                       </CardTitle>
                       <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="mt-auto">
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
