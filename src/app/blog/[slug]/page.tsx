@@ -56,9 +56,74 @@ export default function BlogPostPage() {
       fetchPost();
     }, [slug]);
 
-    // Effect to make TOC collapsible after content loads
-    useEffect(() => {
-      if (!post || loading) return;
+        // Effect to update document head with dynamic SEO meta tags from Sanity
+        useEffect(() => {
+          if (!post) return;
+
+          // Update document title
+          const metaTitle = post.seo?.metaTitle || post.title;
+          document.title = `${metaTitle} | VedicStarAstro`;
+
+          // Helper function to update or create meta tags
+          const updateMetaTag = (name: string, content: string, isProperty = false) => {
+            const attr = isProperty ? 'property' : 'name';
+            let meta = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement;
+            if (!meta) {
+              meta = document.createElement('meta');
+              meta.setAttribute(attr, name);
+              document.head.appendChild(meta);
+            }
+            meta.content = content;
+          };
+
+          // Meta description
+          const metaDescription = post.seo?.metaDescription || post.excerpt || '';
+          updateMetaTag('description', metaDescription);
+
+          // Keywords
+          const keywords = post.seo?.keywords?.join(', ') || '';
+          if (keywords) {
+            updateMetaTag('keywords', keywords);
+          }
+
+          // Open Graph tags
+          updateMetaTag('og:title', metaTitle, true);
+          updateMetaTag('og:description', metaDescription, true);
+          updateMetaTag('og:type', 'article', true);
+          updateMetaTag('og:url', `https://vedicstarastro.com/blog/${post.slug.current}`, true);
+          if (post.featuredImage?.url) {
+            updateMetaTag('og:image', post.featuredImage.url, true);
+            updateMetaTag('og:image:alt', post.featuredImage.alt || post.title, true);
+          }
+
+          // Twitter Card tags
+          updateMetaTag('twitter:card', 'summary_large_image');
+          updateMetaTag('twitter:title', metaTitle);
+          updateMetaTag('twitter:description', metaDescription);
+          if (post.featuredImage?.url) {
+            updateMetaTag('twitter:image', post.featuredImage.url);
+          }
+
+          // Article specific meta tags
+          updateMetaTag('article:published_time', post.publishedAt, true);
+          if (post.author?.name) {
+            updateMetaTag('article:author', post.author.name, true);
+          }
+
+          // Canonical URL
+          let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+          if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+          }
+          canonical.href = `https://vedicstarastro.com/blog/${post.slug.current}`;
+
+        }, [post]);
+
+        // Effect to make TOC collapsible after content loads
+        useEffect(() => {
+          if (!post || loading) return;
 
       // Find the TOC nav element and make it collapsible
       const tocNav = document.querySelector('.blog-content nav.table-of-contents, .blog-content nav');
