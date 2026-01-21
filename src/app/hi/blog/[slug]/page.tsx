@@ -141,7 +141,7 @@ export default async function HindiBlogPostPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateJsonLd(post)),
+          __html: JSON.stringify(generateJsonLd(post)).replace(/</g, "\\u003c"),
         }}
       />
       <BlogPostContent post={post} language="hi" />

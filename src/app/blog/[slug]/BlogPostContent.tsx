@@ -9,9 +9,9 @@ import { Calendar, Clock, User, ArrowLeft, Share2, BookOpen, Globe } from "lucid
 import { SanityPost } from "@/lib/sanity";
 import CommentSection from "@/components/blog/CommentSection";
 
-function formatDate(dateString: string): string {
+function formatDate(dateString: string, language: string = 'en'): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-IN", {
+  return date.toLocaleDateString(language === 'hi' ? "hi-IN" : "en-IN", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -24,9 +24,11 @@ function estimateReadTime(body: string): number {
   return Math.ceil(wordCount / wordsPerMinute) || 5;
 }
 
+type SupportedLanguage = 'en' | 'hi';
+
 interface BlogPostContentProps {
   post: SanityPost;
-  language?: string;
+  language?: SupportedLanguage;
 }
 
 export default function BlogPostContent({ post, language = 'en' }: BlogPostContentProps) {
@@ -158,7 +160,7 @@ export default function BlogPostContent({ post, language = 'en' }: BlogPostConte
             <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                <span>{formatDate(post.publishedAt)}</span>
+                <span>{formatDate(post.publishedAt, language)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
