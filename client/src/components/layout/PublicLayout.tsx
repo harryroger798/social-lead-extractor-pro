@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 function FloatingWhatsApp() {
   const [isHovered, setIsHovered] = useState(false)
   const { i18n } = useTranslation()
-  const whatsappNumber = '919876543210' // Replace with actual number
+  const whatsappNumber = '917003888936'
   const message = encodeURIComponent(
     i18n.language === 'hi' ? 'Namaste! Mujhe repair service chahiye.' :
     i18n.language === 'bn' ? 'নমস্কার! আমার মেরামত সেবা দরকার।' :
@@ -101,7 +101,7 @@ function BackToTop() {
 // Mobile Quick Action Bar
 function MobileQuickActions() {
   const { i18n } = useTranslation()
-  const whatsappNumber = '919876543210'
+  const whatsappNumber = '917003888936'
   
   return (
     <motion.div
@@ -112,7 +112,7 @@ function MobileQuickActions() {
     >
       <div className="grid grid-cols-3 divide-x divide-slate-200 dark:divide-slate-700">
         <a
-          href="tel:+919876543210"
+          href="tel:+917003888936"
           className="flex flex-col items-center justify-center py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
         >
           <PhoneCall className="h-5 w-5 mb-1 text-primary" />
@@ -192,15 +192,16 @@ export function PublicLayout({ children }: PublicLayoutProps) {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-    const navLinks = [
-      { href: '/', label: t('nav.home') },
-      { href: '/services', label: t('nav.services') },
-      { href: '/pricing', label: t('nav.pricing') },
-      { href: '/about', label: t('nav.about') },
-      { href: '/contact', label: t('nav.contact') },
-      { href: '/help', label: t('nav.help') },
-      { href: '/booking', label: t('nav.booking') },
-    ]
+        const navLinks = [
+          { href: '/', label: t('nav.home') },
+          { href: '/services', label: t('nav.services') },
+          { href: '/pricing', label: t('nav.pricing') },
+          { href: '/blog', label: t('nav.blog') },
+          { href: '/about', label: t('nav.about') },
+          { href: '/contact', label: t('nav.contact') },
+          { href: '/help', label: t('nav.help') },
+          { href: '/booking', label: t('nav.booking') },
+        ]
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/'
@@ -311,16 +312,16 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 {t('footer.description')}
               </p>
               <div className="flex gap-4">
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://facebook.com/bytecare" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://twitter.com/bytecare" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://instagram.com/bytecare" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://linkedin.com/company/bytecare" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <Linkedin className="h-5 w-5" />
                 </a>
               </div>
@@ -347,11 +348,11 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <div>
               <h3 className="font-semibold mb-4">{t('footer.services')}</h3>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li>{t('footer.pcRepair')}</li>
-                <li>{t('footer.mobileRepair')}</li>
-                <li>{t('footer.laptopRepair')}</li>
-                <li>{t('footer.dataRecovery')}</li>
-                <li>{t('footer.webDevelopment')}</li>
+                                <li><Link to="/services/pc" className="hover:text-white transition-colors">{t('footer.pcRepair')}</Link></li>
+                                <li><Link to="/services/mobile" className="hover:text-white transition-colors">{t('footer.mobileRepair')}</Link></li>
+                                <li><Link to="/services/laptop" className="hover:text-white transition-colors">{t('footer.laptopRepair')}</Link></li>
+                                <li><Link to="/services/data-recovery" className="hover:text-white transition-colors">{t('footer.dataRecovery')}</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">{t('footer.webDevelopment')}</Link></li>
               </ul>
             </div>
 
@@ -365,7 +366,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="h-4 w-4 flex-shrink-0" />
-                  <span>+91 98765 43210</span>
+                  <span>+91 70038 88936</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4 flex-shrink-0" />
