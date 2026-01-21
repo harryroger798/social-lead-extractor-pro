@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Reply, Send, User, Clock } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface Comment {
   _id: string;
@@ -17,7 +18,7 @@ interface CommentSectionProps {
   postId: string;
 }
 
-function formatCommentDate(dateString: string): string {
+function formatCommentDate(dateString: string, t: (key: string, fallback?: string) => string, language: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -25,12 +26,29 @@ function formatCommentDate(dateString: string): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  if (diffMins < 1) return t("comments.justNow", "Just now");
+  if (diffMins === 1) return t("comments.minuteAgo", "{count} minute ago").replace("{count}", "1");
+  if (diffMins < 60) return t("comments.minutesAgo", "{count} minutes ago").replace("{count}", diffMins.toString());
+  if (diffHours === 1) return t("comments.hourAgo", "{count} hour ago").replace("{count}", "1");
+  if (diffHours < 24) return t("comments.hoursAgo", "{count} hours ago").replace("{count}", diffHours.toString());
+  if (diffDays === 1) return t("comments.dayAgo", "{count} day ago").replace("{count}", "1");
+  if (diffDays < 7) return t("comments.daysAgo", "{count} days ago").replace("{count}", diffDays.toString());
   
-  return date.toLocaleDateString("en-IN", {
+  // Map language codes to locale codes
+  const localeMap: Record<string, string> = {
+    en: "en-IN",
+    hi: "hi-IN",
+    ta: "ta-IN",
+    te: "te-IN",
+    bn: "bn-IN",
+    mr: "mr-IN",
+    gu: "gu-IN",
+    kn: "kn-IN",
+    ml: "ml-IN",
+    pa: "pa-IN"
+  };
+  
+  return date.toLocaleDateString(localeMap[language] || "en-IN", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -61,11 +79,15 @@ function CommentItem({
   replies,
   onReply,
   depth = 0,
+  t,
+  language,
 }: {
   comment: Comment;
   replies: Map<string, Comment[]>;
   onReply: (commentId: string, commentName: string) => void;
   depth?: number;
+  t: (key: string, fallback?: string) => string;
+  language: string;
 }) {
   const commentReplies = replies.get(comment._id) || [];
   const maxDepth = 3; // Limit nesting depth
@@ -82,7 +104,7 @@ function CommentItem({
               <span className="font-semibold text-gray-900">{comment.name}</span>
               <span className="text-gray-400 text-sm flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {formatCommentDate(comment.createdAt)}
+                {formatCommentDate(comment.createdAt, t, language)}
               </span>
             </div>
             <p className="text-gray-700 mt-2 whitespace-pre-wrap">{comment.content}</p>
@@ -92,7 +114,7 @@ function CommentItem({
                 className="mt-2 text-amber-600 hover:text-amber-700 text-sm flex items-center gap-1 transition-colors"
               >
                 <Reply className="w-4 h-4" />
-                Reply
+                {t("comments.reply", "Reply")}
               </button>
             )}
           </div>
@@ -109,6 +131,8 @@ function CommentItem({
               replies={replies}
               onReply={onReply}
               depth={depth + 1}
+              t={t}
+              language={language}
             />
           ))}
         </div>
@@ -118,6 +142,7 @@ function CommentItem({
 }
 
 export default function CommentSection({ postId }: CommentSectionProps) {
+  const { t, language } = useLanguage();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -207,25 +232,25 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       <CardContent className="p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
           <MessageCircle className="w-6 h-6 text-amber-600" />
-          Comments ({comments.length})
+          {t("comments.title", "Comments")} ({comments.length})
         </h3>
 
         {/* Comment Form */}
         <form id="comment-form" onSubmit={handleSubmit} className="mb-8">
           <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
             <h4 className="font-semibold text-gray-900 mb-4">
-              {replyTo ? `Reply to ${replyTo.name}` : "Leave a Comment"}
+              {replyTo ? t("comments.replyTo", "Reply to {name}").replace("{name}", replyTo.name) : t("comments.leaveComment", "Leave a Comment")}
             </h4>
             
             {replyTo && (
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-gray-600">Replying to {replyTo.name}</span>
+                <span className="text-sm text-gray-600">{t("comments.replyingTo", "Replying to {name}").replace("{name}", replyTo.name)}</span>
                 <button
                   type="button"
                   onClick={cancelReply}
                   className="text-amber-600 hover:text-amber-700 text-sm underline"
                 >
-                  Cancel
+                  {t("comments.cancel", "Cancel")}
                 </button>
               </div>
             )}
@@ -244,7 +269,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                  {t("comments.nameLabel", "Name *")}
                 </label>
                 <input
                   type="text"
@@ -255,12 +280,12 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                   minLength={2}
                   maxLength={100}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  placeholder="Your name"
+                  placeholder={t("comments.namePlaceholder", "Your name")}
                 />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email * <span className="text-gray-400 text-xs">(not published)</span>
+                  {t("comments.emailLabel", "Email *")} <span className="text-gray-400 text-xs">{t("comments.emailNotPublished", "(not published)")}</span>
                 </label>
                 <input
                   type="email"
@@ -269,14 +294,14 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  placeholder="your@email.com"
+                  placeholder={t("comments.emailPlaceholder", "your@email.com")}
                 />
               </div>
             </div>
 
             <div className="mb-4">
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                Comment *
+                {t("comments.commentLabel", "Comment *")}
               </label>
               <textarea
                 id="content"
@@ -287,9 +312,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                 maxLength={2000}
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
-                placeholder="Share your thoughts..."
+                placeholder={t("comments.commentPlaceholder", "Share your thoughts...")}
               />
-              <p className="text-xs text-gray-500 mt-1">{content.length}/2000 characters</p>
+              <p className="text-xs text-gray-500 mt-1">{t("comments.charactersCount", "{count}/2000 characters").replace("{count}", content.length.toString())}</p>
             </div>
 
             {submitError && (
@@ -300,7 +325,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
             {submitSuccess && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
-                Thank you! Your comment has been submitted and is awaiting approval.
+                {t("comments.submitSuccess", "Thank you! Your comment has been submitted and is awaiting approval.")}
               </div>
             )}
 
@@ -310,11 +335,11 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
             >
               {submitting ? (
-                "Submitting..."
+                t("comments.submitting", "Submitting...")
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  {replyTo ? "Post Reply" : "Post Comment"}
+                  {replyTo ? t("comments.postReply", "Post Reply") : t("comments.postComment", "Post Comment")}
                 </>
               )}
             </Button>
@@ -324,10 +349,10 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         {/* Comments List */}
         <div>
           {loading ? (
-            <p className="text-gray-500 text-center py-8">Loading comments...</p>
+            <p className="text-gray-500 text-center py-8">{t("comments.loadingComments", "Loading comments...")}</p>
           ) : comments.length === 0 ? (
             <p className="text-gray-500 text-center py-8">
-              No comments yet. Be the first to share your thoughts!
+              {t("comments.noComments", "No comments yet. Be the first to share your thoughts!")}
             </p>
           ) : (
             <div className="space-y-4">
@@ -337,6 +362,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                   comment={comment}
                   replies={replies}
                   onReply={handleReply}
+                  t={t}
+                  language={language}
                 />
               ))}
             </div>

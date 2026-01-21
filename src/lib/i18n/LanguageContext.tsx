@@ -6,6 +6,7 @@ import { newFeatureTranslations, deepMerge } from "./newFeatureTranslations";
 import { astrologyFeatureTranslations, deepMergeAstrology } from "./astrologyFeatureTranslations";
 import { homepageRedesignTranslations, deepMergeHomepage } from "./homepageRedesignTranslations";
 import { astrologersTranslations, deepMergeAstrologers } from "./astrologersTranslations";
+import { commentTranslations, deepMergeComments } from "./commentTranslations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
 
@@ -91,9 +92,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           withAstrology,
           homepageRedesignTranslations[lang] || {}
         );
-        merged[lang] = deepMergeAstrologers(
+        const withAstrologers = deepMergeAstrologers(
           withHomepage,
           astrologersTranslations[lang] || {}
+        );
+        merged[lang] = deepMergeComments(
+          withAstrologers,
+          commentTranslations[lang] || {}
         );
       }
       return merged;
