@@ -119,6 +119,51 @@ export default function BlogPostPage() {
           }
           canonical.href = `https://vedicstarastro.com/blog/${post.slug.current}`;
 
+          // Robots meta tag
+          updateMetaTag('robots', 'index, follow');
+
+          // Open Graph site name
+          updateMetaTag('og:site_name', 'VedicStarAstro', true);
+
+          // Schema.org BlogPosting JSON-LD structured data
+          let jsonLdScript = document.querySelector('script[type="application/ld+json"]') as HTMLScriptElement;
+          if (!jsonLdScript) {
+            jsonLdScript = document.createElement('script');
+            jsonLdScript.type = 'application/ld+json';
+            document.head.appendChild(jsonLdScript);
+          }
+          
+          const schemaData = {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": metaTitle,
+            "description": metaDescription,
+            "image": post.featuredImage?.url || "https://vedicstarastro.com/images/logo.png",
+            "author": {
+              "@type": "Person",
+              "name": post.author?.name || "VedicStarAstro"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "VedicStarAstro",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://vedicstarastro.com/images/logo.png"
+              }
+            },
+            "datePublished": post.publishedAt,
+            "dateModified": post.publishedAt,
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://vedicstarastro.com/blog/${post.slug.current}`
+            },
+            "keywords": post.seo?.keywords?.join(', ') || '',
+            "articleSection": post.categories?.[0]?.title || "Vedic Astrology",
+            "inLanguage": "en-IN"
+          };
+          
+          jsonLdScript.textContent = JSON.stringify(schemaData);
+
         }, [post]);
 
         // Effect to make TOC collapsible after content loads
