@@ -516,7 +516,7 @@ export default function Home() {
       <section className="relative overflow-hidden py-16 lg:py-24 min-h-[90vh] flex items-center bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-950">
         {/* Animated starfield background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-30"></div>
+          <div className="absolute inset-0 bg-[url('/images/hero-bg.webp')] bg-cover bg-center opacity-30"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/50 to-slate-950"></div>
           {/* Animated stars - positions generated client-side to avoid hydration mismatch */}
           <div className="stars-container absolute inset-0">

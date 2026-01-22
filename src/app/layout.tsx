@@ -23,6 +23,22 @@ export const metadata: Metadata = {
     default: "VedicStarAstro - Authentic Vedic Astrology & Kundli Analysis",
     template: "%s | VedicStarAstro",
   },
+  alternates: {
+    canonical: "https://vedicstarastro.com",
+    languages: {
+      "en": "https://vedicstarastro.com/en",
+      "hi": "https://vedicstarastro.com/hi",
+      "ta": "https://vedicstarastro.com/ta",
+      "te": "https://vedicstarastro.com/te",
+      "bn": "https://vedicstarastro.com/bn",
+      "mr": "https://vedicstarastro.com/mr",
+      "gu": "https://vedicstarastro.com/gu",
+      "kn": "https://vedicstarastro.com/kn",
+      "ml": "https://vedicstarastro.com/ml",
+      "pa": "https://vedicstarastro.com/pa",
+      "x-default": "https://vedicstarastro.com",
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "128x128", type: "image/png" },
@@ -114,15 +130,17 @@ export default function RootLayout({
               foundingDate: "2024",
               address: {
                 "@type": "PostalAddress",
+                streetAddress: "Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road",
                 addressLocality: "Bangalore",
+                postalCode: "560100",
                 addressRegion: "Karnataka",
                 addressCountry: "IN",
               },
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+91-XXXXXXXXXX",
+                telephone: "+91-8884919349",
                 contactType: "customer service",
-                availableLanguage: ["English", "Hindi", "Kannada"],
+                availableLanguage: ["English", "Hindi", "Kannada", "Tamil", "Telugu", "Bengali", "Marathi", "Gujarati", "Malayalam", "Punjabi"],
               },
               sameAs: [
                 "https://www.facebook.com/vedicstarastro",
@@ -130,6 +148,53 @@ export default function RootLayout({
                 "https://www.youtube.com/@vedicstarastro",
                 "https://twitter.com/vedicstarastro",
               ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "@id": "https://vedicstarastro.com/#localbusiness",
+              name: "VedicStarAstro",
+              image: "https://vedicstarastro.com/logo.png",
+              description: "Expert Vedic astrology consultations, free Kundli analysis, Nakshatra readings, and personalized horoscope predictions in Bangalore, India.",
+              url: "https://vedicstarastro.com",
+              telephone: "+91-8884919349",
+              priceRange: "$$",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road",
+                addressLocality: "Bangalore",
+                postalCode: "560100",
+                addressRegion: "Karnataka",
+                addressCountry: "IN",
+              },
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: "12.8698",
+                longitude: "77.6476",
+              },
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                  opens: "00:00",
+                  closes: "23:59",
+                },
+              ],
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.9",
+                reviewCount: "10000",
+              },
+              areaServed: {
+                "@type": "Country",
+                name: "India",
+              },
+              serviceType: ["Vedic Astrology Consultation", "Kundli Analysis", "Horoscope Matching", "Nakshatra Reading"],
             }),
           }}
         />
