@@ -22,6 +22,10 @@ export function deepMergeComments(target: TranslationObject, source: Translation
 
 export const commentTranslations: Record<Language, TranslationObject> = {
   en: {
+    consultation: {
+      topics: "Consultation Topics",
+      whyChoose: "Why Choose VedicStarAstro?"
+    },
     comments: {
       title: "Comments",
       leaveComment: "Leave a Comment",
@@ -53,6 +57,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   hi: {
+    consultation: {
+      topics: "परामर्श विषय",
+      whyChoose: "VedicStarAstro क्यों चुनें?"
+    },
     comments: {
       title: "टिप्पणियाँ",
       leaveComment: "टिप्पणी छोड़ें",
@@ -84,6 +92,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   ta: {
+    consultation: {
+      topics: "ஆலோசனை தலைப்புகள்",
+      whyChoose: "VedicStarAstro ஏன் தேர்வு செய்ய வேண்டும்?"
+    },
     comments: {
       title: "கருத்துகள்",
       leaveComment: "கருத்து தெரிவிக்கவும்",
@@ -115,6 +127,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   te: {
+    consultation: {
+      topics: "సంప్రదింపు అంశాలు",
+      whyChoose: "VedicStarAstro ఎందుకు ఎంచుకోవాలి?"
+    },
     comments: {
       title: "వ్యాఖ్యలు",
       leaveComment: "వ్యాఖ్య రాయండి",
@@ -146,6 +162,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   bn: {
+    consultation: {
+      topics: "পরামর্শের বিষয়",
+      whyChoose: "VedicStarAstro কেন বেছে নেবেন?"
+    },
     comments: {
       title: "মন্তব্য",
       leaveComment: "মন্তব্য করুন",
@@ -177,6 +197,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   mr: {
+    consultation: {
+      topics: "सल्लामसलत विषय",
+      whyChoose: "VedicStarAstro का निवडावे?"
+    },
     comments: {
       title: "टिप्पण्या",
       leaveComment: "टिप्पणी द्या",
@@ -208,6 +232,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   gu: {
+    consultation: {
+      topics: "પરામર્શ વિષયો",
+      whyChoose: "VedicStarAstro શા માટે પસંદ કરો?"
+    },
     comments: {
       title: "ટિપ્પણીઓ",
       leaveComment: "ટિપ્પણી કરો",
@@ -239,6 +267,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   kn: {
+    consultation: {
+      topics: "ಸಮಾಲೋಚನೆ ವಿಷಯಗಳು",
+      whyChoose: "VedicStarAstro ಏಕೆ ಆಯ್ಕೆ ಮಾಡಬೇಕು?"
+    },
     comments: {
       title: "ಕಾಮೆಂಟ್‌ಗಳು",
       leaveComment: "ಕಾಮೆಂಟ್ ಬಿಡಿ",
@@ -270,6 +302,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   ml: {
+    consultation: {
+      topics: "കൺസൾട്ടേഷൻ വിഷയങ്ങൾ",
+      whyChoose: "VedicStarAstro എന്തുകൊണ്ട് തിരഞ്ഞെടുക്കണം?"
+    },
     comments: {
       title: "അഭിപ്രായങ്ങള്‍",
       leaveComment: "അഭിപ്രായം രേഖപ്പെടുത്തുക",
@@ -301,6 +337,10 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     }
   },
   pa: {
+    consultation: {
+      topics: "ਸਲਾਹ-ਮਸ਼ਵਰੇ ਦੇ ਵਿਸ਼ੇ",
+      whyChoose: "VedicStarAstro ਕਿਉਂ ਚੁਣੋ?"
+    },
     comments: {
       title: "ਟਿੱਪਣੀਆਂ",
       leaveComment: "ਟਿੱਪਣੀ ਛੱਡੋ",

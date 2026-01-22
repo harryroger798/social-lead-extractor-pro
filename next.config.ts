@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
+    // Disable image optimization for local images to prevent 400 errors on low-memory servers
+    unoptimized: true,
   },
 };
 
