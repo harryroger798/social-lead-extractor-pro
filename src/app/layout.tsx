@@ -10,12 +10,14 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap", // Ensures text remains visible during font loading (improves LCP)
 });
 
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "devanagari"], // Added devanagari for Hindi support
   weight: ["400", "500", "600", "700"],
+  display: "swap", // Ensures text remains visible during font loading (improves LCP)
 });
 
 export const metadata: Metadata = {
@@ -117,6 +119,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preconnect to critical third-party origins for faster resource loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* DNS prefetch for additional performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
