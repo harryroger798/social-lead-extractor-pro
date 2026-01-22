@@ -199,7 +199,7 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="xl:hidden py-4 border-t border-amber-100">
+          <div className="xl:hidden py-4 border-t border-amber-100 max-h-[calc(100vh-5rem)] overflow-y-auto">
             <div className="space-y-2">
               {navigation.map((item) => (
                 <div key={item.name}>
