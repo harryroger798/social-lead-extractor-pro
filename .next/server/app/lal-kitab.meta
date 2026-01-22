@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/lal-kitab/layout,_N_T_/lal-kitab/page,_N_T_/lal-kitab"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/lal-kitab/__PAGE__",
+    "/lal-kitab",
+    "/_index",
+    "/_head"
+  ]
+}

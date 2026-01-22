@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/kp-system/layout,_N_T_/kp-system/page,_N_T_/kp-system"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/kp-system/__PAGE__",
+    "/kp-system",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/27-nakshatras-complete-guide-vedic-astrology/layout,_N_T_/27-nakshatras-complete-guide-vedic-astrology/page,_N_T_/27-nakshatras-complete-guide-vedic-astrology"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/27-nakshatras-complete-guide-vedic-astrology/__PAGE__",
+    "/27-nakshatras-complete-guide-vedic-astrology",
+    "/_index",
+    "/_head"
+  ]
+}

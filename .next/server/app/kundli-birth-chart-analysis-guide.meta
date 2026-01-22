@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/kundli-birth-chart-analysis-guide/layout,_N_T_/kundli-birth-chart-analysis-guide/page,_N_T_/kundli-birth-chart-analysis-guide"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/kundli-birth-chart-analysis-guide/__PAGE__",
+    "/kundli-birth-chart-analysis-guide",
+    "/_index",
+    "/_head"
+  ]
+}

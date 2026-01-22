@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/voice-astrologer/layout,_N_T_/voice-astrologer/page,_N_T_/voice-astrologer"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/voice-astrologer/__PAGE__",
+    "/voice-astrologer",
+    "/_index",
+    "/_head"
+  ]
+}

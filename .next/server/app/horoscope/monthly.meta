@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/horoscope/layout,_N_T_/horoscope/monthly/layout,_N_T_/horoscope/monthly/page,_N_T_/horoscope/monthly"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/horoscope/monthly/__PAGE__",
+    "/horoscope/monthly",
+    "/horoscope",
+    "/_index",
+    "/_head"
+  ]
+}

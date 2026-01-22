@@ -517,7 +517,7 @@ export default function Home() {
       <section className="relative overflow-hidden py-16 lg:py-24 min-h-[90vh] flex items-center bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-950">
         {/* Animated starfield background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.heroBgOptimized}')] bg-cover bg-center opacity-30`}></div>
+          <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url('${CDN_IMAGES.heroBgOptimized}')` }}></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/50 to-slate-950"></div>
           {/* Animated stars - positions generated client-side to avoid hydration mismatch */}
           <div className="stars-container absolute inset-0">
@@ -929,7 +929,7 @@ export default function Home() {
 
       {/* Voice AI Astrologer Highlight Section */}
       <section className="py-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 relative overflow-hidden">
-                <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.starsPattern}')] opacity-10`}></div>
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url('${CDN_IMAGES.starsPattern}')` }}></div>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
                   <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                     <div className="flex-1 text-center lg:text-left">

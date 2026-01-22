@@ -1,0 +1,619 @@
+{
+  "app": {
+    "[project]/src/app/27-nakshatras-complete-guide-vedic-astrology/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/_not-found/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/about/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/ai-astrologer-pro/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/ai-astrologer/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/ai-chart-interpretation/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/astrologers/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/baby-names/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/blockchain-kundli/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/blog/[slug]/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/blog/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/careers/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/chinese-astrology/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/consultation/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/contact/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/daily-horoscope/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/disclaimer/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/doshas/kaal-sarp-dosh/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/doshas/mangal-dosh/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/doshas/pitra-dosh/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/doshas/sade-sati/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/eclipses-2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/festival-calendar-2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/financial-astrology/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/gemstones/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/habit-tracker/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/hi/blog/[slug]/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/hi/blog/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/horoscope/2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/horoscope/monthly/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/horoscope/weekly/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/kp-system/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/kundli-birth-chart-analysis-guide/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/lal-kitab/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/life-timeline/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/numerology/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/palmistry/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/panchang/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/personalized-horoscope/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/planetary-tracker/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/prashna-kundli/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/press/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/privacy-policy/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/refund-policy/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tarot/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/terms-of-service/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/ascendant-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/dasha-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/horoscope-matching/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/kundli-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/love-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/mangal-dosh-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/moon-sign-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/muhurta-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/nakshatra-finder/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/navamsa-chart/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/sade-sati-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/sun-sign-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/transit-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/tools/yoga-calculator/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/transits/jupiter-transit-2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/transits/mercury-retrograde-2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/transits/saturn-transit-2026/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/vastu/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/vedic-astrology-guide-complete-2025/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/vedic-astrology-remedies-doshas-guide/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ],
+    "[project]/src/app/voice-astrologer/page": [
+      "static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2",
+      "static/media/a218039a3287bcfd-s.p.4a23d71b.woff2",
+      "static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2",
+      "static/media/e2334d715941921e-s.p.d82a9aff.woff2",
+      "static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2",
+      "static/media/fb34704f4f4f68ab-s.p.ce643c06.woff2",
+      "static/media/dc6d2a64e9dbf3bc-s.p.4b9eb7a1.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

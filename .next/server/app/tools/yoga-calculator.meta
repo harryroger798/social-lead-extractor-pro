@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/yoga-calculator/layout,_N_T_/tools/yoga-calculator/page,_N_T_/tools/yoga-calculator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/yoga-calculator/__PAGE__",
+    "/tools/yoga-calculator",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/habit-tracker/layout,_N_T_/habit-tracker/page,_N_T_/habit-tracker"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/habit-tracker/__PAGE__",
+    "/habit-tracker",
+    "/_index",
+    "/_head"
+  ]
+}

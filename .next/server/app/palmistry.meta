@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/palmistry/layout,_N_T_/palmistry/page,_N_T_/palmistry"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/palmistry/__PAGE__",
+    "/palmistry",
+    "/_index",
+    "/_head"
+  ]
+}

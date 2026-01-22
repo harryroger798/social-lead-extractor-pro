@@ -1,0 +1,571 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/blog/[slug]",
+      "regex": "^/blog/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/blog/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/hi/blog/[slug]",
+      "regex": "^/hi/blog/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/hi/blog/(?<nxtPslug>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/27-nakshatras-complete-guide-vedic-astrology",
+      "regex": "^/27\\-nakshatras\\-complete\\-guide\\-vedic\\-astrology(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/27\\-nakshatras\\-complete\\-guide\\-vedic\\-astrology(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
+      "page": "/ai-astrologer",
+      "regex": "^/ai\\-astrologer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ai\\-astrologer(?:/)?$"
+    },
+    {
+      "page": "/ai-astrologer-pro",
+      "regex": "^/ai\\-astrologer\\-pro(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ai\\-astrologer\\-pro(?:/)?$"
+    },
+    {
+      "page": "/ai-chart-interpretation",
+      "regex": "^/ai\\-chart\\-interpretation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ai\\-chart\\-interpretation(?:/)?$"
+    },
+    {
+      "page": "/api/ai-chat",
+      "regex": "^/api/ai\\-chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/ai\\-chat(?:/)?$"
+    },
+    {
+      "page": "/api/analyze-palm",
+      "regex": "^/api/analyze\\-palm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analyze\\-palm(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-ascendant",
+      "regex": "^/api/calculate\\-ascendant(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-ascendant(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-chart",
+      "regex": "^/api/calculate\\-chart(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-chart(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-dasha",
+      "regex": "^/api/calculate\\-dasha(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-dasha(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-divisional",
+      "regex": "^/api/calculate\\-divisional(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-divisional(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-moon-sign",
+      "regex": "^/api/calculate\\-moon\\-sign(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-moon\\-sign(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-muhurta",
+      "regex": "^/api/calculate\\-muhurta(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-muhurta(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-nakshatra",
+      "regex": "^/api/calculate\\-nakshatra(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-nakshatra(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-panchang",
+      "regex": "^/api/calculate\\-panchang(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-panchang(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-transits",
+      "regex": "^/api/calculate\\-transits(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-transits(?:/)?$"
+    },
+    {
+      "page": "/api/calculate-yogas",
+      "regex": "^/api/calculate\\-yogas(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calculate\\-yogas(?:/)?$"
+    },
+    {
+      "page": "/api/comments",
+      "regex": "^/api/comments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/comments(?:/)?$"
+    },
+    {
+      "page": "/api/indexnow",
+      "regex": "^/api/indexnow(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/indexnow(?:/)?$"
+    },
+    {
+      "page": "/astrologers",
+      "regex": "^/astrologers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/astrologers(?:/)?$"
+    },
+    {
+      "page": "/baby-names",
+      "regex": "^/baby\\-names(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/baby\\-names(?:/)?$"
+    },
+    {
+      "page": "/blockchain-kundli",
+      "regex": "^/blockchain\\-kundli(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/blockchain\\-kundli(?:/)?$"
+    },
+    {
+      "page": "/blog",
+      "regex": "^/blog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/blog(?:/)?$"
+    },
+    {
+      "page": "/careers",
+      "regex": "^/careers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/careers(?:/)?$"
+    },
+    {
+      "page": "/chinese-astrology",
+      "regex": "^/chinese\\-astrology(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/chinese\\-astrology(?:/)?$"
+    },
+    {
+      "page": "/consultation",
+      "regex": "^/consultation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/consultation(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
+    },
+    {
+      "page": "/daily-horoscope",
+      "regex": "^/daily\\-horoscope(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/daily\\-horoscope(?:/)?$"
+    },
+    {
+      "page": "/disclaimer",
+      "regex": "^/disclaimer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/disclaimer(?:/)?$"
+    },
+    {
+      "page": "/doshas/kaal-sarp-dosh",
+      "regex": "^/doshas/kaal\\-sarp\\-dosh(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doshas/kaal\\-sarp\\-dosh(?:/)?$"
+    },
+    {
+      "page": "/doshas/mangal-dosh",
+      "regex": "^/doshas/mangal\\-dosh(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doshas/mangal\\-dosh(?:/)?$"
+    },
+    {
+      "page": "/doshas/pitra-dosh",
+      "regex": "^/doshas/pitra\\-dosh(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doshas/pitra\\-dosh(?:/)?$"
+    },
+    {
+      "page": "/doshas/sade-sati",
+      "regex": "^/doshas/sade\\-sati(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doshas/sade\\-sati(?:/)?$"
+    },
+    {
+      "page": "/eclipses-2026",
+      "regex": "^/eclipses\\-2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/eclipses\\-2026(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/festival-calendar-2026",
+      "regex": "^/festival\\-calendar\\-2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/festival\\-calendar\\-2026(?:/)?$"
+    },
+    {
+      "page": "/financial-astrology",
+      "regex": "^/financial\\-astrology(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/financial\\-astrology(?:/)?$"
+    },
+    {
+      "page": "/gemstones",
+      "regex": "^/gemstones(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/gemstones(?:/)?$"
+    },
+    {
+      "page": "/habit-tracker",
+      "regex": "^/habit\\-tracker(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/habit\\-tracker(?:/)?$"
+    },
+    {
+      "page": "/hi/blog",
+      "regex": "^/hi/blog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/hi/blog(?:/)?$"
+    },
+    {
+      "page": "/horoscope/2026",
+      "regex": "^/horoscope/2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/horoscope/2026(?:/)?$"
+    },
+    {
+      "page": "/horoscope/monthly",
+      "regex": "^/horoscope/monthly(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/horoscope/monthly(?:/)?$"
+    },
+    {
+      "page": "/horoscope/weekly",
+      "regex": "^/horoscope/weekly(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/horoscope/weekly(?:/)?$"
+    },
+    {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
+      "page": "/kp-system",
+      "regex": "^/kp\\-system(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kp\\-system(?:/)?$"
+    },
+    {
+      "page": "/kundli-birth-chart-analysis-guide",
+      "regex": "^/kundli\\-birth\\-chart\\-analysis\\-guide(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kundli\\-birth\\-chart\\-analysis\\-guide(?:/)?$"
+    },
+    {
+      "page": "/lal-kitab",
+      "regex": "^/lal\\-kitab(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/lal\\-kitab(?:/)?$"
+    },
+    {
+      "page": "/life-timeline",
+      "regex": "^/life\\-timeline(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/life\\-timeline(?:/)?$"
+    },
+    {
+      "page": "/numerology",
+      "regex": "^/numerology(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/numerology(?:/)?$"
+    },
+    {
+      "page": "/palmistry",
+      "regex": "^/palmistry(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/palmistry(?:/)?$"
+    },
+    {
+      "page": "/panchang",
+      "regex": "^/panchang(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/panchang(?:/)?$"
+    },
+    {
+      "page": "/personalized-horoscope",
+      "regex": "^/personalized\\-horoscope(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/personalized\\-horoscope(?:/)?$"
+    },
+    {
+      "page": "/planetary-tracker",
+      "regex": "^/planetary\\-tracker(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/planetary\\-tracker(?:/)?$"
+    },
+    {
+      "page": "/prashna-kundli",
+      "regex": "^/prashna\\-kundli(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/prashna\\-kundli(?:/)?$"
+    },
+    {
+      "page": "/press",
+      "regex": "^/press(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/press(?:/)?$"
+    },
+    {
+      "page": "/privacy-policy",
+      "regex": "^/privacy\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy\\-policy(?:/)?$"
+    },
+    {
+      "page": "/refund-policy",
+      "regex": "^/refund\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/refund\\-policy(?:/)?$"
+    },
+    {
+      "page": "/robots.txt",
+      "regex": "^/robots\\.txt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/robots\\.txt(?:/)?$"
+    },
+    {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/tarot",
+      "regex": "^/tarot(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tarot(?:/)?$"
+    },
+    {
+      "page": "/terms-of-service",
+      "regex": "^/terms\\-of\\-service(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms\\-of\\-service(?:/)?$"
+    },
+    {
+      "page": "/tools/ascendant-calculator",
+      "regex": "^/tools/ascendant\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/ascendant\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/dasha-calculator",
+      "regex": "^/tools/dasha\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/dasha\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/horoscope-matching",
+      "regex": "^/tools/horoscope\\-matching(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/horoscope\\-matching(?:/)?$"
+    },
+    {
+      "page": "/tools/kundli-calculator",
+      "regex": "^/tools/kundli\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/kundli\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/love-calculator",
+      "regex": "^/tools/love\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/love\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/mangal-dosh-calculator",
+      "regex": "^/tools/mangal\\-dosh\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/mangal\\-dosh\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/moon-sign-calculator",
+      "regex": "^/tools/moon\\-sign\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/moon\\-sign\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/muhurta-calculator",
+      "regex": "^/tools/muhurta\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/muhurta\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/nakshatra-finder",
+      "regex": "^/tools/nakshatra\\-finder(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/nakshatra\\-finder(?:/)?$"
+    },
+    {
+      "page": "/tools/navamsa-chart",
+      "regex": "^/tools/navamsa\\-chart(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/navamsa\\-chart(?:/)?$"
+    },
+    {
+      "page": "/tools/sade-sati-calculator",
+      "regex": "^/tools/sade\\-sati\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/sade\\-sati\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/sun-sign-calculator",
+      "regex": "^/tools/sun\\-sign\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/sun\\-sign\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/transit-calculator",
+      "regex": "^/tools/transit\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/transit\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/tools/yoga-calculator",
+      "regex": "^/tools/yoga\\-calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools/yoga\\-calculator(?:/)?$"
+    },
+    {
+      "page": "/transits/jupiter-transit-2026",
+      "regex": "^/transits/jupiter\\-transit\\-2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/transits/jupiter\\-transit\\-2026(?:/)?$"
+    },
+    {
+      "page": "/transits/mercury-retrograde-2026",
+      "regex": "^/transits/mercury\\-retrograde\\-2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/transits/mercury\\-retrograde\\-2026(?:/)?$"
+    },
+    {
+      "page": "/transits/saturn-transit-2026",
+      "regex": "^/transits/saturn\\-transit\\-2026(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/transits/saturn\\-transit\\-2026(?:/)?$"
+    },
+    {
+      "page": "/vastu",
+      "regex": "^/vastu(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vastu(?:/)?$"
+    },
+    {
+      "page": "/vedic-astrology-guide-complete-2025",
+      "regex": "^/vedic\\-astrology\\-guide\\-complete\\-2025(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vedic\\-astrology\\-guide\\-complete\\-2025(?:/)?$"
+    },
+    {
+      "page": "/vedic-astrology-remedies-doshas-guide",
+      "regex": "^/vedic\\-astrology\\-remedies\\-doshas\\-guide(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vedic\\-astrology\\-remedies\\-doshas\\-guide(?:/)?$"
+    },
+    {
+      "page": "/voice-astrologer",
+      "regex": "^/voice\\-astrologer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/voice\\-astrologer(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

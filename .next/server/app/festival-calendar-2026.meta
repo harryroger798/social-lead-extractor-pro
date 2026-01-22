@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/festival-calendar-2026/layout,_N_T_/festival-calendar-2026/page,_N_T_/festival-calendar-2026"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/festival-calendar-2026/__PAGE__",
+    "/festival-calendar-2026",
+    "/_index",
+    "/_head"
+  ]
+}

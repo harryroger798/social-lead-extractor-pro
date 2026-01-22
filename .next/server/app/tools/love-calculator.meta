@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/love-calculator/layout,_N_T_/tools/love-calculator/page,_N_T_/tools/love-calculator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/love-calculator/__PAGE__",
+    "/tools/love-calculator",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

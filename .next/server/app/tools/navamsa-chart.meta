@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/navamsa-chart/layout,_N_T_/tools/navamsa-chart/page,_N_T_/tools/navamsa-chart"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/navamsa-chart/__PAGE__",
+    "/tools/navamsa-chart",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/doshas/layout,_N_T_/doshas/pitra-dosh/layout,_N_T_/doshas/pitra-dosh/page,_N_T_/doshas/pitra-dosh"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/doshas/pitra-dosh/__PAGE__",
+    "/doshas/pitra-dosh",
+    "/doshas",
+    "/_index",
+    "/_head"
+  ]
+}

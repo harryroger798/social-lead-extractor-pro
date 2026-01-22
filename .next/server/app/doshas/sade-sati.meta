@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/doshas/layout,_N_T_/doshas/sade-sati/layout,_N_T_/doshas/sade-sati/page,_N_T_/doshas/sade-sati"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/doshas/sade-sati/__PAGE__",
+    "/doshas/sade-sati",
+    "/doshas",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/sun-sign-calculator/layout,_N_T_/tools/sun-sign-calculator/page,_N_T_/tools/sun-sign-calculator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/sun-sign-calculator/__PAGE__",
+    "/tools/sun-sign-calculator",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

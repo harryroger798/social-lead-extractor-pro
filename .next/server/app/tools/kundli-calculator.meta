@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/kundli-calculator/layout,_N_T_/tools/kundli-calculator/page,_N_T_/tools/kundli-calculator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/kundli-calculator/__PAGE__",
+    "/tools/kundli-calculator",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

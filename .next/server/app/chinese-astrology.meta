@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/chinese-astrology/layout,_N_T_/chinese-astrology/page,_N_T_/chinese-astrology"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/chinese-astrology/__PAGE__",
+    "/chinese-astrology",
+    "/_index",
+    "/_head"
+  ]
+}

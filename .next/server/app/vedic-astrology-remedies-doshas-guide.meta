@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/vedic-astrology-remedies-doshas-guide/layout,_N_T_/vedic-astrology-remedies-doshas-guide/page,_N_T_/vedic-astrology-remedies-doshas-guide"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/vedic-astrology-remedies-doshas-guide/__PAGE__",
+    "/vedic-astrology-remedies-doshas-guide",
+    "/_index",
+    "/_head"
+  ]
+}

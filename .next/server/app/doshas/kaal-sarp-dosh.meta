@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/doshas/layout,_N_T_/doshas/kaal-sarp-dosh/layout,_N_T_/doshas/kaal-sarp-dosh/page,_N_T_/doshas/kaal-sarp-dosh"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/doshas/kaal-sarp-dosh/__PAGE__",
+    "/doshas/kaal-sarp-dosh",
+    "/doshas",
+    "/_index",
+    "/_head"
+  ]
+}
