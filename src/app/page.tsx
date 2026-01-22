@@ -550,20 +550,20 @@ export default function Home() {
                               {t('homeRedesign.heroMainTitle', 'Discover What {year} Has in Store for You').replace('{year}', currentYear.toString())}
                             </h1>
 
-              <p className="text-xl md:text-2xl text-indigo-200 mb-8 max-w-xl">
+              <p className="text-xl md:text-2xl text-indigo-100 mb-8 max-w-xl">
                 {t('homeRedesign.heroSubtitle', 'Your complete cosmic blueprint in 60 seconds. Free forever.')}
               </p>
 
               {/* 3-Field Quick Start Form */}
               <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6 max-w-md mx-auto lg:mx-0">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white text-center lg:text-left">
-                    {t('homeRedesign.heroFormTitle', 'Get Your Cosmic Profile')}
-                  </h3>
+                                    <h2 className="text-lg font-semibold text-white text-center lg:text-left">
+                                      {t('homeRedesign.heroFormTitle', 'Get Your Cosmic Profile')}
+                                    </h2>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="birthDate" className="text-indigo-200 text-sm">
+                      <Label htmlFor="birthDate" className="text-indigo-100 text-sm">
                         {t('homeRedesign.birthDate', 'Birth Date')}
                       </Label>
                       <Input
@@ -576,7 +576,7 @@ export default function Home() {
                     </div>
                     
                     <div>
-                      <Label htmlFor="birthTime" className="text-indigo-200 text-sm">
+                      <Label htmlFor="birthTime" className="text-indigo-100 text-sm">
                         {t('homeRedesign.birthTime', 'Birth Time')}
                       </Label>
                       <Input
@@ -589,7 +589,7 @@ export default function Home() {
                     </div>
                     
                     <div>
-                      <Label htmlFor="birthPlace" className="text-indigo-200 text-sm">
+                      <Label htmlFor="birthPlace" className="text-indigo-100 text-sm">
                         {t('homeRedesign.birthPlace', 'Birth Place')}
                       </Label>
                       <LocationInput
@@ -653,10 +653,10 @@ export default function Home() {
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                       <Star className="w-12 h-12 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                      {t('homeRedesign.cosmicProfileTitle', 'Your Cosmic DNA')}
-                    </h3>
-                    <div className="space-y-2 text-indigo-200">
+                                        <h2 className="text-2xl font-bold text-white mb-2">
+                                          {t('homeRedesign.cosmicProfileTitle', 'Your Cosmic DNA')}
+                                        </h2>
+                    <div className="space-y-2 text-indigo-100">
                       <p><Sun className="inline w-4 h-4 mr-2 text-amber-400" />{t('homeRedesign.sunSign', 'Sun Sign')}: {cosmicProfile ? <span className="text-amber-300 font-semibold">{cosmicProfile.sunSign}</span> : '???'}</p>
                       <p><Moon className="inline w-4 h-4 mr-2 text-blue-300" />{t('homeRedesign.moonSign', 'Moon Sign')}: {cosmicProfile ? <span className="text-blue-300 font-semibold">{cosmicProfile.moonSign}</span> : '???'}</p>
                       <p><Star className="inline w-4 h-4 mr-2 text-purple-400" />{t('homeRedesign.risingSign', 'Rising Sign')}: {cosmicProfile ? <span className="text-purple-300 font-semibold">{cosmicProfile.risingSign}</span> : '???'}</p>
@@ -705,7 +705,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {t('homeRedesign.lifeJourneysTitle', 'Explore Your Cosmic Path')}
             </h2>
-            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+            <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
               {t('homeRedesign.lifeJourneysDesc', 'Choose your journey and discover what the stars reveal about your life')}
             </p>
           </div>
@@ -729,7 +729,7 @@ export default function Home() {
                       <Link
                         key={tool.name}
                         href={tool.href}
-                        className="flex items-center text-sm text-indigo-200 hover:text-amber-400 transition-colors"
+                        className="flex items-center text-sm text-indigo-100 hover:text-amber-400 transition-colors"
                       >
                         <ArrowRight className="w-3 h-3 mr-2" />
                         {tool.name}
@@ -754,7 +754,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {t('homeRedesign.todayEnergyTitle', 'Your Daily Cosmic Forecast')}
             </h2>
-            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+            <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
               {t('homeRedesign.todayEnergyDesc', 'Personalized daily insights based on planetary positions')}
             </p>
           </div>
@@ -889,7 +889,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {t('homeRedesign.unlockBadges', 'Unlock Cosmic Badges')}
             </h2>
-            <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+            <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
               {t('homeRedesign.badgesDesc', 'Complete cosmic activities to earn badges and track your spiritual journey')}
             </p>
           </div>
@@ -1051,7 +1051,7 @@ export default function Home() {
                       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         {withCurrentYear(t('home.predictions2026Title', 'What Does {year} Hold For You?'))}
                       </h2>
-                      <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
+                      <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
                         {withCurrentYear(t('home.predictions2026Desc', 'Explore detailed predictions, planetary transits, and cosmic events for {year}.'))}
                       </p>
                     </div>
@@ -1066,7 +1066,7 @@ export default function Home() {
                 <h3 className="font-semibold text-white text-lg mb-2 group-hover:text-amber-300 transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-indigo-200 text-sm">{item.description}</p>
+                <p className="text-indigo-100 text-sm">{item.description}</p>
                 <span className="inline-flex items-center text-amber-400 text-sm mt-3 group-hover:text-amber-300">
                   {t('common.readMore', 'Read More')} <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
