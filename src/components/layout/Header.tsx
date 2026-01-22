@@ -196,12 +196,16 @@ export function Header() {
 
           <div className="hidden xl:flex xl:items-center xl:gap-x-2">
                         <LanguageSwitcher />
-                        <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
-                          {t('nav.freeKundli', 'Free Kundli')}
-                        </Button>
-                        <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
-                          {t('nav.bookConsultation', 'Book Consultation')}
-                        </Button>
+                        <Link href="/tools/kundli-calculator">
+                          <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50">
+                            {t('nav.freeKundli', 'Free Kundli')}
+                          </Button>
+                        </Link>
+                        <Link href="/consultation">
+                          <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
+                            {t('nav.bookConsultation', 'Book Consultation')}
+                          </Button>
+                        </Link>
           </div>
 
           <div className="flex xl:hidden">
