@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getCurrentYear, withCurrentYear } from "@/lib/utils";
+import { CDN_IMAGES } from "@/lib/cdn";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -282,7 +283,7 @@ export default function ChineseAstrologyPage() {
     <main className="min-h-screen bg-gradient-to-b from-red-50 to-orange-50">
       {/* Hero Section */}
       <section className="relative py-16 bg-gradient-to-r from-red-700 via-red-600 to-orange-600">
-        <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
+        <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.starsPattern}')] opacity-10`}></div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center">
             <Badge className="mb-4 bg-white/20 text-white border-white/30">

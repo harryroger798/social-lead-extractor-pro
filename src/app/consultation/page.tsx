@@ -15,6 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { CDN_IMAGES } from "@/lib/cdn";
 
 // Testimonials stay in original language as requested by user
 // consultationTypes, astrologers, consultationTopics moved inside component to use t() function
@@ -49,8 +50,8 @@ export default function ConsultationPage() {
 
   const consultationTypes = [
     {
-      image: "/images/phone-consultation.png",
-      title: t('consultation.phoneTitle', 'Phone Consultation'),
+            image: CDN_IMAGES.phoneConsultation,
+            title: t('consultation.phoneTitle', 'Phone Consultation'),
       duration: t('consultation.phoneDuration', '30-60 minutes'),
       price: "₹999",
       originalPrice: "₹1,499",
@@ -65,8 +66,8 @@ export default function ConsultationPage() {
       popular: false,
     },
     {
-      image: "/images/video-consultation.png",
-      title: t('consultation.videoTitle', 'Video Consultation'),
+            image: CDN_IMAGES.videoConsultation,
+            title: t('consultation.videoTitle', 'Video Consultation'),
       duration: t('consultation.videoDuration', '45-60 minutes'),
       price: "₹1,499",
       originalPrice: "₹2,499",
@@ -82,8 +83,8 @@ export default function ConsultationPage() {
       popular: true,
     },
     {
-      image: "/images/chat-consultation.png",
-      title: t('consultation.chatTitle', 'Chat Consultation'),
+            image: CDN_IMAGES.chatConsultation,
+            title: t('consultation.chatTitle', 'Chat Consultation'),
       duration: t('consultation.chatDuration', 'Unlimited (24 hours)'),
       price: "₹499",
       originalPrice: "₹799",
@@ -107,27 +108,27 @@ export default function ConsultationPage() {
       rating: 4.9,
       consultations: 15000,
       languages: [t('common.hindi', 'Hindi'), t('common.english', 'English'), t('common.kannada', 'Kannada')],
-      image: "/images/astrologers/acharya-shridhar-khandal.png",
-    },
-    {
-      name: "Madhav Sharma",
+          image: CDN_IMAGES.astrologers.acharyaShridhar,
+        },
+        {
+          name: "Madhav Sharma",
       specialization: t('consultation.spec.astroPoojaGems', 'Astro, Pooja & Gems'),
       experience: t('consultation.exp.20years', '20+ years'),
       rating: 4.8,
       consultations: 12000,
       languages: [t('common.hindi', 'Hindi'), t('common.english', 'English')],
-      image: "/images/astrologers/madhav-sharma.png",
-    },
-    {
-      name: "Raj Kumar Shastri",
+          image: CDN_IMAGES.astrologers.madhavSharma,
+        },
+        {
+          name: "Raj Kumar Shastri",
       specialization: t('consultation.spec.astroVastuPooja', 'Astro, Vastu & Pooja'),
       experience: t('consultation.exp.16years', '16+ years'),
       rating: 4.9,
       consultations: 10000,
       languages: [t('common.hindi', 'Hindi'), t('common.english', 'English'), t('common.bengali', 'Bengali')],
-      image: "/images/astrologers/raj-kumar-shastri.png",
-    },
-  ];
+        image: CDN_IMAGES.astrologers.rajKumarShastri,
+      },
+    ];
 
   const consultationTopics = [
     t('consultation.topic.careerBusiness', 'Career & Business'),

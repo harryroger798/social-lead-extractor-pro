@@ -24,6 +24,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { CDN_IMAGES } from "@/lib/cdn";
 
 // Palm analysis result interface
 interface PalmAnalysisResult {
@@ -42,34 +43,34 @@ interface PalmAnalysisResult {
   };
 }
 
-// Image paths for palm lines
+// Image paths for palm lines - using CDN
 const lineImages: Record<string, string> = {
-  "Heart Line": "/images/palmistry/lines/heart-line.png",
-  "Head Line": "/images/palmistry/lines/head-line.png",
-  "Life Line": "/images/palmistry/lines/life-line.png",
-  "Fate Line": "/images/palmistry/lines/fate-line.png",
-  "Sun Line": "/images/palmistry/lines/sun-line.png",
-  "Marriage Line": "/images/palmistry/lines/marriage-line.png",
+  "Heart Line": CDN_IMAGES.palmistry.lines.heartLine,
+  "Head Line": CDN_IMAGES.palmistry.lines.headLine,
+  "Life Line": CDN_IMAGES.palmistry.lines.lifeLine,
+  "Fate Line": CDN_IMAGES.palmistry.lines.fateLine,
+  "Sun Line": CDN_IMAGES.palmistry.lines.sunLine,
+  "Marriage Line": CDN_IMAGES.palmistry.lines.marriageLine,
 };
 
-// Image paths for mounts
+// Image paths for mounts - using CDN
 const mountImages: Record<string, string> = {
-  "Mount of Jupiter": "/images/palmistry/mounts/mount-jupiter.png",
-  "Mount of Saturn": "/images/palmistry/mounts/mount-saturn.png",
-  "Mount of Apollo (Sun)": "/images/palmistry/mounts/mount-apollo.png",
-  "Mount of Mercury": "/images/palmistry/mounts/mount-mercury.png",
-  "Mount of Venus": "/images/palmistry/mounts/mount-venus.png",
-  "Mount of Moon": "/images/palmistry/mounts/mount-moon.png",
-  "Mount of Mars (Upper)": "/images/palmistry/mounts/mount-mars-upper.png",
-  "Mount of Mars (Lower)": "/images/palmistry/mounts/mount-mars-lower.png",
+  "Mount of Jupiter": CDN_IMAGES.palmistry.mounts.jupiter,
+  "Mount of Saturn": CDN_IMAGES.palmistry.mounts.saturn,
+  "Mount of Apollo (Sun)": CDN_IMAGES.palmistry.mounts.apollo,
+  "Mount of Mercury": CDN_IMAGES.palmistry.mounts.mercury,
+  "Mount of Venus": CDN_IMAGES.palmistry.mounts.venus,
+  "Mount of Moon": CDN_IMAGES.palmistry.mounts.moon,
+  "Mount of Mars (Upper)": CDN_IMAGES.palmistry.mounts.marsUpper,
+  "Mount of Mars (Lower)": CDN_IMAGES.palmistry.mounts.marsLower,
 };
 
-// Image paths for hand shapes
+// Image paths for hand shapes - using CDN
 const handShapeImages: Record<string, string> = {
-  "Earth Hand": "/images/palmistry/shapes/earth-hand.png",
-  "Air Hand": "/images/palmistry/shapes/air-hand.png",
-  "Water Hand": "/images/palmistry/shapes/water-hand.png",
-  "Fire Hand": "/images/palmistry/shapes/fire-hand.png",
+  "Earth Hand": CDN_IMAGES.palmistry.shapes.earthHand,
+  "Air Hand": CDN_IMAGES.palmistry.shapes.airHand,
+  "Water Hand": CDN_IMAGES.palmistry.shapes.waterHand,
+  "Fire Hand": CDN_IMAGES.palmistry.shapes.fireHand,
 };
 
 // Helper function to get translated line name
@@ -403,7 +404,7 @@ export default function PalmistryPage() {
     <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
       {/* Hero Section */}
       <section className="relative py-16 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600">
-        <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
+        <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.starsPattern}')] opacity-10`}></div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center">
             <Badge className="mb-4 bg-white/20 text-white border-white/30">

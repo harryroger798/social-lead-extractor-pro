@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { LocationInput } from "@/components/ui/location-input";
 import { useLanguage } from "@/lib/i18n";
 import { getCurrentYear, withCurrentYear } from "@/lib/utils";
+import { CDN_IMAGES } from "@/lib/cdn";
 import { 
   Star, 
   Calculator, 
@@ -516,7 +517,7 @@ export default function Home() {
       <section className="relative overflow-hidden py-16 lg:py-24 min-h-[90vh] flex items-center bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-950">
         {/* Animated starfield background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/hero-bg.webp')] bg-cover bg-center opacity-30"></div>
+          <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.heroBgOptimized}')] bg-cover bg-center opacity-30`}></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/50 to-slate-950"></div>
           {/* Animated stars - positions generated client-side to avoid hydration mismatch */}
           <div className="stars-container absolute inset-0">
@@ -928,13 +929,13 @@ export default function Home() {
 
       {/* Voice AI Astrologer Highlight Section */}
       <section className="py-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-center lg:text-left">
-              <Badge className="mb-4 bg-white/20 text-white border-white/30">
-                <Sparkles className="w-3 h-3 mr-1" />
-                {t('home.voiceAiBadge', 'NEW - Voice AI Feature')}
+                <div className={`absolute inset-0 bg-[url('${CDN_IMAGES.starsPattern}')] opacity-10`}></div>
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
+                  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div className="flex-1 text-center lg:text-left">
+                      <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        {t('home.voiceAiBadge', 'NEW - Voice AI Feature')}
               </Badge>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
                 {t('home.voiceAiTitle', 'Talk to Our AI Astrologer')}
@@ -1117,13 +1118,13 @@ export default function Home() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <Image
-                  src="/images/kundli-chart.png"
-                  alt="Vedic Birth Chart (Kundli) Illustration"
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-cover"
-                />
+                                <Image
+                                  src={CDN_IMAGES.kundliChart}
+                                  alt="Vedic Birth Chart (Kundli) Illustration"
+                                  width={600}
+                                  height={400}
+                                  className="w-full h-auto object-cover"
+                                />
               </div>
             </div>
           </div>
