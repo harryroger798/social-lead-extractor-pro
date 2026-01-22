@@ -370,8 +370,8 @@ export default function Home() {
       color: 'from-emerald-500 to-teal-500',
       bgColor: 'bg-emerald-50',
       tools: [
-        { name: t('homeRedesign.financialAstrology', 'Financial Astrology'), href: '/tools/financial-astrology' },
-        { name: t('homeRedesign.careerPredictions', 'Career Predictions'), href: '/horoscope/career' },
+        { name: t('homeRedesign.financialAstrology', 'Financial Astrology'), href: '/financial-astrology' },
+        { name: t('homeRedesign.careerPredictions', 'Career Predictions'), href: '/daily-horoscope' },
         { name: t('homeRedesign.wealthTiming', 'Wealth Timing'), href: '/tools/dasha-calculator' },
       ],
     },
@@ -383,7 +383,7 @@ export default function Home() {
       bgColor: 'bg-violet-50',
       tools: [
         { name: t('homeRedesign.dailyPanchang', 'Daily Panchang'), href: '/panchang' },
-        { name: t('homeRedesign.dailyHoroscope', 'Daily Horoscope'), href: '/horoscope/daily' },
+        { name: t('homeRedesign.dailyHoroscope', 'Daily Horoscope'), href: '/daily-horoscope' },
         { name: t('homeRedesign.voiceAstrologer', 'Voice AI Astrologer'), href: '/voice-astrologer' },
       ],
     },
@@ -395,8 +395,8 @@ export default function Home() {
       bgColor: 'bg-amber-50',
       tools: [
         { name: t('homeRedesign.fullKundli', 'Full Kundli Analysis'), href: '/tools/kundli-calculator' },
-        { name: t('homeRedesign.doshaAnalysis', 'Dosha Analysis'), href: '/doshas' },
-        { name: t('homeRedesign.numerology', 'Numerology'), href: '/tools/numerology' },
+        { name: t('homeRedesign.doshaAnalysis', 'Dosha Analysis'), href: '/vedic-astrology-remedies-doshas-guide' },
+        { name: t('homeRedesign.numerology', 'Numerology'), href: '/numerology' },
       ],
     },
   ];
