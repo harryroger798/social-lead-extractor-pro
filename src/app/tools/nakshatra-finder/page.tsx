@@ -922,7 +922,118 @@ export default function NakshatraFinderPage() {
             </Button>
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            {t('calculator.nakshatraFinder.faqTitle', 'Frequently Asked Questions')}
+          </h2>
+          <div className="max-w-3xl mx-auto space-y-4">
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.nakshatraFinder.faq1q', 'What is a Nakshatra?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.faq1a', "A Nakshatra is one of the 27 lunar mansions in Vedic astrology. Each Nakshatra spans 13°20' of the zodiac and has unique characteristics, ruling deity, and planetary lord that influence those born under it.")}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.nakshatraFinder.faq2q', 'How is my birth Nakshatra determined?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.faq2a', "Your birth Nakshatra (Janma Nakshatra) is determined by the Moon's position at the exact time and place of your birth. The Moon travels through all 27 Nakshatras in approximately 27.3 days, spending about one day in each.")}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.nakshatraFinder.faq3q', 'Why is Nakshatra important in Vedic astrology?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.faq3a', 'Nakshatras provide deeper insights than zodiac signs alone. They reveal your emotional nature, innate tendencies, and karmic patterns. Nakshatras are essential for marriage compatibility (Guna Milan), choosing auspicious times (Muhurta), and understanding your life path.')}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.nakshatraFinder.faq4q', 'What are the three Ganas in Nakshatra?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.faq4a', 'The three Ganas are Deva (divine/godly), Manushya (human), and Rakshasa (demon). These represent temperament types: Deva natives are gentle and spiritual, Manushya are balanced and practical, while Rakshasa are independent and powerful. Gana matching is important in marriage compatibility.')}</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Related Tools Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            {t('calculator.nakshatraFinder.relatedTools', 'Related Astrology Tools')}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link href="/tools/kundli-calculator" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.nakshatraFinder.kundliCalculator', 'Kundli Calculator')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.kundliCalculatorDesc', 'Generate your complete Vedic birth chart')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/tools/horoscope-matching" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.nakshatraFinder.horoscopeMatching', 'Horoscope Matching')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.horoscopeMatchingDesc', 'Check marriage compatibility with Guna Milan')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/tools/moon-sign-calculator" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.nakshatraFinder.moonSignCalculator', 'Moon Sign Calculator')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.nakshatraFinder.moonSignCalculatorDesc', 'Find your Vedic Moon sign (Rashi)')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
       </div>
+
+      {/* FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What is a Nakshatra?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "A Nakshatra is one of the 27 lunar mansions in Vedic astrology. Each Nakshatra spans 13°20' of the zodiac and has unique characteristics, ruling deity, and planetary lord that influence those born under it."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "How is my birth Nakshatra determined?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Your birth Nakshatra (Janma Nakshatra) is determined by the Moon's position at the exact time and place of your birth. The Moon travels through all 27 Nakshatras in approximately 27.3 days, spending about one day in each."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Why is Nakshatra important in Vedic astrology?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Nakshatras provide deeper insights than zodiac signs alone. They reveal your emotional nature, innate tendencies, and karmic patterns. Nakshatras are essential for marriage compatibility (Guna Milan), choosing auspicious times (Muhurta), and understanding your life path."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "What are the three Ganas in Nakshatra?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "The three Ganas are Deva (divine/godly), Manushya (human), and Rakshasa (demon). These represent temperament types: Deva natives are gentle and spiritual, Manushya are balanced and practical, while Rakshasa are independent and powerful. Gana matching is important in marriage compatibility."
+                }
+              }
+            ]
+          }),
+        }}
+      />
 
       <script
         type="application/ld+json"
