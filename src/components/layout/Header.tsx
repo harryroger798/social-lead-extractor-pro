@@ -138,14 +138,14 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center gap-1">
-              <Image
-                src="/images/logo.png"
-                alt="VedicStarAstro Logo"
-                width={56}
-                height={56}
-                className="w-14 h-14 object-contain"
-                priority
-              />
+                            <Image
+                              src="/images/logo.webp"
+                              alt="VedicStarAstro Logo"
+                              width={56}
+                              height={56}
+                              className="w-14 h-14 object-contain"
+                              priority
+                            />
               <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 VedicStarAstro
               </span>
