@@ -773,7 +773,118 @@ export default function KundliCalculatorPage() {
             </Button>
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            {t('calculator.kundli.faqTitle', 'Frequently Asked Questions')}
+          </h2>
+          <div className="max-w-3xl mx-auto space-y-4">
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.kundli.faq1q', 'What is a Kundli or Birth Chart?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.kundli.faq1a', 'A Kundli (also called Janam Kundli or Birth Chart) is a map of the sky at the exact moment of your birth. It shows the positions of the Sun, Moon, and planets in the 12 zodiac signs and 12 houses, which astrologers use to make predictions about your life.')}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.kundli.faq2q', 'Why is accurate birth time important?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.kundli.faq2a', 'The Ascendant (Lagna) changes approximately every 2 hours. Even a few minutes difference in birth time can change your Ascendant sign, which affects the entire chart interpretation. Accurate birth time ensures precise predictions.')}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.kundli.faq3q', 'What is the difference between Vedic and Western astrology?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.kundli.faq3a', 'Vedic astrology (Jyotish) uses the sidereal zodiac based on actual star positions, while Western astrology uses the tropical zodiac based on seasons. This results in approximately 23-24 degrees difference. Our calculator uses the Vedic/Sidereal system with Lahiri Ayanamsa.')}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200">
+              <CardContent className="pt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('calculator.kundli.faq4q', 'Is this Kundli calculator free?')}</h3>
+                <p className="text-gray-600 text-sm">{t('calculator.kundli.faq4a', 'Yes, our Kundli calculator is completely free to use. You can generate unlimited birth charts, download PDF reports, and share chart links without any charges. For detailed analysis and personalized guidance, you can book a consultation with our expert astrologers.')}</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Related Tools Section for Internal Linking */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            {t('calculator.kundli.relatedTools', 'Related Astrology Tools')}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link href="/tools/nakshatra-finder" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.kundli.nakshatraFinder', 'Nakshatra Finder')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.kundli.nakshatraFinderDesc', 'Discover your birth Nakshatra and its characteristics')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/tools/horoscope-matching" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.kundli.horoscopeMatching', 'Horoscope Matching')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.kundli.horoscopeMatchingDesc', 'Check marriage compatibility with Guna Milan')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/tools/moon-sign-calculator" className="block">
+              <Card className="border-amber-100 hover:border-amber-300 transition-colors h-full">
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-amber-700 mb-2">{t('calculator.kundli.moonSignCalculator', 'Moon Sign Calculator')}</h3>
+                  <p className="text-gray-600 text-sm">{t('calculator.kundli.moonSignCalculatorDesc', 'Find your Vedic Moon sign (Rashi)')}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
       </div>
+
+      {/* FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What is a Kundli or Birth Chart?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "A Kundli (also called Janam Kundli or Birth Chart) is a map of the sky at the exact moment of your birth. It shows the positions of the Sun, Moon, and planets in the 12 zodiac signs and 12 houses, which astrologers use to make predictions about your life."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Why is accurate birth time important?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "The Ascendant (Lagna) changes approximately every 2 hours. Even a few minutes difference in birth time can change your Ascendant sign, which affects the entire chart interpretation. Accurate birth time ensures precise predictions."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "What is the difference between Vedic and Western astrology?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Vedic astrology (Jyotish) uses the sidereal zodiac based on actual star positions, while Western astrology uses the tropical zodiac based on seasons. This results in approximately 23-24 degrees difference. Our calculator uses the Vedic/Sidereal system with Lahiri Ayanamsa."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Is this Kundli calculator free?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, our Kundli calculator is completely free to use. You can generate unlimited birth charts, download PDF reports, and share chart links without any charges. For detailed analysis and personalized guidance, you can book a consultation with our expert astrologers."
+                }
+              }
+            ]
+          }),
+        }}
+      />
 
       <script
         type="application/ld+json"
