@@ -123,3 +123,82 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ===== DEVICE RESPONSIVENESS & ACCESSIBILITY IMPROVEMENTS ===== */
+
+/* Improved focus indicators for keyboard navigation (WCAG 2.1 compliance) */
+:focus-visible {
+  outline: 2px solid #f97316; /* Orange outline matching brand color */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure minimum touch target size of 44x44px for mobile (WCAG 2.1 Level AAA) */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Reduced motion for users who prefer it (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Improve text readability on mobile */
+@media (max-width: 640px) {
+  html {
+    font-size: 16px; /* Prevent zoom on iOS when focusing inputs */
+  }
+  
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: oklch(0.3 0 0);
+    --ring: oklch(0.2 0 0);
+  }
+}
+
+/* Print styles for better printing */
+@media print {
+  header,
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+}
