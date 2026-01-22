@@ -26,6 +26,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
       topics: "Consultation Topics",
       whyChoose: "Why Choose VedicStarAstro?"
     },
+    error: {
+      pageNotFound: "Page Not Found",
+      pageNotFoundDesc: "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      goHome: "Go to Homepage",
+      popularPages: "Popular Pages",
+      needHelp: "Need help?",
+      contactUs: "Contact our support team"
+    },
+    breadcrumb: {
+      home: "Home",
+      tools: "Tools",
+      consultation: "Consultation",
+      contact: "Contact",
+      about: "About Us",
+      blog: "Blog",
+      astrologers: "Astrologers",
+      dailyHoroscope: "Daily Horoscope",
+      kundliCalculator: "Kundli Calculator",
+      nakshatraFinder: "Nakshatra Finder",
+      horoscopeMatching: "Horoscope Matching"
+    },
     comments: {
       title: "Comments",
       leaveComment: "Leave a Comment",
@@ -60,6 +81,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     consultation: {
       topics: "परामर्श विषय",
       whyChoose: "VedicStarAstro क्यों चुनें?"
+    },
+    error: {
+      pageNotFound: "पेज नहीं मिला",
+      pageNotFoundDesc: "जिस पेज को आप ढूंढ रहे हैं वह हटा दिया गया हो सकता है, उसका नाम बदल दिया गया हो, या अस्थायी रूप से अनुपलब्ध हो।",
+      goHome: "होमपेज पर जाएं",
+      popularPages: "लोकप्रिय पेज",
+      needHelp: "मदद चाहिए?",
+      contactUs: "हमारी सहायता टीम से संपर्क करें"
+    },
+    breadcrumb: {
+      home: "होम",
+      tools: "टूल्स",
+      consultation: "परामर्श",
+      contact: "संपर्क",
+      about: "हमारे बारे में",
+      blog: "ब्लॉग",
+      astrologers: "ज्योतिषी",
+      dailyHoroscope: "दैनिक राशिफल",
+      kundliCalculator: "कुंडली कैलकुलेटर",
+      nakshatraFinder: "नक्षत्र खोजक",
+      horoscopeMatching: "कुंडली मिलान"
     },
     comments: {
       title: "टिप्पणियाँ",
@@ -96,6 +138,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
       topics: "ஆலோசனை தலைப்புகள்",
       whyChoose: "VedicStarAstro ஏன் தேர்வு செய்ய வேண்டும்?"
     },
+    error: {
+      pageNotFound: "பக்கம் கிடைக்கவில்லை",
+      pageNotFoundDesc: "நீங்கள் தேடும் பக்கம் அகற்றப்பட்டிருக்கலாம், பெயர் மாற்றப்பட்டிருக்கலாம் அல்லது தற்காலிகமாக கிடைக்காமல் இருக்கலாம்.",
+      goHome: "முகப்புப் பக்கத்திற்குச் செல்",
+      popularPages: "பிரபலமான பக்கங்கள்",
+      needHelp: "உதவி தேவையா?",
+      contactUs: "எங்கள் ஆதரவு குழுவைத் தொடர்பு கொள்ளுங்கள்"
+    },
+    breadcrumb: {
+      home: "முகப்பு",
+      tools: "கருவிகள்",
+      consultation: "ஆலோசனை",
+      contact: "தொடர்பு",
+      about: "எங்களைப் பற்றி",
+      blog: "வலைப்பதிவு",
+      astrologers: "ஜோதிடர்கள்",
+      dailyHoroscope: "தினசரி ராசிபலன்",
+      kundliCalculator: "குண்டலி கணிப்பான்",
+      nakshatraFinder: "நட்சத்திர கண்டுபிடிப்பான்",
+      horoscopeMatching: "ஜாதக பொருத்தம்"
+    },
     comments: {
       title: "கருத்துகள்",
       leaveComment: "கருத்து தெரிவிக்கவும்",
@@ -130,6 +193,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     consultation: {
       topics: "సంప్రదింపు అంశాలు",
       whyChoose: "VedicStarAstro ఎందుకు ఎంచుకోవాలి?"
+    },
+    error: {
+      pageNotFound: "పేజీ కనుగొనబడలేదు",
+      pageNotFoundDesc: "మీరు వెతుకుతున్న పేజీ తొలగించబడి ఉండవచ్చు, పేరు మార్చబడి ఉండవచ్చు లేదా తాత్కాలికంగా అందుబాటులో లేదు.",
+      goHome: "హోమ్‌పేజీకి వెళ్ళండి",
+      popularPages: "ప్రసిద్ధ పేజీలు",
+      needHelp: "సహాయం కావాలా?",
+      contactUs: "మా సపోర్ట్ టీమ్‌ను సంప్రదించండి"
+    },
+    breadcrumb: {
+      home: "హోమ్",
+      tools: "టూల్స్",
+      consultation: "సంప్రదింపు",
+      contact: "సంప్రదించండి",
+      about: "మా గురించి",
+      blog: "బ్లాగ్",
+      astrologers: "జ్యోతిష్కులు",
+      dailyHoroscope: "రోజువారీ రాశిఫలం",
+      kundliCalculator: "కుండలి కాలిక్యులేటర్",
+      nakshatraFinder: "నక్షత్ర ఫైండర్",
+      horoscopeMatching: "జాతక పొందిక"
     },
     comments: {
       title: "వ్యాఖ్యలు",
@@ -166,6 +250,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
       topics: "পরামর্শের বিষয়",
       whyChoose: "VedicStarAstro কেন বেছে নেবেন?"
     },
+    error: {
+      pageNotFound: "পেজ পাওয়া যায়নি",
+      pageNotFoundDesc: "আপনি যে পেজটি খুঁজছেন সেটি সরানো হয়ে থাকতে পারে, নাম পরিবর্তন করা হয়েছে, অথবা সাময়িকভাবে অনুপলব্ধ।",
+      goHome: "হোমপেজে যান",
+      popularPages: "জনপ্রিয় পেজ",
+      needHelp: "সাহায্য দরকার?",
+      contactUs: "আমাদের সাপোর্ট টিমের সাথে যোগাযোগ করুন"
+    },
+    breadcrumb: {
+      home: "হোম",
+      tools: "টুলস",
+      consultation: "পরামর্শ",
+      contact: "যোগাযোগ",
+      about: "আমাদের সম্পর্কে",
+      blog: "ব্লগ",
+      astrologers: "জ্যোতিষীরা",
+      dailyHoroscope: "দৈনিক রাশিফল",
+      kundliCalculator: "কুণ্ডলি ক্যালকুলেটর",
+      nakshatraFinder: "নক্ষত্র খোঁজক",
+      horoscopeMatching: "কুণ্ডলি মিলান"
+    },
     comments: {
       title: "মন্তব্য",
       leaveComment: "মন্তব্য করুন",
@@ -200,6 +305,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     consultation: {
       topics: "सल्लामसलत विषय",
       whyChoose: "VedicStarAstro का निवडावे?"
+    },
+    error: {
+      pageNotFound: "पृष्ठ सापडले नाही",
+      pageNotFoundDesc: "तुम्ही शोधत असलेले पृष्ठ काढले गेले असेल, त्याचे नाव बदलले गेले असेल किंवा तात्पुरते अनुपलब्ध असेल.",
+      goHome: "मुख्यपृष्ठावर जा",
+      popularPages: "लोकप्रिय पृष्ठे",
+      needHelp: "मदत हवी आहे?",
+      contactUs: "आमच्या सपोर्ट टीमशी संपर्क साधा"
+    },
+    breadcrumb: {
+      home: "मुख्यपृष्ठ",
+      tools: "साधने",
+      consultation: "सल्लामसलत",
+      contact: "संपर्क",
+      about: "आमच्याबद्दल",
+      blog: "ब्लॉग",
+      astrologers: "ज्योतिषी",
+      dailyHoroscope: "दैनिक राशीभविष्य",
+      kundliCalculator: "कुंडली कॅल्क्युलेटर",
+      nakshatraFinder: "नक्षत्र शोधक",
+      horoscopeMatching: "कुंडली जुळवणी"
     },
     comments: {
       title: "टिप्पण्या",
@@ -236,6 +362,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
       topics: "પરામર્શ વિષયો",
       whyChoose: "VedicStarAstro શા માટે પસંદ કરો?"
     },
+    error: {
+      pageNotFound: "પેજ મળ્યું નથી",
+      pageNotFoundDesc: "તમે જે પેજ શોધી રહ્યા છો તે દૂર કરવામાં આવ્યું હોઈ શકે, નામ બદલાયું હોઈ શકે અથવા અસ્થાયી રૂપે અનુપલબ્ધ હોઈ શકે.",
+      goHome: "હોમપેજ પર જાઓ",
+      popularPages: "લોકપ્રિય પેજ",
+      needHelp: "મદદ જોઈએ છે?",
+      contactUs: "અમારી સપોર્ટ ટીમનો સંપર્ક કરો"
+    },
+    breadcrumb: {
+      home: "હોમ",
+      tools: "ટૂલ્સ",
+      consultation: "પરામર્શ",
+      contact: "સંપર્ક",
+      about: "અમારા વિશે",
+      blog: "બ્લોગ",
+      astrologers: "જ્યોતિષીઓ",
+      dailyHoroscope: "દૈનિક રાશિફળ",
+      kundliCalculator: "કુંડળી કેલ્ક્યુલેટર",
+      nakshatraFinder: "નક્ષત્ર શોધક",
+      horoscopeMatching: "કુંડળી મેળાપ"
+    },
     comments: {
       title: "ટિપ્પણીઓ",
       leaveComment: "ટિપ્પણી કરો",
@@ -270,6 +417,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     consultation: {
       topics: "ಸಮಾಲೋಚನೆ ವಿಷಯಗಳು",
       whyChoose: "VedicStarAstro ಏಕೆ ಆಯ್ಕೆ ಮಾಡಬೇಕು?"
+    },
+    error: {
+      pageNotFound: "ಪುಟ ಕಂಡುಬಂದಿಲ್ಲ",
+      pageNotFoundDesc: "ನೀವು ಹುಡುಕುತ್ತಿರುವ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿರಬಹುದು, ಹೆಸರು ಬದಲಾಯಿಸಲಾಗಿರಬಹುದು ಅಥವಾ ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ.",
+      goHome: "ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ",
+      popularPages: "ಜನಪ್ರಿಯ ಪುಟಗಳು",
+      needHelp: "ಸಹಾಯ ಬೇಕೇ?",
+      contactUs: "ನಮ್ಮ ಬೆಂಬಲ ತಂಡವನ್ನು ಸಂಪರ್ಕಿಸಿ"
+    },
+    breadcrumb: {
+      home: "ಮುಖಪುಟ",
+      tools: "ಉಪಕರಣಗಳು",
+      consultation: "ಸಮಾಲೋಚನೆ",
+      contact: "ಸಂಪರ್ಕ",
+      about: "ನಮ್ಮ ಬಗ್ಗೆ",
+      blog: "ಬ್ಲಾಗ್",
+      astrologers: "ಜ್ಯೋತಿಷಿಗಳು",
+      dailyHoroscope: "ದೈನಂದಿನ ರಾಶಿಫಲ",
+      kundliCalculator: "ಕುಂಡಲಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+      nakshatraFinder: "ನಕ್ಷತ್ರ ಹುಡುಕುವಿಕೆ",
+      horoscopeMatching: "ಜಾತಕ ಹೊಂದಾಣಿಕೆ"
     },
     comments: {
       title: "ಕಾಮೆಂಟ್‌ಗಳು",
@@ -306,6 +474,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
       topics: "കൺസൾട്ടേഷൻ വിഷയങ്ങൾ",
       whyChoose: "VedicStarAstro എന്തുകൊണ്ട് തിരഞ്ഞെടുക്കണം?"
     },
+    error: {
+      pageNotFound: "പേജ് കണ്ടെത്തിയില്ല",
+      pageNotFoundDesc: "നിങ്ങൾ തിരയുന്ന പേജ് നീക്കം ചെയ്തിരിക്കാം, പേര് മാറ്റിയിരിക്കാം അല്ലെങ്കിൽ താൽക്കാലികമായി ലഭ്യമല്ല.",
+      goHome: "ഹോംപേജിലേക്ക് പോകുക",
+      popularPages: "ജനപ്രിയ പേജുകൾ",
+      needHelp: "സഹായം വേണോ?",
+      contactUs: "ഞങ്ങളുടെ സപ്പോർട്ട് ടീമിനെ ബന്ധപ്പെടുക"
+    },
+    breadcrumb: {
+      home: "ഹോം",
+      tools: "ടൂളുകൾ",
+      consultation: "കൺസൾട്ടേഷൻ",
+      contact: "ബന്ധപ്പെടുക",
+      about: "ഞങ്ങളെക്കുറിച്ച്",
+      blog: "ബ്ലോഗ്",
+      astrologers: "ജ്യോതിഷികൾ",
+      dailyHoroscope: "ദൈനംദിന രാശിഫലം",
+      kundliCalculator: "കുണ്ഡലി കാൽക്കുലേറ്റർ",
+      nakshatraFinder: "നക്ഷത്ര കണ്ടെത്തൽ",
+      horoscopeMatching: "ജാതക പൊരുത്തം"
+    },
     comments: {
       title: "അഭിപ്രായങ്ങള്‍",
       leaveComment: "അഭിപ്രായം രേഖപ്പെടുത്തുക",
@@ -340,6 +529,27 @@ export const commentTranslations: Record<Language, TranslationObject> = {
     consultation: {
       topics: "ਸਲਾਹ-ਮਸ਼ਵਰੇ ਦੇ ਵਿਸ਼ੇ",
       whyChoose: "VedicStarAstro ਕਿਉਂ ਚੁਣੋ?"
+    },
+    error: {
+      pageNotFound: "ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ",
+      pageNotFoundDesc: "ਜੋ ਪੰਨਾ ਤੁਸੀਂ ਲੱਭ ਰਹੇ ਹੋ ਉਹ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ, ਨਾਮ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ, ਜਾਂ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
+      goHome: "ਹੋਮਪੇਜ 'ਤੇ ਜਾਓ",
+      popularPages: "ਪ੍ਰਸਿੱਧ ਪੰਨੇ",
+      needHelp: "ਮਦਦ ਚਾਹੀਦੀ ਹੈ?",
+      contactUs: "ਸਾਡੀ ਸਪੋਰਟ ਟੀਮ ਨਾਲ ਸੰਪਰਕ ਕਰੋ"
+    },
+    breadcrumb: {
+      home: "ਹੋਮ",
+      tools: "ਟੂਲਸ",
+      consultation: "ਸਲਾਹ-ਮਸ਼ਵਰਾ",
+      contact: "ਸੰਪਰਕ",
+      about: "ਸਾਡੇ ਬਾਰੇ",
+      blog: "ਬਲੌਗ",
+      astrologers: "ਜੋਤਿਸ਼ੀ",
+      dailyHoroscope: "ਰੋਜ਼ਾਨਾ ਰਾਸ਼ੀਫਲ",
+      kundliCalculator: "ਕੁੰਡਲੀ ਕੈਲਕੁਲੇਟਰ",
+      nakshatraFinder: "ਨਕਸ਼ੱਤਰ ਖੋਜਕ",
+      horoscopeMatching: "ਕੁੰਡਲੀ ਮਿਲਾਨ"
     },
     comments: {
       title: "ਟਿੱਪਣੀਆਂ",

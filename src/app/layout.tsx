@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -202,11 +203,12 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${notoSans.variable} font-sans antialiased bg-white text-gray-900`}
       >
-        <Providers>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </Providers>
+                <Providers>
+                  <Header />
+                  <Breadcrumb />
+                  <main className="min-h-screen">{children}</main>
+                  <Footer />
+                </Providers>
       </body>
     </html>
   );
