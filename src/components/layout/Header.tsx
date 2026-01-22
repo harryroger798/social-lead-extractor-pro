@@ -3,15 +3,39 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
-import { useLanguage } from "@/lib/i18n";
+import { useLanguage, Language } from "@/lib/i18n";
 import { getCurrentYear, withCurrentYear } from "@/lib/utils";
 
+const languages: { code: Language; name: string; nativeName: string }[] = [
+  { code: "en", name: "English", nativeName: "English" },
+  { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা" },
+  { code: "mr", name: "Marathi", nativeName: "मराठी" },
+  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી" },
+  { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ" },
+  { code: "ml", name: "Malayalam", nativeName: "മലയാളം" },
+  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
+];
+
 export function Header() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const currentYear = getCurrentYear();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
+
+  const toggleSection = (sectionName: string) => {
+    setExpandedSections(prev => 
+      prev.includes(sectionName) 
+        ? prev.filter(s => s !== sectionName)
+        : [...prev, sectionName]
+    );
+  };
   
   const navigation = [
     {
@@ -107,8 +131,6 @@ export function Header() {
         { name: t('nav.consultation', 'Consultation'), href: "/consultation" },
     { name: t('nav.about', 'About'), href: "/about" },
   ];
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm">
@@ -199,46 +221,90 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="xl:hidden py-4 border-t border-amber-100 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="space-y-2">
-              {navigation.map((item) => (
-                <div key={item.name}>
-                  {item.children ? (
-                    <div className="space-y-1">
-                      <div className="px-3 py-2 text-sm font-semibold text-gray-900">{item.name}</div>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          className="block px-6 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {child.name}
-                        </Link>
-                      ))}
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className="block px-3 py-2 text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  )}
-                </div>
-              ))}
-              <div className="pt-4 px-3 space-y-2">
-                                <div className="flex justify-center pb-2">
-                                  <LanguageSwitcher />
-                                </div>
-                                <Button variant="outline" className="w-full border-amber-500 text-amber-600">
-                                  {t('nav.freeKundli', 'Free Kundli')}
-                                </Button>
-                                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
-                                  {t('nav.bookConsultation', 'Book Consultation')}
-                                </Button>
+          <div className="xl:hidden flex flex-col border-t border-amber-100 max-h-[calc(100vh-5rem)]">
+            {/* Language Selector at TOP - Inline Grid */}
+            <div className="px-3 py-3 border-b border-amber-100 bg-amber-50/50">
+              <div className="flex items-center gap-2 mb-2">
+                <Globe className="w-4 h-4 text-amber-600" />
+                <span className="text-xs font-medium text-gray-700">{t('nav.selectLanguage', 'Select Language')}</span>
               </div>
+              <div className="grid grid-cols-5 gap-1">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`px-2 py-1.5 text-xs rounded-md transition-colors ${
+                      language === lang.code
+                        ? "bg-amber-500 text-white font-medium"
+                        : "bg-white text-gray-700 hover:bg-amber-100 border border-gray-200"
+                    }`}
+                    title={lang.name}
+                  >
+                    {lang.nativeName.substring(0, 4)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Scrollable Navigation with Collapsible Sections */}
+            <div className="flex-1 overflow-y-auto py-2">
+              <div className="space-y-1">
+                {navigation.map((item) => (
+                  <div key={item.name}>
+                    {item.children ? (
+                      <div>
+                        <button
+                          onClick={() => toggleSection(item.name)}
+                          className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-gray-900 hover:bg-amber-50 rounded-lg transition-colors"
+                        >
+                          <span>{item.name}</span>
+                          <ChevronRight 
+                            className={`w-4 h-4 text-gray-400 transition-transform ${
+                              expandedSections.includes(item.name) ? 'rotate-90' : ''
+                            }`} 
+                          />
+                        </button>
+                        {expandedSections.includes(item.name) && (
+                          <div className="ml-3 pl-3 border-l-2 border-amber-200 space-y-0.5">
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.name}
+                                href={child.href}
+                                className="block px-3 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className="block px-3 py-2.5 text-sm font-semibold text-gray-900 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Fixed CTA Buttons at BOTTOM */}
+            <div className="px-3 py-3 border-t border-amber-100 bg-white space-y-2">
+              <Link href="/tools/kundli-calculator" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="outline" className="w-full border-amber-500 text-amber-600 hover:bg-amber-50">
+                  {t('nav.freeKundli', 'Free Kundli')}
+                </Button>
+              </Link>
+              <Link href="/consultation" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
+                  {t('nav.bookConsultation', 'Book Consultation')}
+                </Button>
+              </Link>
             </div>
           </div>
         )}
