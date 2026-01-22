@@ -231,6 +231,7 @@ export default function ConsultationPage() {
                 <Button 
                   className={`w-full ${type.popular ? "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700" : ""}`}
                   variant={type.popular ? "default" : "outline"}
+                  onClick={() => window.open(`https://wa.me/918884919349?text=${encodeURIComponent(`Hi, I'm interested in ${type.title}. Please help me book a consultation.`)}`, '_blank')}
                 >
                   {t('consultation.bookNow', 'Book Now')}
                 </Button>
@@ -298,7 +299,11 @@ export default function ConsultationPage() {
                     ))}
                   </div>
                   
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={() => window.open(`https://wa.me/918884919349?text=${encodeURIComponent(`Hi, I would like to book a consultation with ${astrologer.name}. Please help me schedule an appointment.`)}`, '_blank')}
+                  >
                     <Calendar className="w-4 h-4 mr-2" />
                     {t('consultation.bookConsultation', 'Book Consultation')}
                   </Button>
@@ -410,7 +415,11 @@ export default function ConsultationPage() {
               {t('consultation.readyToStartDesc', "Book your consultation now and get clarity on your life's important questions.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50">
+              <Button 
+                size="lg" 
+                className="bg-white text-amber-600 hover:bg-amber-50"
+                onClick={() => window.open('https://wa.me/918884919349?text=' + encodeURIComponent('Hi, I would like to book a consultation. Please help me schedule an appointment.'), '_blank')}
+              >
                 {t('consultation.bookNowBtn', 'Book Consultation Now')}
               </Button>
                             <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
