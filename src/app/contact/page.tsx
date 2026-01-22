@@ -192,22 +192,58 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">{t('contact.readyTitle', 'Ready for Your Consultation?')}</h2>
-            <p className="mb-4 text-amber-100">
-              {t('contact.readyDesc', 'Book a session with our expert astrologers and get personalized guidance.')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                <Link href="/consultation">{t('contact.bookConsultation', 'Book Consultation')}</Link>
-              </Button>
-                            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
-                              <Link href="/tools/kundli-calculator">{t('contact.tryFreeKundli', 'Try Free Kundli')}</Link>
-                            </Button>
-            </div>
-          </CardContent>
-        </Card>
+                {/* Google Maps Embed for Local SEO */}
+                <Card className="border-amber-200 mb-12">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-amber-600" />
+                      {t('contact.ourLocation', 'Our Location')}
+                    </CardTitle>
+                    <CardDescription>
+                      {t('contact.locationDesc', 'Visit us at our office in Bangalore for in-person consultations')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video w-full rounded-lg overflow-hidden border border-amber-100">
+                      <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3889.5!2d77.6476!3d12.8698!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDUyJzExLjMiTiA3N8KwMzgnNTEuNCJF!5e0!3m2!1sen!2sin!4v1706000000000!5m2!1sen!2sin"
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="VedicStarAstro Office Location - Begur Koppa Road, Bangalore"
+                        aria-label="Google Maps showing VedicStarAstro office location in Bangalore"
+                      />
+                    </div>
+                    <div className="mt-4 p-4 bg-amber-50 rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        <strong>{t('contact.address', 'Address')}:</strong> Nakshatraveda Astro House #12A, Ashraya Layout, S.Bingipura Village, Begur Koppa Road, Bangalore - 560100, Karnataka, India
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        {t('contact.directions', 'Landmark: Near Begur Lake. Free parking available.')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                  <CardContent className="pt-6 text-center">
+                    <h2 className="text-2xl font-bold mb-2">{t('contact.readyTitle', 'Ready for Your Consultation?')}</h2>
+                    <p className="mb-4 text-amber-100">
+                      {t('contact.readyDesc', 'Book a session with our expert astrologers and get personalized guidance.')}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                        <Link href="/consultation">{t('contact.bookConsultation', 'Book Consultation')}</Link>
+                      </Button>
+                      <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50" asChild>
+                        <Link href="/tools/kundli-calculator">{t('contact.tryFreeKundli', 'Try Free Kundli')}</Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
       </div>
 
       <script
