@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useLanguage, Language } from "@/lib/i18n";
 import { getCurrentYear, withCurrentYear } from "@/lib/utils";
-import { CDN_IMAGES } from "@/lib/cdn";
 
 const languages: { code: Language; name: string; nativeName: string }[] = [
   { code: "en", name: "English", nativeName: "English" },
@@ -139,14 +138,14 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center gap-1">
-<Image
-                src={CDN_IMAGES.logoOptimized}
-                alt="VedicStarAstro Logo"
-                width={56}
-                height={56}
-                className="w-14 h-14 object-contain"
-                priority
-              />
+                            <Image
+                              src="/images/logo.webp"
+                              alt="VedicStarAstro Logo"
+                              width={56}
+                              height={56}
+                              className="w-14 h-14 object-contain"
+                              priority
+                            />
               <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 VedicStarAstro
               </span>

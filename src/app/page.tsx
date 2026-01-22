@@ -929,13 +929,13 @@ export default function Home() {
 
       {/* Voice AI Astrologer Highlight Section */}
       <section className="py-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url('${CDN_IMAGES.starsPattern}')` }}></div>
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-                  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                    <div className="flex-1 text-center lg:text-left">
-                      <Badge className="mb-4 bg-white/20 text-white border-white/30">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        {t('home.voiceAiBadge', 'NEW - Voice AI Feature')}
+        
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex-1 text-center lg:text-left">
+              <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                <Sparkles className="w-3 h-3 mr-1" />
+                {t('home.voiceAiBadge', 'NEW - Voice AI Feature')}
               </Badge>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
                 {t('home.voiceAiTitle', 'Talk to Our AI Astrologer')}
@@ -1124,6 +1124,7 @@ export default function Home() {
                                   width={600}
                                   height={400}
                                   className="w-full h-auto object-cover"
+                                  loading="lazy"
                                 />
               </div>
             </div>

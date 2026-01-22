@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
-import { CDN_IMAGES } from "@/lib/cdn";
 
 const socialLinks = [
   { name: "Facebook", href: "https://facebook.com/vedicstarastro", icon: Facebook },
@@ -51,13 +50,13 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-<Image
-                src={CDN_IMAGES.logoFooter}
-                alt="VedicStarAstro Logo"
-                width={48}
-                height={48}
-                className="w-12 h-12 object-contain"
-              />
+                            <Image
+                              src="/images/logo.webp"
+                              alt="VedicStarAstro Logo"
+                              width={48}
+                              height={48}
+                              className="w-12 h-12 object-contain"
+                            />
               <span className="text-xl font-bold text-white">VedicStarAstro</span>
             </Link>
             <p className="text-sm text-gray-400 mb-6 max-w-xs">

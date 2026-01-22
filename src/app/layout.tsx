@@ -119,13 +119,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preconnect to critical third-party origins for faster resource loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                {/* Preconnect to critical third-party origins for faster resource loading */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link rel="preconnect" href="https://ik.imagekit.io" crossOrigin="anonymous" />
         
-        {/* DNS prefetch for additional performance */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+                {/* DNS prefetch for additional performance */}
+                <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+                <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+                <link rel="dns-prefetch" href="https://ik.imagekit.io" />
+        
+                {/* Preload critical LCP image (hero background) for faster rendering */}
+                <link 
+                  rel="preload" 
+                  href="https://ik.imagekit.io/xhjdo9szg/tr:q-80,f-auto/images/hero-bg.webp" 
+                  as="image" 
+                  type="image/webp"
+                />
         
         <script
           type="application/ld+json"

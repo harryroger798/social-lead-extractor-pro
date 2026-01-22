@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { CDN_IMAGES } from "@/lib/cdn";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -242,7 +241,7 @@ export default function BabyNamesPage() {
     <main className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
       {/* Hero Section */}
       <section className="relative py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-600">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url('${CDN_IMAGES.starsPattern}')` }}></div>
+        <div className="absolute inset-0 bg-[url('/images/stars-pattern.png')] opacity-10"></div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center">
             <Badge className="mb-4 bg-white/20 text-white border-white/30">

@@ -16,7 +16,6 @@ import {
   Clock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { CDN_IMAGES } from "@/lib/cdn";
 
 export default function AboutPage() {
   const { t } = useLanguage();
@@ -51,35 +50,35 @@ export default function AboutPage() {
     },
   ];
 
-    const team = [
-      {
-        name: "Acharya Shridhar Khandal",
-        role: t('about.founderRole', 'Founder & Chief Astrologer'),
-        experience: t('about.exp35', '35+ years'),
-        specialization: t('about.specAstroVastuPoojaGems', 'Astro, Vastu, Pooja & Gems'),
-        bio: t('about.bioShridhar', 'A renowned Vedic astrologer with 35 years of experience in Astrology, Vastu, Pooja, and Gemstone consultation. Based in Bengaluru, Acharya Shridhar has dedicated his life to making authentic Jyotish accessible to the modern world.'),
-        location: t('about.locationBengaluru', 'Bengaluru'),
-        image: CDN_IMAGES.astrologers.acharyaShridhar,
-      },
-      {
-        name: "Madhav Sharma",
-        role: t('about.seniorRole', 'Senior Astrologer'),
-        experience: t('about.exp20', '20+ years'),
-        specialization: t('about.specAstroPoojaGems', 'Astro, Pooja & Gems'),
-        bio: t('about.bioMadhav', 'With 20 years of experience in Astrology, Pooja, and Gemstone consultation, Madhav Sharma brings deep expertise to traditional astrological practice from Jaipur.'),
-        location: t('about.locationJaipur', 'Jaipur'),
-        image: CDN_IMAGES.astrologers.madhavSharma,
-      },
-      {
-        name: "Raj Kumar Shastri",
-        role: t('about.remediesRole', 'Remedies Specialist'),
-        experience: t('about.exp16', '16+ years'),
-        specialization: t('about.specAstroVastuPooja', 'Astro, Vastu & Pooja'),
-        bio: t('about.bioRajKumar', 'An expert in Astrology, Vastu, and Pooja with 16 years of experience, Raj Kumar Shastri has helped thousands from Kolkata overcome challenging planetary periods.'),
-        location: t('about.locationKolkata', 'Kolkata (WB)'),
-        image: CDN_IMAGES.astrologers.rajKumarShastri,
-      },
-    ];
+  const team = [
+    {
+      name: "Acharya Shridhar Khandal",
+      role: t('about.founderRole', 'Founder & Chief Astrologer'),
+      experience: t('about.exp35', '35+ years'),
+      specialization: t('about.specAstroVastuPoojaGems', 'Astro, Vastu, Pooja & Gems'),
+      bio: t('about.bioShridhar', 'A renowned Vedic astrologer with 35 years of experience in Astrology, Vastu, Pooja, and Gemstone consultation. Based in Bengaluru, Acharya Shridhar has dedicated his life to making authentic Jyotish accessible to the modern world.'),
+      location: t('about.locationBengaluru', 'Bengaluru'),
+      image: "/images/astrologers/acharya-shridhar-khandal.png",
+    },
+    {
+      name: "Madhav Sharma",
+      role: t('about.seniorRole', 'Senior Astrologer'),
+      experience: t('about.exp20', '20+ years'),
+      specialization: t('about.specAstroPoojaGems', 'Astro, Pooja & Gems'),
+      bio: t('about.bioMadhav', 'With 20 years of experience in Astrology, Pooja, and Gemstone consultation, Madhav Sharma brings deep expertise to traditional astrological practice from Jaipur.'),
+      location: t('about.locationJaipur', 'Jaipur'),
+      image: "/images/astrologers/madhav-sharma.png",
+    },
+    {
+      name: "Raj Kumar Shastri",
+      role: t('about.remediesRole', 'Remedies Specialist'),
+      experience: t('about.exp16', '16+ years'),
+      specialization: t('about.specAstroVastuPooja', 'Astro, Vastu & Pooja'),
+      bio: t('about.bioRajKumar', 'An expert in Astrology, Vastu, and Pooja with 16 years of experience, Raj Kumar Shastri has helped thousands from Kolkata overcome challenging planetary periods.'),
+      location: t('about.locationKolkata', 'Kolkata (WB)'),
+      image: "/images/astrologers/raj-kumar-shastri.png",
+    },
+  ];
   return (
     <div className="py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

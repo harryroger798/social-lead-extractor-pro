@@ -74,7 +74,7 @@ export const CDN_IMAGES = {
   // Other images
   kundliChart: getCdnImageUrl("images/kundli-chart.png", { format: "auto" }),
   nakshatraArt: getCdnImageUrl("images/nakshatra-art.png", { format: "auto" }),
-  starsPattern: getCdnImageUrl("images/stars-pattern.png", { format: "auto" }),
+  // Note: stars-pattern.png doesn't exist on the server, using CSS gradient instead
   
   // Palmistry images
   palmistry: {

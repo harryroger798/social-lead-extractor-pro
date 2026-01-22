@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getPostBySlug } from "@/lib/sanity";
 import BlogPostContent from "@/app/blog/[slug]/BlogPostContent";
-import { CDN_IMAGES } from "@/lib/cdn";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -88,7 +87,7 @@ function generateJsonLd(post: NonNullable<Awaited<ReturnType<typeof getPostBySlu
     "@type": "BlogPosting",
     headline: metaTitle,
     description: metaDescription,
-    image: post.featuredImage?.url || CDN_IMAGES.logo,
+    image: post.featuredImage?.url || "https://vedicstarastro.com/images/logo.png",
     author: {
       "@type": "Person",
       name: post.author?.name || "VedicStarAstro",
@@ -96,10 +95,10 @@ function generateJsonLd(post: NonNullable<Awaited<ReturnType<typeof getPostBySlu
     publisher: {
       "@type": "Organization",
       name: "VedicStarAstro",
-            logo: {
-              "@type": "ImageObject",
-              url: CDN_IMAGES.logo,
-            },
+      logo: {
+        "@type": "ImageObject",
+        url: "https://vedicstarastro.com/images/logo.png",
+      },
     },
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,

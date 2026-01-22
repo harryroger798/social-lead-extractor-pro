@@ -16,7 +16,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { CDN_IMAGES } from "@/lib/cdn";
 
 const astrologers = [
   {
@@ -31,8 +30,8 @@ const astrologers = [
     price: 1500,
     available: true,
     location: "Bengaluru",
-        image: CDN_IMAGES.astrologers.acharyaShridhar,
-        bio: "With 35 years of experience, Acharya Shridhar Khandal is a master of Vedic astrology, Vastu Shastra, and gemstone therapy. His holistic approach combines traditional wisdom with practical remedies.",
+    image: "/images/astrologers/acharya-shridhar-khandal.png",
+    bio: "With 35 years of experience, Acharya Shridhar Khandal is a master of Vedic astrology, Vastu Shastra, and gemstone therapy. His holistic approach combines traditional wisdom with practical remedies.",
     education: "Jyotish Acharya, Vastu Expert",
   },
   {
@@ -47,8 +46,8 @@ const astrologers = [
     price: 1000,
     available: true,
     location: "Bengaluru",
-        image: CDN_IMAGES.astrologers.banwariDadich,
-        bio: "Banwari Dadich specializes in Vastu Shastra and traditional Pooja ceremonies. His expertise helps clients harmonize their living and working spaces.",
+    image: "/images/astrologers/banwari-dadich.png",
+    bio: "Banwari Dadich specializes in Vastu Shastra and traditional Pooja ceremonies. His expertise helps clients harmonize their living and working spaces.",
     education: "Vastu Visharad, Pooja Specialist",
   },
   {
@@ -63,8 +62,8 @@ const astrologers = [
     price: 900,
     available: true,
     location: "Bengaluru",
-        image: CDN_IMAGES.astrologers.nemichandShastri,
-        bio: "Nemichand Shastri brings 12 years of expertise in Vastu and Pooja services. He is known for his accurate Muhurta calculations and effective remedies.",
+    image: "/images/astrologers/nemichand-shastri.png",
+    bio: "Nemichand Shastri brings 12 years of expertise in Vastu and Pooja services. He is known for his accurate Muhurta calculations and effective remedies.",
     education: "Jyotish Visharad",
   },
   {
@@ -79,8 +78,8 @@ const astrologers = [
     price: 800,
     available: true,
     location: "Mumbai",
-        image: CDN_IMAGES.astrologers.vinodShastri,
-        bio: "Based in Mumbai, Vinod Shastri offers expert Vastu consultations and Pooja services. His practical approach makes ancient wisdom accessible to modern clients.",
+    image: "/images/astrologers/vinod-shastri.png",
+    bio: "Based in Mumbai, Vinod Shastri offers expert Vastu consultations and Pooja services. His practical approach makes ancient wisdom accessible to modern clients.",
     education: "Vastu Consultant, Pooja Expert",
   },
   {
@@ -95,8 +94,8 @@ const astrologers = [
     price: 1200,
     available: true,
     location: "Jaipur",
-        image: CDN_IMAGES.astrologers.madhavSharma,
-        bio: "With 20 years of experience from Jaipur, Madhav Sharma is renowned for his accurate predictions and gemstone recommendations. His expertise spans Kundli analysis and traditional Pooja.",
+    image: "/images/astrologers/madhav-sharma.png",
+    bio: "With 20 years of experience from Jaipur, Madhav Sharma is renowned for his accurate predictions and gemstone recommendations. His expertise spans Kundli analysis and traditional Pooja.",
     education: "Jyotish Acharya, Gemologist",
   },
   {
@@ -111,8 +110,8 @@ const astrologers = [
     price: 900,
     available: true,
     location: "New Delhi",
-        image: CDN_IMAGES.astrologers.bajarangbaliDubey,
-        bio: "Bajarangbali Dubey from New Delhi specializes in Vastu corrections and Pooja ceremonies. He is particularly known for Griha Pravesh and business establishment rituals.",
+    image: "/images/astrologers/bajarangbali-dubey.png",
+    bio: "Bajarangbali Dubey from New Delhi specializes in Vastu corrections and Pooja ceremonies. He is particularly known for Griha Pravesh and business establishment rituals.",
     education: "Vastu Expert, Pooja Specialist",
   },
   {
@@ -127,8 +126,8 @@ const astrologers = [
     price: 1100,
     available: true,
     location: "Kolkata (WB)",
-        image: CDN_IMAGES.astrologers.rajKumarShastri,
-        bio: "Raj Kumar Shastri from Kolkata combines expertise in astrology, Vastu, and Pooja. His marriage matching consultations are highly sought after in Eastern India.",
+    image: "/images/astrologers/raj-kumar-shastri.png",
+    bio: "Raj Kumar Shastri from Kolkata combines expertise in astrology, Vastu, and Pooja. His marriage matching consultations are highly sought after in Eastern India.",
     education: "Jyotish Ratna, Vastu Visharad",
   },
   {
@@ -143,8 +142,8 @@ const astrologers = [
     price: 850,
     available: true,
     location: "Bareilly (UP)",
-        image: CDN_IMAGES.astrologers.pankajShastri,
-        bio: "Pankaj Shastri from Bareilly offers comprehensive Vastu and Pooja services. His remedial measures have helped countless families overcome obstacles.",
+    image: "/images/astrologers/pankaj-shastri.png",
+    bio: "Pankaj Shastri from Bareilly offers comprehensive Vastu and Pooja services. His remedial measures have helped countless families overcome obstacles.",
     education: "Vastu Consultant, Pooja Expert",
   },
 ];
