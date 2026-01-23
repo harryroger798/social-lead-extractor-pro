@@ -56,6 +56,31 @@ interface ChartData {
   }[];
 }
 
+interface DashaData {
+  mahadashas: {
+    planet: string;
+    start_date: string;
+    end_date: string;
+    duration_years: number;
+    is_current: boolean;
+    antardashas: {
+      planet: string;
+      start_date: string;
+      end_date: string;
+      duration_years: number;
+      is_current: boolean;
+    }[];
+  }[];
+}
+
+interface NavamsaData {
+  planets: {
+    name: string;
+    sign: string;
+    degree: number;
+  }[];
+}
+
 // Helper function to calculate Tropical sign from Sidereal sign
 // Tropical is approximately one sign ahead of Sidereal (due to ~24° ayanamsa)
 function getTropicalFromSidereal(siderealSign: string | undefined): string {
@@ -142,6 +167,65 @@ async function fetchChartFromBackend(details: BirthDetails): Promise<ChartData> 
   } catch (error) {
     console.error("Error fetching chart:", error);
     throw error;
+  }
+}
+
+async function fetchDashaFromBackend(details: BirthDetails): Promise<DashaData | null> {
+  try {
+    const response = await fetch("/api/calculate-dasha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: details.name,
+        birth_date: details.date,
+        birth_time: details.time,
+        birth_place: details.place,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to calculate Dasha");
+    }
+
+    const data = await response.json();
+    return {
+      mahadashas: data.dasha?.mahadashas || [],
+    };
+  } catch (error) {
+    console.error("Error fetching Dasha:", error);
+    return null;
+  }
+}
+
+async function fetchNavamsaFromBackend(details: BirthDetails): Promise<NavamsaData | null> {
+  try {
+    const response = await fetch("/api/calculate-divisional", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: details.name,
+        birth_date: details.date,
+        birth_time: details.time,
+        birth_place: details.place,
+        division: 9,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to calculate Navamsa");
+    }
+
+    const data = await response.json();
+    return {
+      planets: data.divisional_chart?.planets || data.rashi_chart?.planets || [],
+    };
+  } catch (error) {
+    console.error("Error fetching Navamsa:", error);
+    return null;
   }
 }
 
@@ -235,10 +319,13 @@ export default function KundliCalculatorPage() {
     place: "",
   });
   const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [dashaData, setDashaData] = useState<DashaData | null>(null);
+  const [navamsaData, setNavamsaData] = useState<NavamsaData | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [expandedDasha, setExpandedDasha] = useState<string | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
 
   const [error, setError] = useState("");
@@ -274,8 +361,15 @@ export default function KundliCalculatorPage() {
     setError("");
     
     try {
-      const chart = await fetchChartFromBackend(birthDetails);
+      // Fetch all data in parallel
+      const [chart, dasha, navamsa] = await Promise.all([
+        fetchChartFromBackend(birthDetails),
+        fetchDashaFromBackend(birthDetails),
+        fetchNavamsaFromBackend(birthDetails),
+      ]);
       setChartData(chart);
+      setDashaData(dasha);
+      setNavamsaData(navamsa);
       setShareUrl(null);
     } catch (err) {
       console.error("Error calculating chart:", err);
@@ -695,17 +789,51 @@ export default function KundliCalculatorPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
-                        <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.navamsaComingSoon', 'Navamsa Chart Coming Soon')}</h4>
-                        <p className="text-sm text-amber-700 mb-4">
-                          {t('calculator.kundli.navamsaComingSoonDesc', 'We are working on adding the Navamsa (D-9) divisional chart. For now, you can get detailed Navamsa analysis from our expert astrologers.')}
+                    {navamsaData && navamsaData.planets && navamsaData.planets.length > 0 ? (
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-600 mb-4">
+                          {t('calculator.kundli.navamsaIntro', 'Your Navamsa (D-9) planetary positions. This chart is crucial for analyzing marriage and spiritual growth.')}
                         </p>
-                        <Button asChild className="bg-amber-600 hover:bg-amber-700">
-                          <Link href="/consultation">{t('calculator.kundli.getNavamsaAnalysis', 'Get Navamsa Analysis')}</Link>
-                        </Button>
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr className="bg-amber-50">
+                                <th className="border border-amber-200 px-4 py-2 text-left font-semibold text-amber-800">{t('calculator.planet', 'Planet')}</th>
+                                <th className="border border-amber-200 px-4 py-2 text-left font-semibold text-amber-800">{t('calculator.kundli.navamsaSign', 'Navamsa Sign')}</th>
+                                <th className="border border-amber-200 px-4 py-2 text-left font-semibold text-amber-800">{t('calculator.degree', 'Degree')}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {navamsaData.planets.map((planet, index) => (
+                                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                  <td className="border border-gray-200 px-4 py-2 font-medium text-gray-900">{planet.name}</td>
+                                  <td className="border border-gray-200 px-4 py-2 text-gray-700">{planet.sign}</td>
+                                  <td className="border border-gray-200 px-4 py-2 text-gray-600">{typeof planet.degree === 'number' ? `${planet.degree.toFixed(2)}°` : planet.degree}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                          <h5 className="font-semibold text-blue-800 mb-2">{t('calculator.kundli.navamsaNote', 'Interpretation Note')}</h5>
+                          <p className="text-sm text-blue-700">
+                            {t('calculator.kundli.navamsaNoteDesc', 'The Navamsa chart shows the inner strength of planets. A planet in its own sign or exalted in Navamsa gives excellent results. For detailed marriage predictions and spouse characteristics, consult our expert astrologers.')}
+                          </p>
+                          <Button asChild className="mt-3 bg-blue-600 hover:bg-blue-700">
+                            <Link href="/consultation">{t('calculator.kundli.getNavamsaAnalysis', 'Get Detailed Navamsa Analysis')}</Link>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
+                          <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.navamsaLoading', 'Loading Navamsa Data...')}</h4>
+                          <p className="text-sm text-amber-700 mb-4">
+                            {t('calculator.kundli.navamsaLoadingDesc', 'Navamsa calculations are being processed. If this takes too long, please try recalculating your chart.')}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-gray-800 mb-2">{t('calculator.kundli.aboutNavamsa', 'About Navamsa Chart')}</h4>
                       <p className="text-sm text-gray-600">
@@ -725,17 +853,79 @@ export default function KundliCalculatorPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
-                        <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.dashaComingSoon', 'Dasha Predictions Coming Soon')}</h4>
-                        <p className="text-sm text-amber-700 mb-4">
-                          {t('calculator.kundli.dashaComingSoonDesc', 'We are working on adding detailed Vimshottari Dasha predictions with Mahadasha and Antardasha periods. For personalized Dasha analysis, consult our expert astrologers.')}
+                    {dashaData && dashaData.mahadashas && dashaData.mahadashas.length > 0 ? (
+                      <div className="space-y-3">
+                        <p className="text-sm text-gray-600 mb-4">
+                          {t('calculator.kundli.dashaIntro', 'Your Vimshottari Dasha periods based on Moon Nakshatra. Click on a Mahadasha to see Antardasha sub-periods.')}
                         </p>
-                        <Button asChild className="bg-amber-600 hover:bg-amber-700">
-                          <Link href="/consultation">{t('calculator.kundli.getDashaAnalysis', 'Get Dasha Analysis')}</Link>
-                        </Button>
+                        {dashaData.mahadashas.map((mahadasha, index) => (
+                          <div 
+                            key={index} 
+                            className={`border rounded-lg overflow-hidden ${mahadasha.is_current ? 'border-amber-500 bg-amber-50' : 'border-gray-200'}`}
+                          >
+                            <button
+                              onClick={() => setExpandedDasha(expandedDasha === mahadasha.planet ? null : mahadasha.planet)}
+                              className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mahadasha.is_current ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                                  {mahadasha.planet.substring(0, 2)}
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-semibold text-gray-900">
+                                    {mahadasha.planet} {t('calculator.kundli.mahadasha', 'Mahadasha')}
+                                    {mahadasha.is_current && (
+                                      <Badge className="ml-2 bg-amber-500">{t('calculator.kundli.current', 'Current')}</Badge>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {new Date(mahadasha.start_date).toLocaleDateString()} - {new Date(mahadasha.end_date).toLocaleDateString()}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">{mahadasha.duration_years.toFixed(1)} {t('calculator.kundli.years', 'years')}</span>
+                                <svg className={`w-5 h-5 transition-transform ${expandedDasha === mahadasha.planet ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </div>
+                            </button>
+                            {expandedDasha === mahadasha.planet && mahadasha.antardashas && (
+                              <div className="border-t bg-gray-50 p-4">
+                                <h5 className="font-medium text-gray-700 mb-3">{t('calculator.kundli.antardashaPeriods', 'Antardasha Periods')}</h5>
+                                <div className="grid gap-2">
+                                  {mahadasha.antardashas.map((antardasha, aIndex) => (
+                                    <div 
+                                      key={aIndex}
+                                      className={`flex items-center justify-between p-2 rounded ${antardasha.is_current ? 'bg-amber-100 border border-amber-300' : 'bg-white border border-gray-100'}`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-medium text-gray-800">{antardasha.planet}</span>
+                                        {antardasha.is_current && (
+                                          <Badge variant="outline" className="text-xs border-amber-500 text-amber-700">{t('calculator.kundli.active', 'Active')}</Badge>
+                                        )}
+                                      </div>
+                                      <div className="text-sm text-gray-500">
+                                        {new Date(antardasha.start_date).toLocaleDateString()} - {new Date(antardasha.end_date).toLocaleDateString()}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
+                          <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.dashaLoading', 'Loading Dasha Data...')}</h4>
+                          <p className="text-sm text-amber-700 mb-4">
+                            {t('calculator.kundli.dashaLoadingDesc', 'Dasha calculations are being processed. If this takes too long, please try recalculating your chart.')}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-gray-800 mb-2">{t('calculator.kundli.aboutDasha', 'About Vimshottari Dasha')}</h4>
                       <p className="text-sm text-gray-600">

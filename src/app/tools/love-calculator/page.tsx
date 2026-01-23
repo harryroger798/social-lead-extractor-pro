@@ -249,7 +249,7 @@ export default function LoveCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600"
+                className="w-full bg-pink-600 hover:bg-pink-700"
                 disabled={!person1Date || !person2Date || isCalculating}
               >
                 {isCalculating ? (
@@ -268,7 +268,7 @@ export default function LoveCalculatorPage() {
           </Card>
 
           {result && message ? (
-            <Card className="border-pink-200 bg-gradient-to-br from-pink-50 to-red-50">
+            <Card className="border-pink-200 bg-pink-50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-center justify-center">
                   <Heart className="w-6 h-6 text-pink-600" />

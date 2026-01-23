@@ -207,7 +207,7 @@ export default function YogaCalculatorPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700"
                   disabled={isCalculating}
                 >
                   {isCalculating ? (

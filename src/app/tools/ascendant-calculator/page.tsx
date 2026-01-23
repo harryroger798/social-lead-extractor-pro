@@ -285,7 +285,7 @@ export default function AscendantCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+                className="w-full bg-indigo-600 hover:bg-indigo-700"
                 disabled={!birthDate || !birthTime || isCalculating}
               >
                 {isCalculating ? (
@@ -314,7 +314,7 @@ export default function AscendantCalculatorPage() {
           </Card>
 
           {ascendant && signData ? (
-            <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Card className="border-indigo-200 bg-indigo-50">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
