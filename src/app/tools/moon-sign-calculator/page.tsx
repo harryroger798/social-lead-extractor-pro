@@ -281,7 +281,7 @@ export default function MoonSignCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                className="w-full bg-purple-600 hover:bg-purple-700"
                 disabled={!birthDate || isCalculating}
               >
                 {isCalculating ? (
@@ -300,7 +300,7 @@ export default function MoonSignCalculatorPage() {
           </Card>
 
           {moonSign && signData ? (
-            <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
+            <Card className="border-purple-200 bg-purple-50">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">

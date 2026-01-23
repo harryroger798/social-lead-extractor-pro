@@ -305,7 +305,7 @@ export default function SunSignCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700"
+                className="w-full bg-amber-600 hover:bg-amber-700"
                 disabled={!birthDate || isCalculating}
               >
                 {isCalculating ? (
@@ -336,7 +336,7 @@ export default function SunSignCalculatorPage() {
           </Card>
 
           {sunSign && signData ? (
-            <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50">
+            <Card className="border-orange-200 bg-amber-50">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">

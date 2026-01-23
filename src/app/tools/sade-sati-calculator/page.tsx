@@ -272,7 +272,7 @@ export default function SadeSatiCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={!birthDate || isCalculating}
               >
                 {isCalculating ? (

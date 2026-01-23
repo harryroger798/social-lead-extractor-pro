@@ -262,7 +262,7 @@ export default function NavamsaChartPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700"
                   disabled={isCalculating}
                 >
                   {isCalculating ? (

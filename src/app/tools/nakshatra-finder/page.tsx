@@ -688,7 +688,7 @@ export default function NakshatraFinderPage() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700"
                   disabled={isCalculating}
                 >
                     {isCalculating ? (
@@ -709,7 +709,7 @@ export default function NakshatraFinderPage() {
 
           {nakshatra ? (
             <Card className="border-amber-200">
-              <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50">
+              <CardHeader className="bg-amber-50">
                 <div className="flex items-center justify-between">
                   <div>
                     <Badge className="mb-2 bg-amber-100 text-amber-800">{t('calculator.nakshatraFinder.yourNakshatra', 'Your Nakshatra')}</Badge>
@@ -892,7 +892,7 @@ export default function NakshatraFinderPage() {
           </div>
         )}
 
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8">
+        <div className="mt-12 bg-amber-50 rounded-2xl p-8 border border-amber-100">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             {t('calculator.nakshatraFinder.understandingTitle', 'Understanding Nakshatras')}
           </h2>

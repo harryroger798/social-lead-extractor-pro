@@ -232,7 +232,7 @@ export default function MangalDoshCalculatorPage() {
               
               <Button 
                 onClick={handleCalculate}
-                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
+                className="w-full bg-red-600 hover:bg-red-700"
                 disabled={!birthDate || isCalculating}
               >
                 {isCalculating ? (

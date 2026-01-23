@@ -186,7 +186,7 @@ export default function MuhurtaCalculatorPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="w-full bg-green-600 hover:bg-green-700"
                   disabled={isCalculating}
                 >
                   {isCalculating ? (
