@@ -443,7 +443,7 @@ export default function KundliCalculatorPage() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
                   disabled={isCalculating}
                 >
                   {isCalculating ? (
@@ -526,7 +526,7 @@ export default function KundliCalculatorPage() {
                   </div>
                   
                   {/* Dual Zodiac Display - Both Sidereal (Vedic) and Tropical (Western) */}
-                  <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+                  <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                     <div className="text-center mb-3">
                       <h4 className="font-semibold text-gray-800">{t('calculator.dualZodiac.title', 'Your Zodiac Signs')}</h4>
                       <p className="text-xs text-gray-500">{t('calculator.dualZodiac.subtitle', 'Both Vedic (Sidereal) and Western (Tropical) systems')}</p>
@@ -597,9 +597,11 @@ export default function KundliCalculatorPage() {
         {chartData && (
           <div className="mt-8">
             <Tabs defaultValue="planets" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="planets">{t('calculator.kundli.planetaryPositions', 'Planetary Positions')}</TabsTrigger>
                 <TabsTrigger value="houses">{t('calculator.kundli.houseAnalysis', 'House Analysis')}</TabsTrigger>
+                <TabsTrigger value="navamsa">{t('calculator.kundli.navamsaChart', 'Navamsa (D-9)')}</TabsTrigger>
+                <TabsTrigger value="dasha">{t('calculator.kundli.vimshottariDasha', 'Vimshottari Dasha')}</TabsTrigger>
                 <TabsTrigger value="doshas">{t('calculator.kundli.doshaCheck', 'Dosha Check')}</TabsTrigger>
               </TabsList>
               
@@ -684,6 +686,66 @@ export default function KundliCalculatorPage() {
                 </Card>
               </TabsContent>
               
+              <TabsContent value="navamsa" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('calculator.kundli.navamsaChartTitle', 'Navamsa Chart (D-9)')}</CardTitle>
+                    <CardDescription>
+                      {t('calculator.kundli.navamsaChartDesc', 'The Navamsa chart reveals marriage, spiritual growth, and the deeper aspects of your destiny')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
+                        <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.navamsaComingSoon', 'Navamsa Chart Coming Soon')}</h4>
+                        <p className="text-sm text-amber-700 mb-4">
+                          {t('calculator.kundli.navamsaComingSoonDesc', 'We are working on adding the Navamsa (D-9) divisional chart. For now, you can get detailed Navamsa analysis from our expert astrologers.')}
+                        </p>
+                        <Button asChild className="bg-amber-600 hover:bg-amber-700">
+                          <Link href="/consultation">{t('calculator.kundli.getNavamsaAnalysis', 'Get Navamsa Analysis')}</Link>
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-semibold text-gray-800 mb-2">{t('calculator.kundli.aboutNavamsa', 'About Navamsa Chart')}</h4>
+                      <p className="text-sm text-gray-600">
+                        {t('calculator.kundli.aboutNavamsaDesc', 'The Navamsa chart (D-9) is the most important divisional chart in Vedic astrology. It is used to analyze marriage compatibility, spouse characteristics, spiritual inclinations, and the strength of planets. A planet well-placed in Navamsa gives better results even if weak in the birth chart.')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="dasha" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('calculator.kundli.vimshottariDashaTitle', 'Vimshottari Dasha')}</CardTitle>
+                    <CardDescription>
+                      {t('calculator.kundli.vimshottariDashaDesc', 'The 120-year planetary period system that predicts life events and timing')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-md mx-auto">
+                        <h4 className="font-semibold text-amber-800 mb-2">{t('calculator.kundli.dashaComingSoon', 'Dasha Predictions Coming Soon')}</h4>
+                        <p className="text-sm text-amber-700 mb-4">
+                          {t('calculator.kundli.dashaComingSoonDesc', 'We are working on adding detailed Vimshottari Dasha predictions with Mahadasha and Antardasha periods. For personalized Dasha analysis, consult our expert astrologers.')}
+                        </p>
+                        <Button asChild className="bg-amber-600 hover:bg-amber-700">
+                          <Link href="/consultation">{t('calculator.kundli.getDashaAnalysis', 'Get Dasha Analysis')}</Link>
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-semibold text-gray-800 mb-2">{t('calculator.kundli.aboutDasha', 'About Vimshottari Dasha')}</h4>
+                      <p className="text-sm text-gray-600">
+                        {t('calculator.kundli.aboutDashaDesc', 'Vimshottari Dasha is a 120-year planetary period system based on the Moon\'s Nakshatra at birth. Each planet rules a specific period (Mahadasha) during which its effects are most prominent. Sub-periods (Antardasha) further refine predictions for timing of events like career changes, marriage, health issues, and financial gains.')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
               <TabsContent value="doshas" className="mt-4">
                 <Card>
                   <CardHeader>
@@ -741,7 +803,7 @@ export default function KundliCalculatorPage() {
           </div>
         )}
 
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8">
+        <div className="mt-12 bg-amber-50 rounded-2xl p-8 border border-amber-100">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             {t('calculator.kundli.aboutTitle', 'About Our Kundli Calculator')}
           </h2>
