@@ -8,6 +8,7 @@ import { homepageRedesignTranslations, deepMergeHomepage } from "./homepageRedes
 import { astrologersTranslations, deepMergeAstrologers } from "./astrologersTranslations";
 import { commentTranslations, deepMergeComments } from "./commentTranslations";
 import { indexPagesTranslations, deepMergeIndexPages } from "./indexPagesTranslations";
+import { poojaTranslations, deepMergePoojaTranslations } from "./poojaTranslations";
 
 type TranslateFunction = (key: string, fallback?: string) => string;
 
@@ -101,9 +102,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           withAstrologers,
           commentTranslations[lang] || {}
         );
-        merged[lang] = deepMergeIndexPages(
+        const withIndexPages = deepMergeIndexPages(
           withComments,
           indexPagesTranslations[lang] || {}
+        );
+        merged[lang] = deepMergePoojaTranslations(
+          withIndexPages,
+          poojaTranslations[lang] || {}
         );
       }
       return merged;
