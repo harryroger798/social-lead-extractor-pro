@@ -1,6 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Language routes - site uses client-side i18n, not route-based
+      { source: '/en', destination: '/', permanent: true },
+      { source: '/hi', destination: '/', permanent: true },
+      { source: '/ta', destination: '/', permanent: true },
+      { source: '/te', destination: '/', permanent: true },
+      { source: '/bn', destination: '/', permanent: true },
+      { source: '/mr', destination: '/', permanent: true },
+      { source: '/gu', destination: '/', permanent: true },
+      { source: '/kn', destination: '/', permanent: true },
+      { source: '/ml', destination: '/', permanent: true },
+      { source: '/pa', destination: '/', permanent: true },
+      // Horoscope yearly index - redirect to horoscope hub
+      { source: '/horoscope/yearly', destination: '/horoscope', permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {
