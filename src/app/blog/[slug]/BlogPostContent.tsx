@@ -309,6 +309,37 @@ export default function BlogPostContent({ post, language = 'en' }: BlogPostConte
               border-top: 1px solid #e5e7eb;
               margin: 2rem 0;
             }
+            /* Responsive Images - Fix for mobile/tablet */
+            .blog-content img {
+              max-width: 100%;
+              height: auto;
+              display: block;
+              margin: 1.5rem auto;
+              border-radius: 0.5rem;
+            }
+            .blog-content figure {
+              max-width: 100%;
+              margin: 1.5rem 0;
+            }
+            .blog-content figure img {
+              margin: 0 auto 0.5rem auto;
+            }
+            .blog-content figcaption {
+              text-align: center;
+              font-size: 0.875rem;
+              color: #6b7280;
+              font-style: italic;
+            }
+            /* Video embeds responsive */
+            .blog-content iframe,
+            .blog-content video {
+              max-width: 100%;
+              height: auto;
+              aspect-ratio: 16/9;
+              margin: 1.5rem auto;
+              display: block;
+              border-radius: 0.5rem;
+            }
             /* Table of Contents - Collapsible Styles */
             .blog-content nav,
             .blog-content nav.table-of-contents {
