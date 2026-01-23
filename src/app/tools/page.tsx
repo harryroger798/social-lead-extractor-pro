@@ -720,6 +720,216 @@ export default function ToolsPage() {
           })}
         </div>
       </div>
+
+      {/* Service Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Free Vedic Astrology Tools",
+            description: "Comprehensive collection of free Vedic astrology calculators and tools",
+            url: "https://vedicstarastro.com/tools",
+            numberOfItems: 14,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Kundli Calculator",
+                  url: "https://vedicstarastro.com/tools/kundli-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Nakshatra Finder",
+                  url: "https://vedicstarastro.com/tools/nakshatra-finder",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Horoscope Matching",
+                  url: "https://vedicstarastro.com/tools/horoscope-matching",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Moon Sign Calculator",
+                  url: "https://vedicstarastro.com/tools/moon-sign-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 5,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Sun Sign Calculator",
+                  url: "https://vedicstarastro.com/tools/sun-sign-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 6,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Ascendant Calculator",
+                  url: "https://vedicstarastro.com/tools/ascendant-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 7,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Love Compatibility Calculator",
+                  url: "https://vedicstarastro.com/tools/love-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 8,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Dasha Calculator",
+                  url: "https://vedicstarastro.com/tools/dasha-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 9,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Navamsa Chart Generator",
+                  url: "https://vedicstarastro.com/tools/navamsa-chart",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 10,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Yoga Calculator",
+                  url: "https://vedicstarastro.com/tools/yoga-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 11,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Muhurta Calculator",
+                  url: "https://vedicstarastro.com/tools/muhurta-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 12,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Transit Calculator",
+                  url: "https://vedicstarastro.com/tools/transit-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 13,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Mangal Dosh Calculator",
+                  url: "https://vedicstarastro.com/tools/mangal-dosh-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 14,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Sade Sati Calculator",
+                  url: "https://vedicstarastro.com/tools/sade-sati-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* BreadcrumbList Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://vedicstarastro.com",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Free Astrology Tools",
+                item: "https://vedicstarastro.com/tools",
+              },
+            ],
+          }),
+        }}
+      />
     </div>
   );
 }
