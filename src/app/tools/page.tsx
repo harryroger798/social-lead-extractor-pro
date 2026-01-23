@@ -19,6 +19,11 @@ import {
   Calendar,
   Target,
   Gem,
+  Hash,
+  Grid3X3,
+  Circle,
+  Crown,
+  Type,
 } from "lucide-react";
 
 const toolsTranslations = {
@@ -83,6 +88,26 @@ const toolsTranslations = {
         title: "Sade Sati Calculator",
         description: "Check your Sade Sati status and phase",
       },
+      numerologyCalculator: {
+        title: "Numerology Calculator",
+        description: "Calculate your Life Path and Destiny Numbers",
+      },
+      yantraRecommendations: {
+        title: "Yantra Recommendations",
+        description: "Find the right sacred Yantras for spiritual growth",
+      },
+      rudrakshaRecommendations: {
+        title: "Rudraksha Recommendations",
+        description: "Discover the ideal Rudraksha beads for you",
+      },
+      ishtaDevataCalculator: {
+        title: "Ishta Devata Calculator",
+        description: "Find your personal deity based on birth chart",
+      },
+      naamRashiCalculator: {
+        title: "Naam Rashi Calculator",
+        description: "Find your zodiac sign based on your name",
+      },
     },
   },
   hi: {
@@ -145,6 +170,26 @@ const toolsTranslations = {
       sadeSatiCalculator: {
         title: "साढ़े साती कैलकुलेटर",
         description: "अपनी साढ़े साती स्थिति और चरण जांचें",
+      },
+      numerologyCalculator: {
+        title: "अंक ज्योतिष कैलकुलेटर",
+        description: "अपना जीवन पथ और भाग्य अंक जानें",
+      },
+      yantraRecommendations: {
+        title: "यंत्र सिफारिशें",
+        description: "आध्यात्मिक विकास के लिए सही यंत्र खोजें",
+      },
+      rudrakshaRecommendations: {
+        title: "रुद्राक्ष सिफारिशें",
+        description: "आपके लिए आदर्श रुद्राक्ष मोती खोजें",
+      },
+      ishtaDevataCalculator: {
+        title: "इष्ट देवता कैलकुलेटर",
+        description: "जन्म कुंडली के आधार पर अपने व्यक्तिगत देवता खोजें",
+      },
+      naamRashiCalculator: {
+        title: "नाम राशि कैलकुलेटर",
+        description: "अपने नाम के आधार पर अपनी राशि जानें",
       },
     },
   },
@@ -209,6 +254,26 @@ const toolsTranslations = {
         title: "சாடே சாதி கால்குலேட்டர்",
         description: "உங்கள் சாடே சாதி நிலை மற்றும் கட்டத்தை சரிபார்க்கவும்",
       },
+      numerologyCalculator: {
+        title: "எண் ஜோதிட கால்குலேட்டர்",
+        description: "உங்கள் வாழ்க்கை பாதை மற்றும் விதி எண்களைக் கணக்கிடுங்கள்",
+      },
+      yantraRecommendations: {
+        title: "யந்திர பரிந்துரைகள்",
+        description: "ஆன்மீக வளர்ச்சிக்கு சரியான யந்திரங்களைக் கண்டறியுங்கள்",
+      },
+      rudrakshaRecommendations: {
+        title: "ருத்ராக்ஷ பரிந்துரைகள்",
+        description: "உங்களுக்கான சிறந்த ருத்ராக்ஷ மணிகளைக் கண்டறியுங்கள்",
+      },
+      ishtaDevataCalculator: {
+        title: "இஷ்ட தேவதா கால்குலேட்டர்",
+        description: "ஜாதகத்தின் அடிப்படையில் உங்கள் தனிப்பட்ட தெய்வத்தைக் கண்டறியுங்கள்",
+      },
+      naamRashiCalculator: {
+        title: "நாம ராசி கால்குலேட்டர்",
+        description: "உங்கள் பெயரின் அடிப்படையில் உங்கள் ராசியைக் கண்டறியுங்கள்",
+      },
     },
   },
   te: {
@@ -271,6 +336,26 @@ const toolsTranslations = {
       sadeSatiCalculator: {
         title: "సాడే సాతి కాల్క్యులేటర్",
         description: "మీ సాడే సాతి స్థితి మరియు దశను తనిఖీ చేయండి",
+      },
+      numerologyCalculator: {
+        title: "న్యూమరాలజీ కాల్క్యులేటర్",
+        description: "మీ జీవిత మార్గం మరియు విధి సంఖ్యలను లెక్కించండి",
+      },
+      yantraRecommendations: {
+        title: "యంత్ర సిఫార్సులు",
+        description: "ఆధ్యాత్మిక వృద్ధికి సరైన యంత్రాలను కనుగొనండి",
+      },
+      rudrakshaRecommendations: {
+        title: "రుద్రాక్ష సిఫార్సులు",
+        description: "మీకు అనువైన రుద్రాక్ష పూసలను కనుగొనండి",
+      },
+      ishtaDevataCalculator: {
+        title: "ఇష్ట దేవత కాల్క్యులేటర్",
+        description: "జన్మ కుండలి ఆధారంగా మీ వ్యక్తిగత దేవతను కనుగొనండి",
+      },
+      naamRashiCalculator: {
+        title: "నామ రాశి కాల్క్యులేటర్",
+        description: "మీ పేరు ఆధారంగా మీ రాశిని కనుగొనండి",
       },
     },
   },
@@ -335,6 +420,26 @@ const toolsTranslations = {
         title: "সাড়ে সাতি ক্যালকুলেটর",
         description: "আপনার সাড়ে সাতি অবস্থা এবং পর্যায় পরীক্ষা করুন",
       },
+      numerologyCalculator: {
+        title: "সংখ্যাতত্ত্ব ক্যালকুলেটর",
+        description: "আপনার জীবন পথ এবং ভাগ্য সংখ্যা গণনা করুন",
+      },
+      yantraRecommendations: {
+        title: "যন্ত্র সুপারিশ",
+        description: "আধ্যাত্মিক বৃদ্ধির জন্য সঠিক যন্ত্র খুঁজুন",
+      },
+      rudrakshaRecommendations: {
+        title: "রুদ্রাক্ষ সুপারিশ",
+        description: "আপনার জন্য আদর্শ রুদ্রাক্ষ মালা খুঁজুন",
+      },
+      ishtaDevataCalculator: {
+        title: "ইষ্ট দেবতা ক্যালকুলেটর",
+        description: "জন্ম কুণ্ডলীর উপর ভিত্তি করে আপনার ব্যক্তিগত দেবতা খুঁজুন",
+      },
+      naamRashiCalculator: {
+        title: "নাম রাশি ক্যালকুলেটর",
+        description: "আপনার নামের উপর ভিত্তি করে আপনার রাশি খুঁজুন",
+      },
     },
   },
   mr: {
@@ -397,6 +502,26 @@ const toolsTranslations = {
       sadeSatiCalculator: {
         title: "साडेसाती कॅल्क्युलेटर",
         description: "तुमची साडेसाती स्थिती आणि टप्पा तपासा",
+      },
+      numerologyCalculator: {
+        title: "अंकशास्त्र कॅल्क्युलेटर",
+        description: "तुमचा जीवन मार्ग आणि भाग्य अंक मोजा",
+      },
+      yantraRecommendations: {
+        title: "यंत्र शिफारसी",
+        description: "आध्यात्मिक वाढीसाठी योग्य यंत्रे शोधा",
+      },
+      rudrakshaRecommendations: {
+        title: "रुद्राक्ष शिफारसी",
+        description: "तुमच्यासाठी आदर्श रुद्राक्ष माळा शोधा",
+      },
+      ishtaDevataCalculator: {
+        title: "इष्ट देवता कॅल्क्युलेटर",
+        description: "जन्म कुंडलीवर आधारित तुमचे वैयक्तिक देवता शोधा",
+      },
+      naamRashiCalculator: {
+        title: "नाम राशी कॅल्क्युलेटर",
+        description: "तुमच्या नावावर आधारित तुमची राशी शोधा",
       },
     },
   },
@@ -461,6 +586,26 @@ const toolsTranslations = {
         title: "સાડા સાતી કેલ્ક્યુલેટર",
         description: "તમારી સાડા સાતી સ્થિતિ અને તબક્કો તપાસો",
       },
+      numerologyCalculator: {
+        title: "અંકશાસ્ત્ર કેલ્ક્યુલેટર",
+        description: "તમારો જીવન માર્ગ અને ભાગ્ય અંક ગણો",
+      },
+      yantraRecommendations: {
+        title: "યંત્ર ભલામણો",
+        description: "આધ્યાત્મિક વિકાસ માટે યોગ્ય યંત્રો શોધો",
+      },
+      rudrakshaRecommendations: {
+        title: "રુદ્રાક્ષ ભલામણો",
+        description: "તમારા માટે આદર્શ રુદ્રાક્ષ માળા શોધો",
+      },
+      ishtaDevataCalculator: {
+        title: "ઇષ્ટ દેવતા કેલ્ક્યુલેટર",
+        description: "જન્મ કુંડળી પર આધારિત તમારા વ્યક્તિગત દેવતા શોધો",
+      },
+      naamRashiCalculator: {
+        title: "નામ રાશિ કેલ્ક્યુલેટર",
+        description: "તમારા નામ પર આધારિત તમારી રાશિ શોધો",
+      },
     },
   },
   kn: {
@@ -523,6 +668,26 @@ const toolsTranslations = {
       sadeSatiCalculator: {
         title: "ಸಾಡೆ ಸಾತಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
         description: "ನಿಮ್ಮ ಸಾಡೆ ಸಾತಿ ಸ್ಥಿತಿ ಮತ್ತು ಹಂತವನ್ನು ಪರಿಶೀಲಿಸಿ",
+      },
+      numerologyCalculator: {
+        title: "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+        description: "ನಿಮ್ಮ ಜೀವನ ಮಾರ್ಗ ಮತ್ತು ಭಾಗ್ಯ ಸಂಖ್ಯೆಗಳನ್ನು ಲೆಕ್ಕಹಾಕಿ",
+      },
+      yantraRecommendations: {
+        title: "ಯಂತ್ರ ಶಿಫಾರಸುಗಳು",
+        description: "ಆಧ್ಯಾತ್ಮಿಕ ಬೆಳವಣಿಗೆಗೆ ಸರಿಯಾದ ಯಂತ್ರಗಳನ್ನು ಹುಡುಕಿ",
+      },
+      rudrakshaRecommendations: {
+        title: "ರುದ್ರಾಕ್ಷ ಶಿಫಾರಸುಗಳು",
+        description: "ನಿಮಗೆ ಸೂಕ್ತವಾದ ರುದ್ರಾಕ್ಷ ಮಣಿಗಳನ್ನು ಹುಡುಕಿ",
+      },
+      ishtaDevataCalculator: {
+        title: "ಇಷ್ಟ ದೇವತಾ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+        description: "ಜನ್ಮ ಕುಂಡಲಿ ಆಧಾರದ ಮೇಲೆ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ದೇವತೆಯನ್ನು ಹುಡುಕಿ",
+      },
+      naamRashiCalculator: {
+        title: "ನಾಮ ರಾಶಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+        description: "ನಿಮ್ಮ ಹೆಸರಿನ ಆಧಾರದ ಮೇಲೆ ನಿಮ್ಮ ರಾಶಿಯನ್ನು ಹುಡುಕಿ",
       },
     },
   },
@@ -587,6 +752,26 @@ const toolsTranslations = {
         title: "സാഡെ സാതി കാല്‍ക്കുലേറ്റര്‍",
         description: "നിങ്ങളുടെ സാഡെ സാതി നില ഘട്ടം പരിശോധിക്കുക",
       },
+      numerologyCalculator: {
+        title: "സംഖ്യാശാസ്ത്ര കാല്‍ക്കുലേറ്റര്‍",
+        description: "നിങ്ങളുടെ ജീവിത പാതയും വിധി സംഖ്യകളും കണക്കാക്കുക",
+      },
+      yantraRecommendations: {
+        title: "യന്ത്ര ശുപാര്‍ശകള്‍",
+        description: "ആത്മീയ വളര്‍ച്ചയ്ക്ക് ശരിയായ യന്ത്രങ്ങള്‍ കണ്ടെത്തുക",
+      },
+      rudrakshaRecommendations: {
+        title: "രുദ്രാക്ഷ ശുപാര്‍ശകള്‍",
+        description: "നിങ്ങള്‍ക്ക് അനുയോജ്യമായ രുദ്രാക്ഷ മണികള്‍ കണ്ടെത്തുക",
+      },
+      ishtaDevataCalculator: {
+        title: "ഇഷ്ട ദേവത കാല്‍ക്കുലേറ്റര്‍",
+        description: "ജനന കുണ്ഡലിയുടെ അടിസ്ഥാനത്തില്‍ നിങ്ങളുടെ വ്യക്തിഗത ദേവതയെ കണ്ടെത്തുക",
+      },
+      naamRashiCalculator: {
+        title: "നാമ രാശി കാല്‍ക്കുലേറ്റര്‍",
+        description: "നിങ്ങളുടെ പേരിന്റെ അടിസ്ഥാനത്തില്‍ നിങ്ങളുടെ രാശി കണ്ടെത്തുക",
+      },
     },
   },
   pa: {
@@ -650,6 +835,26 @@ const toolsTranslations = {
         title: "ਸਾੜ੍ਹੇ ਸਾਤੀ ਕੈਲਕੁਲੇਟਰ",
         description: "ਆਪਣੀ ਸਾੜ੍ਹੇ ਸਾਤੀ ਸਥਿਤੀ ਅਤੇ ਪੜਾਅ ਜਾਂਚੋ",
       },
+      numerologyCalculator: {
+        title: "ਅੰਕ ਵਿਗਿਆਨ ਕੈਲਕੁਲੇਟਰ",
+        description: "ਆਪਣਾ ਜੀਵਨ ਮਾਰਗ ਅਤੇ ਕਿਸਮਤ ਅੰਕ ਗਿਣੋ",
+      },
+      yantraRecommendations: {
+        title: "ਯੰਤਰ ਸਿਫਾਰਸ਼ਾਂ",
+        description: "ਅਧਿਆਤਮਿਕ ਵਿਕਾਸ ਲਈ ਸਹੀ ਯੰਤਰ ਲੱਭੋ",
+      },
+      rudrakshaRecommendations: {
+        title: "ਰੁਦਰਾਕਸ਼ ਸਿਫਾਰਸ਼ਾਂ",
+        description: "ਤੁਹਾਡੇ ਲਈ ਆਦਰਸ਼ ਰੁਦਰਾਕਸ਼ ਮਣਕੇ ਲੱਭੋ",
+      },
+      ishtaDevataCalculator: {
+        title: "ਇਸ਼ਟ ਦੇਵਤਾ ਕੈਲਕੁਲੇਟਰ",
+        description: "ਜਨਮ ਕੁੰਡਲੀ ਦੇ ਆਧਾਰ 'ਤੇ ਆਪਣੇ ਨਿੱਜੀ ਦੇਵਤਾ ਲੱਭੋ",
+      },
+      naamRashiCalculator: {
+        title: "ਨਾਮ ਰਾਸ਼ੀ ਕੈਲਕੁਲੇਟਰ",
+        description: "ਆਪਣੇ ਨਾਮ ਦੇ ਆਧਾਰ 'ਤੇ ਆਪਣੀ ਰਾਸ਼ੀ ਲੱਭੋ",
+      },
     },
   },
 };
@@ -669,6 +874,11 @@ const tools = [
   { key: "transitCalculator", href: "/tools/transit-calculator", icon: TrendingUp, color: "from-violet-500 to-purple-600" },
   { key: "mangalDoshCalculator", href: "/tools/mangal-dosh-calculator", icon: Zap, color: "from-rose-500 to-red-600" },
   { key: "sadeSatiCalculator", href: "/tools/sade-sati-calculator", icon: Gem, color: "from-slate-500 to-gray-600" },
+  { key: "numerologyCalculator", href: "/tools/numerology-calculator", icon: Hash, color: "from-fuchsia-500 to-pink-600" },
+  { key: "yantraRecommendations", href: "/tools/yantra-recommendations", icon: Grid3X3, color: "from-amber-600 to-yellow-500" },
+  { key: "rudrakshaRecommendations", href: "/tools/rudraksha-recommendations", icon: Circle, color: "from-orange-700 to-amber-600" },
+  { key: "ishtaDevataCalculator", href: "/tools/ishta-devata-calculator", icon: Crown, color: "from-yellow-500 to-amber-600" },
+  { key: "naamRashiCalculator", href: "/tools/naam-rashi-calculator", icon: Type, color: "from-sky-500 to-blue-600" },
 ];
 
 type Language = keyof typeof toolsTranslations;
@@ -731,7 +941,7 @@ export default function ToolsPage() {
             name: "Free Vedic Astrology Tools",
             description: "Comprehensive collection of free Vedic astrology calculators and tools",
             url: "https://vedicstarastro.com/tools",
-            numberOfItems: 14,
+            numberOfItems: 19,
             itemListElement: [
               {
                 "@type": "ListItem",
@@ -896,6 +1106,66 @@ export default function ToolsPage() {
                   "@type": "SoftwareApplication",
                   name: "Sade Sati Calculator",
                   url: "https://vedicstarastro.com/tools/sade-sati-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 15,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Numerology Calculator",
+                  url: "https://vedicstarastro.com/tools/numerology-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 16,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Yantra Recommendations",
+                  url: "https://vedicstarastro.com/tools/yantra-recommendations",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 17,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Rudraksha Recommendations",
+                  url: "https://vedicstarastro.com/tools/rudraksha-recommendations",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 18,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Ishta Devata Calculator",
+                  url: "https://vedicstarastro.com/tools/ishta-devata-calculator",
+                  applicationCategory: "LifestyleApplication",
+                  operatingSystem: "Web",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 19,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: "Naam Rashi Calculator",
+                  url: "https://vedicstarastro.com/tools/naam-rashi-calculator",
                   applicationCategory: "LifestyleApplication",
                   operatingSystem: "Web",
                   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
