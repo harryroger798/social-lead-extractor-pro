@@ -241,6 +241,113 @@ def parse_time(time_str: str) -> float:
     second = int(parts[2]) if len(parts) > 2 else 0
     return hour + minute / 60.0 + second / 3600.0
 
+def get_timezone_offset(longitude: float) -> float:
+    """
+    Get the standard timezone offset for a given longitude.
+    For India (longitude ~68-97°E), this returns IST offset of +5:30 (5.5 hours).
+    For other regions, returns the standard timezone offset.
+    
+    Swiss Ephemeris requires Universal Time (UT), so we need to convert
+    local time to UT by subtracting the timezone offset.
+    """
+    # India Standard Time (IST) covers all of India: UTC+5:30
+    # India spans roughly 68°E to 97°E longitude
+    if 68 <= longitude <= 97:
+        return 5.5  # IST = UTC + 5:30
+    
+    # Nepal: UTC+5:45
+    if 80 <= longitude <= 88 and longitude > 84:
+        return 5.75
+    
+    # For other locations, use standard timezone based on longitude
+    # Each 15 degrees of longitude = 1 hour offset from UTC
+    # This is an approximation; for precise results, a timezone database would be needed
+    
+    # Common timezone offsets for major regions:
+    # Pakistan (60-77°E): UTC+5
+    if 60 <= longitude < 68:
+        return 5.0
+    
+    # Bangladesh (88-92°E): UTC+6
+    if 88 <= longitude <= 92:
+        return 6.0
+    
+    # Sri Lanka (79-82°E): UTC+5:30
+    if 79 <= longitude <= 82:
+        return 5.5
+    
+    # Myanmar (92-101°E): UTC+6:30
+    if 92 < longitude <= 101:
+        return 6.5
+    
+    # Thailand, Vietnam, Indonesia (95-141°E): UTC+7
+    if 95 <= longitude <= 110:
+        return 7.0
+    
+    # China, Singapore, Malaysia, Philippines (100-125°E): UTC+8
+    if 100 <= longitude <= 125:
+        return 8.0
+    
+    # Japan, Korea (125-145°E): UTC+9
+    if 125 < longitude <= 145:
+        return 9.0
+    
+    # Australia East (140-155°E): UTC+10
+    if 140 < longitude <= 155:
+        return 10.0
+    
+    # Middle East - UAE, Oman (51-60°E): UTC+4
+    if 51 <= longitude < 60:
+        return 4.0
+    
+    # Saudi Arabia, Iraq (36-51°E): UTC+3
+    if 36 <= longitude < 51:
+        return 3.0
+    
+    # Europe (0-30°E): UTC+1 to UTC+2
+    if 0 <= longitude <= 15:
+        return 1.0
+    if 15 < longitude <= 30:
+        return 2.0
+    
+    # UK, Portugal, West Africa (-10 to 0°): UTC+0
+    if -10 <= longitude < 0:
+        return 0.0
+    
+    # US East Coast (-85 to -65°): UTC-5
+    if -85 <= longitude < -65:
+        return -5.0
+    
+    # US Central (-105 to -85°): UTC-6
+    if -105 <= longitude < -85:
+        return -6.0
+    
+    # US Mountain (-115 to -105°): UTC-7
+    if -115 <= longitude < -105:
+        return -7.0
+    
+    # US Pacific (-125 to -115°): UTC-8
+    if -125 <= longitude < -115:
+        return -8.0
+    
+    # Default: calculate based on longitude (15° = 1 hour)
+    return round(longitude / 15.0)
+
+def local_time_to_ut(local_hour: float, longitude: float) -> float:
+    """
+    Convert local time to Universal Time (UT).
+    
+    Args:
+        local_hour: Local time in decimal hours (e.g., 9.25 for 9:15 AM)
+        longitude: Geographic longitude in degrees
+    
+    Returns:
+        Universal Time in decimal hours
+    """
+    timezone_offset = get_timezone_offset(longitude)
+    ut_hour = local_hour - timezone_offset
+    return ut_hour
+
 def calculate_birth_chart(
     birth_date: datetime,
     birth_time: str,
@@ -253,8 +360,26 @@ def calculate_birth_chart(
     if longitude is None:
         longitude = 77.5946
     
-    hour = parse_time(birth_time)
-    jd = datetime_to_julian_day(birth_date, hour)
+    # Parse local time and convert to Universal Time (UT)
+    # Swiss Ephemeris requires UT for accurate calculations
+    local_hour = parse_time(birth_time)
+    ut_hour = local_time_to_ut(local_hour, longitude)
+    
+    # Handle day rollover when UT goes negative or exceeds 24
+    date_offset = 0
+    if ut_hour < 0:
+        ut_hour += 24
+        date_offset = -1
+    elif ut_hour >= 24:
+        ut_hour -= 24
+        date_offset = 1
+    
+    # Adjust date if needed
+    adjusted_date = birth_date
+    if date_offset != 0:
+        adjusted_date = birth_date + timedelta(days=date_offset)
+    
+    jd = datetime_to_julian_day(adjusted_date, ut_hour)
     ayanamsa = get_ayanamsa(jd)
     
     house_data = calculate_ascendant(jd, latitude, longitude, ayanamsa)
