@@ -2,10 +2,11 @@ import { MetadataRoute } from 'next'
 
 const BASE_URL = 'https://vedicstarastro.com'
 
-const languages = ['en', 'hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa'] as const
+const zodiacSigns = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'] as const
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString()
+  const currentYear = new Date().getFullYear()
 
   const staticPages = [
     '',
@@ -20,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/terms-of-service',
     '/refund-policy',
     '/disclaimer',
+    '/tools',
     '/tools/kundli-calculator',
     '/tools/nakshatra-finder',
     '/tools/horoscope-matching',
@@ -36,9 +38,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/sade-sati-calculator',
     '/panchang',
     '/daily-horoscope',
+    '/horoscope',
     '/horoscope/weekly',
     '/horoscope/monthly',
-    '/horoscope/2026',
+    `/horoscope/${currentYear}`,
     '/ai-astrologer',
     '/ai-astrologer-pro',
     '/ai-chart-interpretation',
@@ -59,15 +62,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/life-timeline',
     '/planetary-tracker',
     '/blockchain-kundli',
+    '/doshas',
     '/doshas/mangal-dosh',
     '/doshas/kaal-sarp-dosh',
     '/doshas/sade-sati',
     '/doshas/pitra-dosh',
-    '/transits/jupiter-transit-2026',
-    '/transits/saturn-transit-2026',
-    '/transits/mercury-retrograde-2026',
-    '/eclipses-2026',
-    '/festival-calendar-2026',
+    '/transits',
+    `/transits/jupiter-transit-${currentYear}`,
+    `/transits/saturn-transit-${currentYear}`,
+    `/transits/mercury-retrograde-${currentYear}`,
+    `/eclipses-${currentYear}`,
+    `/festival-calendar-${currentYear}`,
     '/vedic-astrology-guide-complete-2025',
     '/kundli-birth-chart-analysis-guide',
     '/27-nakshatras-complete-guide-vedic-astrology',
@@ -77,19 +82,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries: MetadataRoute.Sitemap = []
 
   staticPages.forEach((page) => {
-    const alternates: Record<string, string> = {}
-    languages.forEach((lang) => {
-      alternates[lang] = `${BASE_URL}/${lang}${page}`
-    })
-
     sitemapEntries.push({
       url: `${BASE_URL}${page}`,
       lastModified: currentDate,
       changeFrequency: page === '' ? 'daily' : page.includes('horoscope') || page.includes('panchang') ? 'daily' : 'weekly',
       priority: page === '' ? 1.0 : page.includes('tools') ? 0.9 : page.includes('consultation') ? 0.9 : 0.8,
-      alternates: {
-        languages: alternates,
-      },
+    })
+  })
+
+  zodiacSigns.forEach((sign) => {
+    sitemapEntries.push({
+      url: `${BASE_URL}/horoscope/yearly/${sign}`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
     })
   })
 
