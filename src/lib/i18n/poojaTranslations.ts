@@ -7,6 +7,9 @@ type TranslationObject = Record<string, unknown>;
 
 export const poojaTranslations: Record<Language, TranslationObject> = {
   en: {
+    breadcrumb: {
+      poojaBooking: "Pooja Booking"
+    },
     pooja: {
       badge: "Sacred Rituals",
       title: "Book Pooja & Havan Services",
@@ -144,6 +147,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   hi: {
+    breadcrumb: {
+      poojaBooking: "पूजा बुकिंग"
+    },
     pooja: {
       badge: "पवित्र अनुष्ठान",
       title: "पूजा और हवन सेवाएं बुक करें",
@@ -281,6 +287,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   ta: {
+    breadcrumb: {
+      poojaBooking: "பூஜை முன்பதிவு"
+    },
     pooja: {
       badge: "புனித சடங்குகள்",
       title: "பூஜை மற்றும் ஹவன் சேவைகளை முன்பதிவு செய்யுங்கள்",
@@ -372,6 +381,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   te: {
+    breadcrumb: {
+      poojaBooking: "పూజ బుకింగ్"
+    },
     pooja: {
       badge: "పవిత్ర ఆచారాలు",
       title: "పూజ మరియు హవన్ సేవలను బుక్ చేయండి",
@@ -400,6 +412,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   bn: {
+    breadcrumb: {
+      poojaBooking: "পূজা বুকিং"
+    },
     pooja: {
       badge: "পবিত্র আচার",
       title: "পূজা এবং হবন সেবা বুক করুন",
@@ -428,6 +443,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   mr: {
+    breadcrumb: {
+      poojaBooking: "पूजा बुकिंग"
+    },
     pooja: {
       badge: "पवित्र विधी",
       title: "पूजा आणि हवन सेवा बुक करा",
@@ -456,6 +474,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   gu: {
+    breadcrumb: {
+      poojaBooking: "પૂજા બુકિંગ"
+    },
     pooja: {
       badge: "પવિત્ર વિધિઓ",
       title: "પૂજા અને હવન સેવાઓ બુક કરો",
@@ -482,6 +503,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   kn: {
+    breadcrumb: {
+      poojaBooking: "ಪೂಜೆ ಬುಕಿಂಗ್"
+    },
     pooja: {
       badge: "ಪವಿತ್ರ ಆಚರಣೆಗಳು",
       title: "ಪೂಜೆ ಮತ್ತು ಹವನ ಸೇವೆಗಳನ್ನು ಬುಕ್ ಮಾಡಿ",
@@ -508,6 +532,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   ml: {
+    breadcrumb: {
+      poojaBooking: "പൂജ ബുക്കിംഗ്"
+    },
     pooja: {
       badge: "പവിത്ര ആചാരങ്ങൾ",
       title: "പൂജയും ഹവനവും ബുക്ക് ചെയ്യുക",
@@ -534,6 +561,9 @@ export const poojaTranslations: Record<Language, TranslationObject> = {
     }
   },
   pa: {
+    breadcrumb: {
+      poojaBooking: "ਪੂਜਾ ਬੁਕਿੰਗ"
+    },
     pooja: {
       badge: "ਪਵਿੱਤਰ ਰੀਤੀ-ਰਿਵਾਜ",
       title: "ਪੂਜਾ ਅਤੇ ਹਵਨ ਸੇਵਾਵਾਂ ਬੁੱਕ ਕਰੋ",

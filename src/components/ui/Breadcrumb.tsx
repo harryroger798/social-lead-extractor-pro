@@ -78,6 +78,7 @@ const pathTranslations: Record<string, string> = {
   'terms-of-service': 'breadcrumb.termsOfService',
   'refund-policy': 'breadcrumb.refundPolicy',
   disclaimer: 'breadcrumb.disclaimer',
+  'pooja-booking': 'breadcrumb.poojaBooking',
 };
 
 // Default labels for paths (fallback if translation not found)
@@ -144,6 +145,7 @@ const defaultLabels: Record<string, string> = {
   'terms-of-service': 'Terms of Service',
   'refund-policy': 'Refund Policy',
   disclaimer: 'Disclaimer',
+  'pooja-booking': 'Pooja Booking',
 };
 
 export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
