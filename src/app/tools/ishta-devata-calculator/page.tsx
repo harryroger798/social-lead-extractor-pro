@@ -215,8 +215,61 @@ const nakshatraToDeity: Record<string, string> = {
   Revati: "Lord Vishnu",
 };
 
+// Zodiac signs array for calculations
+const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+                     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+
+// Calculate Navamsa sign from a planet's position
+// Navamsa divides each sign into 9 parts (3.333° each)
+function calculateNavamsaSign(sign: string, degree: number): string {
+  const signIndex = zodiacSigns.indexOf(sign);
+  if (signIndex === -1) return sign;
+  
+  // Determine the starting sign for Navamsa based on element
+  // Fire signs (Aries, Leo, Sagittarius): Start from Aries
+  // Earth signs (Taurus, Virgo, Capricorn): Start from Capricorn
+  // Air signs (Gemini, Libra, Aquarius): Start from Libra
+  // Water signs (Cancer, Scorpio, Pisces): Start from Cancer
+  let startingSignIndex: number;
+  const element = signIndex % 4;
+  switch (element) {
+    case 0: // Fire (Aries=0, Leo=4, Sagittarius=8)
+      startingSignIndex = 0; // Aries
+      break;
+    case 1: // Earth (Taurus=1, Virgo=5, Capricorn=9)
+      startingSignIndex = 9; // Capricorn
+      break;
+    case 2: // Air (Gemini=2, Libra=6, Aquarius=10)
+      startingSignIndex = 6; // Libra
+      break;
+    case 3: // Water (Cancer=3, Scorpio=7, Pisces=11)
+      startingSignIndex = 3; // Cancer
+      break;
+    default:
+      startingSignIndex = 0;
+  }
+  
+  // Calculate which navamsa (1-9) the degree falls in
+  // Each navamsa spans 3.333... degrees (30/9)
+  const navamsaNumber = Math.floor(degree / (30 / 9)); // 0-8
+  
+  // Calculate the final navamsa sign
+  const navamsaSignIndex = (startingSignIndex + navamsaNumber) % 12;
+  return zodiacSigns[navamsaSignIndex];
+}
+
+// Get the 12th house from a given sign
+function get12thHouseSign(sign: string): string {
+  const signIndex = zodiacSigns.indexOf(sign);
+  if (signIndex === -1) return "Pisces";
+  // 12th house is the sign before the given sign
+  const twelfthHouseIndex = (signIndex + 11) % 12;
+  return zodiacSigns[twelfthHouseIndex];
+}
+
 function analyzeChartForIshtaDevata(chartData: ChartData): DeityRecommendation {
   // Find Atmakaraka (planet with highest degree)
+  // This is the planet that has traveled the most degrees in its sign
   let atmakaraka: Planet | null = null;
   let highestDegree = -1;
   
@@ -230,33 +283,44 @@ function analyzeChartForIshtaDevata(chartData: ChartData): DeityRecommendation {
     }
   }
 
-  // Find 9th house lord (Dharma lord)
-  const ascendantSign = chartData.ascendant;
-  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
-                 "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-  const ascIndex = signs.findIndex(s => ascendantSign.includes(s));
-  const ninthHouseSign = signs[(ascIndex + 8) % 12];
-  const ninthLord = signToRuler[ninthHouseSign];
-
-  // Determine Ishta Devata based on multiple factors
-  // Priority: 1. Atmakaraka, 2. 9th house lord, 3. Nakshatra, 4. Moon sign
-
-  // Check Atmakaraka first (highest priority)
-  if (atmakaraka && planetToDeity[atmakaraka.name]) {
-    return {
-      deity: planetToDeity[atmakaraka.name],
-      reason: `Based on your Atmakaraka (soul significator) ${atmakaraka.name} at ${atmakaraka.degree.toFixed(2)}° in ${atmakaraka.sign}`,
-      confidence: "high",
-    };
+  // AstroSage Method: Use 12th house from Karakamsa to determine Ishta Devata
+  // Karakamsa = Atmakaraka's position in Navamsa chart
+  // The lord of the 12th house from Karakamsa determines the Ishta Devata
+  
+  if (atmakaraka) {
+    // Step 1: Calculate Karakamsa (Atmakaraka's Navamsa position)
+    const karakamsa = calculateNavamsaSign(atmakaraka.sign, atmakaraka.degree);
+    
+    // Step 2: Find the 12th house from Karakamsa
+    const twelfthFromKarakamsa = get12thHouseSign(karakamsa);
+    
+    // Step 3: Check if any planet is placed in the 12th from Karakamsa (in Navamsa)
+    // For simplicity, we'll use the lord of that sign as the determining planet
+    const twelfthLord = signToRuler[twelfthFromKarakamsa];
+    
+    // Step 4: Map the planet to the corresponding deity
+    if (twelfthLord && planetToDeity[twelfthLord]) {
+      return {
+        deity: planetToDeity[twelfthLord],
+        reason: `Based on the 12th house from Karakamsa (${karakamsa}). The 12th house is ${twelfthFromKarakamsa}, ruled by ${twelfthLord}. This is the traditional Jaimini method used to determine your personal deity.`,
+        confidence: "high",
+      };
+    }
   }
 
-  // Check 9th house lord
-  if (ninthLord && planetToDeity[ninthLord]) {
-    return {
-      deity: planetToDeity[ninthLord],
-      reason: `Based on your 9th house (Dharma) lord ${ninthLord} ruling ${ninthHouseSign}`,
-      confidence: "high",
-    };
+  // Fallback: Use 9th house lord (Dharma lord)
+  const ascendantSign = chartData.ascendant;
+  const ascIndex = zodiacSigns.findIndex(s => ascendantSign.includes(s));
+  if (ascIndex !== -1) {
+    const ninthHouseSign = zodiacSigns[(ascIndex + 8) % 12];
+    const ninthLord = signToRuler[ninthHouseSign];
+    if (ninthLord && planetToDeity[ninthLord]) {
+      return {
+        deity: planetToDeity[ninthLord],
+        reason: `Based on your 9th house (Dharma) lord ${ninthLord} ruling ${ninthHouseSign}`,
+        confidence: "high",
+      };
+    }
   }
 
   // Check Nakshatra
