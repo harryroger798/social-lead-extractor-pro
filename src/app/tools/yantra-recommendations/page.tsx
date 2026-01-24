@@ -189,16 +189,31 @@ function analyzeChartForYantras(chartData: ChartData): YantraRecommendation[] {
   const recommendations: YantraRecommendation[] = [];
   const addedYantras = new Set<string>();
 
-  // Check for doshas first (highest priority)
-  if (chartData.doshas?.mangal_dosha) {
-    recommendations.push({
-      name: "Mangal Yantra",
-      reason: "Mangal Dosha detected in your chart - helps reduce Mars's malefic effects on marriage and relationships",
-      priority: "high",
-    });
-    addedYantras.add("Mangal Yantra");
+  // PRIORITY 1: Check Moon placement first (highest priority - matches AstroSage logic)
+  // Moon represents the mind and mental well-being, so Moon issues take precedence
+  const moonPlanet = chartData.planets.find(p => p.name === "Moon");
+  if (moonPlanet) {
+    // Check if Moon is in dusthana house (6, 8, 12)
+    if (dusthanaHouses.includes(moonPlanet.house)) {
+      recommendations.push({
+        name: "Chandra Yantra",
+        reason: `Moon is placed in house ${moonPlanet.house} - Moon represents the mind and this placement can cause mental stress, emotional instability, and health issues. Chandra Yantra brings mental peace and emotional balance.`,
+        priority: "high",
+      });
+      addedYantras.add("Chandra Yantra");
+    }
+    // Check if Moon is debilitated (in Scorpio)
+    else if (moonPlanet.sign === "Scorpio") {
+      recommendations.push({
+        name: "Chandra Yantra",
+        reason: "Moon is debilitated in Scorpio - this weakens mental strength and emotional stability. Chandra Yantra strengthens the Moon's positive influence.",
+        priority: "high",
+      });
+      addedYantras.add("Chandra Yantra");
+    }
   }
 
+  // PRIORITY 2: Check for Kaal Sarp Dosha (severe dosha)
   if (chartData.doshas?.kaal_sarp_dosha) {
     recommendations.push({
       name: "Rahu Yantra",
@@ -216,8 +231,19 @@ function analyzeChartForYantras(chartData: ChartData): YantraRecommendation[] {
     }
   }
 
-  // Check for debilitated planets
+  // PRIORITY 3: Check for Mangal Dosha
+  if (chartData.doshas?.mangal_dosha && !addedYantras.has("Mangal Yantra")) {
+    recommendations.push({
+      name: "Mangal Yantra",
+      reason: "Mangal Dosha detected in your chart - helps reduce Mars's malefic effects on marriage and relationships",
+      priority: "high",
+    });
+    addedYantras.add("Mangal Yantra");
+  }
+
+  // PRIORITY 4: Check for debilitated planets (excluding Moon which is already checked)
   for (const planet of chartData.planets) {
+    if (planet.name === "Moon") continue; // Already handled above
     const debilitatedSign = debilitatedSigns[planet.name];
     if (debilitatedSign && planet.sign === debilitatedSign) {
       const yantraName = planetToYantra[planet.name];
@@ -232,8 +258,9 @@ function analyzeChartForYantras(chartData: ChartData): YantraRecommendation[] {
     }
   }
 
-  // Check for planets in dusthana houses (6, 8, 12)
+  // PRIORITY 5: Check for other planets in dusthana houses (6, 8, 12) - excluding Moon
   for (const planet of chartData.planets) {
+    if (planet.name === "Moon") continue; // Already handled above
     if (dusthanaHouses.includes(planet.house)) {
       const yantraName = planetToYantra[planet.name];
       if (yantraName && !addedYantras.has(yantraName)) {
@@ -247,7 +274,7 @@ function analyzeChartForYantras(chartData: ChartData): YantraRecommendation[] {
     }
   }
 
-  // Check for retrograde planets
+  // PRIORITY 6: Check for retrograde planets
   for (const planet of chartData.planets) {
     if (planet.retrograde && !["Rahu", "Ketu"].includes(planet.name)) {
       const yantraName = planetToYantra[planet.name];
