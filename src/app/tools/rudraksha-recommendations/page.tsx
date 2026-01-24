@@ -18,7 +18,33 @@ import {
   ArrowRight,
   Heart,
   Shield,
+  AlertCircle,
 } from "lucide-react";
+
+interface Planet {
+  name: string;
+  sign: string;
+  degree: number;
+  house: number;
+  retrograde: boolean;
+}
+
+interface ChartData {
+  ascendant: string;
+  moon_sign: string;
+  nakshatra: string;
+  planets: Planet[];
+  doshas: {
+    mangal_dosha: boolean;
+    kaal_sarp_dosha: boolean;
+  };
+}
+
+interface RudrakshaRecommendation {
+  mukhi: number;
+  reason: string;
+  priority: "high" | "medium" | "low";
+}
 
 const rudrakshaData: Record<number, {
   name: string;
@@ -178,39 +204,212 @@ const rudrakshaData: Record<number, {
   },
 };
 
+// Planet to Rudraksha Mukhi mapping
+const planetToRudraksha: Record<string, number> = {
+  Sun: 12,      // 12 Mukhi for Sun
+  Moon: 2,      // 2 Mukhi for Moon
+  Mars: 3,      // 3 Mukhi for Mars
+  Mercury: 4,   // 4 Mukhi for Mercury
+  Jupiter: 5,   // 5 Mukhi for Jupiter
+  Venus: 6,     // 6 Mukhi for Venus
+  Saturn: 7,    // 7 Mukhi for Saturn
+  Rahu: 8,      // 8 Mukhi for Rahu
+  Ketu: 9,      // 9 Mukhi for Ketu
+};
+
+// Debilitated signs for each planet
+const debilitatedSigns: Record<string, string> = {
+  Sun: "Libra",
+  Moon: "Scorpio",
+  Mars: "Cancer",
+  Mercury: "Pisces",
+  Jupiter: "Capricorn",
+  Venus: "Virgo",
+  Saturn: "Aries",
+};
+
+// Dusthana houses (6, 8, 12) indicate challenges
+const dusthanaHouses = [6, 8, 12];
+
+function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation[] {
+  const recommendations: RudrakshaRecommendation[] = [];
+  const addedMukhis = new Set<number>();
+
+  // Always recommend 5 Mukhi for general well-being
+  recommendations.push({
+    mukhi: 5,
+    reason: "Universal Rudraksha for overall well-being, peace, and protection - beneficial for everyone",
+    priority: "medium",
+  });
+  addedMukhis.add(5);
+
+  // Check for doshas first (highest priority)
+  if (chartData.doshas?.mangal_dosha) {
+    recommendations.push({
+      mukhi: 3,
+      reason: "Mangal Dosha detected - 3 Mukhi pacifies Mars and reduces its malefic effects on marriage",
+      priority: "high",
+    });
+    addedMukhis.add(3);
+  }
+
+  if (chartData.doshas?.kaal_sarp_dosha) {
+    if (!addedMukhis.has(8)) {
+      recommendations.push({
+        mukhi: 8,
+        reason: "Kaal Sarp Dosha detected - 8 Mukhi removes obstacles caused by Rahu",
+        priority: "high",
+      });
+      addedMukhis.add(8);
+    }
+    if (!addedMukhis.has(9)) {
+      recommendations.push({
+        mukhi: 9,
+        reason: "Kaal Sarp Dosha detected - 9 Mukhi neutralizes Ketu's negative effects",
+        priority: "high",
+      });
+      addedMukhis.add(9);
+    }
+  }
+
+  // Check for debilitated planets
+  for (const planet of chartData.planets) {
+    const debilitatedSign = debilitatedSigns[planet.name];
+    if (debilitatedSign && planet.sign === debilitatedSign) {
+      const mukhi = planetToRudraksha[planet.name];
+      if (mukhi && !addedMukhis.has(mukhi)) {
+        recommendations.push({
+          mukhi,
+          reason: `${planet.name} is debilitated in ${planet.sign} - ${mukhi} Mukhi strengthens this planet`,
+          priority: "high",
+        });
+        addedMukhis.add(mukhi);
+      }
+    }
+  }
+
+  // Check for planets in dusthana houses (6, 8, 12)
+  for (const planet of chartData.planets) {
+    if (dusthanaHouses.includes(planet.house)) {
+      const mukhi = planetToRudraksha[planet.name];
+      if (mukhi && !addedMukhis.has(mukhi)) {
+        recommendations.push({
+          mukhi,
+          reason: `${planet.name} in house ${planet.house} - ${mukhi} Mukhi helps overcome challenges`,
+          priority: "medium",
+        });
+        addedMukhis.add(mukhi);
+      }
+    }
+  }
+
+  // Check for retrograde planets (except Rahu/Ketu which are always retrograde)
+  for (const planet of chartData.planets) {
+    if (planet.retrograde && !["Rahu", "Ketu"].includes(planet.name)) {
+      const mukhi = planetToRudraksha[planet.name];
+      if (mukhi && !addedMukhis.has(mukhi)) {
+        recommendations.push({
+          mukhi,
+          reason: `${planet.name} is retrograde - ${mukhi} Mukhi helps channel its energy positively`,
+          priority: "low",
+        });
+        addedMukhis.add(mukhi);
+      }
+    }
+  }
+
+  // Sort by priority then by mukhi number
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  recommendations.sort((a, b) => {
+    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+    if (priorityDiff !== 0) return priorityDiff;
+    return a.mukhi - b.mukhi;
+  });
+
+  return recommendations.slice(0, 5); // Return top 5 recommendations
+}
+
 export default function RudrakshaRecommendationsPage() {
   const { t } = useLanguage();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
-  const [recommendations, setRecommendations] = useState<number[]>([]);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [recommendations, setRecommendations] = useState<RudrakshaRecommendation[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [chartAnalysis, setChartAnalysis] = useState<string | null>(null);
+
+  const handleLocationSelect = (location: string, lat?: number, lng?: number) => {
+    setBirthPlace(location);
+    if (lat !== undefined && lng !== undefined) {
+      setLatitude(lat);
+      setLongitude(lng);
+    }
+  };
 
   const handleCalculate = async () => {
-    if (!birthDate) return;
+    if (!birthDate || !birthTime || !birthPlace) {
+      setError("Please fill in all birth details for accurate recommendations");
+      return;
+    }
     
     setIsCalculating(true);
+    setError(null);
+    setChartAnalysis(null);
     
-    // Simulate API call - in production, this would analyze the birth chart
-    setTimeout(() => {
-      const month = new Date(birthDate).getMonth();
-      const day = new Date(birthDate).getDate();
+    try {
+      // Call the backend API for birth chart calculation
+      const response = await fetch("https://vedicstarastro.com/api/charts/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "User",
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_place: birthPlace,
+          latitude: latitude || 28.6139,
+          longitude: longitude || 77.2090,
+          timezone: 5.5,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to calculate birth chart");
+      }
+
+      const data = await response.json();
+      const chartData: ChartData = data.chart_data;
+
+      // Analyze the chart and get recommendations
+      const rudrakshaRecommendations = analyzeChartForRudraksha(chartData);
+      setRecommendations(rudrakshaRecommendations);
+
+      // Set chart analysis summary
+      const doshaInfo = [];
+      if (chartData.doshas?.mangal_dosha) doshaInfo.push("Mangal Dosha");
+      if (chartData.doshas?.kaal_sarp_dosha) doshaInfo.push("Kaal Sarp Dosha");
       
-      const recommended: number[] = [5]; // Everyone benefits from 5 Mukhi
+      setChartAnalysis(
+        `Ascendant: ${chartData.ascendant} | Moon Sign: ${chartData.moon_sign} | Nakshatra: ${chartData.nakshatra}${doshaInfo.length > 0 ? ` | Doshas: ${doshaInfo.join(", ")}` : ""}`
+      );
+
+    } catch (err) {
+      console.error("Error calculating chart:", err);
+      setError("Unable to connect to the astrology service. Please try again later.");
       
-      // Simple logic for demonstration - in production, use actual planetary positions
-      if (month >= 0 && month <= 2) recommended.push(7); // Saturn period
-      if (month >= 3 && month <= 5) recommended.push(3); // Mars period
-      if (month >= 6 && month <= 8) recommended.push(4); // Mercury period
-      if (month >= 9 && month <= 11) recommended.push(6); // Venus period
-      
-      if (day <= 10) recommended.push(1);
-      else if (day <= 20) recommended.push(8);
-      else recommended.push(9);
-      
-      setRecommendations([...new Set(recommended)].sort((a, b) => a - b));
+      // Fallback to basic recommendations
+      const fallbackRecs: RudrakshaRecommendation[] = [
+        { mukhi: 5, reason: "Universal Rudraksha for overall well-being", priority: "high" },
+        { mukhi: 8, reason: "Removes obstacles and brings success", priority: "medium" },
+      ];
+      setRecommendations(fallbackRecs);
+    } finally {
       setIsCalculating(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -275,7 +474,7 @@ export default function RudrakshaRecommendationsPage() {
                   placeholder={t('calculator.searchCity', 'Search city...')}
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
-                  onLocationSelect={(loc) => setBirthPlace(loc)}
+                  onLocationSelect={handleLocationSelect}
                 />
               </div>
               
@@ -305,24 +504,51 @@ export default function RudrakshaRecommendationsPage() {
                 <Shield className="w-5 h-5 text-red-600" />
                 {t('calculator.rudraksha.recommendedRudraksha', 'Recommended Rudraksha for You')}
               </h3>
-              {recommendations.map((mukhi) => {
-                const rudraksha = rudrakshaData[mukhi];
+              
+              {chartAnalysis && (
+                <div className="bg-red-100 border border-red-300 rounded-lg p-3 text-sm">
+                  <p className="font-medium text-red-800">{t('calculator.chartAnalysis', 'Chart Analysis')}: {chartAnalysis}</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-yellow-700">{error}</p>
+                </div>
+              )}
+
+              {recommendations.map((rec) => {
+                const rudraksha = rudrakshaData[rec.mukhi];
                 if (!rudraksha) return null;
                 return (
-                  <Card key={mukhi} className="border-red-200 bg-red-50">
+                  <Card key={rec.mukhi} className="border-red-200 bg-red-50">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg flex items-center gap-2">
                           <span className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold">
-                            {mukhi}
+                            {rec.mukhi}
                           </span>
                           {rudraksha.name}
                         </CardTitle>
-                        <Badge className="bg-red-500">{rudraksha.planet}</Badge>
+                        <div className="flex gap-2">
+                          <Badge className={
+                            rec.priority === "high" ? "bg-red-600" :
+                            rec.priority === "medium" ? "bg-amber-500" : "bg-blue-500"
+                          }>
+                            {rec.priority === "high" ? t('calculator.highPriority', 'High Priority') :
+                             rec.priority === "medium" ? t('calculator.mediumPriority', 'Recommended') :
+                             t('calculator.lowPriority', 'Optional')}
+                          </Badge>
+                        </div>
                       </div>
                       <p className="text-gray-600">{rudraksha.hindi} • {rudraksha.deity}</p>
                     </CardHeader>
                     <CardContent>
+                      <div className="bg-white rounded-lg p-2 mb-3 border-l-4 border-red-400">
+                        <p className="text-gray-700 text-sm font-medium">{t('calculator.whyRecommended', 'Why Recommended')}: {rec.reason}</p>
+                      </div>
+                      
                       <p className="text-gray-700 text-sm mb-3">{rudraksha.description}</p>
                       
                       <div className="space-y-2">

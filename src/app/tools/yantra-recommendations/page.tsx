@@ -18,7 +18,33 @@ import {
   ArrowRight,
   Shield,
   Star,
+  AlertCircle,
 } from "lucide-react";
+
+interface Planet {
+  name: string;
+  sign: string;
+  degree: number;
+  house: number;
+  retrograde: boolean;
+}
+
+interface ChartData {
+  ascendant: string;
+  moon_sign: string;
+  nakshatra: string;
+  planets: Planet[];
+  doshas: {
+    mangal_dosha: boolean;
+    kaal_sarp_dosha: boolean;
+  };
+}
+
+interface YantraRecommendation {
+  name: string;
+  reason: string;
+  priority: "high" | "medium" | "low";
+}
 
 const yantraData: Record<string, {
   name: string;
@@ -132,40 +158,212 @@ const yantraData: Record<string, {
   },
 };
 
+// Debilitated signs for each planet
+const debilitatedSigns: Record<string, string> = {
+  Sun: "Libra",
+  Moon: "Scorpio",
+  Mars: "Cancer",
+  Mercury: "Pisces",
+  Jupiter: "Capricorn",
+  Venus: "Virgo",
+  Saturn: "Aries",
+};
+
+// Dusthana houses (6, 8, 12) indicate challenges
+const dusthanaHouses = [6, 8, 12];
+
+// Planet to Yantra mapping
+const planetToYantra: Record<string, string> = {
+  Sun: "Surya Yantra",
+  Moon: "Chandra Yantra",
+  Mars: "Mangal Yantra",
+  Mercury: "Budh Yantra",
+  Jupiter: "Guru Yantra",
+  Venus: "Shukra Yantra",
+  Saturn: "Shani Yantra",
+  Rahu: "Rahu Yantra",
+  Ketu: "Ketu Yantra",
+};
+
+function analyzeChartForYantras(chartData: ChartData): YantraRecommendation[] {
+  const recommendations: YantraRecommendation[] = [];
+  const addedYantras = new Set<string>();
+
+  // Check for doshas first (highest priority)
+  if (chartData.doshas?.mangal_dosha) {
+    recommendations.push({
+      name: "Mangal Yantra",
+      reason: "Mangal Dosha detected in your chart - helps reduce Mars's malefic effects on marriage and relationships",
+      priority: "high",
+    });
+    addedYantras.add("Mangal Yantra");
+  }
+
+  if (chartData.doshas?.kaal_sarp_dosha) {
+    recommendations.push({
+      name: "Rahu Yantra",
+      reason: "Kaal Sarp Dosha detected - helps neutralize the effects of Rahu-Ketu axis",
+      priority: "high",
+    });
+    addedYantras.add("Rahu Yantra");
+    if (!addedYantras.has("Ketu Yantra")) {
+      recommendations.push({
+        name: "Ketu Yantra",
+        reason: "Kaal Sarp Dosha detected - complements Rahu Yantra for complete protection",
+        priority: "high",
+      });
+      addedYantras.add("Ketu Yantra");
+    }
+  }
+
+  // Check for debilitated planets
+  for (const planet of chartData.planets) {
+    const debilitatedSign = debilitatedSigns[planet.name];
+    if (debilitatedSign && planet.sign === debilitatedSign) {
+      const yantraName = planetToYantra[planet.name];
+      if (yantraName && !addedYantras.has(yantraName)) {
+        recommendations.push({
+          name: yantraName,
+          reason: `${planet.name} is debilitated in ${planet.sign} - strengthens the planet's positive influence`,
+          priority: "high",
+        });
+        addedYantras.add(yantraName);
+      }
+    }
+  }
+
+  // Check for planets in dusthana houses (6, 8, 12)
+  for (const planet of chartData.planets) {
+    if (dusthanaHouses.includes(planet.house)) {
+      const yantraName = planetToYantra[planet.name];
+      if (yantraName && !addedYantras.has(yantraName)) {
+        recommendations.push({
+          name: yantraName,
+          reason: `${planet.name} is placed in house ${planet.house} - helps overcome challenges associated with this placement`,
+          priority: "medium",
+        });
+        addedYantras.add(yantraName);
+      }
+    }
+  }
+
+  // Check for retrograde planets
+  for (const planet of chartData.planets) {
+    if (planet.retrograde && !["Rahu", "Ketu"].includes(planet.name)) {
+      const yantraName = planetToYantra[planet.name];
+      if (yantraName && !addedYantras.has(yantraName)) {
+        recommendations.push({
+          name: yantraName,
+          reason: `${planet.name} is retrograde - helps channel the introspective energy positively`,
+          priority: "low",
+        });
+        addedYantras.add(yantraName);
+      }
+    }
+  }
+
+  // Always recommend Sri Yantra for general prosperity if less than 3 recommendations
+  if (recommendations.length < 3 && !addedYantras.has("Sri Yantra")) {
+    recommendations.push({
+      name: "Sri Yantra",
+      reason: "Universal Yantra for prosperity, success, and spiritual growth - beneficial for everyone",
+      priority: "medium",
+    });
+  }
+
+  // Sort by priority
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  recommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+  return recommendations.slice(0, 5); // Return top 5 recommendations
+}
+
 export default function YantraRecommendationsPage() {
   const { t } = useLanguage();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
-  const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [recommendations, setRecommendations] = useState<YantraRecommendation[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [chartAnalysis, setChartAnalysis] = useState<string | null>(null);
+
+  const handleLocationSelect = (location: string, lat?: number, lng?: number) => {
+    setBirthPlace(location);
+    if (lat !== undefined && lng !== undefined) {
+      setLatitude(lat);
+      setLongitude(lng);
+    }
+  };
 
   const handleCalculate = async () => {
-    if (!birthDate) return;
+    if (!birthDate || !birthTime || !birthPlace) {
+      setError("Please fill in all birth details for accurate recommendations");
+      return;
+    }
     
     setIsCalculating(true);
+    setError(null);
+    setChartAnalysis(null);
     
-    // Simulate API call - in production, this would analyze the birth chart
-    setTimeout(() => {
-      // Based on birth date, recommend relevant yantras
+    try {
+      // Call the backend API for birth chart calculation
+      const response = await fetch("https://vedicstarastro.com/api/charts/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "User",
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_place: birthPlace,
+          latitude: latitude || 28.6139, // Default to Delhi if not set
+          longitude: longitude || 77.2090,
+          timezone: 5.5, // IST
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to calculate birth chart");
+      }
+
+      const data = await response.json();
+      const chartData: ChartData = data.chart_data;
+
+      // Analyze the chart and get recommendations
+      const yantraRecommendations = analyzeChartForYantras(chartData);
+      setRecommendations(yantraRecommendations);
+
+      // Set chart analysis summary
+      const doshaInfo = [];
+      if (chartData.doshas?.mangal_dosha) doshaInfo.push("Mangal Dosha");
+      if (chartData.doshas?.kaal_sarp_dosha) doshaInfo.push("Kaal Sarp Dosha");
+      
+      setChartAnalysis(
+        `Ascendant: ${chartData.ascendant} | Moon Sign: ${chartData.moon_sign} | Nakshatra: ${chartData.nakshatra}${doshaInfo.length > 0 ? ` | Doshas: ${doshaInfo.join(", ")}` : ""}`
+      );
+
+    } catch (err) {
+      console.error("Error calculating chart:", err);
+      setError("Unable to connect to the astrology service. Please try again later.");
+      
+      // Fallback to basic recommendations based on date
       const month = new Date(birthDate).getMonth();
-      const day = new Date(birthDate).getDate();
+      const fallbackRecs: YantraRecommendation[] = [
+        { name: "Sri Yantra", reason: "Universal Yantra for prosperity and success", priority: "high" },
+      ];
+      if (month >= 0 && month <= 2) fallbackRecs.push({ name: "Shani Yantra", reason: "Beneficial during this period", priority: "medium" });
+      else if (month >= 3 && month <= 5) fallbackRecs.push({ name: "Mangal Yantra", reason: "Beneficial during this period", priority: "medium" });
+      else if (month >= 6 && month <= 8) fallbackRecs.push({ name: "Budh Yantra", reason: "Beneficial during this period", priority: "medium" });
+      else fallbackRecs.push({ name: "Guru Yantra", reason: "Beneficial during this period", priority: "medium" });
       
-      const recommended: string[] = [];
-      
-      // Simple logic for demonstration - in production, use actual planetary positions
-      if (month >= 0 && month <= 2) recommended.push("Shani Yantra");
-      if (month >= 3 && month <= 5) recommended.push("Mangal Yantra");
-      if (month >= 6 && month <= 8) recommended.push("Budh Yantra");
-      if (month >= 9 && month <= 11) recommended.push("Guru Yantra");
-      
-      if (day <= 10) recommended.push("Sri Yantra");
-      else if (day <= 20) recommended.push("Surya Yantra");
-      else recommended.push("Chandra Yantra");
-      
-      setRecommendations([...new Set(recommended)]);
+      setRecommendations(fallbackRecs);
+    } finally {
       setIsCalculating(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -225,13 +423,13 @@ export default function YantraRecommendationsPage() {
                   <MapPin className="w-4 h-4" />
                   {t('calculator.placeOfBirth', 'Place of Birth')}
                 </Label>
-                <LocationInput
-                  id="place"
-                  placeholder={t('calculator.searchCity', 'Search city...')}
-                  value={birthPlace}
-                  onChange={(e) => setBirthPlace(e.target.value)}
-                  onLocationSelect={(loc) => setBirthPlace(loc)}
-                />
+                  <LocationInput
+                    id="place"
+                    placeholder={t('calculator.searchCity', 'Search city...')}
+                    value={birthPlace}
+                    onChange={(e) => setBirthPlace(e.target.value)}
+                    onLocationSelect={handleLocationSelect}
+                  />
               </div>
               
               <Button 
@@ -260,22 +458,49 @@ export default function YantraRecommendationsPage() {
                 <Shield className="w-5 h-5 text-amber-600" />
                 {t('calculator.yantra.recommendedYantras', 'Recommended Yantras for You')}
               </h3>
-              {recommendations.map((yantraName) => {
-                const yantra = yantraData[yantraName];
+              
+              {chartAnalysis && (
+                <div className="bg-amber-100 border border-amber-300 rounded-lg p-3 text-sm">
+                  <p className="font-medium text-amber-800">{t('calculator.chartAnalysis', 'Chart Analysis')}: {chartAnalysis}</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-yellow-700">{error}</p>
+                </div>
+              )}
+
+              {recommendations.map((rec) => {
+                const yantra = yantraData[rec.name];
                 if (!yantra) return null;
                 return (
-                  <Card key={yantraName} className="border-amber-200 bg-amber-50">
+                  <Card key={rec.name} className="border-amber-200 bg-amber-50">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg flex items-center gap-2">
                           <Star className="w-5 h-5 text-amber-600" />
                           {yantra.name}
                         </CardTitle>
-                        <Badge className="bg-amber-500">{yantra.color}</Badge>
+                        <div className="flex gap-2">
+                          <Badge className={
+                            rec.priority === "high" ? "bg-red-500" :
+                            rec.priority === "medium" ? "bg-amber-500" : "bg-blue-500"
+                          }>
+                            {rec.priority === "high" ? t('calculator.highPriority', 'High Priority') :
+                             rec.priority === "medium" ? t('calculator.mediumPriority', 'Recommended') :
+                             t('calculator.lowPriority', 'Optional')}
+                          </Badge>
+                        </div>
                       </div>
                       <p className="text-gray-600">{yantra.hindi} • {yantra.deity}</p>
                     </CardHeader>
                     <CardContent>
+                      <div className="bg-white rounded-lg p-2 mb-3 border-l-4 border-amber-400">
+                        <p className="text-gray-700 text-sm font-medium">{t('calculator.whyRecommended', 'Why Recommended')}: {rec.reason}</p>
+                      </div>
+                      
                       <p className="text-gray-700 text-sm mb-3">{yantra.description}</p>
                       
                       <div className="space-y-2">

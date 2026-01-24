@@ -19,7 +19,29 @@ import {
   Heart,
   Star,
   Sun,
+  AlertCircle,
 } from "lucide-react";
+
+interface Planet {
+  name: string;
+  sign: string;
+  degree: number;
+  house: number;
+  retrograde: boolean;
+}
+
+interface ChartData {
+  ascendant: string;
+  moon_sign: string;
+  nakshatra: string;
+  planets: Planet[];
+}
+
+interface DeityRecommendation {
+  deity: string;
+  reason: string;
+  confidence: "high" | "medium" | "low";
+}
 
 const deityData: Record<string, {
   name: string;
@@ -133,31 +155,222 @@ const deityData: Record<string, {
   },
 };
 
+// Mapping of planets to their associated deities
+const planetToDeity: Record<string, string> = {
+  Sun: "Lord Surya",
+  Moon: "Lord Shiva",
+  Mars: "Lord Hanuman",
+  Mercury: "Lord Ganesha",
+  Jupiter: "Lord Vishnu",
+  Venus: "Goddess Lakshmi",
+  Saturn: "Lord Hanuman",
+  Rahu: "Goddess Durga",
+  Ketu: "Lord Ganesha",
+};
+
+// Mapping of zodiac signs to their ruling planets
+const signToRuler: Record<string, string> = {
+  Aries: "Mars",
+  Taurus: "Venus",
+  Gemini: "Mercury",
+  Cancer: "Moon",
+  Leo: "Sun",
+  Virgo: "Mercury",
+  Libra: "Venus",
+  Scorpio: "Mars",
+  Sagittarius: "Jupiter",
+  Capricorn: "Saturn",
+  Aquarius: "Saturn",
+  Pisces: "Jupiter",
+};
+
+// Mapping of nakshatras to deities
+const nakshatraToDeity: Record<string, string> = {
+  Ashwini: "Lord Ganesha",
+  Bharani: "Goddess Durga",
+  Krittika: "Lord Surya",
+  Rohini: "Lord Krishna",
+  Mrigashira: "Lord Shiva",
+  Ardra: "Lord Shiva",
+  Punarvasu: "Lord Vishnu",
+  Pushya: "Lord Vishnu",
+  Ashlesha: "Goddess Durga",
+  Magha: "Lord Hanuman",
+  "Purva Phalguni": "Goddess Lakshmi",
+  "Uttara Phalguni": "Lord Surya",
+  Hasta: "Lord Vishnu",
+  Chitra: "Lord Vishnu",
+  Swati: "Goddess Saraswati",
+  Vishakha: "Lord Ganesha",
+  Anuradha: "Lord Krishna",
+  Jyeshtha: "Lord Vishnu",
+  Mula: "Lord Ganesha",
+  "Purva Ashadha": "Goddess Lakshmi",
+  "Uttara Ashadha": "Lord Vishnu",
+  Shravana: "Lord Vishnu",
+  Dhanishta: "Lord Hanuman",
+  Shatabhisha: "Lord Shiva",
+  "Purva Bhadrapada": "Lord Shiva",
+  "Uttara Bhadrapada": "Lord Shiva",
+  Revati: "Lord Vishnu",
+};
+
+function analyzeChartForIshtaDevata(chartData: ChartData): DeityRecommendation {
+  // Find Atmakaraka (planet with highest degree)
+  let atmakaraka: Planet | null = null;
+  let highestDegree = -1;
+  
+  for (const planet of chartData.planets) {
+    // Exclude Rahu and Ketu from Atmakaraka calculation (traditional method)
+    if (planet.name !== "Rahu" && planet.name !== "Ketu") {
+      if (planet.degree > highestDegree) {
+        highestDegree = planet.degree;
+        atmakaraka = planet;
+      }
+    }
+  }
+
+  // Find 9th house lord (Dharma lord)
+  const ascendantSign = chartData.ascendant;
+  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+                 "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+  const ascIndex = signs.findIndex(s => ascendantSign.includes(s));
+  const ninthHouseSign = signs[(ascIndex + 8) % 12];
+  const ninthLord = signToRuler[ninthHouseSign];
+
+  // Determine Ishta Devata based on multiple factors
+  // Priority: 1. Atmakaraka, 2. 9th house lord, 3. Nakshatra, 4. Moon sign
+
+  // Check Atmakaraka first (highest priority)
+  if (atmakaraka && planetToDeity[atmakaraka.name]) {
+    return {
+      deity: planetToDeity[atmakaraka.name],
+      reason: `Based on your Atmakaraka (soul significator) ${atmakaraka.name} at ${atmakaraka.degree.toFixed(2)}° in ${atmakaraka.sign}`,
+      confidence: "high",
+    };
+  }
+
+  // Check 9th house lord
+  if (ninthLord && planetToDeity[ninthLord]) {
+    return {
+      deity: planetToDeity[ninthLord],
+      reason: `Based on your 9th house (Dharma) lord ${ninthLord} ruling ${ninthHouseSign}`,
+      confidence: "high",
+    };
+  }
+
+  // Check Nakshatra
+  if (chartData.nakshatra && nakshatraToDeity[chartData.nakshatra]) {
+    return {
+      deity: nakshatraToDeity[chartData.nakshatra],
+      reason: `Based on your birth Nakshatra ${chartData.nakshatra}`,
+      confidence: "medium",
+    };
+  }
+
+  // Fallback to Moon sign
+  const moonSignRuler = signToRuler[chartData.moon_sign];
+  if (moonSignRuler && planetToDeity[moonSignRuler]) {
+    return {
+      deity: planetToDeity[moonSignRuler],
+      reason: `Based on your Moon sign ${chartData.moon_sign} ruled by ${moonSignRuler}`,
+      confidence: "medium",
+    };
+  }
+
+  // Default fallback
+  return {
+    deity: "Lord Ganesha",
+    reason: "Lord Ganesha is the universal deity suitable for all, as the remover of obstacles",
+    confidence: "low",
+  };
+}
+
 export default function IshtaDevataCalculatorPage() {
   const { t } = useLanguage();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [ishtaDevata, setIshtaDevata] = useState<string | null>(null);
+  const [deityReason, setDeityReason] = useState<string | null>(null);
+  const [deityConfidence, setDeityConfidence] = useState<"high" | "medium" | "low" | null>(null);
+  const [chartAnalysis, setChartAnalysis] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLocationSelect = (location: string, lat?: number, lng?: number) => {
+    setBirthPlace(location);
+    if (lat !== undefined) setLatitude(lat);
+    if (lng !== undefined) setLongitude(lng);
+  };
 
   const handleCalculate = async () => {
-    if (!birthDate) return;
+    if (!birthDate || !birthTime || !birthPlace) {
+      setError("Please fill in all birth details for accurate deity determination");
+      return;
+    }
     
     setIsCalculating(true);
+    setError(null);
+    setChartAnalysis(null);
     
-    // Simulate API call - in production, this would analyze the 9th house lord and Atmakaraka
-    setTimeout(() => {
+    try {
+      const response = await fetch("https://vedicstarastro.com/api/charts/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "User",
+          birth_date: birthDate,
+          birth_time: birthTime,
+          birth_place: birthPlace,
+          latitude: latitude || 28.6139,
+          longitude: longitude || 77.2090,
+          timezone: 5.5,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const chartData: ChartData = {
+          ascendant: data.ascendant || "Aries",
+          moon_sign: data.moon_sign || "Aries",
+          nakshatra: data.nakshatra || "Ashwini",
+          planets: data.planets || [],
+        };
+
+        const recommendation = analyzeChartForIshtaDevata(chartData);
+        setIshtaDevata(recommendation.deity);
+        setDeityReason(recommendation.reason);
+        setDeityConfidence(recommendation.confidence);
+        setChartAnalysis(`Ascendant: ${chartData.ascendant}, Moon Sign: ${chartData.moon_sign}, Nakshatra: ${chartData.nakshatra}`);
+      } else {
+        // Fallback to simplified calculation
+        setError("Could not connect to birth chart API. Using simplified calculation based on birth date.");
+        const month = new Date(birthDate).getMonth();
+        const day = new Date(birthDate).getDate();
+        const deities = Object.keys(deityData);
+        const index = (month + day) % deities.length;
+        setIshtaDevata(deities[index]);
+        setDeityReason("Based on birth date calculation (simplified method)");
+        setDeityConfidence("low");
+      }
+    } catch {
+      // Fallback to simplified calculation
+      setError("Could not connect to birth chart API. Using simplified calculation based on birth date.");
       const month = new Date(birthDate).getMonth();
       const day = new Date(birthDate).getDate();
-      
-      // Simple logic for demonstration - in production, use actual planetary positions
       const deities = Object.keys(deityData);
       const index = (month + day) % deities.length;
-      
       setIshtaDevata(deities[index]);
+      setDeityReason("Based on birth date calculation (simplified method)");
+      setDeityConfidence("low");
+    } finally {
       setIsCalculating(false);
-    }, 1000);
+    }
   };
 
   const deity = ishtaDevata ? deityData[ishtaDevata] : null;
@@ -227,7 +440,7 @@ export default function IshtaDevataCalculatorPage() {
                   placeholder={t('calculator.searchCity', 'Search city...')}
                   value={birthPlace}
                   onChange={(e) => setBirthPlace(e.target.value)}
-                  onLocationSelect={(loc) => setBirthPlace(loc)}
+                  onLocationSelect={handleLocationSelect}
                 />
               </div>
               
@@ -259,14 +472,43 @@ export default function IshtaDevataCalculatorPage() {
                     <Sun className="w-5 h-5 text-orange-600" />
                     {t('calculator.ishtaDevata.yourDeity', 'Your Ishta Devata')}
                   </CardTitle>
-                  <Badge className="bg-orange-500">{deity.bestDay}</Badge>
+                  <div className="flex gap-2">
+                    <Badge className={
+                      deityConfidence === "high" ? "bg-green-600" :
+                      deityConfidence === "medium" ? "bg-amber-500" : "bg-blue-500"
+                    }>
+                      {deityConfidence === "high" ? t('calculator.highConfidence', 'High Confidence') :
+                       deityConfidence === "medium" ? t('calculator.mediumConfidence', 'Medium Confidence') :
+                       t('calculator.lowConfidence', 'Basic Analysis')}
+                    </Badge>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
+                {chartAnalysis && (
+                  <div className="bg-orange-100 border border-orange-300 rounded-lg p-3 text-sm mb-4">
+                    <p className="font-medium text-orange-800">{t('calculator.chartAnalysis', 'Chart Analysis')}: {chartAnalysis}</p>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm flex items-start gap-2 mb-4">
+                    <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-yellow-700">{error}</p>
+                  </div>
+                )}
+
                 <div className="text-center mb-6">
                   <h2 className="text-3xl font-bold text-orange-700">{deity.name}</h2>
                   <p className="text-xl text-gray-600">{deity.hindi}</p>
+                  <Badge className="mt-2 bg-orange-500">{t('calculator.bestDay', 'Best Day')}: {deity.bestDay}</Badge>
                 </div>
+
+                {deityReason && (
+                  <div className="bg-white rounded-lg p-4 mb-4 border-l-4 border-orange-400">
+                    <p className="text-gray-700 text-sm font-medium">{t('calculator.whyRecommended', 'Why Recommended')}: {deityReason}</p>
+                  </div>
+                )}
 
                 <div className="space-y-4">
                   <div className="bg-white rounded-lg p-4">
