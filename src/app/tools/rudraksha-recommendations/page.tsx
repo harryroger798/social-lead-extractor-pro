@@ -235,24 +235,32 @@ function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation
   const recommendations: RudrakshaRecommendation[] = [];
   const addedMukhis = new Set<number>();
 
-  // Always recommend 5 Mukhi for general well-being
-  recommendations.push({
-    mukhi: 5,
-    reason: "Universal Rudraksha for overall well-being, peace, and protection - beneficial for everyone",
-    priority: "medium",
-  });
-  addedMukhis.add(5);
-
-  // Check for doshas first (highest priority)
-  if (chartData.doshas?.mangal_dosha) {
-    recommendations.push({
-      mukhi: 3,
-      reason: "Mangal Dosha detected - 3 Mukhi pacifies Mars and reduces its malefic effects on marriage",
-      priority: "high",
-    });
-    addedMukhis.add(3);
+  // PRIORITY 1: Check Moon placement first (highest priority - matches AstroSage logic)
+  // Moon represents the mind and mental well-being, so Moon issues take precedence
+  // 2 Mukhi Rudraksha is ruled by Moon and recommended for weak Moon placement
+  const moonPlanet = chartData.planets.find(p => p.name === "Moon");
+  if (moonPlanet) {
+    // Check if Moon is in dusthana house (6, 8, 12)
+    if (dusthanaHouses.includes(moonPlanet.house)) {
+      recommendations.push({
+        mukhi: 2,
+        reason: `Moon is placed in house ${moonPlanet.house} - 2 Mukhi Rudraksha (ruled by Moon) brings emotional balance, mental peace, and harmony. It is recommended for those with weak Moon placement.`,
+        priority: "high",
+      });
+      addedMukhis.add(2);
+    }
+    // Check if Moon is debilitated (in Scorpio)
+    else if (moonPlanet.sign === "Scorpio") {
+      recommendations.push({
+        mukhi: 2,
+        reason: "Moon is debilitated in Scorpio - 2 Mukhi Rudraksha strengthens the Moon, bringing emotional stability and mental peace.",
+        priority: "high",
+      });
+      addedMukhis.add(2);
+    }
   }
 
+  // PRIORITY 2: Check for Kaal Sarp Dosha (severe dosha)
   if (chartData.doshas?.kaal_sarp_dosha) {
     if (!addedMukhis.has(8)) {
       recommendations.push({
@@ -272,8 +280,19 @@ function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation
     }
   }
 
-  // Check for debilitated planets
+  // PRIORITY 3: Check for Mangal Dosha
+  if (chartData.doshas?.mangal_dosha && !addedMukhis.has(3)) {
+    recommendations.push({
+      mukhi: 3,
+      reason: "Mangal Dosha detected - 3 Mukhi pacifies Mars and reduces its malefic effects on marriage",
+      priority: "high",
+    });
+    addedMukhis.add(3);
+  }
+
+  // PRIORITY 4: Check for debilitated planets (excluding Moon which is already handled)
   for (const planet of chartData.planets) {
+    if (planet.name === "Moon") continue; // Already handled above
     const debilitatedSign = debilitatedSigns[planet.name];
     if (debilitatedSign && planet.sign === debilitatedSign) {
       const mukhi = planetToRudraksha[planet.name];
@@ -288,8 +307,9 @@ function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation
     }
   }
 
-  // Check for planets in dusthana houses (6, 8, 12)
+  // PRIORITY 5: Check for other planets in dusthana houses (6, 8, 12) - excluding Moon
   for (const planet of chartData.planets) {
+    if (planet.name === "Moon") continue; // Already handled above
     if (dusthanaHouses.includes(planet.house)) {
       const mukhi = planetToRudraksha[planet.name];
       if (mukhi && !addedMukhis.has(mukhi)) {
@@ -303,7 +323,7 @@ function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation
     }
   }
 
-  // Check for retrograde planets (except Rahu/Ketu which are always retrograde)
+  // PRIORITY 6: Check for retrograde planets (except Rahu/Ketu which are always retrograde)
   for (const planet of chartData.planets) {
     if (planet.retrograde && !["Rahu", "Ketu"].includes(planet.name)) {
       const mukhi = planetToRudraksha[planet.name];
@@ -316,6 +336,16 @@ function analyzeChartForRudraksha(chartData: ChartData): RudrakshaRecommendation
         addedMukhis.add(mukhi);
       }
     }
+  }
+
+  // Always recommend 5 Mukhi for general well-being (if not already added)
+  if (!addedMukhis.has(5)) {
+    recommendations.push({
+      mukhi: 5,
+      reason: "Universal Rudraksha for overall well-being, peace, and protection - beneficial for everyone",
+      priority: "medium",
+    });
+    addedMukhis.add(5);
   }
 
   // Sort by priority then by mukhi number
