@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, CheckCircle, XCircle, Mail, ArrowRight } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
+  const updateUser = useAuthStore((state) => state.updateUser);
   
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
@@ -30,6 +32,8 @@ export default function VerifyEmailPage() {
 
     try {
       await authApi.verifyEmail(token!);
+      // Update the user's is_verified status in the auth store
+      updateUser({ is_verified: true });
       setVerified(true);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to verify email. The link may have expired.');

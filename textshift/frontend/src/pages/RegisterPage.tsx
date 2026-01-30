@@ -27,7 +27,8 @@ export default function RegisterPage() {
       const response = await authApi.register(email, password, fullName);
       setAuth(response.access_token, response.user);
       triggerConfetti();
-      setTimeout(() => navigate('/dashboard'), 1500);
+      // Redirect to verification pending page instead of dashboard
+      setTimeout(() => navigate('/verify-email-pending', { state: { email } }), 1500);
     }catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {

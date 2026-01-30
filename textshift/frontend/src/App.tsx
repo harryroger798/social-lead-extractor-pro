@@ -7,6 +7,7 @@ import RegisterPage from '@/pages/RegisterPage';
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
+import VerifyEmailPendingPage from '@/pages/VerifyEmailPendingPage';
 import Dashboard from '@/pages/Dashboard';
 import PricingPage from '@/pages/PricingPage';
 
@@ -21,9 +22,15 @@ const queryClient = new QueryClient({
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+  
+  // Redirect unverified users to verification pending page
+  if (user && !user.is_verified) {
+    return <Navigate to="/verify-email-pending" state={{ email: user.email }} replace />;
   }
   
   return <>{children}</>;
@@ -82,6 +89,10 @@ function App() {
                     <Route 
                       path="/verify-email" 
                       element={<VerifyEmailPage />} 
+                    />
+                    <Route 
+                      path="/verify-email-pending" 
+                      element={<VerifyEmailPendingPage />} 
                     />
           
                     <Route 

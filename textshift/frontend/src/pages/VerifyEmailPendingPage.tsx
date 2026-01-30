@@ -1,0 +1,100 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
+import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
+
+export default function VerifyEmailPendingPage() {
+  const location = useLocation();
+  const email = location.state?.email || '';
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  const handleResend = async () => {
+    if (!email) return;
+    setResending(true);
+    try {
+      await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      setResent(true);
+      setTimeout(() => setResent(false), 5000);
+    } catch (e) {
+      console.error('Failed to resend verification email');
+    } finally {
+      setResending(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4 py-12">
+      <ParticlesBackground />
+      <GradientBackground />
+      <NoiseOverlay />
+
+      <div className="w-full max-w-md relative text-center">
+        <div className="mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+          </Link>
+        </div>
+
+        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-8">
+          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Mail className="w-10 h-10 text-emerald-400" />
+          </div>
+
+          <h1 className="text-2xl md:text-3xl font-light text-white mb-4">Check Your Email</h1>
+          
+          <p className="text-gray-400 mb-2">We've sent a verification link to:</p>
+          <p className="text-emerald-400 font-medium mb-6">{email || 'your email address'}</p>
+
+          <p className="text-gray-500 text-sm mb-8">
+            Click the link in the email to verify your account and start using TextShift. 
+            The link will expire in 24 hours.
+          </p>
+
+          <div className="space-y-4">
+            <Button
+              onClick={handleResend}
+              disabled={resending || resent}
+              variant="outline"
+              className="w-full border-white/20 text-white hover:bg-white/5 rounded-full h-12"
+            >
+              {resent ? (
+                <><CheckCircle className="w-4 h-4 mr-2 text-emerald-400" />Email Sent!</>
+              ) : resending ? (
+                <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Sending...</>
+              ) : (
+                <><RefreshCw className="w-4 h-4 mr-2" />Resend Verification Email</>
+              )}
+            </Button>
+
+            <Link to="/verify-email">
+              <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12">
+                Enter Verification Code
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <p className="text-gray-500 text-sm">
+              Didn't receive the email? Check your spam folder or{' '}
+              <button onClick={handleResend} className="text-emerald-400 hover:text-emerald-300">
+                click here to resend
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 text-gray-500 text-sm">
+          Wrong email?{' '}
+          <Link to="/register" className="text-emerald-400 hover:text-emerald-300">Register again</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
