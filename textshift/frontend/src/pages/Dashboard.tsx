@@ -338,28 +338,29 @@ export default function Dashboard() {
             </div>
 
             <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
-              <h3 className="text-lg font-medium text-white mb-4">Credit Costs</h3>
+              <h3 className="text-lg font-medium text-white mb-4">How Credits Work</h3>
+              <p className="text-gray-400 text-sm mb-4">Credits are based on text length and scan type. Minimum 100 credits per scan.</p>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-emerald-400" />
                     <span className="text-gray-300">AI Detection</span>
                   </div>
-                  <span className="text-white">100</span>
+                  <span className="text-white text-sm">100 / 1K chars</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-purple-400" />
                     <span className="text-gray-300">Humanize</span>
                   </div>
-                  <span className="text-white">200</span>
+                  <span className="text-white text-sm">200 / 1K chars</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Search className="w-4 h-4 text-blue-400" />
                     <span className="text-gray-300">Plagiarism</span>
                   </div>
-                  <span className="text-white">150</span>
+                  <span className="text-white text-sm">150 / 1K chars</span>
                 </div>
               </div>
             </div>
