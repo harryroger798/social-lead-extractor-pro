@@ -234,18 +234,26 @@ async def resend_verification(
     """Resend email verification link."""
     user = db.query(User).filter(User.email == request.email).first()
     
-    if user and not user.is_verified:
-        token = generate_token()
-        user.verification_token = token
-        user.verification_token_expires_at = datetime.utcnow() + timedelta(
-            minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES
-        )
-        db.commit()
-        
-        background_tasks.add_task(
-            email_service.send_verification_email,
-            user.email,
-            token
-        )
+    if not user:
+        # Don't reveal if email exists or not for security
+        return {"message": "If an unverified account with that email exists, a verification link has been sent.", "sent": False}
     
-    return {"message": "If an unverified account with that email exists, a verification link has been sent."}
+    if user.is_verified:
+        # Account is already verified - let frontend know
+        return {"message": "This email is already verified. You can log in to your account.", "already_verified": True, "sent": False}
+    
+    # User exists and is not verified - send verification email
+    token = generate_token()
+    user.verification_token = token
+    user.verification_token_expires_at = datetime.utcnow() + timedelta(
+        minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES
+    )
+    db.commit()
+    
+    background_tasks.add_task(
+        email_service.send_verification_email,
+        user.email,
+        token
+    )
+    
+    return {"message": "Verification email sent successfully.", "sent": True}

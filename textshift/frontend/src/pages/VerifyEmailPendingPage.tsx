@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
@@ -13,6 +13,14 @@ export default function VerifyEmailPendingPage() {
   const email = location.state?.email || user?.email || '';
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [alreadyVerified, setAlreadyVerified] = useState(false);
+
+  // If user is already verified, redirect to dashboard
+  useEffect(() => {
+    if (user?.is_verified) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleRegisterAgain = () => {
     logout();
@@ -22,14 +30,23 @@ export default function VerifyEmailPendingPage() {
   const handleResend = async () => {
     if (!email) return;
     setResending(true);
+    setAlreadyVerified(false);
     try {
-      await fetch('/api/auth/resend-verification', {
+      const response = await fetch('/api/auth/resend-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
-      setResent(true);
-      setTimeout(() => setResent(false), 5000);
+      const data = await response.json();
+      
+      if (data.already_verified) {
+        setAlreadyVerified(true);
+        // Redirect to login after 3 seconds
+        setTimeout(() => navigate('/login'), 3000);
+      } else if (data.sent) {
+        setResent(true);
+        setTimeout(() => setResent(false), 5000);
+      }
     } catch (e) {
       console.error('Failed to resend verification email');
     } finally {
@@ -66,21 +83,41 @@ export default function VerifyEmailPendingPage() {
             The link will expire in 24 hours.
           </p>
 
-          <div className="space-y-4">
-            <Button
-              onClick={handleResend}
-              disabled={resending || resent || !email}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
-            >
-              {resent ? (
-                <><CheckCircle className="w-4 h-4 mr-2" />Email Sent!</>
-              ) : resending ? (
-                <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Sending...</>
-              ) : (
-                <><RefreshCw className="w-4 h-4 mr-2" />Resend Verification Email</>
-              )}
-            </Button>
-          </div>
+          {alreadyVerified ? (
+            <div className="space-y-4">
+              <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-center gap-2 text-emerald-400">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Email Already Verified!</span>
+                </div>
+                <p className="text-gray-400 text-sm mt-2">
+                  Your account is already verified. Redirecting to login...
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate('/login')}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
+              >
+                Go to Login
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <Button
+                onClick={handleResend}
+                disabled={resending || resent || !email}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
+              >
+                {resent ? (
+                  <><CheckCircle className="w-4 h-4 mr-2" />Email Sent!</>
+                ) : resending ? (
+                  <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Sending...</>
+                ) : (
+                  <><RefreshCw className="w-4 h-4 mr-2" />Resend Verification Email</>
+                )}
+              </Button>
+            </div>
+          )}
 
           <div className="mt-8 pt-6 border-t border-white/10">
             <p className="text-gray-500 text-sm">
