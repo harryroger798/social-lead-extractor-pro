@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
@@ -26,10 +26,27 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+
+  // Handle pre-filled text from navigation state (e.g., from History page re-analyze)
+  useEffect(() => {
+    const state = location.state as { text?: string; tool?: string } | null;
+    if (state?.text) {
+      setInputText(state.text);
+    }
+    if (state?.tool) {
+      const toolMap: Record<string, string> = { 'humanize': 'humanize', 'plagiarism': 'plagiarism', 'detect': 'detect', 'ai_detection': 'detect' };
+      setActiveTab(toolMap[state.tool] || 'detect');
+    }
+    // Clear the state after reading it
+    if (state) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const { data: credits, refetch: refetchCredits } = useQuery({
     queryKey: ['credits'],

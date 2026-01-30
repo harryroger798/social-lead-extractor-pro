@@ -123,26 +123,29 @@ export default function HistoryPage() {
     setExporting(false);
   };
 
-  const generateShareLink = () => {
-    if (!selectedScan) return;
-    const shareData = btoa(JSON.stringify({ id: selectedScan.id, type: selectedScan.scan_type, result: selectedScan.ai_probability || selectedScan.plagiarism_score }));
-    const url = `${window.location.origin}/shared-report/${shareData}`;
-    setShareUrl(url);
-    copyToClipboard(url);
-  };
+    const generateShareLink = () => {
+      if (!selectedScan) return;
+      const shareData = btoa(JSON.stringify({ id: selectedScan.id, type: selectedScan.scan_type, result: selectedScan.ai_probability || selectedScan.plagiarism_score }));
+      const url = `${window.location.origin}/shared-report/${shareData}`;
+      setShareUrl(url);
+      navigator.clipboard.writeText(url);
+      alert('Share link copied to clipboard!');
+    };
 
   const reAnalyze = (tool: string) => {
     if (!selectedScan) return;
     navigate('/dashboard', { state: { text: selectedScan.input_text, tool } });
   };
 
-  const copyHighlightedSections = () => {
-    if (!selectedScan) return;
-    const results = selectedScan.results || {};
-    const sentences = results.sentence_analysis || [];
-    const highAISentences = sentences.filter((s: any) => s.ai_probability > 50).map((s: any) => s.text).join(' ');
-    copyToClipboard(highAISentences || selectedScan.input_text);
-  };
+    const copyHighlightedSections = () => {
+      if (!selectedScan) return;
+      const results = selectedScan.results || {};
+      const sentences = results.sentence_analysis || [];
+      const highAISentences = sentences.filter((s: any) => s.ai_probability > 50).map((s: any) => s.text).join(' ');
+      const textToCopy = highAISentences || selectedScan.input_text;
+      navigator.clipboard.writeText(textToCopy);
+      alert('Copied to clipboard!');
+    };
 
   const renderWordDiff = (original: string, humanized: string) => {
     const diff = Diff.diffWords(original, humanized);

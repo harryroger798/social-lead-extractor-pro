@@ -320,7 +320,7 @@ export default function LandingPage() {
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
                                         <p className="text-gray-400 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
                     <ul className="space-y-3">
-                      {['10-level confidence analysis', 'Sentence-by-sentence breakdown', 'All major AI models supported', 'Real-time detection'].map((item, i) => (
+                      {['Heat map visualization', 'Sentence-by-sentence breakdown', 'PDF export & shareable reports', 'Confidence meter gauge'].map((item, i) => (
                         <motion.li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
@@ -355,7 +355,7 @@ export default function LandingPage() {
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
                                         <p className="text-gray-400 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
                     <ul className="space-y-3">
-                      {['0% AI detection after humanization', 'Preserves original meaning', 'Natural writing style', 'Multiple tone options'].map((item, i) => (
+                      {['Word-level diff comparison', 'Side-by-side before/after', 'Preserves original meaning', 'Re-analyze with one click'].map((item, i) => (
                         <motion.li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
@@ -390,7 +390,7 @@ export default function LandingPage() {
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
                                         <p className="text-gray-400 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
                     <ul className="space-y-3">
-                      {['99.95% accuracy', 'Web source detection', 'Paraphrase detection', 'Detailed source reports'].map((item, i) => (
+                      {['Source URLs with matches', 'Percentage breakdown per source', 'PDF export reports', 'Comparison mode'].map((item, i) => (
                         <motion.li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
@@ -504,10 +504,10 @@ export default function LandingPage() {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic support'], cta: 'Get Started', highlight: false },
-              { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'Email support', 'Priority processing'], cta: 'Subscribe', highlight: false },
-              { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', highlight: true },
-              { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'White-label API', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+                            { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Heat map visualization', 'Basic reports'], cta: 'Get Started', highlight: false },
+                            { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode'], cta: 'Subscribe', highlight: false },
+                            { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Priority support'], cta: 'Subscribe', highlight: true },
+                            { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>

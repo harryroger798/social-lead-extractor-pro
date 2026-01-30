@@ -34,12 +34,12 @@ export default function PricingPage() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
 
-  const plans = [
-    { id: 'free', name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic support', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
-    { id: 'starter', name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'Email support', 'Priority processing'], cta: 'Subscribe', popular: false },
-    { id: 'pro', name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
-    { id: 'enterprise', name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'White-label API', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
-  ];
+    const plans = [
+      { id: 'free', name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
+      { id: 'starter', name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode', 'Email support'], cta: 'Subscribe', popular: false },
+      { id: 'pro', name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
+      { id: 'enterprise', name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
+    ];
 
   const faqs = [
     { q: 'What does "words" mean in the plans?', a: 'Words are the unit we use to measure usage. Each word you scan counts toward your monthly limit. Pro and Enterprise plans have unlimited words!' },
