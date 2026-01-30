@@ -109,7 +109,7 @@ export default function PricingPage() {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button variant="outline" className="border-slate-600 text-slate-300">
+                  <Button variant="outline" className="border-slate-600 text-white">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Dashboard
                   </Button>
@@ -117,7 +117,7 @@ export default function PricingPage() {
               ) : (
                 <>
                   <Link to="/login">
-                    <Button variant="ghost" className="text-slate-300 hover:text-white">
+                    <Button variant="ghost" className="text-white hover:text-blue-400">
                       Log in
                     </Button>
                   </Link>
@@ -168,7 +168,7 @@ export default function PricingPage() {
               <CardContent>
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-center text-slate-300">
+                    <li key={j} className="flex items-center text-white">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
                       {feature}
                     </li>
@@ -242,7 +242,7 @@ export default function PricingPage() {
             Contact our support team and we'll help you find the right plan.
           </p>
           <a href="mailto:support@textshift.org">
-            <Button variant="outline" className="border-slate-600 text-slate-300">
+            <Button variant="outline" className="border-slate-600 text-white">
               Contact Support
             </Button>
           </a>

@@ -42,13 +42,13 @@ export default function LandingPage() {
               <span className="text-xl font-bold text-white">TextShift</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-300 hover:text-white transition">Features</a>
-              <a href="#pricing" className="text-slate-300 hover:text-white transition">Pricing</a>
-              <a href="#demo" className="text-slate-300 hover:text-white transition">Demo</a>
+                            <a href="#features" className="text-white hover:text-blue-400 transition">Features</a>
+                            <a href="#pricing" className="text-white hover:text-blue-400 transition">Pricing</a>
+                            <a href="#demo" className="text-white hover:text-blue-400 transition">Demo</a>
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/login">
-                <Button variant="ghost" className="text-slate-300 hover:text-white">
+                <Button variant="ghost" className="text-white hover:text-blue-400">
                   Log in
                 </Button>
               </Link>
@@ -87,9 +87,9 @@ export default function LandingPage() {
               </Button>
             </Link>
             <a href="#demo">
-              <Button size="lg" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 text-lg px-8">
-                Try Live Demo
-              </Button>
+                            <Button size="lg" variant="outline" className="border-slate-600 text-white hover:bg-slate-800 text-lg px-8">
+                              Try Live Demo
+                            </Button>
             </a>
           </div>
           
@@ -134,7 +134,7 @@ export default function LandingPage() {
               <CardContent>
                 <ul className="space-y-2">
                   {['10-level confidence analysis', 'Sentence-by-sentence breakdown', 'Supports all major AI models', 'Real-time detection'].map((item, i) => (
-                    <li key={i} className="flex items-center text-slate-300">
+                    <li key={i} className="flex items-center text-white">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
                       {item}
                     </li>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               <CardContent>
                 <ul className="space-y-2">
                   {['0% AI detection after humanization', 'Preserves original meaning', 'Natural writing style', 'Multiple tone options'].map((item, i) => (
-                    <li key={i} className="flex items-center text-slate-300">
+                    <li key={i} className="flex items-center text-white">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
                       {item}
                     </li>
@@ -178,7 +178,7 @@ export default function LandingPage() {
               <CardContent>
                 <ul className="space-y-2">
                   {['99.95% accuracy', 'Web source detection', 'Paraphrase detection', 'Detailed source reports'].map((item, i) => (
-                    <li key={i} className="flex items-center text-slate-300">
+                    <li key={i} className="flex items-center text-white">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
                       {item}
                     </li>
@@ -313,7 +313,7 @@ export default function LandingPage() {
                 <CardContent>
                   <ul className="space-y-3 mb-6">
                     {plan.features.map((feature, j) => (
-                      <li key={j} className="flex items-center text-slate-300">
+                      <li key={j} className="flex items-center text-white">
                         <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
                         {feature}
                       </li>
@@ -365,7 +365,7 @@ export default function LandingPage() {
                       <Star key={j} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-slate-300 mb-4">"{testimonial.quote}"</p>
+                  <p className="text-white mb-4">"{testimonial.quote}"</p>
                   <div>
                     <div className="font-semibold text-white">{testimonial.author}</div>
                     <div className="text-slate-400 text-sm">{testimonial.role}</div>
@@ -383,10 +383,10 @@ export default function LandingPage() {
           <h2 className="text-4xl font-bold text-white mb-4">
             Ready to Get Started?
           </h2>
-          <p className="text-slate-300 text-lg mb-8">
-            Join thousands of users who trust TextShift for their content needs.
-            Start with 20,000 free credits today.
-          </p>
+                    <p className="text-white text-lg mb-8">
+                      Join thousands of users who trust TextShift for their content needs.
+                      Start with 20,000 free credits today.
+                    </p>
           <Link to="/register">
             <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-lg px-8">
               Create Free Account

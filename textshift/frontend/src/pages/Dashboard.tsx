@@ -116,9 +116,9 @@ export default function Dashboard() {
                 <span className="text-slate-400">credits</span>
               </div>
               <Link to="/pricing">
-                <Button variant="outline" size="sm" className="border-slate-600 text-slate-300">
-                  Upgrade
-                </Button>
+                                <Button variant="outline" size="sm" className="border-slate-600 text-white">
+                                  Upgrade
+                                </Button>
               </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-400 hover:text-white">
                 <LogOut className="w-4 h-4" />
@@ -364,21 +364,21 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Shield className="w-4 h-4 text-blue-400 mr-2" />
-                    <span className="text-slate-300">AI Detection</span>
+                    <span className="text-white">AI Detection</span>
                   </div>
                   <span className="text-white">100 credits</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Sparkles className="w-4 h-4 text-purple-400 mr-2" />
-                    <span className="text-slate-300">Humanize</span>
+                    <span className="text-white">Humanize</span>
                   </div>
                   <span className="text-white">200 credits</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Search className="w-4 h-4 text-green-400 mr-2" />
-                    <span className="text-slate-300">Plagiarism</span>
+                    <span className="text-white">Plagiarism</span>
                   </div>
                   <span className="text-white">150 credits</span>
                 </div>
@@ -388,15 +388,15 @@ export default function Dashboard() {
             {/* Quick Links */}
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-4 space-y-2">
-                <Link to="/history" className="flex items-center text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-700/50 transition">
+                <Link to="/history" className="flex items-center text-white hover:text-blue-400 p-2 rounded-lg hover:bg-slate-700/50 transition">
                   <History className="w-4 h-4 mr-3" />
                   Scan History
                 </Link>
-                <Link to="/pricing" className="flex items-center text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-700/50 transition">
-                  <CreditCard className="w-4 h-4 mr-3" />
-                  Buy Credits
-                </Link>
-                <Link to="/settings" className="flex items-center text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-700/50 transition">
+                                <Link to="/pricing" className="flex items-center text-white hover:text-blue-400 p-2 rounded-lg hover:bg-slate-700/50 transition">
+                                  <CreditCard className="w-4 h-4 mr-3" />
+                                  Buy Credits
+                                </Link>
+                                <Link to="/settings" className="flex items-center text-white hover:text-blue-400 p-2 rounded-lg hover:bg-slate-700/50 transition">
                   <Settings className="w-4 h-4 mr-3" />
                   Settings
                 </Link>

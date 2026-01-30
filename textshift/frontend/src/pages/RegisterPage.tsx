@@ -56,7 +56,7 @@ export default function RegisterPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-slate-300">Full Name</Label>
+              <Label htmlFor="fullName" className="text-white">Full Name</Label>
               <Input
                 id="fullName"
                 type="text"
@@ -67,7 +67,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-300">Email</Label>
+              <Label htmlFor="email" className="text-white">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -79,7 +79,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">Password</Label>
+              <Label htmlFor="password" className="text-white">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                 'Access to all 3 tools',
                 'Credits never expire'
               ].map((item, i) => (
-                <div key={i} className="flex items-center text-slate-300 text-sm">
+                <div key={i} className="flex items-center text-white text-sm">
                   <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
                   {item}
                 </div>
