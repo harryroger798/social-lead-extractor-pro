@@ -41,8 +41,10 @@ export default function VerifyEmailPendingPage() {
       
       if (data.already_verified) {
         setAlreadyVerified(true);
-        // Redirect to login after 3 seconds
-        setTimeout(() => navigate('/login'), 3000);
+        // Redirect to login after 3 seconds using window.location for reliability
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 3000);
       } else if (data.sent) {
         setResent(true);
         setTimeout(() => setResent(false), 5000);
@@ -95,7 +97,7 @@ export default function VerifyEmailPendingPage() {
                 </p>
               </div>
               <Button
-                onClick={() => navigate('/login')}
+                onClick={() => window.location.href = '/login'}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
               >
                 Go to Login
