@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 export default function VerifyEmailPendingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, updateUser } = useAuthStore();
+  const { user, logout } = useAuthStore();
   // Get email from location state (after registration) or from auth store (if user is logged in)
   const email = location.state?.email || user?.email || '';
   const [resending, setResending] = useState(false);
@@ -41,13 +41,13 @@ export default function VerifyEmailPendingPage() {
       
       if (data.already_verified) {
         setAlreadyVerified(true);
-        // Update auth store to mark user as verified
-        updateUser({ is_verified: true });
-        // Redirect to dashboard after 3 seconds (user is already verified)
+        // Logout and redirect to login - user will get fresh is_verified status when they log in
+        // This avoids race condition with localStorage persistence
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          logout();
+          window.location.href = '/login?verified=true';
         }, 3000);
-      } else if (data.sent) {
+      }else if (data.sent) {
         setResent(true);
         setTimeout(() => setResent(false), 5000);
       }
@@ -95,17 +95,17 @@ export default function VerifyEmailPendingPage() {
                   <span className="font-medium">Email Already Verified!</span>
                 </div>
                 <p className="text-gray-400 text-sm mt-2">
-                  Your account is already verified. Redirecting to dashboard...
+                  Your account is already verified. Please log in to continue.
                 </p>
               </div>
               <Button
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => { logout(); window.location.href = '/login?verified=true'; }}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
               >
-                Go to Dashboard
+                Go to Login
               </Button>
             </div>
-          ) : (
+          ): (
             <div className="space-y-4">
               <Button
                 onClick={handleResend}
