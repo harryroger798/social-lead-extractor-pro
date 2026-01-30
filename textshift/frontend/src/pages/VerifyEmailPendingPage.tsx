@@ -8,8 +8,9 @@ import { useAuthStore } from '@/store/authStore';
 export default function VerifyEmailPendingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
-  const email = location.state?.email || '';
+  const { user, logout } = useAuthStore();
+  // Get email from location state (after registration) or from auth store (if user is logged in)
+  const email = location.state?.email || user?.email || '';
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
 
@@ -68,24 +69,17 @@ export default function VerifyEmailPendingPage() {
           <div className="space-y-4">
             <Button
               onClick={handleResend}
-              disabled={resending || resent}
-              variant="outline"
-              className="w-full border-white/20 text-white hover:bg-white/5 rounded-full h-12"
+              disabled={resending || resent || !email}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
             >
               {resent ? (
-                <><CheckCircle className="w-4 h-4 mr-2 text-emerald-400" />Email Sent!</>
+                <><CheckCircle className="w-4 h-4 mr-2" />Email Sent!</>
               ) : resending ? (
                 <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Sending...</>
               ) : (
                 <><RefreshCw className="w-4 h-4 mr-2" />Resend Verification Email</>
               )}
             </Button>
-
-            <Link to="/verify-email">
-              <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12">
-                Enter Verification Code
-              </Button>
-            </Link>
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10">
