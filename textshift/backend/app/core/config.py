@@ -51,6 +51,19 @@ class Settings(BaseSettings):
     STARTER_TIER_CREDITS: int = 100000
     PRO_TIER_CREDITS: int = 500000
     
+    # Mailgun Email Service
+    MAILGUN_API_KEY: str = ""  # Set via environment variable
+    MAILGUN_DOMAIN: str = "mail.textshift.org"
+    MAILGUN_FROM_EMAIL: str = "noreply@mail.textshift.org"
+    MAILGUN_FROM_NAME: str = "TextShift"
+    
+    # Frontend URL for email links
+    FRONTEND_URL: str = "https://textshift.org"
+    
+    # Password reset token expiry (in minutes)
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 30
+    EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
