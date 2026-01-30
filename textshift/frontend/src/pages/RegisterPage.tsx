@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Loader2, CheckCircle, ArrowRight } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import { triggerConfetti } from '@/components/animations/ConfettiEffect';
+import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -24,8 +26,9 @@ export default function RegisterPage() {
     try {
       const response = await authApi.register(email, password, fullName);
       setAuth(response.access_token, response.user);
-      navigate('/dashboard');
-    } catch (err: any) {
+      triggerConfetti();
+      setTimeout(() => navigate('/dashboard'), 1500);
+    }catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
@@ -34,9 +37,9 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4 py-12">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-b from-emerald-500/20 via-emerald-500/5 to-transparent rounded-full blur-3xl" />
-      </div>
+      <ParticlesBackground />
+      <GradientBackground />
+      <NoiseOverlay />
 
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
