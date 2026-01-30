@@ -4,6 +4,9 @@ import { useAuthStore } from '@/store/authStore';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
+import VerifyEmailPage from '@/pages/VerifyEmailPage';
 import Dashboard from '@/pages/Dashboard';
 import PricingPage from '@/pages/PricingPage';
 
@@ -52,17 +55,37 @@ function App() {
               </PublicRoute>
             } 
           />
-          <Route 
-            path="/register" 
-            element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            } 
-          />
+                    <Route 
+                      path="/register" 
+                      element={
+                        <PublicRoute>
+                          <RegisterPage />
+                        </PublicRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/forgot-password" 
+                      element={
+                        <PublicRoute>
+                          <ForgotPasswordPage />
+                        </PublicRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/reset-password" 
+                      element={
+                        <PublicRoute>
+                          <ResetPasswordPage />
+                        </PublicRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/verify-email" 
+                      element={<VerifyEmailPage />} 
+                    />
           
-          <Route 
-            path="/dashboard" 
+                    <Route 
+                      path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />

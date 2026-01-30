@@ -66,19 +66,24 @@ export default function LoginPage() {
                 className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl h-12 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-300 text-sm">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl h-12 focus:border-emerald-500/50 focus:ring-emerald-500/20"
-              />
-            </div>
-            <Button
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="password" className="text-gray-300 text-sm">Password</Label>
+                            <Link to="/forgot-password" className="text-sm text-emerald-400 hover:text-emerald-300 transition">
+                              Forgot password?
+                            </Link>
+                          </div>
+                          <Input
+                            id="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl h-12 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+                          />
+                        </div>
+                        <Button
               type="submit"
               className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
               disabled={loading}
