@@ -10,6 +10,7 @@ import VerifyEmailPage from '@/pages/VerifyEmailPage';
 import VerifyEmailPendingPage from '@/pages/VerifyEmailPendingPage';
 import Dashboard from '@/pages/Dashboard';
 import PricingPage from '@/pages/PricingPage';
+import HistoryPage from '@/pages/HistoryPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +101,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <HistoryPage />
               </ProtectedRoute>
             } 
           />
