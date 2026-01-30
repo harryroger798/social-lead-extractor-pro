@@ -49,7 +49,7 @@ export default function RegisterPage() {
             <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
           </Link>
           <h1 className="text-3xl md:text-4xl font-light text-white mb-2">Create your account</h1>
-          <p className="text-gray-500">Start with 20,000 free credits</p>
+          <p className="text-gray-500">Start with 5,000 free words for AI Detection</p>
         </div>
 
         <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8">
@@ -111,7 +111,7 @@ export default function RegisterPage() {
           <div className="mt-6 pt-6 border-t border-white/10">
             <div className="text-gray-500 text-sm text-center mb-4">What you get:</div>
             <div className="space-y-3">
-              {['20,000 free credits', 'Access to all 3 tools', 'Credits never expire'].map((item, i) => (
+              {['5,000 free words/month', 'AI Detection included', 'Upgrade for all 3 tools'].map((item, i) => (
                 <div key={i} className="flex items-center text-gray-300 text-sm">
                   <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{item}
                 </div>

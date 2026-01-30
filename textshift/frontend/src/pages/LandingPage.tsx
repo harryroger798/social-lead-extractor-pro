@@ -45,10 +45,10 @@ export default function LandingPage() {
   };
 
     const faqs = [
-      { q: "What makes TextShift different?", a: "TextShift combines AI detection, humanization, and plagiarism checking in one platform with industry-leading 99% accuracy. Credits never expire, and we're 40-70% cheaper than competitors." },
+      { q: "What makes TextShift different?", a: "TextShift combines AI detection, humanization, and plagiarism checking in one platform with industry-leading 99% accuracy. Pro and Enterprise plans offer unlimited usage, and we're 40-70% cheaper than competitors." },
       { q: "How accurate is the AI detection?", a: "Our Advanced Neural Intelligence system achieves 99% accuracy with zero false positives, tested against all major AI writing tools including ChatGPT, Claude, and Gemini." },
-      { q: "Can I cancel my subscription anytime?", a: "Yes! You can cancel, pause, or change your plan at any time. Your unused credits roll over and never expire." },
-      { q: "How does the humanizer work?", a: "Our Natural Language Transformation Engine rewrites AI-generated text to sound authentically human while preserving your original meaning. It achieves 0% AI detection on all major detectors." },
+      { q: "What's included in the free plan?", a: "The free plan includes 5,000 words/month for AI Detection with 10 scans/day. Upgrade to Starter ($9/mo) for all 3 tools, or Pro ($19/mo) for unlimited usage." },
+      { q: "How does the humanizer work?", a: "Our Natural Language Transformation Engine rewrites AI-generated text to sound authentically human while preserving your original meaning. It achieves 0% AI detection on all major detectors. Available on Starter plan and above." },
       { q: "Is my content secure?", a: "Absolutely. We don't store your content after processing. All data is encrypted and protected at every step." }
     ];
 
@@ -203,7 +203,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>20,000 free credits</span>
+                <span>5,000 free words</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
@@ -461,10 +461,10 @@ export default function LandingPage() {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: 'Free', price: '$0', credits: '20,000', features: ['All 3 tools', 'Basic support', 'Credits never expire'], cta: 'Get Started', highlight: false },
-              { name: 'Starter', price: '$7', credits: '100,000', features: ['All 3 tools', 'Priority processing', 'Email support', 'Credits rollover'], cta: 'Subscribe', highlight: false },
-              { name: 'Pro', price: '$15', credits: '500,000', features: ['All 3 tools', 'API access', 'Batch processing', 'Priority support', 'Credits rollover'], cta: 'Subscribe', highlight: true },
-              { name: 'Enterprise', price: '$40', credits: 'Unlimited', features: ['All 3 tools', 'White-label option', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+              { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic support'], cta: 'Get Started', highlight: false },
+              { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'Email support', 'Priority processing'], cta: 'Subscribe', highlight: false },
+              { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', highlight: true },
+              { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'White-label API', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
@@ -613,7 +613,7 @@ export default function LandingPage() {
             <h2 className="text-4xl sm:text-5xl md:text-7xl font-light text-white mb-8">Let's <span className="text-emerald-400">talk.</span></h2>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto">Ready to transform your content workflow? Start with 20,000 free credits today.</p>
+            <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto">Ready to transform your content workflow? Start with 5,000 free words today.</p>
           </ScrollReveal>
           <ScrollReveal delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
