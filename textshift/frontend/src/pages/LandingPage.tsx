@@ -527,9 +527,9 @@ export default function LandingPage() {
           
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { quote: "TextShift's AI detection is incredibly accurate. It's become an essential tool for our content team.", author: "Sarah M.", role: "Content Manager", company: "TechCorp" },
-              { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James K.", role: "Marketing Director", company: "GrowthLabs" },
-              { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily R.", role: "University Professor", company: "Stanford" }
+              { quote: "TextShift's AI detection is incredibly accurate. It's become an essential tool for our content team.", author: "Sarah M.", role: "Content Manager", company: "TechCorp", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" },
+              { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James K.", role: "Marketing Director", company: "GrowthLabs", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" },
+              { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily R.", role: "University Professor", company: "Stanford", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" }
             ].map((testimonial, i) => (
               <ScrollReveal key={i} delay={i * 0.15}>
                 <TiltCard className="h-full">
@@ -548,7 +548,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-lg md:text-xl font-medium text-white mb-4">"{testimonial.quote}"</h3>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-full" />
+                      <img src={testimonial.avatar} alt={testimonial.author} className="w-10 h-10 rounded-full object-cover" />
                       <div>
                         <div className="font-medium text-white">{testimonial.author}</div>
                         <div className="text-gray-500 text-sm">{testimonial.role} - {testimonial.company}</div>
