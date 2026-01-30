@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Sparkles, 
   CheckCircle, 
   ArrowLeft,
-  Loader2
+  Loader2,
+  ChevronDown,
+  ArrowRight
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { paymentApi } from '@/lib/api';
@@ -22,44 +21,22 @@ export default function PricingPage() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const plans = [
-    {
-      id: 'free',
-      name: 'Free',
-      price: '$0',
-      credits: '20,000',
-      features: ['All 3 tools', 'Basic support', 'Credits never expire'],
-      cta: 'Get Started',
-      popular: false
-    },
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: '$7',
-      credits: '100,000',
-      features: ['All 3 tools', 'Priority processing', 'Email support', 'Credits rollover'],
-      cta: 'Subscribe',
-      popular: false
-    },
-    {
-      id: 'pro',
-      name: 'Pro',
-      price: '$15',
-      credits: '500,000',
-      features: ['All 3 tools', 'API access', 'Batch processing', 'Priority support', 'Credits rollover'],
-      cta: 'Subscribe',
-      popular: true
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: '$40',
-      credits: 'Unlimited',
-      features: ['All 3 tools', 'White-label option', 'Dedicated support', 'Custom integrations', 'SLA guarantee'],
-      cta: 'Contact Sales',
-      popular: false
-    }
+    { id: 'free', name: 'Free', price: '$0', credits: '20,000', features: ['All 3 tools', 'Basic support', 'Credits never expire'], cta: 'Get Started', popular: false },
+    { id: 'starter', name: 'Starter', price: '$7', credits: '100,000', features: ['All 3 tools', 'Priority processing', 'Email support', 'Credits rollover'], cta: 'Subscribe', popular: false },
+    { id: 'pro', name: 'Pro', price: '$15', credits: '500,000', features: ['All 3 tools', 'API access', 'Batch processing', 'Priority support', 'Credits rollover'], cta: 'Subscribe', popular: true },
+    { id: 'enterprise', name: 'Enterprise', price: '$40', credits: 'Unlimited', features: ['All 3 tools', 'White-label option', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
+  ];
+
+  const faqs = [
+    { q: 'Do credits expire?', a: 'No! Unlike our competitors, your credits never expire. Use them whenever you need.' },
+    { q: 'Can I upgrade or downgrade my plan?', a: 'Yes, you can change your plan at any time. Your unused credits will carry over.' },
+    { q: 'What payment methods do you accept?', a: 'We accept PayPal for secure payments. You can pay with your PayPal balance, bank account, or credit/debit card through PayPal.' },
+    { q: 'Is there a free trial?', a: 'Yes! Every new account gets 20,000 free credits to try all our tools.' },
+    { q: 'How accurate is the AI detection?', a: 'Our AI detection has 99.18% accuracy with 0% false positives, tested against major AI models.' },
+    { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked. Your credits remain valid.' }
   ];
 
   const handleSubscribe = async (planId: string) => {
@@ -67,22 +44,17 @@ export default function PricingPage() {
       navigate('/register');
       return;
     }
-
     if (planId === 'free') {
       navigate('/dashboard');
       return;
     }
-
     if (planId === 'enterprise') {
       window.location.href = 'mailto:support@textshift.org?subject=Enterprise%20Plan%20Inquiry';
       return;
     }
-
     setLoading(planId);
     try {
       const order = await paymentApi.createOrder(planId);
-      
-      // Redirect to PayPal
       if (order.approval_url) {
         window.location.href = order.approval_url;
       }
@@ -95,36 +67,32 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Navigation */}
-      <nav className="border-b border-slate-700/50 backdrop-blur-sm bg-slate-900/80">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-b from-emerald-500/20 via-emerald-500/5 to-transparent rounded-full blur-3xl" />
+      </div>
+
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">TextShift</span>
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button variant="outline" className="border-slate-600 text-white">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Dashboard
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full">
+                    <ArrowLeft className="w-4 h-4 mr-2" />Back to Dashboard
                   </Button>
                 </Link>
               ) : (
                 <>
                   <Link to="/login">
-                    <Button variant="ghost" className="text-white hover:text-blue-400">
-                      Log in
-                    </Button>
+                    <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
                   </Link>
                   <Link to="/register">
-                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600">
-                      Get Started
-                    </Button>
+                    <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full px-6">Get Started</Button>
                   </Link>
                 </>
               )}
@@ -133,117 +101,80 @@ export default function PricingPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Simple, Transparent Pricing
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white mb-4">
+            Plans to suit <span className="text-emerald-400">your needs</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Credits never expire. No hidden fees. Cancel anytime.
-            Pay with PayPal for secure transactions.
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Credits never expire. No hidden fees. Cancel anytime. Pay with PayPal for secure transactions.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {plans.map((plan) => (
-            <Card 
+            <div 
               key={plan.id} 
-              className={`relative bg-slate-800/50 border-slate-700 ${plan.popular ? 'border-purple-500 ring-2 ring-purple-500/20' : ''}`}
+              className={`relative bg-gradient-to-b from-white/5 to-transparent border rounded-3xl p-6 md:p-8 ${
+                plan.popular ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-white/10'
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-purple-500 text-white">Most Popular</Badge>
+                  <span className="bg-emerald-500 text-black text-xs font-medium px-3 py-1 rounded-full">Most Popular</span>
                 </div>
               )}
-              <CardHeader className="text-center">
-                <CardTitle className="text-white">{plan.name}</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  {plan.price !== '$0' && <span className="text-slate-400">/month</span>}
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
+                <div className="mb-2">
+                  <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
+                  {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
                 </div>
-                <div className="text-slate-400 mt-2">
-                  {plan.credits} credits
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-center text-white">
-                      <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={loading === plan.id}
-                  className={`w-full ${plan.popular ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-slate-700 hover:bg-slate-600'}`}
-                >
-                  {loading === plan.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    plan.cta
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+                <div className="text-gray-500 text-sm">{plan.credits} credits</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((feature, j) => (
+                  <li key={j} className="flex items-center text-gray-300 text-sm">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                onClick={() => handleSubscribe(plan.id)}
+                disabled={loading === plan.id}
+                className={`w-full rounded-full ${
+                  plan.popular ? 'bg-emerald-500 hover:bg-emerald-600 text-black' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                }`}
+              >
+                {loading === plan.id ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>) : plan.cta}
+              </Button>
+            </div>
           ))}
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-20">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
-            Frequently Asked Questions
+        <div className="max-w-3xl mx-auto mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white text-center mb-12">
+            <span className="text-emerald-400">FAQ</span>
           </h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                q: 'Do credits expire?',
-                a: 'No! Unlike our competitors, your credits never expire. Use them whenever you need.'
-              },
-              {
-                q: 'Can I upgrade or downgrade my plan?',
-                a: 'Yes, you can change your plan at any time. Your unused credits will carry over.'
-              },
-              {
-                q: 'What payment methods do you accept?',
-                a: 'We accept PayPal for secure payments. You can pay with your PayPal balance, bank account, or credit/debit card through PayPal.'
-              },
-              {
-                q: 'Is there a free trial?',
-                a: 'Yes! Every new account gets 20,000 free credits to try all our tools.'
-              },
-              {
-                q: 'How accurate is the AI detection?',
-                a: 'Our AI detection has 99.18% accuracy with 0% false positives, tested against major AI models.'
-              },
-              {
-                q: 'Can I cancel anytime?',
-                a: 'Absolutely. Cancel your subscription anytime with no questions asked. Your credits remain valid.'
-              }
-            ].map((faq, i) => (
-              <div key={i} className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-                <h3 className="text-white font-semibold mb-2">{faq.q}</h3>
-                <p className="text-slate-400">{faq.a}</p>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden">
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between p-5 md:p-6 text-left">
+                  <span className="text-white font-medium pr-4">{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaq === i && (<div className="px-5 md:px-6 pb-5 md:pb-6 text-gray-400">{faq.a}</div>)}
               </div>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="mt-20 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">
-            Still have questions?
-          </h2>
-          <p className="text-slate-400 mb-6">
-            Contact our support team and we'll help you find the right plan.
-          </p>
+        <div className="text-center py-12 border-t border-white/10">
+          <h2 className="text-2xl md:text-3xl font-light text-white mb-4">Still have questions?</h2>
+          <p className="text-gray-400 mb-8">Contact our support team and we'll help you find the right plan.</p>
           <a href="mailto:support@textshift.org">
-            <Button variant="outline" className="border-slate-600 text-white">
-              Contact Support
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full px-8">
+              Contact Support <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </a>
         </div>

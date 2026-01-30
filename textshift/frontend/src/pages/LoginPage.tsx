@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 
@@ -33,29 +32,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
-        <CardHeader className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-white">TextShift</span>
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-b from-emerald-500/20 via-emerald-500/5 to-transparent rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md relative">
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
           </Link>
-          <CardTitle className="text-white">Welcome back</CardTitle>
-          <CardDescription className="text-slate-400">
-            Sign in to your account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <h1 className="text-3xl md:text-4xl font-light text-white mb-2">Welcome back</h1>
+          <p className="text-gray-500">Sign in to your account to continue</p>
+        </div>
+
+        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-sm">
                 {error}
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Email</Label>
+              <Label htmlFor="email" className="text-gray-300 text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -63,44 +63,40 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-500"
+                className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl h-12 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Password</Label>
+              <Label htmlFor="password" className="text-gray-300 text-sm">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-500"
+                className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl h-12 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </div>
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
               disabled={loading}
             >
               {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Signing in...</>
               ) : (
-                'Sign in'
+                <>Sign in <ArrowRight className="w-4 h-4 ml-2" /></>
               )}
             </Button>
           </form>
-          <div className="mt-6 text-center text-slate-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-400 hover:text-blue-300">
-              Sign up
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="mt-8 text-center text-gray-500">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-emerald-400 hover:text-emerald-300 transition">Sign up</Link>
+        </div>
+      </div>
     </div>
   );
 }
