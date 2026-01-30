@@ -94,7 +94,7 @@ async def contact_sales(request: ContactSalesRequest):
         """
         
         # Send to sales team
-        await email_service.send_email(
+        email_service.send_email(
             to_email="harryroger798@gmail.com",
             subject=subject,
             html_content=html_content,
@@ -136,7 +136,7 @@ async def contact_sales(request: ContactSalesRequest):
         </html>
         """
         
-        await email_service.send_email(
+        email_service.send_email(
             to_email=request.email,
             subject=confirmation_subject,
             html_content=confirmation_html,

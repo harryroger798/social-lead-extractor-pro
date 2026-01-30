@@ -1,4 +1,4 @@
-import httpx
+import requests
 import secrets
 from datetime import datetime
 from typing import Optional
@@ -122,7 +122,7 @@ class EmailService:
         self.from_email = f"{settings.MAILGUN_FROM_NAME} <{settings.MAILGUN_FROM_EMAIL}>"
         self.base_url = f"https://api.mailgun.net/v3/{self.domain}"
     
-    async def send_email(
+    def send_email(
         self,
         to_email: str,
         subject: str,
@@ -130,24 +130,24 @@ class EmailService:
         text_content: Optional[str] = None
     ) -> bool:
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    f"{self.base_url}/messages",
-                    auth=("api", self.api_key),
-                    data={
-                        "from": self.from_email,
-                        "to": to_email,
-                        "subject": subject,
-                        "html": html_content,
-                        "text": text_content or html_content
-                    }
-                )
-                return response.status_code == 200
+            response = requests.post(
+                f"{self.base_url}/messages",
+                auth=("api", self.api_key),
+                data={
+                    "from": self.from_email,
+                    "to": to_email,
+                    "subject": subject,
+                    "html": html_content,
+                    "text": text_content or html_content
+                },
+                timeout=30
+            )
+            return response.status_code == 200
         except Exception as e:
             print(f"Email sending failed: {e}")
             return False
     
-    async def send_verification_email(self, to_email: str, token: str) -> bool:
+    def send_verification_email(self, to_email: str, token: str) -> bool:
         verification_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
         
         content = f"""
@@ -204,14 +204,14 @@ This link expires in 24 hours. If you didn't create an account, you can safely i
 - The TextShift Team
         """
         
-        return await self.send_email(
+        return self.send_email(
             to_email=to_email,
             subject="Verify Your Email - TextShift",
             html_content=html_content,
             text_content=text_content
         )
     
-    async def send_password_reset_email(self, to_email: str, token: str) -> bool:
+    def send_password_reset_email(self, to_email: str, token: str) -> bool:
         reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
         
         content = f"""
@@ -270,14 +270,14 @@ If you didn't request this reset, please ignore this email.
 - The TextShift Team
         """
         
-        return await self.send_email(
+        return self.send_email(
             to_email=to_email,
             subject="Reset Your Password - TextShift",
             html_content=html_content,
             text_content=text_content
         )
     
-    async def send_welcome_email(self, to_email: str, full_name: Optional[str] = None) -> bool:
+    def send_welcome_email(self, to_email: str, full_name: Optional[str] = None) -> bool:
         name = full_name.split()[0] if full_name else "there"
         dashboard_url = f"{settings.FRONTEND_URL}/dashboard"
         
@@ -392,14 +392,14 @@ Need help? Reply to this email or visit our website.
 - The TextShift Team
         """
         
-        return await self.send_email(
+        return self.send_email(
             to_email=to_email,
             subject="Welcome to TextShift! Your Account is Ready",
             html_content=html_content,
             text_content=text_content
         )
     
-    async def send_subscription_confirmation(self, to_email: str, plan_name: str, credits: int, full_name: Optional[str] = None) -> bool:
+    def send_subscription_confirmation(self, to_email: str, plan_name: str, credits: int, full_name: Optional[str] = None) -> bool:
         name = full_name.split()[0] if full_name else "there"
         dashboard_url = f"{settings.FRONTEND_URL}/dashboard"
         credits_display = "Unlimited" if credits == -1 else f"{credits:,}"
@@ -470,7 +470,7 @@ Go to Dashboard: {dashboard_url}
 - The TextShift Team
         """
         
-        return await self.send_email(
+        return self.send_email(
             to_email=to_email,
             subject=f"Subscription Confirmed - {plan_name} Plan",
             html_content=html_content,
