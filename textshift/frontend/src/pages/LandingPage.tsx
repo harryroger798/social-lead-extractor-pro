@@ -44,13 +44,13 @@ export default function LandingPage() {
     }
   };
 
-  const faqs = [
-    { q: "What makes TextShift different?", a: "TextShift combines AI detection, humanization, and plagiarism checking in one platform with 99.18% accuracy. Credits never expire, and we're 40-70% cheaper than competitors." },
-    { q: "How accurate is the AI detection?", a: "Our RoBERTa-based model achieves 99.18% accuracy with 0% false positives, tested against all major AI writing tools including GPT-4, Claude, and Gemini." },
-    { q: "Can I cancel my subscription anytime?", a: "Yes! You can cancel, pause, or change your plan at any time. Your unused credits roll over and never expire." },
-    { q: "How does the humanizer work?", a: "Our T5-based humanizer rewrites AI-generated text to sound natural while preserving meaning. It achieves 0% AI detection on all major detectors." },
-    { q: "Is my content secure?", a: "Absolutely. We don't store your content after processing. All data is encrypted in transit and at rest." }
-  ];
+    const faqs = [
+      { q: "What makes TextShift different?", a: "TextShift combines AI detection, humanization, and plagiarism checking in one platform with industry-leading 99% accuracy. Credits never expire, and we're 40-70% cheaper than competitors." },
+      { q: "How accurate is the AI detection?", a: "Our Advanced Neural Intelligence system achieves 99% accuracy with zero false positives, tested against all major AI writing tools including ChatGPT, Claude, and Gemini." },
+      { q: "Can I cancel my subscription anytime?", a: "Yes! You can cancel, pause, or change your plan at any time. Your unused credits roll over and never expire." },
+      { q: "How does the humanizer work?", a: "Our Natural Language Transformation Engine rewrites AI-generated text to sound authentically human while preserving your original meaning. It achieves 0% AI detection on all major detectors." },
+      { q: "Is my content secure?", a: "Absolutely. We don't store your content after processing. All data is encrypted and protected at every step." }
+    ];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
@@ -164,9 +164,9 @@ export default function LandingPage() {
           </ScrollReveal>
           
           <ScrollReveal delay={0.2}>
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-              The most accurate AI detection, humanization, and plagiarism checking platform. 99.18% accuracy. Credits never expire.
-            </p>
+                        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                          The most accurate AI detection, humanization, and plagiarism checking platform. Industry-leading 99% accuracy. Credits never expire.
+                        </p>
           </ScrollReveal>
           
           <ScrollReveal delay={0.4}>
@@ -254,7 +254,7 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-16 md:mb-20">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Our <span className="text-emerald-400">Tools</span></h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Three powerful tools, one platform. Everything you need to ensure your content is original, human-like, and plagiarism-free.</p>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
             </div>
           </ScrollReveal>
           
@@ -274,8 +274,8 @@ export default function LandingPage() {
                     >
                       <Shield className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
                     </motion.div>
-                    <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
-                    <p className="text-gray-400 mb-6">Detect AI-generated content with 99.18% accuracy using our RoBERTa-based model.</p>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
+                                        <p className="text-gray-400 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
                     <ul className="space-y-3">
                       {['10-level confidence analysis', 'Sentence-by-sentence breakdown', 'All major AI models supported', 'Real-time detection'].map((item, i) => (
                         <motion.li 
@@ -309,8 +309,8 @@ export default function LandingPage() {
                     >
                       <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
                     </motion.div>
-                    <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
-                    <p className="text-gray-400 mb-6">Transform AI text to bypass all detectors while maintaining meaning and quality.</p>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
+                                        <p className="text-gray-400 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
                     <ul className="space-y-3">
                       {['0% AI detection after humanization', 'Preserves original meaning', 'Natural writing style', 'Multiple tone options'].map((item, i) => (
                         <motion.li 
@@ -344,8 +344,8 @@ export default function LandingPage() {
                     >
                       <Search className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
                     </motion.div>
-                    <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
-                    <p className="text-gray-400 mb-6">Check for plagiarism against billions of sources with web search integration.</p>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
+                                        <p className="text-gray-400 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
                     <ul className="space-y-3">
                       {['99.95% accuracy', 'Web source detection', 'Paraphrase detection', 'Detailed source reports'].map((item, i) => (
                         <motion.li 
@@ -370,16 +370,16 @@ export default function LandingPage() {
       <section className="py-16 md:py-20 px-6 border-y border-white/10">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {[
-              { value: 99.18, suffix: '%', label: 'Detection Accuracy' },
-              { value: 0, suffix: '%', label: 'False Positives' },
-              { value: 50, suffix: 'K+', label: 'Users Trust Us' },
-              { value: 10, suffix: 'M+', label: 'Texts Analyzed' },
-            ].map((stat, i) => (
+                        {[
+                          { value: 99, suffix: '%', label: 'Detection Accuracy' },
+                          { value: 0, suffix: '%', label: 'False Positives' },
+                          { value: 50, suffix: 'K+', label: 'Users Trust Us' },
+                          { value: 10, suffix: 'M+', label: 'Texts Analyzed' },
+                        ].map((stat, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <div className="text-center">
                   <div className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-2">
-                    <AnimatedCounter end={stat.value} suffix={stat.suffix} decimals={stat.value === 99.18 ? 2 : 0} />
+                    <AnimatedCounter end={stat.value} suffix={stat.suffix} decimals={0} />
                   </div>
                   <div className="text-gray-500 text-xs md:text-sm uppercase tracking-wider">{stat.label}</div>
                 </div>

@@ -93,11 +93,11 @@ export default function Dashboard() {
     }
   };
 
-  const tabs = [
-    { id: 'detect', label: 'AI Detection', icon: Shield, color: 'emerald', description: 'Detect if text is AI-generated with 99.18% accuracy. Get sentence-level analysis.' },
-    { id: 'humanize', label: 'Humanizer', icon: Sparkles, color: 'purple', description: 'Transform AI-generated text to bypass all detectors while preserving meaning.' },
-    { id: 'plagiarism', label: 'Plagiarism', icon: Search, color: 'blue', description: 'Check for plagiarism against billions of sources including web pages.' }
-  ];
+    const tabs = [
+      { id: 'detect', label: 'AI Detection', icon: Shield, color: 'emerald', description: 'Powered by Advanced Neural Intelligence - spot machine-generated content with 99% accuracy.' },
+      { id: 'humanize', label: 'Humanizer', icon: Sparkles, color: 'purple', description: 'Transform robotic text into authentic, human-sounding content while preserving your meaning.' },
+      { id: 'plagiarism', label: 'Plagiarism', icon: Search, color: 'blue', description: 'Scan your content against billions of web pages and documents in real-time.' }
+    ];
 
   const activeTabData = tabs.find(t => t.id === activeTab);
 

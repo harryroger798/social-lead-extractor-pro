@@ -35,7 +35,7 @@ export default function PricingPage() {
     { q: 'Can I upgrade or downgrade my plan?', a: 'Yes, you can change your plan at any time. Your unused credits will carry over.' },
     { q: 'What payment methods do you accept?', a: 'We accept PayPal for secure payments. You can pay with your PayPal balance, bank account, or credit/debit card through PayPal.' },
     { q: 'Is there a free trial?', a: 'Yes! Every new account gets 20,000 free credits to try all our tools.' },
-    { q: 'How accurate is the AI detection?', a: 'Our AI detection has 99.18% accuracy with 0% false positives, tested against major AI models.' },
+    { q: 'How accurate is the AI detection?', a: 'Our Advanced Neural Intelligence achieves industry-leading 99% accuracy with zero false positives, tested against all major AI writing tools.' },
     { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked. Your credits remain valid.' }
   ];
 
