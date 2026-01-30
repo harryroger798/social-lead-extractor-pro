@@ -14,7 +14,8 @@ import {
   ChevronDown,
   Star,
   Menu,
-  X
+  X,
+  LayoutDashboard
 } from 'lucide-react';
 import {
   ParticlesBackground,
@@ -27,12 +28,14 @@ import {
   GradientBackground,
   NoiseOverlay,
 } from '@/components/animations';
+import { useAuthStore } from '@/store/authStore';
 
 export default function LandingPage() {
   const [demoText, setDemoText] = useState('');
   const [demoResult, setDemoResult] = useState<null | { type: string; score: number }>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuthStore();
 
   const handleDemoCheck = () => {
     if (demoText.length > 20) {
@@ -89,14 +92,35 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
-            </Link>
-            <MagneticButton>
-              <Link to="/register">
-                <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/20 rounded-full px-6 transition-all duration-300">Get Started</Button>
-              </Link>
-            </MagneticButton>
+            {isAuthenticated ? (
+              <>
+                <Link to="/dashboard">
+                  <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5 flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <MagneticButton>
+                  <Button 
+                    onClick={() => logout()}
+                    className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/20 rounded-full px-6 transition-all duration-300"
+                  >
+                    Log out
+                  </Button>
+                </MagneticButton>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
+                </Link>
+                <MagneticButton>
+                  <Link to="/register">
+                    <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/20 rounded-full px-6 transition-all duration-300">Get Started</Button>
+                  </Link>
+                </MagneticButton>
+              </>
+            )}
           </div>
 
           <button className="md:hidden text-white p-2 cursor-auto" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -118,12 +142,31 @@ export default function LandingPage() {
               <a href="#faq" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
               <a href="#contact" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Contact</a>
               <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
-                </Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full">Get Started</Button>
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-center gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button 
+                      onClick={() => { logout(); setMobileMenuOpen(false); }}
+                      className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full"
+                    >
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
+                    </Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full">Get Started</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
@@ -172,9 +215,9 @@ export default function LandingPage() {
           <ScrollReveal delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <MagneticButton>
-                <Link to="/register">
+                <Link to={isAuthenticated ? "/dashboard" : "/register"}>
                   <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
-                    Start Free
+                    {isAuthenticated ? "Go to Dashboard" : "Start Free"}
                     <motion.span
                       className="ml-2"
                       animate={{ x: [0, 5, 0] }}

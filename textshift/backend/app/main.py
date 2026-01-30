@@ -6,6 +6,7 @@ import logging
 from app.core.database import engine, Base
 from app.core.config import settings
 from app.routers import auth, scan, credits, payment, api_keys, batch, contact
+from app.models import User, Scan, CreditTransaction, Subscription, APIKey  # Import models to register with Base
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
