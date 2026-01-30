@@ -485,7 +485,7 @@ export default function LandingPage() {
                         <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
                         {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
                       </div>
-                      <div className="text-gray-500 text-sm">{plan.credits} credits</div>
+                      <div className="text-gray-500 text-sm">{plan.credits}</div>
                     </div>
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feature, j) => (
