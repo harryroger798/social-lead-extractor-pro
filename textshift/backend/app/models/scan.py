@@ -47,6 +47,10 @@ class Scan(Base):
     # Credits
     credits_used = Column(Integer, default=0)
     
+    # Priority processing (higher = more priority)
+    # 0 = Free, 1 = Starter, 2 = Pro, 3 = Enterprise
+    priority = Column(Integer, default=0)
+    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)

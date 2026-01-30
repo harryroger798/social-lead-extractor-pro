@@ -6,10 +6,11 @@ import {
   ArrowLeft,
   Loader2,
   ChevronDown,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
-import { paymentApi } from '@/lib/api';
+import { paymentApi, contactApi } from '@/lib/api';
 
 declare global {
   interface Window {
@@ -18,10 +19,20 @@ declare global {
 }
 
 export default function PricingPage() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: user?.email || '',
+    company: '',
+    phone: '',
+    message: ''
+  });
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
 
   const plans = [
     { id: 'free', name: 'Free', price: '$0', credits: '20,000', features: ['All 3 tools', 'Basic support', 'Credits never expire'], cta: 'Get Started', popular: false },
@@ -39,6 +50,23 @@ export default function PricingPage() {
     { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked. Your credits remain valid.' }
   ];
 
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactLoading(true);
+    try {
+      await contactApi.contactSales({
+        ...contactForm,
+        plan_interest: 'enterprise'
+      });
+      setContactSuccess(true);
+    } catch (error) {
+      console.error('Failed to submit contact form:', error);
+      alert('Failed to submit. Please try again or email us at harryroger798@gmail.com');
+    } finally {
+      setContactLoading(false);
+    }
+  };
+
   const handleSubscribe = async (planId: string) => {
     if (!isAuthenticated) {
       navigate('/register');
@@ -49,7 +77,7 @@ export default function PricingPage() {
       return;
     }
     if (planId === 'enterprise') {
-      window.location.href = 'mailto:support@textshift.org?subject=Enterprise%20Plan%20Inquiry';
+      setShowContactModal(true);
       return;
     }
     setLoading(planId);
@@ -179,6 +207,135 @@ export default function PricingPage() {
           </a>
         </div>
       </div>
+
+      {/* Contact Sales Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !contactLoading && setShowContactModal(false)} />
+          <div className="relative w-full max-w-lg bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => !contactLoading && setShowContactModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {contactSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-medium text-white mb-3">Thank You!</h3>
+                <p className="text-gray-400 mb-6">
+                  We've received your inquiry and our team will contact you within 24 hours.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setShowContactModal(false);
+                    setContactSuccess(false);
+                    setContactForm({ name: '', email: user?.email || '', company: '', phone: '', message: '' });
+                  }}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-8"
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-8">
+                  <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">🏢</span>
+                  </div>
+                  <h3 className="text-2xl font-medium text-white mb-2">Contact Sales</h3>
+                  <p className="text-gray-400">
+                    Get a custom Enterprise plan tailored to your organization's needs.
+                  </p>
+                </div>
+
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                      placeholder="John Smith"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Work Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                      placeholder="john@company.com"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Company</label>
+                      <input
+                        type="text"
+                        value={contactForm.company}
+                        onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="Acme Inc."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
+                      <input
+                        type="tel"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="+1 (555) 000-0000"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">How can we help? *</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all resize-none"
+                      placeholder="Tell us about your team size, use case, and any specific requirements..."
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={contactLoading}
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium py-3 rounded-full transition-all"
+                  >
+                    {contactLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      'Send Message'
+                    )}
+                  </Button>
+
+                  <p className="text-center text-gray-500 text-sm">
+                    We'll respond within 24 hours. No spam, ever.
+                  </p>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

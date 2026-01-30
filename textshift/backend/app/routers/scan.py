@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from app.core.database import get_db
 from app.core.security import get_current_active_user
-from app.models.user import User
+from app.models.user import User, SubscriptionTier
 from app.models.scan import Scan, ScanType, ScanStatus
 from app.schemas.scan import ScanCreate, ScanResponse, ScanListResponse
 from app.services.credit_service import calculate_credits_needed, deduct_credits
@@ -14,6 +14,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/scan", tags=["Scanning"])
+
+
+def get_priority_for_tier(tier: SubscriptionTier) -> int:
+    """Get processing priority based on subscription tier.
+    Higher number = higher priority (processed first).
+    """
+    priority_map = {
+        SubscriptionTier.FREE: 0,
+        SubscriptionTier.STARTER: 1,
+        SubscriptionTier.PRO: 2,
+        SubscriptionTier.ENTERPRISE: 3
+    }
+    return priority_map.get(tier, 0)
 
 
 def process_scan(scan_id: int, db: Session):
@@ -75,6 +88,9 @@ async def detect_ai(
             detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
         )
     
+    # Get priority based on subscription tier
+    priority = get_priority_for_tier(current_user.subscription_tier)
+    
     # Create scan record
     scan = Scan(
         user_id=current_user.id,
@@ -82,6 +98,7 @@ async def detect_ai(
         input_text=scan_data.text,
         input_length=len(scan_data.text),
         credits_used=credits_needed,
+        priority=priority,
         status=ScanStatus.PENDING
     )
     db.add(scan)
@@ -138,6 +155,9 @@ async def humanize_text(
             detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
         )
     
+    # Get priority based on subscription tier
+    priority = get_priority_for_tier(current_user.subscription_tier)
+    
     # Create scan record
     scan = Scan(
         user_id=current_user.id,
@@ -145,6 +165,7 @@ async def humanize_text(
         input_text=scan_data.text,
         input_length=len(scan_data.text),
         credits_used=credits_needed,
+        priority=priority,
         status=ScanStatus.PENDING
     )
     db.add(scan)
@@ -200,6 +221,9 @@ async def check_plagiarism(
             detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
         )
     
+    # Get priority based on subscription tier
+    priority = get_priority_for_tier(current_user.subscription_tier)
+    
     # Create scan record
     scan = Scan(
         user_id=current_user.id,
@@ -207,6 +231,7 @@ async def check_plagiarism(
         input_text=scan_data.text,
         input_length=len(scan_data.text),
         credits_used=credits_needed,
+        priority=priority,
         status=ScanStatus.PENDING
     )
     db.add(scan)

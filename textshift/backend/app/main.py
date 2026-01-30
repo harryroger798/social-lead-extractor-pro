@@ -5,7 +5,7 @@ import logging
 
 from app.core.database import engine, Base
 from app.core.config import settings
-from app.routers import auth, scan, credits, payment
+from app.routers import auth, scan, credits, payment, api_keys, batch, contact
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +44,9 @@ app.include_router(auth.router)
 app.include_router(scan.router)
 app.include_router(credits.router)
 app.include_router(payment.router)
+app.include_router(api_keys.router)
+app.include_router(batch.router)
+app.include_router(contact.router)
 
 
 @app.get("/healthz")

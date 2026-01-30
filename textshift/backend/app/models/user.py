@@ -49,13 +49,19 @@ class User(Base):
     scans = relationship("Scan", back_populates="user")
     credit_transactions = relationship("CreditTransaction", back_populates="user")
     subscriptions = relationship("Subscription", back_populates="user")
+    api_keys = relationship("APIKey", back_populates="user")
 
     def has_enough_credits(self, amount: int) -> bool:
+        # -1 means unlimited credits (Enterprise tier)
+        if self.credits_balance == -1:
+            return True
         return self.credits_balance >= amount
 
     def deduct_credits(self, amount: int) -> bool:
         if self.has_enough_credits(amount):
-            self.credits_balance -= amount
+            # Don't deduct from unlimited credits (-1)
+            if self.credits_balance != -1:
+                self.credits_balance -= amount
             self.credits_used_total += amount
             return True
         return False

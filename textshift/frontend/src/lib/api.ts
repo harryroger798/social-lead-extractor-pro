@@ -141,6 +141,57 @@ export const creditsApi = {
   },
 };
 
+// Contact API
+export const contactApi = {
+  contactSales: async (data: {
+    name: string;
+    email: string;
+    company?: string;
+    phone?: string;
+    message: string;
+    plan_interest?: string;
+  }) => {
+    const response = await api.post('/api/contact/sales', data);
+    return response.data;
+  },
+};
+
+// API Keys API (Pro+ only)
+export const apiKeysApi = {
+  generate: async (name?: string) => {
+    const response = await api.post('/api/keys/generate', { name });
+    return response.data;
+  },
+
+  list: async () => {
+    const response = await api.get('/api/keys/list');
+    return response.data;
+  },
+
+  revoke: async (keyId: number) => {
+    const response = await api.delete(`/api/keys/${keyId}`);
+    return response.data;
+  },
+};
+
+// Batch API (Pro+ only)
+export const batchApi = {
+  detectAI: async (items: { text: string; id?: string }[]) => {
+    const response = await api.post('/api/batch/detect', { items });
+    return response.data;
+  },
+
+  humanize: async (items: { text: string; id?: string }[]) => {
+    const response = await api.post('/api/batch/humanize', { items });
+    return response.data;
+  },
+
+  checkPlagiarism: async (items: { text: string; id?: string }[]) => {
+    const response = await api.post('/api/batch/plagiarism', { items });
+    return response.data;
+  },
+};
+
 // Payment API
 export const paymentApi = {
   getPlans: async () => {
