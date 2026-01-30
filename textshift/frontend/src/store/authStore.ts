@@ -10,6 +10,7 @@ interface User {
   credits_used_total: number;
   is_active: boolean;
   is_admin: boolean;
+  is_verified: boolean;
   created_at: string;
 }
 

@@ -16,7 +16,8 @@ import {
   Copy,
   CheckCircle,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
+  Mail
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { scanApi, creditsApi } from '@/lib/api';
@@ -138,6 +139,50 @@ export default function Dashboard() {
           </h1>
           <p className="text-gray-500">Choose a tool below to analyze your text.</p>
         </div>
+
+        {!user?.is_verified && (
+          <div className="mb-8 p-6 bg-amber-500/10 border border-amber-500/30 rounded-2xl">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-amber-500/20 rounded-full">
+                <Mail className="w-6 h-6 text-amber-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-medium text-amber-400 mb-2">Verify Your Email</h3>
+                <p className="text-gray-300 mb-4">
+                  Please verify your email address to access all features. Check your inbox for a verification link.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() => navigate('/verify-email')}
+                    className="bg-amber-500 hover:bg-amber-600 text-black rounded-full px-6"
+                  >
+                    Enter Verification Code
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/auth/resend-verification', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ email: user?.email })
+                        });
+                        if (response.ok) {
+                          alert('Verification email sent! Please check your inbox.');
+                        }
+                      } catch (e) {
+                        alert('Failed to resend verification email. Please try again.');
+                      }
+                    }}
+                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 rounded-full px-6"
+                  >
+                    Resend Email
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">

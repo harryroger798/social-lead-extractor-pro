@@ -60,18 +60,11 @@ async def register(
     db.commit()
     db.refresh(user)
     
-    # Send verification email in background
+    # Send verification email in background (welcome email sent after verification)
     background_tasks.add_task(
         email_service.send_verification_email,
         user.email,
         verification_token
-    )
-    
-    # Send welcome email in background
-    background_tasks.add_task(
-        email_service.send_welcome_email,
-        user.email,
-        user.full_name
     )
     
     # Create access token
@@ -202,6 +195,7 @@ async def reset_password(
 @router.post("/verify-email")
 async def verify_email(
     request: VerifyEmailRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
     """Verify email using the token from email."""
@@ -220,6 +214,13 @@ async def verify_email(
     user.verification_token = None
     user.verification_token_expires_at = None
     db.commit()
+    
+    # Send welcome email now that email is verified
+    background_tasks.add_task(
+        email_service.send_welcome_email,
+        user.email,
+        user.full_name
+    )
     
     return {"message": "Email verified successfully"}
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional
 from app.core.database import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_current_verified_user
 from app.models.user import User, SubscriptionTier
 from app.models.scan import Scan, ScanType, ScanStatus
 from app.schemas.scan import ScanCreate, ScanResponse, ScanListResponse
@@ -71,7 +71,7 @@ def process_scan(scan_id: int, db: Session):
 async def detect_ai(
     scan_data: ScanCreate,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_verified_user),
     db: Session = Depends(get_db)
 ):
     """Detect if text is AI-generated."""
@@ -138,7 +138,7 @@ async def detect_ai(
 @router.post("/humanize", response_model=ScanResponse)
 async def humanize_text(
     scan_data: ScanCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_verified_user),
     db: Session = Depends(get_db)
 ):
     """Humanize AI-generated text."""
@@ -204,7 +204,7 @@ async def humanize_text(
 @router.post("/plagiarism", response_model=ScanResponse)
 async def check_plagiarism(
     scan_data: ScanCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_verified_user),
     db: Session = Depends(get_db)
 ):
     """Check text for plagiarism."""
