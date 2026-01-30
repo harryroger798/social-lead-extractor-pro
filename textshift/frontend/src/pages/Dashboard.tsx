@@ -85,17 +85,21 @@ export default function Dashboard() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const getWordCount = () => {
+    return inputText.trim().split(/\s+/).filter(w => w.length > 0).length;
+  };
+
   const getCreditCost = () => {
-    const charCount = inputText.length;
-    let rate = 100;
+    const wordCount = getWordCount();
+    let multiplier = 1;
     switch (activeTab) {
-      case 'detect': rate = 100; break;
-      case 'humanize': rate = 200; break;
-      case 'plagiarism': rate = 150; break;
-      default: rate = 100;
+      case 'detect': multiplier = 1; break;
+      case 'humanize': multiplier = 2; break;
+      case 'plagiarism': multiplier = 1.5; break;
+      default: multiplier = 1;
     }
-    // Formula: max(100, (charCount / 1000 + 1) * rate)
-    return Math.max(100, Math.floor((charCount / 1000) + 1) * rate);
+    // Formula: max(50, wordCount * multiplier)
+    return Math.max(50, Math.floor(wordCount * multiplier));
   };
 
     const tabs = [
@@ -122,8 +126,10 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
                 <CreditCard className="w-4 h-4 text-emerald-400" />
-                <span className="text-white font-medium">{credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0}</span>
-                <span className="text-gray-500">credits</span>
+                <span className="text-white font-medium">
+                  {(credits?.balance === -1 || user?.credits_balance === -1) ? 'Unlimited' : (credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0)}
+                </span>
+                <span className="text-gray-500">words</span>
               </div>
               <Link to="/pricing">
                 <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full px-4">Upgrade</Button>
@@ -221,7 +227,7 @@ export default function Dashboard() {
 
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="text-gray-500 text-sm">
-                  {inputText.length} characters | Cost: <span className="text-white">{getCreditCost()}</span> credits
+                  {getWordCount()} words | Cost: <span className="text-white">{getCreditCost()}</span> words
                 </div>
                 <Button
                   onClick={handleAnalyze}
@@ -327,8 +333,10 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">Credits Balance</span>
-                  <span className="text-white font-medium">{credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0}</span>
+                  <span className="text-gray-500">Words Remaining</span>
+                  <span className="text-white font-medium">
+                    {(credits?.balance === -1 || user?.credits_balance === -1) ? 'Unlimited' : (credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500">Total Used</span>
@@ -338,31 +346,32 @@ export default function Dashboard() {
             </div>
 
             <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
-              <h3 className="text-lg font-medium text-white mb-4">How Credits Work</h3>
-              <p className="text-gray-400 text-sm mb-4">Credits are based on text length and scan type. Minimum 100 credits per scan.</p>
+              <h3 className="text-lg font-medium text-white mb-4">How Words Are Counted</h3>
+              <p className="text-gray-400 text-sm mb-4">Usage is measured in words. Each scan costs words based on the tool used. Minimum 50 words per scan.</p>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-emerald-400" />
                     <span className="text-gray-300">AI Detection</span>
                   </div>
-                  <span className="text-white text-sm">100 / 1K chars</span>
+                  <span className="text-white text-sm">1 word = 1 credit</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-purple-400" />
                     <span className="text-gray-300">Humanize</span>
                   </div>
-                  <span className="text-white text-sm">200 / 1K chars</span>
+                  <span className="text-white text-sm">1 word = 2 credits</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Search className="w-4 h-4 text-blue-400" />
                     <span className="text-gray-300">Plagiarism</span>
                   </div>
-                  <span className="text-white text-sm">150 / 1K chars</span>
+                  <span className="text-white text-sm">1 word = 1.5 credits</span>
                 </div>
               </div>
+              <p className="text-gray-500 text-xs mt-4">Pro and Enterprise plans have unlimited words!</p>
             </div>
 
             <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">

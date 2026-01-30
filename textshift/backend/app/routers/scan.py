@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from app.core.database import get_db
 from app.core.security import get_current_active_user, get_current_verified_user
 from app.models.user import User, SubscriptionTier
 from app.models.scan import Scan, ScanType, ScanStatus
 from app.schemas.scan import ScanCreate, ScanResponse, ScanListResponse
-from app.services.credit_service import calculate_credits_needed, deduct_credits
+from app.services.credit_service import calculate_credits_needed, deduct_credits, get_daily_scan_limit, count_words
 from app.services.ml_service import ml_service
 import logging
 
@@ -27,6 +27,45 @@ def get_priority_for_tier(tier: SubscriptionTier) -> int:
         SubscriptionTier.ENTERPRISE: 3
     }
     return priority_map.get(tier, 0)
+
+
+def check_feature_access(user: User, scan_type: str) -> None:
+    """Check if user's subscription tier allows access to the feature.
+    
+    FREE tier: AI Detection only
+    STARTER+: All features (AI Detection, Humanize, Plagiarism)
+    """
+    tier = user.subscription_tier
+    
+    # Free tier can only use AI Detection
+    if tier == SubscriptionTier.FREE and scan_type != "ai_detection":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Upgrade to Starter or higher to access {scan_type.replace('_', ' ').title()}. Free tier only includes AI Detection."
+        )
+
+
+def check_daily_scan_limit(user: User, db: Session) -> None:
+    """Check if user has exceeded their daily scan limit."""
+    tier = user.subscription_tier.value if hasattr(user.subscription_tier, 'value') else str(user.subscription_tier)
+    daily_limit = get_daily_scan_limit(tier)
+    
+    # -1 means unlimited
+    if daily_limit == -1:
+        return
+    
+    # Count today's scans
+    today = date.today()
+    today_scans = db.query(Scan).filter(
+        Scan.user_id == user.id,
+        Scan.created_at >= datetime.combine(today, datetime.min.time())
+    ).count()
+    
+    if today_scans >= daily_limit:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Daily scan limit reached ({daily_limit} scans/day). Upgrade your plan for more scans."
+        )
 
 
 def process_scan(scan_id: int, db: Session):
@@ -78,14 +117,18 @@ async def detect_ai(
     if scan_data.scan_type != ScanType.AI_DETECTION:
         scan_data.scan_type = ScanType.AI_DETECTION
     
-    # Calculate credits needed
-    credits_needed = calculate_credits_needed(scan_data.text, "ai_detection")
+    # Check daily scan limit
+    check_daily_scan_limit(current_user, db)
     
-    # Check if user has enough credits
-    if not current_user.has_enough_credits(credits_needed):
+    # Calculate credits needed (word count)
+    credits_needed = calculate_credits_needed(scan_data.text, "ai_detection")
+    word_count = count_words(scan_data.text)
+    
+    # Check if user has enough credits (Pro/Enterprise have unlimited = -1)
+    if current_user.credits_balance != -1 and not current_user.has_enough_credits(credits_needed):
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
+            detail=f"Insufficient words. Need {credits_needed} words, have {current_user.credits_balance} remaining"
         )
     
     # Get priority based on subscription tier
@@ -145,14 +188,20 @@ async def humanize_text(
     if scan_data.scan_type != ScanType.HUMANIZE:
         scan_data.scan_type = ScanType.HUMANIZE
     
-    # Calculate credits needed
+    # Check feature access (Free tier cannot use Humanize)
+    check_feature_access(current_user, "humanize")
+    
+    # Check daily scan limit
+    check_daily_scan_limit(current_user, db)
+    
+    # Calculate credits needed (word count * 2 for humanize)
     credits_needed = calculate_credits_needed(scan_data.text, "humanize")
     
-    # Check if user has enough credits
-    if not current_user.has_enough_credits(credits_needed):
+    # Check if user has enough credits (Pro/Enterprise have unlimited = -1)
+    if current_user.credits_balance != -1 and not current_user.has_enough_credits(credits_needed):
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
+            detail=f"Insufficient words. Need {credits_needed} words, have {current_user.credits_balance} remaining"
         )
     
     # Get priority based on subscription tier
@@ -211,14 +260,20 @@ async def check_plagiarism(
     if scan_data.scan_type != ScanType.PLAGIARISM:
         scan_data.scan_type = ScanType.PLAGIARISM
     
-    # Calculate credits needed
+    # Check feature access (Free tier cannot use Plagiarism)
+    check_feature_access(current_user, "plagiarism")
+    
+    # Check daily scan limit
+    check_daily_scan_limit(current_user, db)
+    
+    # Calculate credits needed (word count * 1.5 for plagiarism)
     credits_needed = calculate_credits_needed(scan_data.text, "plagiarism")
     
-    # Check if user has enough credits
-    if not current_user.has_enough_credits(credits_needed):
+    # Check if user has enough credits (Pro/Enterprise have unlimited = -1)
+    if current_user.credits_balance != -1 and not current_user.has_enough_credits(credits_needed):
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail=f"Insufficient credits. Need {credits_needed}, have {current_user.credits_balance}"
+            detail=f"Insufficient words. Need {credits_needed} words, have {current_user.credits_balance} remaining"
         )
     
     # Get priority based on subscription tier

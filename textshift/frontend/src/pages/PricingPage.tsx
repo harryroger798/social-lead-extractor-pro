@@ -35,19 +35,20 @@ export default function PricingPage() {
   const [contactSuccess, setContactSuccess] = useState(false);
 
   const plans = [
-    { id: 'free', name: 'Free', price: '$0', credits: '20,000', features: ['All 3 tools', 'Basic support', 'Credits never expire'], cta: 'Get Started', popular: false },
-    { id: 'starter', name: 'Starter', price: '$7', credits: '100,000', features: ['All 3 tools', 'Priority processing', 'Email support', 'Credits rollover'], cta: 'Subscribe', popular: false },
-    { id: 'pro', name: 'Pro', price: '$15', credits: '500,000', features: ['All 3 tools', 'API access', 'Batch processing', 'Priority support', 'Credits rollover'], cta: 'Subscribe', popular: true },
-    { id: 'enterprise', name: 'Enterprise', price: '$40', credits: 'Unlimited', features: ['All 3 tools', 'White-label option', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
+    { id: 'free', name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic support', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
+    { id: 'starter', name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'Email support', 'Priority processing'], cta: 'Subscribe', popular: false },
+    { id: 'pro', name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
+    { id: 'enterprise', name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'White-label API', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
   ];
 
   const faqs = [
-    { q: 'Do credits expire?', a: 'No! Unlike our competitors, your credits never expire. Use them whenever you need.' },
-    { q: 'Can I upgrade or downgrade my plan?', a: 'Yes, you can change your plan at any time. Your unused credits will carry over.' },
+    { q: 'What does "words" mean in the plans?', a: 'Words are the unit we use to measure usage. Each word you scan counts toward your monthly limit. Pro and Enterprise plans have unlimited words!' },
+    { q: 'What\'s the difference between Pro and Enterprise unlimited?', a: 'Pro has a fair use limit of 500 scans/day to prevent abuse. Enterprise has truly unlimited scans with no daily limits, plus white-label API access.' },
+    { q: 'Can I upgrade or downgrade my plan?', a: 'Yes, you can change your plan at any time. Upgrades take effect immediately.' },
     { q: 'What payment methods do you accept?', a: 'We accept PayPal for secure payments. You can pay with your PayPal balance, bank account, or credit/debit card through PayPal.' },
-    { q: 'Is there a free trial?', a: 'Yes! Every new account gets 20,000 free credits to try all our tools.' },
+    { q: 'Is there a free plan?', a: 'Yes! Our Free plan includes 5,000 words/month for AI Detection. Upgrade to Starter or higher to access Humanizer and Plagiarism Checker.' },
     { q: 'How accurate is the AI detection?', a: 'Our Advanced Neural Intelligence achieves industry-leading 99% accuracy with zero false positives, tested against all major AI writing tools.' },
-    { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked. Your credits remain valid.' }
+    { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked.' }
   ];
 
   const handleContactSubmit = async (e: React.FormEvent) => {

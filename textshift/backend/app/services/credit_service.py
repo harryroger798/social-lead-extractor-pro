@@ -7,22 +7,35 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def count_words(text: str) -> int:
+    """Count words in text."""
+    return len(text.split())
+
+
 def calculate_credits_needed(text: str, scan_type: str) -> int:
-    """Calculate credits needed based on text length and scan type."""
-    char_count = len(text)
+    """Calculate credits (words) needed based on text length and scan type.
     
-    # Credits per 1000 characters
+    Credits are now word-based:
+    - AI Detection: 1 word = 1 credit
+    - Humanize: 1 word = 2 credits (more processing intensive)
+    - Plagiarism: 1 word = 1.5 credits (rounded up)
+    
+    Minimum: 50 words per scan
+    """
+    word_count = count_words(text)
+    
+    # Multiplier based on scan type
     if scan_type == "ai_detection":
-        rate = settings.CREDIT_COST_DETECT
+        multiplier = 1.0
     elif scan_type == "humanize":
-        rate = settings.CREDIT_COST_HUMANIZE
+        multiplier = 2.0
     elif scan_type == "plagiarism":
-        rate = settings.CREDIT_COST_PLAGIARISM
+        multiplier = 1.5
     else:
-        rate = 100  # Default
+        multiplier = 1.0
     
-    # Calculate credits (minimum 100 credits per scan)
-    credits = max(100, (char_count // 1000 + 1) * rate)
+    # Calculate credits (minimum 50 credits per scan)
+    credits = max(50, int(word_count * multiplier))
     return credits
 
 
@@ -70,11 +83,26 @@ def add_credits(db: Session, user: User, amount: int, transaction_type: Transact
 
 
 def get_credits_per_tier(tier: str) -> int:
-    """Get monthly credits for a subscription tier."""
+    """Get monthly credits (words) for a subscription tier.
+    Returns -1 for unlimited tiers (Pro, Enterprise).
+    """
     tier_credits = {
-        "free": settings.FREE_TIER_CREDITS,
-        "starter": settings.STARTER_TIER_CREDITS,
-        "pro": settings.PRO_TIER_CREDITS,
-        "enterprise": -1  # Unlimited
+        "free": settings.FREE_TIER_CREDITS,  # 5,000 words
+        "starter": settings.STARTER_TIER_CREDITS,  # 25,000 words
+        "pro": settings.PRO_TIER_CREDITS,  # -1 (Unlimited)
+        "enterprise": settings.ENTERPRISE_TIER_CREDITS  # -1 (Unlimited)
     }
-    return tier_credits.get(tier, settings.FREE_TIER_CREDITS)
+    return tier_credits.get(tier.lower(), settings.FREE_TIER_CREDITS)
+
+
+def get_daily_scan_limit(tier: str) -> int:
+    """Get daily scan limit for a subscription tier.
+    Returns -1 for unlimited.
+    """
+    limits = {
+        "free": settings.FREE_DAILY_SCANS,  # 10
+        "starter": settings.STARTER_DAILY_SCANS,  # 100
+        "pro": settings.PRO_DAILY_SCANS,  # 500
+        "enterprise": settings.ENTERPRISE_DAILY_SCANS  # -1 (Unlimited)
+    }
+    return limits.get(tier.lower(), settings.FREE_DAILY_SCANS)

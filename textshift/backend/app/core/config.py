@@ -41,15 +41,34 @@ class Settings(BaseSettings):
     SERPER_API_KEY: str = "14e76cf7d90184e9053825ba67d99621705dc122"
     ORIGINALITY_API_KEY: str = "4mrg7suxpdhfi2ty6kq85ne9cz3ljowv"
     
-    # Credit costs (per 1000 characters)
-    CREDIT_COST_DETECT: int = 100
-    CREDIT_COST_HUMANIZE: int = 200
-    CREDIT_COST_PLAGIARISM: int = 150
+    # Credit costs (per 1000 words) - 1 word = 1 credit for simplicity
+    # AI Detection: 1 credit per word (minimum 100)
+    # Humanize: 2 credits per word (minimum 100)
+    # Plagiarism: 1.5 credits per word (minimum 100)
+    CREDIT_COST_DETECT: int = 1  # per word
+    CREDIT_COST_HUMANIZE: int = 2  # per word
+    CREDIT_COST_PLAGIARISM: int = 1  # per word (rounded to 1.5 in calculation)
     
-    # Pricing tiers (credits per month)
-    FREE_TIER_CREDITS: int = 20000
-    STARTER_TIER_CREDITS: int = 100000
-    PRO_TIER_CREDITS: int = 500000
+    # Pricing tiers (words per month)
+    # FREE: 5,000 words/month (AI Detection only)
+    # STARTER $9/mo: 25,000 words/month (All 3 tools)
+    # PRO $19/mo: Unlimited (fair use: 500 scans/day)
+    # ENTERPRISE $49/mo: True unlimited + Priority + White-label API
+    FREE_TIER_CREDITS: int = 5000  # words
+    STARTER_TIER_CREDITS: int = 25000  # words
+    PRO_TIER_CREDITS: int = -1  # Unlimited (use -1 to indicate unlimited)
+    ENTERPRISE_TIER_CREDITS: int = -1  # True unlimited
+    
+    # Daily scan limits for fair use
+    FREE_DAILY_SCANS: int = 10
+    STARTER_DAILY_SCANS: int = 100
+    PRO_DAILY_SCANS: int = 500
+    ENTERPRISE_DAILY_SCANS: int = -1  # Unlimited
+    
+    # Pricing (in USD)
+    STARTER_PRICE: float = 9.0
+    PRO_PRICE: float = 19.0
+    ENTERPRISE_PRICE: float = 49.0
     
     # Mailgun Email Service
     MAILGUN_API_KEY: str = ""  # Set via environment variable

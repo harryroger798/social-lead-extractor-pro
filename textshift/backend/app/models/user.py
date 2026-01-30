@@ -25,8 +25,8 @@ class User(Base):
     subscription_id = Column(String(255), nullable=True)  # PayPal subscription ID
     subscription_expires_at = Column(DateTime, nullable=True)
     
-    # Credits
-    credits_balance = Column(Integer, default=20000)  # Free tier starts with 20K
+    # Credits (words) - Free tier starts with 5,000 words
+    credits_balance = Column(Integer, default=5000)  # Free tier: 5K words/month
     credits_used_total = Column(Integer, default=0)
     
     # Status
