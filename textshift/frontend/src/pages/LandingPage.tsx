@@ -49,7 +49,7 @@ export default function LandingPage() {
       <nav className="fixed w-full z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+            <img src="/images/logo.png" alt="TextShift" className="w-8 h-8 object-contain" />
             <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
           </Link>
           
@@ -99,7 +99,11 @@ export default function LandingPage() {
       </nav>
 
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/hero-bg.png" alt="" className="w-full h-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+        </div>
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light tracking-tight mb-8">
             Transform your content<br />with <span className="text-emerald-400">AI.</span>
           </h1>
@@ -138,8 +142,11 @@ export default function LandingPage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-emerald-500/30 transition-all duration-500">
+            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+              <div className="absolute inset-0 opacity-10">
+                <img src="/images/ai-detection-card.png" alt="" className="w-full h-full object-cover" />
+              </div>
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6">
                   <Shield className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
@@ -154,8 +161,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-purple-500/30 transition-all duration-500">
+            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-purple-500/30 transition-all duration-500 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+              <div className="absolute inset-0 opacity-10">
+                <img src="/images/humanizer-card.png" alt="" className="w-full h-full object-cover" />
+              </div>
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6">
                   <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
@@ -170,8 +180,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-blue-500/30 transition-all duration-500">
+            <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-blue-500/30 transition-all duration-500 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+              <div className="absolute inset-0 opacity-10">
+                <img src="/images/plagiarism-card.png" alt="" className="w-full h-full object-cover" />
+              </div>
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6">
                   <Search className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
@@ -289,8 +302,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 md:py-32 px-6 border-t border-white/10">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative py-20 md:py-32 px-6 border-t border-white/10 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/testimonials-bg.png" alt="" className="w-full h-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">What our <span className="text-emerald-400">clients say</span></h2>
           </div>
@@ -301,7 +318,7 @@ export default function LandingPage() {
               { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James K.", role: "Marketing Director", company: "GrowthLabs" },
               { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily R.", role: "University Professor", company: "Stanford" }
             ].map((testimonial, i) => (
-              <div key={i} className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8">
+              <div key={i} className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, j) => (<Star key={j} className="w-4 h-4 text-emerald-400 fill-emerald-400" />))}
                 </div>
@@ -358,7 +375,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+              <img src="/images/logo.png" alt="TextShift" className="w-8 h-8 object-contain" />
               <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-gray-500 text-sm">
