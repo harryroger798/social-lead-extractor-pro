@@ -82,9 +82,9 @@ export default function PricingPage() {
             <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full">
-                    <ArrowLeft className="w-4 h-4 mr-2" />Back to Dashboard
-                  </Button>
+                                    <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 rounded-full">
+                                      <ArrowLeft className="w-4 h-4 mr-2" />Back to Dashboard
+                                    </Button>
                 </Link>
               ) : (
                 <>
@@ -173,9 +173,9 @@ export default function PricingPage() {
           <h2 className="text-2xl md:text-3xl font-light text-white mb-4">Still have questions?</h2>
           <p className="text-gray-400 mb-8">Contact our support team and we'll help you find the right plan.</p>
           <a href="mailto:support@textshift.org">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full px-8">
-              Contact Support <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+                        <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 rounded-full px-8">
+                          Contact Support <ArrowRight className="ml-2 w-4 h-4" />
+                        </Button>
           </a>
         </div>
       </div>

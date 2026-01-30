@@ -111,7 +111,7 @@ export default function LandingPage() {
               <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full px-8 py-6 text-lg w-full sm:w-auto">Start Free</Button>
             </Link>
             <a href="#demo">
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full px-8 py-6 text-lg w-full sm:w-auto">Try Demo <ArrowRight className="ml-2 w-4 h-4" /></Button>
+              <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 rounded-full px-8 py-6 text-lg w-full sm:w-auto">Try Demo <ArrowRight className="ml-2 w-4 h-4" /></Button>
             </a>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function LandingPage() {
               <Button className="bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto">Get Started Free<ArrowRight className="ml-2 w-5 h-5" /></Button>
             </Link>
             <a href="mailto:support@textshift.org">
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto">Contact Us</Button>
+              <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto">Contact Us</Button>
             </a>
           </div>
         </div>
