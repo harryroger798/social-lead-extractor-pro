@@ -25,7 +25,6 @@ import {
   LiveUserCounter,
   ActivityToast,
   GradientBackground,
-  CustomCursor,
   NoiseOverlay,
 } from '@/components/animations';
 
@@ -54,8 +53,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden cursor-none md:cursor-none">
-      <CustomCursor />
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
       <ParticlesBackground />
       <GradientBackground />
       <NoiseOverlay />
