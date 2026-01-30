@@ -1,14 +1,22 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
 import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
+import { useAuthStore } from '@/store/authStore';
 
 export default function VerifyEmailPendingPage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
   const email = location.state?.email || '';
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+
+  const handleRegisterAgain = () => {
+    logout();
+    navigate('/register');
+  };
 
   const handleResend = async () => {
     if (!email) return;
@@ -92,7 +100,7 @@ export default function VerifyEmailPendingPage() {
 
         <div className="mt-8 text-gray-500 text-sm">
           Wrong email?{' '}
-          <Link to="/register" className="text-emerald-400 hover:text-emerald-300">Register again</Link>
+          <button onClick={handleRegisterAgain} className="text-emerald-400 hover:text-emerald-300">Register again</button>
         </div>
       </div>
     </div>
