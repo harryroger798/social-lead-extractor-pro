@@ -263,60 +263,60 @@ export default function Dashboard() {
                   <h3 className="text-lg font-medium text-white">Analysis Complete</h3>
                 </div>
 
-                {activeTab === 'detect' && result.result && (
+                {activeTab === 'detect' && result.ai_probability !== undefined && (
                   <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-black/30 rounded-2xl border border-white/10 gap-4">
                       <div>
                         <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Detection Result</div>
                         <div className="text-2xl font-light text-white">
-                          {result.result.ai_probability > 50 ? 'AI Generated' : 'Human Written'}
+                          {result.ai_probability > 50 ? 'AI Generated' : 'Human Written'}
                         </div>
                       </div>
                       <div className="sm:text-right">
                         <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">AI Probability</div>
-                        <div className={`text-3xl font-light ${result.result.ai_probability > 50 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                          {result.result.ai_probability}%
+                        <div className={`text-3xl font-light ${result.ai_probability > 50 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          {result.ai_probability}%
                         </div>
                       </div>
                     </div>
-                    <Progress value={result.result.ai_probability} className="h-2 bg-white/10" />
+                    <Progress value={result.ai_probability} className="h-2 bg-white/10" />
                   </div>
                 )}
 
-                {activeTab === 'humanize' && result.result && (
+                {activeTab === 'humanize' && result.output_text && (
                   <div className="space-y-4">
                     <div className="p-4 bg-black/30 rounded-2xl border border-white/10">
                       <div className="flex justify-between items-center mb-3">
                         <div className="text-gray-500 text-sm uppercase tracking-wider">Humanized Text</div>
-                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(result.result.humanized_text)} className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full">
+                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(result.output_text)} className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full">
                           {copied ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                         </Button>
                       </div>
-                      <p className="text-white whitespace-pre-wrap leading-relaxed">{result.result.humanized_text}</p>
+                      <p className="text-white whitespace-pre-wrap leading-relaxed">{result.output_text}</p>
                     </div>
                   </div>
                 )}
 
-                {activeTab === 'plagiarism' && result.result && (
+                {activeTab === 'plagiarism' && result.plagiarism_score !== undefined && (
                   <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-black/30 rounded-2xl border border-white/10 gap-4">
                       <div>
                         <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Originality Score</div>
-                        <div className="text-2xl font-light text-white">{result.result.originality_score}% Original</div>
+                        <div className="text-2xl font-light text-white">{100 - result.plagiarism_score}% Original</div>
                       </div>
                       <div className="sm:text-right">
                         <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Plagiarism Detected</div>
-                        <div className={`text-3xl font-light ${result.result.plagiarism_score > 20 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                          {result.result.plagiarism_score}%
+                        <div className={`text-3xl font-light ${result.plagiarism_score > 20 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          {result.plagiarism_score}%
                         </div>
                       </div>
                     </div>
-                    <Progress value={result.result.originality_score} className="h-2 bg-white/10" />
+                    <Progress value={100 - result.plagiarism_score} className="h-2 bg-white/10" />
                   </div>
                 )}
 
                 <div className="mt-4 pt-4 border-t border-white/10 text-gray-500 text-sm">
-                  Credits used: <span className="text-white">{result.credits_used}</span> | Remaining: <span className="text-white">{result.credits_remaining?.toLocaleString()}</span>
+                  Words used: <span className="text-white">{result.credits_used}</span> | Remaining: <span className="text-white">{credits?.balance === -1 ? 'Unlimited' : credits?.balance?.toLocaleString()}</span>
                 </div>
               </div>
             )}
