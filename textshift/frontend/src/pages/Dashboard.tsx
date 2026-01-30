@@ -86,12 +86,16 @@ export default function Dashboard() {
   };
 
   const getCreditCost = () => {
+    const charCount = inputText.length;
+    let rate = 100;
     switch (activeTab) {
-      case 'detect': return 100;
-      case 'humanize': return 200;
-      case 'plagiarism': return 150;
-      default: return 0;
+      case 'detect': rate = 100; break;
+      case 'humanize': rate = 200; break;
+      case 'plagiarism': rate = 150; break;
+      default: rate = 100;
     }
+    // Formula: max(100, (charCount / 1000 + 1) * rate)
+    return Math.max(100, Math.floor((charCount / 1000) + 1) * rate);
   };
 
     const tabs = [
