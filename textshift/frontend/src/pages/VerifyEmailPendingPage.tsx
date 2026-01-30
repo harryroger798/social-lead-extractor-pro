@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 export default function VerifyEmailPendingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
   // Get email from location state (after registration) or from auth store (if user is logged in)
   const email = location.state?.email || user?.email || '';
   const [resending, setResending] = useState(false);
@@ -41,9 +41,11 @@ export default function VerifyEmailPendingPage() {
       
       if (data.already_verified) {
         setAlreadyVerified(true);
-        // Redirect to login after 3 seconds using window.location for reliability
+        // Update auth store to mark user as verified
+        updateUser({ is_verified: true });
+        // Redirect to dashboard after 3 seconds (user is already verified)
         setTimeout(() => {
-          window.location.href = '/login';
+          window.location.href = '/dashboard';
         }, 3000);
       } else if (data.sent) {
         setResent(true);
@@ -93,14 +95,14 @@ export default function VerifyEmailPendingPage() {
                   <span className="font-medium">Email Already Verified!</span>
                 </div>
                 <p className="text-gray-400 text-sm mt-2">
-                  Your account is already verified. Redirecting to login...
+                  Your account is already verified. Redirecting to dashboard...
                 </p>
               </div>
               <Button
-                onClick={() => window.location.href = '/login'}
+                onClick={() => window.location.href = '/dashboard'}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full h-12"
               >
-                Go to Login
+                Go to Dashboard
               </Button>
             </div>
           ) : (
