@@ -14,7 +14,7 @@ class ContactSalesRequest(BaseModel):
     company: str = ""
     phone: str = ""
     message: str
-    plan_interest: str = "enterprise"  # Which plan they're interested in
+    plan_interest: str = "Enterprise"  # Which plan they're interested in
 
 
 class ContactSalesResponse(BaseModel):

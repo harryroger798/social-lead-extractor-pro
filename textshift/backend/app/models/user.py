@@ -6,10 +6,10 @@ from app.core.database import Base
 
 
 class SubscriptionTier(str, enum.Enum):
-    FREE = "free"
-    STARTER = "starter"
-    PRO = "pro"
-    ENTERPRISE = "enterprise"
+    FREE = "Free"
+    STARTER = "Starter"
+    PRO = "Pro"
+    ENTERPRISE = "Enterprise"
 
 
 class User(Base):

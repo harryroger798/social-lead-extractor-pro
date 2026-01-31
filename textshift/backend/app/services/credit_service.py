@@ -87,12 +87,12 @@ def get_credits_per_tier(tier: str) -> int:
     Returns -1 for unlimited tiers (Pro, Enterprise).
     """
     tier_credits = {
-        "free": settings.FREE_TIER_CREDITS,  # 5,000 words
-        "starter": settings.STARTER_TIER_CREDITS,  # 25,000 words
-        "pro": settings.PRO_TIER_CREDITS,  # -1 (Unlimited)
-        "enterprise": settings.ENTERPRISE_TIER_CREDITS  # -1 (Unlimited)
+        "Free": settings.FREE_TIER_CREDITS,  # 5,000 words
+        "Starter": settings.STARTER_TIER_CREDITS,  # 25,000 words
+        "Pro": settings.PRO_TIER_CREDITS,  # -1 (Unlimited)
+        "Enterprise": settings.ENTERPRISE_TIER_CREDITS  # -1 (Unlimited)
     }
-    return tier_credits.get(tier.lower(), settings.FREE_TIER_CREDITS)
+    return tier_credits.get(tier.capitalize(), settings.FREE_TIER_CREDITS)
 
 
 def get_daily_scan_limit(tier: str) -> int:
@@ -100,9 +100,9 @@ def get_daily_scan_limit(tier: str) -> int:
     Returns -1 for unlimited.
     """
     limits = {
-        "free": settings.FREE_DAILY_SCANS,  # 10
-        "starter": settings.STARTER_DAILY_SCANS,  # 100
-        "pro": settings.PRO_DAILY_SCANS,  # 500
-        "enterprise": settings.ENTERPRISE_DAILY_SCANS  # -1 (Unlimited)
+        "Free": settings.FREE_DAILY_SCANS,  # 10
+        "Starter": settings.STARTER_DAILY_SCANS,  # 100
+        "Pro": settings.PRO_DAILY_SCANS,  # 500
+        "Enterprise": settings.ENTERPRISE_DAILY_SCANS  # -1 (Unlimited)
     }
-    return limits.get(tier.lower(), settings.FREE_DAILY_SCANS)
+    return limits.get(tier.capitalize(), settings.FREE_DAILY_SCANS)

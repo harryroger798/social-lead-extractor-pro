@@ -98,7 +98,7 @@ async def list_users(
             "id": user.id,
             "email": user.email,
             "full_name": user.full_name,
-            "subscription_tier": user.subscription_tier.value if user.subscription_tier else "free",
+            "subscription_tier": user.subscription_tier.value if user.subscription_tier else "Free",
             "credits_balance": user.credits_balance,
             "credits_used_total": user.credits_used_total,
             "is_active": user.is_active,
@@ -152,7 +152,7 @@ async def get_user_details(
         "id": user.id,
         "email": user.email,
         "full_name": user.full_name,
-        "subscription_tier": user.subscription_tier.value if user.subscription_tier else "free",
+        "subscription_tier": user.subscription_tier.value if user.subscription_tier else "Free",
         "subscription_id": user.subscription_id,
         "subscription_expires_at": user.subscription_expires_at.isoformat() if user.subscription_expires_at else None,
         "credits_balance": user.credits_balance,
@@ -355,7 +355,7 @@ async def get_analytics_overview(
             "total": total_users,
             "new": new_users,
             "active": active_users,
-            "by_tier": {tier.subscription_tier.value if tier.subscription_tier else "free": tier.count for tier in users_by_tier}
+            "by_tier": {tier.subscription_tier.value if tier.subscription_tier else "Free": tier.count for tier in users_by_tier}
         },
         "scans": {
             "total": total_scans,
@@ -610,7 +610,7 @@ async def export_users(
             "id": user.id,
             "email": user.email,
             "full_name": user.full_name,
-            "subscription_tier": user.subscription_tier.value if user.subscription_tier else "free",
+            "subscription_tier": user.subscription_tier.value if user.subscription_tier else "Free",
             "credits_balance": user.credits_balance,
             "credits_used_total": user.credits_used_total,
             "is_active": user.is_active,

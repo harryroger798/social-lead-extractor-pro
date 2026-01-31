@@ -180,7 +180,7 @@ export default function AdminPanel() {
       title: '',
       description: '',
       promo_type: 'free_plan',
-      plan_tier: 'starter',
+      plan_tier: 'Starter',
       discount_percentage: 0,
       credits_amount: 0,
       duration_days: 30,
@@ -410,7 +410,7 @@ export default function AdminPanel() {
             title: '',
             description: '',
             promo_type: 'free_plan',
-            plan_tier: 'starter',
+            plan_tier: 'Starter',
             discount_percentage: 0,
             credits_amount: 0,
             duration_days: 30,
@@ -826,10 +826,10 @@ export default function AdminPanel() {
                 className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-emerald-500"
               >
                 <option value="">All Tiers</option>
-                <option value="free">Free</option>
-                <option value="starter">Starter</option>
-                <option value="pro">Pro</option>
-                <option value="enterprise">Enterprise</option>
+                <option value="Free">Free</option>
+                <option value="Starter">Starter</option>
+                <option value="Pro">Pro</option>
+                <option value="Enterprise">Enterprise</option>
               </select>
               <button
                 onClick={() => exportData('users', 'csv')}
@@ -864,9 +864,9 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded text-xs ${
-                          u.subscription_tier === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
-                          u.subscription_tier === 'pro' ? 'bg-blue-500/20 text-blue-400' :
-                          u.subscription_tier === 'starter' ? 'bg-emerald-500/20 text-emerald-400' :
+                          u.subscription_tier === 'Enterprise' ? 'bg-purple-500/20 text-purple-400' :
+                          u.subscription_tier === 'Pro' ? 'bg-blue-500/20 text-blue-400' :
+                          u.subscription_tier === 'Starter' ? 'bg-emerald-500/20 text-emerald-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>
                           {u.subscription_tier}
@@ -1839,9 +1839,9 @@ export default function AdminPanel() {
                           onChange={(e) => setNewPromo({ ...newPromo, plan_tier: e.target.value })}
                           className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
                         >
-                          <option value="starter">Starter</option>
-                          <option value="pro">Pro</option>
-                          <option value="enterprise">Enterprise</option>
+                          <option value="Starter">Starter</option>
+                          <option value="Pro">Pro</option>
+                          <option value="Enterprise">Enterprise</option>
                         </select>
                       </div>
                     )}
@@ -2147,10 +2147,10 @@ export default function AdminPanel() {
                   onChange={(e) => setEditingUser({ ...editingUser, subscription_tier: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
                 >
-                  <option value="free">Free</option>
-                  <option value="starter">Starter</option>
-                  <option value="pro">Pro</option>
-                  <option value="enterprise">Enterprise</option>
+                  <option value="Free">Free</option>
+                  <option value="Starter">Starter</option>
+                  <option value="Pro">Pro</option>
+                  <option value="Enterprise">Enterprise</option>
                 </select>
               </div>
               <div>

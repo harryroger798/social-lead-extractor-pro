@@ -21,19 +21,19 @@ PAYPAL_API_BASE = "https://api-m.paypal.com" if settings.PAYPAL_MODE == "live" e
 
 # Pricing plans - Monthly
 PRICING_PLANS = {
-    "starter": {
+    "Starter": {
         "name": "Starter",
         "price": 7.00,
         "credits": 100000,
         "description": "100,000 credits/month + rollover"
     },
-    "pro": {
+    "Pro": {
         "name": "Pro",
         "price": 15.00,
         "credits": 500000,
         "description": "500,000 credits/month + rollover"
     },
-    "enterprise": {
+    "Enterprise": {
         "name": "Enterprise",
         "price": 40.00,
         "credits": -1,  # Unlimited
@@ -43,7 +43,7 @@ PRICING_PLANS = {
 
 # Yearly pricing - Pay for 10 months, get 2 months free
 YEARLY_PRICING_PLANS = {
-    "starter": {
+    "Starter": {
         "name": "Starter",
         "price": 70.00,  # 7 * 10 months (2 months free)
         "monthly_equivalent": 5.83,  # 70/12
@@ -51,7 +51,7 @@ YEARLY_PRICING_PLANS = {
         "description": "1,200,000 credits/year + rollover",
         "savings": 14.00  # 2 months free
     },
-    "pro": {
+    "Pro": {
         "name": "Pro",
         "price": 150.00,  # 15 * 10 months (2 months free)
         "monthly_equivalent": 12.50,  # 150/12
@@ -59,7 +59,7 @@ YEARLY_PRICING_PLANS = {
         "description": "6,000,000 credits/year + rollover",
         "savings": 30.00  # 2 months free
     },
-    "enterprise": {
+    "Enterprise": {
         "name": "Enterprise",
         "price": 400.00,  # 40 * 10 months (2 months free)
         "monthly_equivalent": 33.33,  # 400/12
@@ -148,11 +148,11 @@ def get_plan_features(plan_id: str) -> list:
         "Credits never expire"
     ]
     
-    if plan_id == "starter":
+    if plan_id == "Starter":
         return base_features + ["Priority processing"]
-    elif plan_id == "pro":
+    elif plan_id == "Pro":
         return base_features + ["Priority processing", "API access", "Batch processing"]
-    elif plan_id == "enterprise":
+    elif plan_id == "Enterprise":
         return base_features + ["Priority processing", "API access", "Batch processing", "White-label option", "Dedicated support"]
     
     return base_features
@@ -302,9 +302,9 @@ async def capture_paypal_order(
         if capture_data["status"] == "COMPLETED":
             # Update user subscription
             tier_map = {
-                "starter": SubscriptionTier.STARTER,
-                "pro": SubscriptionTier.PRO,
-                "enterprise": SubscriptionTier.ENTERPRISE
+                "Starter": SubscriptionTier.STARTER,
+                "Pro": SubscriptionTier.PRO,
+                "Enterprise": SubscriptionTier.ENTERPRISE
             }
             
             current_user.subscription_tier = tier_map.get(plan_id, SubscriptionTier.FREE)

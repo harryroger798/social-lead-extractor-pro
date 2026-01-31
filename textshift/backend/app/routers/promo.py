@@ -504,9 +504,9 @@ async def redeem_promo(
         
         # Define tier hierarchy for comparison
         tier_map = {
-            "starter": SubscriptionTier.STARTER,
-            "pro": SubscriptionTier.PRO,
-            "enterprise": SubscriptionTier.ENTERPRISE
+            "Starter": SubscriptionTier.STARTER,
+            "Pro": SubscriptionTier.PRO,
+            "Enterprise": SubscriptionTier.ENTERPRISE
         }
         tier_hierarchy = {
             SubscriptionTier.FREE: 0,
@@ -546,9 +546,9 @@ async def redeem_promo(
             
             # Set credits based on tier (only if upgrading from FREE or lower tier)
             if current_tier_level < promo_tier_level or current_tier == SubscriptionTier.FREE:
-                if plan_tier_granted == "starter":
+                if plan_tier_granted == "Starter":
                     current_user.credits_balance = 25000
-                elif plan_tier_granted in ["pro", "enterprise"]:
+                elif plan_tier_granted in ["Pro", "Enterprise"]:
                     current_user.credits_balance = -1  # Unlimited
         
         tier_name = plan_tier_granted.capitalize() if plan_tier_granted else "Premium"
