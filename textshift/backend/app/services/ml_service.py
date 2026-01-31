@@ -764,22 +764,80 @@ class MLModelService:
                 result += "."
         return re.sub(r'\s+', ' ', result).strip()
     
-    def humanize(self, text: str, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
-        self._load_humanizer()
-        input_text = f"humanize: {text}"
-        inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=512, padding=True)
-        with torch.no_grad():
-            outputs = self._humanizer_model.generate(
-                **inputs,
-                max_length=512,
-                num_beams=4,
-                do_sample=True,
-                temperature=0.8,
-                top_p=0.9,
-                repetition_penalty=2.5,
-                no_repeat_ngram_size=3
+    def _humanize_with_hf_api(self, text: str) -> str:
+        """Fallback humanization using HuggingFace Inference API."""
+        try:
+            hf_token = getattr(settings, 'HUGGINGFACE_API_KEY', '')
+            if not hf_token:
+                logger.warning("No HuggingFace API key configured for fallback")
+                return text
+            
+            headers = {"Authorization": f"Bearer {hf_token}"}
+            # Use Flan-T5 for paraphrasing
+            api_url = "https://api-inference.huggingface.co/models/google/flan-t5-base"
+            
+            response = httpx.post(
+                api_url,
+                headers=headers,
+                json={"inputs": f"Paraphrase the following text to sound more natural and human-written: {text}"},
+                timeout=60.0
             )
-        model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, list) and len(result) > 0:
+                    generated = result[0].get("generated_text", "")
+                    if generated and len(generated) > 20:
+                        return generated
+            elif response.status_code == 503:
+                # Model is loading, wait and retry once
+                logger.info("HuggingFace model loading, waiting...")
+                import time
+                time.sleep(20)
+                response = httpx.post(
+                    api_url,
+                    headers=headers,
+                    json={"inputs": f"Paraphrase the following text to sound more natural and human-written: {text}"},
+                    timeout=60.0
+                )
+                if response.status_code == 200:
+                    result = response.json()
+                    if isinstance(result, list) and len(result) > 0:
+                        generated = result[0].get("generated_text", "")
+                        if generated and len(generated) > 20:
+                            return generated
+            
+            logger.warning(f"HuggingFace API returned status {response.status_code}")
+            return text
+        except Exception as e:
+            logger.warning(f"HuggingFace API fallback failed: {e}")
+            return text
+    
+    def humanize(self, text: str, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+        model_output = None
+        use_fallback = False
+        
+        try:
+            self._load_humanizer()
+            input_text = f"humanize: {text}"
+            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=512, padding=True)
+            with torch.no_grad():
+                outputs = self._humanizer_model.generate(
+                    **inputs,
+                    max_length=512,
+                    num_beams=4,
+                    do_sample=True,
+                    temperature=0.8,
+                    top_p=0.9,
+                    repetition_penalty=2.5,
+                    no_repeat_ngram_size=3
+                )
+            model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+        except Exception as e:
+            logger.warning(f"Local humanizer model failed: {e}, using HuggingFace API fallback")
+            use_fallback = True
+            model_output = self._humanize_with_hf_api(text)
+        
         final_output = self._apply_stealthwriter_postprocessor(model_output, passes) if use_post_processor else model_output
         original_words = text.lower().split()
         final_words = final_output.lower().split()
@@ -792,7 +850,8 @@ class MLModelService:
             "original_length": len(text),
             "humanized_length": len(final_output),
             "post_processor_used": use_post_processor,
-            "passes": passes
+            "passes": passes,
+            "used_fallback": use_fallback
         }
     
     def _sync_web_search(self, text: str) -> List[Dict[str, Any]]:

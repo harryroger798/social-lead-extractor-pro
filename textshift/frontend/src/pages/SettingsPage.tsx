@@ -218,13 +218,13 @@ export default function SettingsPage() {
                 <div className="flex items-center gap-3 mb-1">
                   <span className="text-white font-medium">Current Plan</span>
                   <span className={`px-2 py-0.5 rounded-full text-xs border ${getTierBadgeColor(user?.subscription_tier || 'free')}`}>
-                    {user?.subscription_tier?.toUpperCase() || 'FREE'}
+                    {user?.subscription_tier ? user.subscription_tier.charAt(0).toUpperCase() + user.subscription_tier.slice(1).toLowerCase() : 'Free'}
                   </span>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  {user?.subscription_tier === 'enterprise' || user?.subscription_tier === 'pro' 
+                  {user?.subscription_tier === 'enterprise' || user?.subscription_tier === 'pro' || user?.credits_balance === -1
                     ? 'Unlimited words' 
-                    : `${user?.credits_balance?.toLocaleString() || 0} words remaining`}
+                    : `${(user?.credits_balance ?? 0).toLocaleString()} words remaining`}
                 </p>
               </div>
               <Link to="/pricing">
