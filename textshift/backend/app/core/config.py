@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     SERPER_API_KEY: str = "14e76cf7d90184e9053825ba67d99621705dc122"
     ORIGINALITY_API_KEY: str = "4mrg7suxpdhfi2ty6kq85ne9cz3ljowv"
     
+    # HuggingFace API for LoRA training (set via environment variable)
+    HUGGINGFACE_API_KEY: str = ""  # Set via HF_API_KEY environment variable
+    HUGGINGFACE_MODEL_REPO: str = "harryroger798/textshift-lora-adapters"
+    
     # Credit costs (per 1000 words) - 1 word = 1 credit for simplicity
     # AI Detection: 1 credit per word (minimum 100)
     # Humanize: 2 credits per word (minimum 100)

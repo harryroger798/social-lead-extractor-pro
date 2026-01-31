@@ -21,6 +21,120 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 
+class ABTestingIntegration:
+    """
+    A/B Testing integration for ML model serving.
+    Part of Phase 3: Self-Learning ML System.
+    
+    This class handles:
+    - Determining which model version to serve to each user
+    - Recording model version used for each scan
+    - Supporting gradual rollout of new models
+    """
+    
+    # Cache for user assignments to avoid repeated DB lookups
+    _assignment_cache: Dict[int, Dict[str, str]] = {}
+    _cache_ttl = 300  # 5 minutes
+    _cache_timestamps: Dict[str, datetime] = {}
+    
+    @classmethod
+    def get_model_version_for_user(
+        cls,
+        user_id: int,
+        model_type: str,
+        db_session = None
+    ) -> Dict[str, Any]:
+        """
+        Determine which model version to use for a given user.
+        
+        Args:
+            user_id: The user's ID
+            model_type: 'detector', 'humanizer', or 'plagiarism'
+            db_session: Optional database session for A/B test lookups
+            
+        Returns:
+            Dict with 'version_name', 'is_test_group', 'adapter_path' (if applicable)
+        """
+        # Check cache first
+        cache_key = f"{user_id}_{model_type}"
+        if cache_key in cls._assignment_cache:
+            cached_time = cls._cache_timestamps.get(cache_key)
+            if cached_time and (datetime.utcnow() - cached_time).seconds < cls._cache_ttl:
+                return cls._assignment_cache[cache_key]
+        
+        # Default to production model
+        result = {
+            'version_name': f'{model_type}_v1.0',
+            'is_test_group': False,
+            'adapter_path': None,
+            'model_type': model_type
+        }
+        
+        # If we have a DB session, check for active A/B tests
+        if db_session:
+            try:
+                from app.services.ab_testing_service import ABTestingService
+                ab_service = ABTestingService(db_session)
+                
+                # Get user's assignment for this model type
+                assignment = ab_service.get_user_assignment(user_id, model_type)
+                
+                if assignment:
+                    result = {
+                        'version_name': assignment.get('version_name', result['version_name']),
+                        'is_test_group': assignment.get('is_test_group', False),
+                        'adapter_path': assignment.get('adapter_path'),
+                        'model_type': model_type,
+                        'ab_test_id': assignment.get('ab_test_id')
+                    }
+            except Exception as e:
+                logger.warning(f"A/B testing lookup failed, using default: {e}")
+        
+        # Cache the result
+        cls._assignment_cache[cache_key] = result
+        cls._cache_timestamps[cache_key] = datetime.utcnow()
+        
+        return result
+    
+    @classmethod
+    def record_model_usage(
+        cls,
+        user_id: int,
+        model_type: str,
+        version_name: str,
+        scan_id: int,
+        db_session = None
+    ):
+        """
+        Record that a specific model version was used for a scan.
+        This data is used for A/B test analysis.
+        """
+        if db_session:
+            try:
+                from app.services.ab_testing_service import ABTestingService
+                ab_service = ABTestingService(db_session)
+                ab_service.record_scan_with_version(
+                    user_id=user_id,
+                    model_type=model_type,
+                    version_name=version_name,
+                    scan_id=scan_id
+                )
+            except Exception as e:
+                logger.warning(f"Failed to record model usage: {e}")
+    
+    @classmethod
+    def clear_cache(cls, user_id: Optional[int] = None):
+        """Clear the assignment cache, optionally for a specific user."""
+        if user_id:
+            keys_to_remove = [k for k in cls._assignment_cache if k.startswith(f"{user_id}_")]
+            for key in keys_to_remove:
+                cls._assignment_cache.pop(key, None)
+                cls._cache_timestamps.pop(key, None)
+        else:
+            cls._assignment_cache.clear()
+            cls._cache_timestamps.clear()
+
+
 class IDriveCacheService:
     """Service for caching plagiarism search results on iDrive e2."""
     
