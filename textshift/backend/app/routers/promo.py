@@ -501,23 +501,55 @@ async def redeem_promo(
     if promo.promo_type == PromoType.FREE_PLAN:
         # Grant free subscription
         plan_tier_granted = promo.plan_tier
-        subscription_expires_at = datetime.utcnow() + timedelta(days=promo.duration_days)
         
-        # Update user subscription
+        # Define tier hierarchy for comparison
         tier_map = {
             "starter": SubscriptionTier.STARTER,
             "pro": SubscriptionTier.PRO,
             "enterprise": SubscriptionTier.ENTERPRISE
         }
+        tier_hierarchy = {
+            SubscriptionTier.FREE: 0,
+            SubscriptionTier.STARTER: 1,
+            SubscriptionTier.PRO: 2,
+            SubscriptionTier.ENTERPRISE: 3
+        }
+        
+        promo_tier = tier_map.get(plan_tier_granted, SubscriptionTier.FREE)
+        current_tier = current_user.subscription_tier or SubscriptionTier.FREE
+        current_tier_level = tier_hierarchy.get(current_tier, 0)
+        promo_tier_level = tier_hierarchy.get(promo_tier, 0)
+        
+        # Check if user already has a higher tier plan
+        if current_tier_level > promo_tier_level:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"You already have a {current_tier.value} plan which is higher than this promo offers"
+            )
+        
+        # Check if user already has the same tier with active subscription
+        if current_tier_level == promo_tier_level and current_tier != SubscriptionTier.FREE:
+            # User already has this tier - check if subscription is still active
+            if current_user.subscription_expires_at and current_user.subscription_expires_at > datetime.utcnow():
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"You already have an active {current_tier.value} subscription. This promo cannot be stacked with existing subscriptions."
+                )
+        
+        # Calculate new subscription expiry
+        subscription_expires_at = datetime.utcnow() + timedelta(days=promo.duration_days)
+        
+        # Update user subscription
         if plan_tier_granted in tier_map:
             current_user.subscription_tier = tier_map[plan_tier_granted]
             current_user.subscription_expires_at = subscription_expires_at
             
-            # Set credits based on tier
-            if plan_tier_granted == "starter":
-                current_user.credits_balance = 25000
-            elif plan_tier_granted in ["pro", "enterprise"]:
-                current_user.credits_balance = -1  # Unlimited
+            # Set credits based on tier (only if upgrading from FREE or lower tier)
+            if current_tier_level < promo_tier_level or current_tier == SubscriptionTier.FREE:
+                if plan_tier_granted == "starter":
+                    current_user.credits_balance = 25000
+                elif plan_tier_granted in ["pro", "enterprise"]:
+                    current_user.credits_balance = -1  # Unlimited
         
         tier_name = plan_tier_granted.capitalize() if plan_tier_granted else "Premium"
         benefit_description = f"{promo.duration_days} days of {tier_name} plan"
