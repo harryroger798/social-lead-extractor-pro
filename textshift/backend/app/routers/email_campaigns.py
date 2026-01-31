@@ -489,3 +489,112 @@ async def get_email_stats(
         "open_rate": f"{(total_opens / total_emails_sent * 100):.1f}%" if total_emails_sent > 0 else "0%",
         "click_rate": f"{(total_clicks / total_emails_sent * 100):.1f}%" if total_emails_sent > 0 else "0%"
     }
+
+
+# ==================== EMAIL TRACKING ENDPOINTS ====================
+
+# Create a separate router for public tracking endpoints (no auth required)
+tracking_router = APIRouter(prefix="/api/v1/email", tags=["email-tracking"])
+
+
+@tracking_router.get("/track/open/{tracking_id}")
+async def track_email_open(
+    tracking_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Track email open via 1x1 pixel image.
+    Returns a transparent 1x1 GIF image.
+    """
+    from fastapi.responses import Response
+    
+    # Find the email send record
+    email_send = db.query(EmailSend).filter(
+        EmailSend.tracking_id == tracking_id
+    ).first()
+    
+    if email_send and not email_send.opened_at:
+        # Record the open
+        email_send.opened_at = datetime.utcnow()
+        
+        # Update campaign stats
+        if email_send.campaign_id:
+            campaign = db.query(EmailCampaign).filter(
+                EmailCampaign.id == email_send.campaign_id
+            ).first()
+            if campaign:
+                campaign.emails_opened = (campaign.emails_opened or 0) + 1
+        
+        db.commit()
+        logger.info(f"Email open tracked: {tracking_id}")
+    
+    # Return a 1x1 transparent GIF
+    # This is the smallest valid GIF (43 bytes)
+    transparent_gif = bytes([
+        0x47, 0x49, 0x46, 0x38, 0x39, 0x61,  # GIF89a
+        0x01, 0x00, 0x01, 0x00,              # 1x1 dimensions
+        0x80, 0x00, 0x00,                    # Global color table
+        0xff, 0xff, 0xff,                    # White
+        0x00, 0x00, 0x00,                    # Black
+        0x21, 0xf9, 0x04,                    # Graphic control extension
+        0x01, 0x00, 0x00, 0x00, 0x00,        # Transparent
+        0x2c, 0x00, 0x00, 0x00, 0x00,        # Image descriptor
+        0x01, 0x00, 0x01, 0x00, 0x00,        # 1x1
+        0x02, 0x02, 0x44, 0x01, 0x00,        # Image data
+        0x3b                                  # Trailer
+    ])
+    
+    return Response(
+        content=transparent_gif,
+        media_type="image/gif",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
+
+
+@tracking_router.get("/track/click/{tracking_id}")
+async def track_email_click(
+    tracking_id: str,
+    url: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Track email link click and redirect to destination URL.
+    """
+    from fastapi.responses import RedirectResponse
+    
+    # Find the email send record
+    email_send = db.query(EmailSend).filter(
+        EmailSend.tracking_id == tracking_id
+    ).first()
+    
+    if email_send and not email_send.clicked_at:
+        # Record the click
+        email_send.clicked_at = datetime.utcnow()
+        
+        # Also record open if not already recorded
+        if not email_send.opened_at:
+            email_send.opened_at = datetime.utcnow()
+            if email_send.campaign_id:
+                campaign = db.query(EmailCampaign).filter(
+                    EmailCampaign.id == email_send.campaign_id
+                ).first()
+                if campaign:
+                    campaign.emails_opened = (campaign.emails_opened or 0) + 1
+        
+        # Update campaign click stats
+        if email_send.campaign_id:
+            campaign = db.query(EmailCampaign).filter(
+                EmailCampaign.id == email_send.campaign_id
+            ).first()
+            if campaign:
+                campaign.emails_clicked = (campaign.emails_clicked or 0) + 1
+        
+        db.commit()
+        logger.info(f"Email click tracked: {tracking_id} -> {url}")
+    
+    # Redirect to the destination URL
+    return RedirectResponse(url=url, status_code=302)

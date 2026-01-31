@@ -68,6 +68,8 @@ app.include_router(user_settings.router)
 
 # Email campaigns router
 app.include_router(email_campaigns.router)
+# Email tracking router (public, no auth required)
+app.include_router(email_campaigns.tracking_router)
 
 
 @app.get("/healthz")

@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/payment", tags=["Payment"])
 # PayPal API URLs
 PAYPAL_API_BASE = "https://api-m.paypal.com" if settings.PAYPAL_MODE == "live" else "https://api-m.sandbox.paypal.com"
 
-# Pricing plans
+# Pricing plans - Monthly
 PRICING_PLANS = {
     "starter": {
         "name": "Starter",
@@ -38,6 +38,34 @@ PRICING_PLANS = {
         "price": 40.00,
         "credits": -1,  # Unlimited
         "description": "Unlimited credits"
+    }
+}
+
+# Yearly pricing - Pay for 10 months, get 2 months free
+YEARLY_PRICING_PLANS = {
+    "starter": {
+        "name": "Starter",
+        "price": 70.00,  # 7 * 10 months (2 months free)
+        "monthly_equivalent": 5.83,  # 70/12
+        "credits": 1200000,  # 100,000 * 12 months
+        "description": "1,200,000 credits/year + rollover",
+        "savings": 14.00  # 2 months free
+    },
+    "pro": {
+        "name": "Pro",
+        "price": 150.00,  # 15 * 10 months (2 months free)
+        "monthly_equivalent": 12.50,  # 150/12
+        "credits": 6000000,  # 500,000 * 12 months
+        "description": "6,000,000 credits/year + rollover",
+        "savings": 30.00  # 2 months free
+    },
+    "enterprise": {
+        "name": "Enterprise",
+        "price": 400.00,  # 40 * 10 months (2 months free)
+        "monthly_equivalent": 33.33,  # 400/12
+        "credits": -1,  # Unlimited
+        "description": "Unlimited credits for 1 year",
+        "savings": 80.00  # 2 months free
     }
 }
 
@@ -69,9 +97,33 @@ async def get_paypal_access_token() -> str:
 
 
 @router.get("/plans")
-async def get_pricing_plans():
-    """Get available pricing plans."""
+async def get_pricing_plans(billing_cycle: str = "monthly"):
+    """Get available pricing plans.
+    
+    Args:
+        billing_cycle: 'monthly' or 'yearly'
+    """
+    if billing_cycle == "yearly":
+        return {
+            "billing_cycle": "yearly",
+            "plans": [
+                {
+                    "id": plan_id,
+                    "name": plan["name"],
+                    "price": plan["price"],
+                    "monthly_equivalent": plan["monthly_equivalent"],
+                    "credits": plan["credits"],
+                    "description": plan["description"],
+                    "features": get_plan_features(plan_id),
+                    "savings": plan["savings"],
+                    "billing_period": "year"
+                }
+                for plan_id, plan in YEARLY_PRICING_PLANS.items()
+            ]
+        }
+    
     return {
+        "billing_cycle": "monthly",
         "plans": [
             {
                 "id": plan_id,
@@ -79,7 +131,8 @@ async def get_pricing_plans():
                 "price": plan["price"],
                 "credits": plan["credits"],
                 "description": plan["description"],
-                "features": get_plan_features(plan_id)
+                "features": get_plan_features(plan_id),
+                "billing_period": "month"
             }
             for plan_id, plan in PRICING_PLANS.items()
         ]
@@ -108,17 +161,34 @@ def get_plan_features(plan_id: str) -> list:
 @router.post("/create-order")
 async def create_paypal_order(
     plan_id: str,
+    billing_cycle: str = "monthly",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Create a PayPal order for subscription."""
-    if plan_id not in PRICING_PLANS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid plan ID"
-        )
+    """Create a PayPal order for subscription.
     
-    plan = PRICING_PLANS[plan_id]
+    Args:
+        plan_id: 'starter', 'pro', or 'enterprise'
+        billing_cycle: 'monthly' or 'yearly'
+    """
+    # Select the appropriate pricing plan based on billing cycle
+    if billing_cycle == "yearly":
+        if plan_id not in YEARLY_PRICING_PLANS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid plan ID"
+            )
+        plan = YEARLY_PRICING_PLANS[plan_id]
+        billing_description = "Yearly Subscription (2 months free)"
+    else:
+        if plan_id not in PRICING_PLANS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid plan ID"
+            )
+        plan = PRICING_PLANS[plan_id]
+        billing_description = "Monthly Subscription"
+    
     access_token = await get_paypal_access_token()
     
     async with httpx.AsyncClient() as client:
@@ -135,13 +205,13 @@ async def create_paypal_order(
                         "currency_code": "USD",
                         "value": str(plan["price"])
                     },
-                    "description": f"TextShift {plan['name']} Plan - Monthly Subscription"
+                    "description": f"TextShift {plan['name']} Plan - {billing_description}"
                 }],
                 "application_context": {
                     "brand_name": "TextShift",
                     "landing_page": "NO_PREFERENCE",
                     "user_action": "PAY_NOW",
-                    "return_url": f"{settings.APP_URL if hasattr(settings, 'APP_URL') else 'http://localhost:3000'}/payment/success",
+                    "return_url": f"{settings.APP_URL if hasattr(settings, 'APP_URL') else 'http://localhost:3000'}/payment/success?billing={billing_cycle}",
                     "cancel_url": f"{settings.APP_URL if hasattr(settings, 'APP_URL') else 'http://localhost:3000'}/payment/cancel"
                 }
             }
@@ -162,7 +232,8 @@ async def create_paypal_order(
             tier=plan_id,
             amount=plan["price"],
             credits_per_cycle=plan["credits"],
-            status=SubscriptionStatus.PENDING
+            status=SubscriptionStatus.PENDING,
+            billing_cycle=billing_cycle
         )
         db.add(subscription)
         db.commit()
@@ -170,6 +241,7 @@ async def create_paypal_order(
         return {
             "order_id": order_data["id"],
             "subscription_id": subscription.id,
+            "billing_cycle": billing_cycle,
             "approval_url": next(
                 (link["href"] for link in order_data["links"] if link["rel"] == "approve"),
                 None
@@ -181,17 +253,32 @@ async def create_paypal_order(
 async def capture_paypal_order(
     order_id: str,
     plan_id: str,
+    billing_cycle: str = "monthly",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Capture a PayPal order after approval."""
-    if plan_id not in PRICING_PLANS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid plan ID"
-        )
+    """Capture a PayPal order after approval.
     
-    plan = PRICING_PLANS[plan_id]
+    Args:
+        order_id: PayPal order ID
+        plan_id: 'starter', 'pro', or 'enterprise'
+        billing_cycle: 'monthly' or 'yearly'
+    """
+    # Select the appropriate pricing plan based on billing cycle
+    if billing_cycle == "yearly":
+        if plan_id not in YEARLY_PRICING_PLANS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid plan ID"
+            )
+        plan = YEARLY_PRICING_PLANS[plan_id]
+    else:
+        if plan_id not in PRICING_PLANS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid plan ID"
+            )
+        plan = PRICING_PLANS[plan_id]
     access_token = await get_paypal_access_token()
     
     async with httpx.AsyncClient() as client:

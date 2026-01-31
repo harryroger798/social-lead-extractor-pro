@@ -647,6 +647,37 @@ class EmailCampaignService:
         
         return query.all()
     
+    def _add_tracking_to_email(self, html_content: str, tracking_id: str, base_url: str = "https://textshift.org") -> str:
+        """Add tracking pixel and convert CTA links to tracked links."""
+        import re
+        
+        # Add tracking pixel before closing </body> tag
+        tracking_pixel = f'<img src="{base_url}/api/v1/email/track/open/{tracking_id}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />'
+        
+        # Insert tracking pixel before </body>
+        if '</body>' in html_content:
+            html_content = html_content.replace('</body>', f'{tracking_pixel}</body>')
+        else:
+            # Append at the end if no body tag
+            html_content += tracking_pixel
+        
+        # Convert CTA links to tracked links
+        # Match href="URL" patterns and wrap them with click tracking
+        def replace_link(match):
+            original_url = match.group(1)
+            # Don't track internal tracking URLs or unsubscribe links
+            if '/track/' in original_url or 'unsubscribe' in original_url.lower():
+                return match.group(0)
+            # URL encode the original URL
+            from urllib.parse import quote
+            tracked_url = f'{base_url}/api/v1/email/track/click/{tracking_id}?url={quote(original_url, safe="")}'
+            return f'href="{tracked_url}"'
+        
+        # Replace href attributes (but not for tracking pixel)
+        html_content = re.sub(r'href="([^"]+)"', replace_link, html_content)
+        
+        return html_content
+
     def send_campaign(self, db: Session, campaign: EmailCampaign) -> dict:
         """Send an email campaign to all target users."""
         is_marketing = campaign.email_type in [
@@ -687,6 +718,9 @@ class EmailCampaignService:
                 )
                 
                 html_content = get_base_email_template(content, campaign.preview_text or campaign.subject)
+                
+                # Add tracking pixel and click tracking to email
+                html_content = self._add_tracking_to_email(html_content, tracking_id)
                 
                 # Send email
                 success = self.email_service.send_email(

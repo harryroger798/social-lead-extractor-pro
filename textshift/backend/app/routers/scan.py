@@ -8,7 +8,7 @@ from app.models.user import User, SubscriptionTier
 from app.models.scan import Scan, ScanType, ScanStatus
 from app.schemas.scan import ScanCreate, ScanResponse, ScanListResponse
 from app.services.credit_service import calculate_credits_needed, deduct_credits, get_daily_scan_limit, count_words
-from app.services.ml_service import ml_service
+from app.services.ml_service import ml_service, ABTestingIntegration
 import logging
 
 logger = logging.getLogger(__name__)
@@ -160,12 +160,32 @@ async def detect_ai(
         scan.status = ScanStatus.PROCESSING
         db.commit()
         
+        # Get A/B testing model version assignment
+        model_version = ABTestingIntegration.get_model_version_for_user(
+            user_id=current_user.id,
+            model_type='detector',
+            db_session=db
+        )
+        
         result = ml_service.detect_ai(scan.input_text)
         scan.ai_probability = result["ai_probability"]
         scan.confidence_level = result["confidence_level"]
+        
+        # Add model version info to results
+        result["model_version"] = model_version.get("version_name", "detector_v1.0")
+        result["is_test_group"] = model_version.get("is_test_group", False)
         scan.results = result
         scan.status = ScanStatus.COMPLETED
         scan.completed_at = datetime.utcnow()
+        
+        # Record model usage for A/B testing analytics
+        ABTestingIntegration.record_model_usage(
+            user_id=current_user.id,
+            model_type='detector',
+            version_name=model_version.get("version_name", "detector_v1.0"),
+            scan_id=scan.id,
+            db_session=db
+        )
         
     except Exception as e:
         logger.error(f"Error processing scan {scan.id}: {str(e)}")
@@ -233,11 +253,31 @@ async def humanize_text(
         scan.status = ScanStatus.PROCESSING
         db.commit()
         
+        # Get A/B testing model version assignment
+        model_version = ABTestingIntegration.get_model_version_for_user(
+            user_id=current_user.id,
+            model_type='humanizer',
+            db_session=db
+        )
+        
         result = ml_service.humanize(scan.input_text)
         scan.output_text = result["humanized_text"]
+        
+        # Add model version info to results
+        result["model_version"] = model_version.get("version_name", "humanizer_v1.0")
+        result["is_test_group"] = model_version.get("is_test_group", False)
         scan.results = result
         scan.status = ScanStatus.COMPLETED
         scan.completed_at = datetime.utcnow()
+        
+        # Record model usage for A/B testing analytics
+        ABTestingIntegration.record_model_usage(
+            user_id=current_user.id,
+            model_type='humanizer',
+            version_name=model_version.get("version_name", "humanizer_v1.0"),
+            scan_id=scan.id,
+            db_session=db
+        )
         
     except Exception as e:
         logger.error(f"Error processing scan {scan.id}: {str(e)}")
@@ -305,12 +345,32 @@ async def check_plagiarism(
         scan.status = ScanStatus.PROCESSING
         db.commit()
         
+        # Get A/B testing model version assignment
+        model_version = ABTestingIntegration.get_model_version_for_user(
+            user_id=current_user.id,
+            model_type='plagiarism',
+            db_session=db
+        )
+        
         result = ml_service.check_plagiarism(scan.input_text)
         scan.plagiarism_score = result["plagiarism_score"]
         scan.sources_found = result["sources_found"]
+        
+        # Add model version info to results
+        result["model_version"] = model_version.get("version_name", "plagiarism_v1.0")
+        result["is_test_group"] = model_version.get("is_test_group", False)
         scan.results = result
         scan.status = ScanStatus.COMPLETED
         scan.completed_at = datetime.utcnow()
+        
+        # Record model usage for A/B testing analytics
+        ABTestingIntegration.record_model_usage(
+            user_id=current_user.id,
+            model_type='plagiarism',
+            version_name=model_version.get("version_name", "plagiarism_v1.0"),
+            scan_id=scan.id,
+            db_session=db
+        )
         
     except Exception as e:
         logger.error(f"Error processing scan {scan.id}: {str(e)}")

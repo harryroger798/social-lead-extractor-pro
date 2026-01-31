@@ -196,7 +196,13 @@ async def topup_credits(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Purchase additional credits (paid users only)."""
+    """
+    Purchase additional credits (paid users only).
+    
+    SECURITY: This endpoint now requires PayPal payment.
+    It creates a PayPal order and returns the approval URL.
+    Credits are only added after successful payment capture.
+    """
     # Check if user is on a paid plan
     if current_user.subscription_tier == SubscriptionTier.FREE:
         raise HTTPException(
@@ -212,14 +218,11 @@ async def topup_credits(
         )
     
     package = CREDIT_PACKAGES[topup_data.package]
-    credits_to_add = package["credits"]
     price = package["price"]
+    credits = package["credits"]
     
-    # Add credits to user balance
-    # Note: In production, this would integrate with a payment gateway
-    # For now, we simulate the purchase
+    # User has unlimited credits, no need to purchase
     if current_user.credits_balance == -1:
-        # User has unlimited credits, no need to add
         return CreditTopUpResponse(
             success=True,
             credits_added=0,
@@ -228,29 +231,60 @@ async def topup_credits(
             price=price
         )
     
-    current_user.credits_balance += credits_to_add
-    new_balance = current_user.credits_balance
-    current_user.updated_at = datetime.utcnow()
+    # Create PayPal order for payment
+    access_token = await get_paypal_access_token()
     
-    # Record the transaction
-    transaction = CreditTransaction(
-        user_id=current_user.id,
-        amount=credits_to_add,
-        balance_after=new_balance,
-        transaction_type="topup",
-        description=f"Credit top-up: {credits_to_add:,} words (${price})"
-    )
-    db.add(transaction)
-    db.commit()
-    db.refresh(current_user)
-    
-    return CreditTopUpResponse(
-        success=True,
-        credits_added=credits_to_add,
-        new_balance=current_user.credits_balance,
-        package=topup_data.package,
-        price=price
-    )
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "intent": "CAPTURE",
+                "purchase_units": [{
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": str(price)
+                    },
+                    "description": f"TextShift Credit Top-up: {credits:,} words"
+                }],
+                "application_context": {
+                    "brand_name": "TextShift",
+                    "landing_page": "NO_PREFERENCE",
+                    "user_action": "PAY_NOW",
+                    "return_url": f"{settings.FRONTEND_URL}/dashboard?topup=success&package={topup_data.package}",
+                    "cancel_url": f"{settings.FRONTEND_URL}/dashboard?topup=cancelled"
+                }
+            }
+        )
+        
+        if response.status_code not in [200, 201]:
+            logger.error(f"PayPal order creation error: {response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create payment order. Please try again."
+            )
+        
+        order_data = response.json()
+        approval_url = next(
+            (link["href"] for link in order_data["links"] if link["rel"] == "approve"),
+            None
+        )
+        
+        # Return response indicating payment is required
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail={
+                "message": "Payment required for credit top-up",
+                "order_id": order_data["id"],
+                "approval_url": approval_url,
+                "package": topup_data.package,
+                "credits": credits,
+                "price": price
+            }
+        )
 
 
 @router.post("/topup/create-order")
