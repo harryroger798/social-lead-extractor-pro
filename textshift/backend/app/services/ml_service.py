@@ -61,6 +61,21 @@ FILLERS_TO_REMOVE = [
     "totally ", "completely ", "pretty much ", "kind of ", "sort of ",
 ]
 
+# Meta-commentary patterns to remove from model output
+META_COMMENTARY_PATTERNS = [
+    r"^(okay|ok|alright|sure|well|so),?\s*(here\s+is|here's|let\s+me|i('ll|'m\s+going\s+to|am\s+going\s+to)|this\s+is)\s+.*?(rewrite|rewritten|version|text|paraphrase).*?[.!:]\s*",
+    r"^(as\s+a\s+matter\s+of\s+fact,?\s*)?(okay|ok)?,?\s*(here\s+is|here's).*?(rewrite|version|text).*?[.!:]\s*",
+    r"^i('m|\s+am)\s+(going\s+to|gonna)\s+.*?(rewrite|paraphrase|humanize).*?[.!:]\s*",
+    r"^(let\s+me|allow\s+me\s+to)\s+.*?(rewrite|paraphrase|humanize).*?[.!:]\s*",
+    r"^(here\s+is|here's)\s+(a\s+)?(more\s+)?(conversational|human|natural|casual).*?(version|rewrite|text).*?[.!:]\s*",
+    r"^trying\s+to\s+(make|create)\s+it\s+sound.*?[.!:]\s*",
+    r"^(this\s+is\s+)?(a\s+)?(more\s+)?(conversational|human-like|natural).*?(rewrite|version).*?[.!:]\s*",
+    r"(makes?\s+sense,?\s*(though|right)?,?\s*(does\s+)?(not\s+)?(it|n't\s+it)[.?!]?\s*$)",
+    r"(you\s+know[.?!]?\s*$)",
+    r"(right[.?!]?\s*$)",
+    r"(does\s+not\s+it[.?!]?\s*$)",
+]
+
 
 class PlagiarismClassifier(nn.Module):
     """Neural network classifier for plagiarism detection."""
@@ -316,8 +331,31 @@ class MLModelService:
             "level_analysis": self._perform_10_level_analysis(text, ai_prob)
         }
     
+    def _remove_meta_commentary(self, text: str) -> str:
+        """Remove meta-commentary from model output like 'okay, here is a rewrite...'"""
+        result = text.strip()
+        # Apply meta-commentary removal patterns
+        for pattern in META_COMMENTARY_PATTERNS:
+            result = re.sub(pattern, '', result, flags=re.IGNORECASE)
+        # Also remove common conversational fillers at the start
+        start_fillers = [
+            "okay, ", "ok, ", "alright, ", "sure, ", "well, ", "so, ",
+            "as a matter of fact, ", "in point of fact, ",
+        ]
+        lower_result = result.lower()
+        for filler in start_fillers:
+            if lower_result.startswith(filler):
+                result = result[len(filler):]
+                lower_result = result.lower()
+        # Capitalize first letter if needed
+        if result and result[0].islower():
+            result = result[0].upper() + result[1:]
+        return result.strip()
+    
     def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2) -> str:
         result = text
+        # First remove meta-commentary
+        result = self._remove_meta_commentary(result)
         for _ in range(passes):
             for contraction, expansion in CONTRACTION_EXPANSIONS.items():
                 result = re.sub(re.escape(contraction), expansion, result, flags=re.IGNORECASE)
