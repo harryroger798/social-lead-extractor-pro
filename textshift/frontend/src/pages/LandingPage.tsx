@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
@@ -21,7 +21,9 @@ import {
   TrendingUp,
   Users,
   Target,
-  Cpu
+  Cpu,
+  Gift,
+  Clock
 } from 'lucide-react';
 import {
   ParticlesBackground,
@@ -36,12 +38,46 @@ import {
 } from '@/components/animations';
 import { useAuthStore } from '@/store/authStore';
 
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
+
+interface LandingPromo {
+  id: number;
+  code: string;
+  title: string;
+  description: string;
+  promo_type: string;
+  plan_tier: string | null;
+  duration_days: number;
+  end_date: string | null;
+  landing_headline: string | null;
+  landing_subtext: string | null;
+  landing_button_text: string | null;
+  landing_badge_text: string | null;
+  days_until_expiry: number | null;
+}
+
 export default function LandingPage() {
   const [demoText, setDemoText] = useState('');
   const [demoResult, setDemoResult] = useState<null | { type: string; score: number }>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activePromos, setActivePromos] = useState<LandingPromo[]>([]);
   const { isAuthenticated, logout } = useAuthStore();
+
+  useEffect(() => {
+    const fetchPromos = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/promo/active`);
+        if (response.ok) {
+          const data = await response.json();
+          setActivePromos(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch promos:', err);
+      }
+    };
+    fetchPromos();
+  }, []);
 
   const handleDemoCheck = () => {
     if (demoText.length > 20) {
@@ -262,16 +298,86 @@ export default function LandingPage() {
           </ScrollReveal>
         </div>
         
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <ChevronDown className="w-6 h-6 text-gray-500" />
-        </motion.div>
-      </section>
+              <motion.div
+                className="absolute bottom-10 left-1/2 -translate-x-1/2"
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <ChevronDown className="w-6 h-6 text-gray-500" />
+              </motion.div>
+            </section>
 
-      <section className="py-20 md:py-32 px-6">
+            {/* Promo Banner Section */}
+            {activePromos.length > 0 && (
+              <section className="py-8 px-6">
+                <div className="max-w-4xl mx-auto">
+                  {activePromos.map((promo) => (
+                    <motion.div
+                      key={promo.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-600/10 to-purple-500/20 border border-emerald-500/30 p-6 md:p-8"
+                    >
+                      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-5" />
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                      <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex-1 text-center md:text-left">
+                          <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                            <Gift className="w-5 h-5 text-emerald-400" />
+                                                        {promo.landing_badge_text && (
+                                                          <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/30">
+                                                            {promo.landing_badge_text}
+                                                          </span>
+                                                        )}
+                                                        {promo.days_until_expiry !== null && promo.days_until_expiry >= 0 && promo.days_until_expiry <= 7 && (
+                                                          <span className="flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-full border border-yellow-500/30">
+                                                            <Clock className="w-3 h-3" />
+                                                            {promo.days_until_expiry} days left
+                                                          </span>
+                                                        )}
+                          </div>
+                          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                            {promo.landing_headline || promo.title}
+                          </h3>
+                          <p className="text-gray-300 text-lg">
+                            {promo.landing_subtext || promo.description}
+                          </p>
+                          <div className="mt-3 flex items-center justify-center md:justify-start gap-4 text-sm text-gray-400">
+                            <span className="flex items-center gap-1">
+                              <CheckCircle className="w-4 h-4 text-emerald-400" />
+                              {promo.duration_days} days free
+                            </span>
+                            {promo.plan_tier && (
+                              <span className="flex items-center gap-1">
+                                <Zap className="w-4 h-4 text-emerald-400" />
+                                {promo.plan_tier.charAt(0).toUpperCase() + promo.plan_tier.slice(1)} Plan
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                  
+                        <div className="flex flex-col items-center gap-3">
+                          <Link to={`/register?promo=${promo.code}`}>
+                            <MagneticButton>
+                              <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
+                                {promo.landing_button_text || 'Claim Now'}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                              </Button>
+                            </MagneticButton>
+                          </Link>
+                          <code className="text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                            Code: {promo.code}
+                          </code>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section className="py-20 md:py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light leading-tight">

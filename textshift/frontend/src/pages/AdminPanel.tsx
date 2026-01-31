@@ -23,13 +23,14 @@ import {
   FileText,
   TrendingUp,
   CreditCard,
-  Shield
+  Shield,
+  Gift
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
-type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'settings';
+type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'promos' | 'settings';
 
 interface DashboardSummary {
   users: { total: number; today: number; this_week: number; this_month: number };
@@ -85,6 +86,39 @@ interface FeedbackData {
   created_at: string;
 }
 
+interface PromoData {
+  id: number;
+  code: string;
+  title: string;
+  description: string;
+  promo_type: string;
+  plan_tier: string | null;
+  discount_percentage: number | null;
+  credits_amount: number | null;
+  duration_days: number;
+  start_date: string;
+  end_date: string | null;
+  max_redemptions: number | null;
+  current_redemptions: number;
+  is_active: boolean;
+  show_on_landing: boolean;
+  landing_headline: string | null;
+  landing_subtext: string | null;
+  landing_button_text: string | null;
+  landing_badge_text: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface PromoRedemption {
+  id: number;
+  user_id: number;
+  user_email: string;
+  promo_id: number;
+  redeemed_at: string;
+  ip_address: string | null;
+}
+
 export default function AdminPanel() {
   const { token, user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -118,10 +152,36 @@ export default function AdminPanel() {
   const [trainingHistory, setTrainingHistory] = useState<any[]>([]);
   const [triggeringTraining, setTriggeringTraining] = useState<string | null>(null);
   
-  // Settings
-  const [settings, setSettings] = useState<any>(null);
+    // Settings
+    const [settings, setSettings] = useState<any>(null);
 
-  const fetchSummary = async () => {
+    // Promos data
+    const [promos, setPromos] = useState<PromoData[]>([]);
+    const [promosLoading, setPromosLoading] = useState(false);
+    const [editingPromo, setEditingPromo] = useState<PromoData | null>(null);
+    const [creatingPromo, setCreatingPromo] = useState(false);
+    const [viewingRedemptions, setViewingRedemptions] = useState<number | null>(null);
+    const [redemptions, setRedemptions] = useState<PromoRedemption[]>([]);
+    const [newPromo, setNewPromo] = useState({
+      code: '',
+      title: '',
+      description: '',
+      promo_type: 'free_plan',
+      plan_tier: 'starter',
+      discount_percentage: 0,
+      credits_amount: 0,
+      duration_days: 30,
+      end_date: '',
+      max_redemptions: 0,
+      is_active: true,
+      show_on_landing: true,
+      landing_headline: '',
+      landing_subtext: '',
+      landing_button_text: 'Claim Now',
+      landing_badge_text: 'Limited Time'
+    });
+
+    const fetchSummary = async () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/dashboard/summary`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -219,21 +279,146 @@ export default function AdminPanel() {
     }
   };
 
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/admin/settings`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSettings(data);
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/admin/settings`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setSettings(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings:', err);
       }
-    } catch (err) {
-      console.error('Failed to fetch settings:', err);
-    }
-  };
+    };
 
-  const updateUser = async (userId: number, updates: Partial<UserData>) => {
+    const fetchPromos = async () => {
+      setPromosLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/api/promo/admin/list`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setPromos(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch promos:', err);
+      } finally {
+        setPromosLoading(false);
+      }
+    };
+
+    const createPromo = async () => {
+      try {
+        const payload = {
+          ...newPromo,
+          end_date: newPromo.end_date || null,
+          max_redemptions: newPromo.max_redemptions || null,
+          discount_percentage: newPromo.promo_type === 'percentage' ? newPromo.discount_percentage : null,
+          credits_amount: newPromo.promo_type === 'fixed_credits' ? newPromo.credits_amount : null,
+          plan_tier: newPromo.promo_type === 'free_plan' ? newPromo.plan_tier : null
+        };
+      
+        const response = await fetch(`${API_URL}/api/promo/admin/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      
+        if (response.ok) {
+          setCreatingPromo(false);
+          setNewPromo({
+            code: '',
+            title: '',
+            description: '',
+            promo_type: 'free_plan',
+            plan_tier: 'starter',
+            discount_percentage: 0,
+            credits_amount: 0,
+            duration_days: 30,
+            end_date: '',
+            max_redemptions: 0,
+            is_active: true,
+            show_on_landing: true,
+            landing_headline: '',
+            landing_subtext: '',
+            landing_button_text: 'Claim Now',
+            landing_badge_text: 'Limited Time'
+          });
+          fetchPromos();
+        } else {
+          const data = await response.json();
+          setError(data.detail || 'Failed to create promo');
+        }
+      } catch (err) {
+        setError('Failed to create promo');
+      }
+    };
+
+    const updatePromo = async (promoId: number, updates: Partial<PromoData>) => {
+      try {
+        const response = await fetch(`${API_URL}/api/promo/admin/${promoId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(updates)
+        });
+      
+        if (response.ok) {
+          setEditingPromo(null);
+          fetchPromos();
+        } else {
+          const data = await response.json();
+          setError(data.detail || 'Failed to update promo');
+        }
+      } catch (err) {
+        setError('Failed to update promo');
+      }
+    };
+
+    const deletePromo = async (promoId: number) => {
+      if (!confirm('Are you sure you want to delete this promo?')) return;
+    
+      try {
+        const response = await fetch(`${API_URL}/api/promo/admin/${promoId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      
+        if (response.ok) {
+          fetchPromos();
+        } else {
+          const data = await response.json();
+          setError(data.detail || 'Failed to delete promo');
+        }
+      } catch (err) {
+        setError('Failed to delete promo');
+      }
+    };
+
+    const fetchRedemptions = async (promoId: number) => {
+      try {
+        const response = await fetch(`${API_URL}/api/promo/admin/${promoId}/redemptions`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRedemptions(data);
+          setViewingRedemptions(promoId);
+        }
+      } catch (err) {
+        console.error('Failed to fetch redemptions:', err);
+      }
+    };
+
+    const updateUser = async (userId: number, updates: Partial<UserData>) => {
     try {
       const response = await fetch(`${API_URL}/api/admin/users/${userId}`, {
         method: 'PUT',
@@ -352,13 +537,14 @@ export default function AdminPanel() {
     loadData();
   }, [token]);
 
-  useEffect(() => {
-    if (activeTab === 'users') fetchUsers();
-    if (activeTab === 'scans') fetchScans();
-    if (activeTab === 'feedback') fetchFeedback();
-    if (activeTab === 'ml') fetchMlMetrics();
-    if (activeTab === 'settings') fetchSettings();
-  }, [activeTab, usersPage, userSearch, userTierFilter, scansPage, scanTypeFilter, feedbackPage]);
+    useEffect(() => {
+      if (activeTab === 'users') fetchUsers();
+      if (activeTab === 'scans') fetchScans();
+      if (activeTab === 'feedback') fetchFeedback();
+      if (activeTab === 'ml') fetchMlMetrics();
+      if (activeTab === 'settings') fetchSettings();
+      if (activeTab === 'promos') fetchPromos();
+    }, [activeTab, usersPage, userSearch, userTierFilter, scansPage, scanTypeFilter, feedbackPage]);
 
   if (!user?.is_admin) {
     return (
@@ -372,14 +558,15 @@ export default function AdminPanel() {
     );
   }
 
-  const tabs = [
-    { id: 'overview' as TabType, label: 'Overview', icon: BarChart3 },
-    { id: 'users' as TabType, label: 'Users', icon: Users },
-    { id: 'scans' as TabType, label: 'Scans', icon: FileText },
-    { id: 'feedback' as TabType, label: 'Feedback', icon: MessageSquare },
-    { id: 'ml' as TabType, label: 'ML System', icon: Brain },
-    { id: 'settings' as TabType, label: 'Settings', icon: Settings },
-  ];
+    const tabs = [
+      { id: 'overview' as TabType, label: 'Overview', icon: BarChart3 },
+      { id: 'users' as TabType, label: 'Users', icon: Users },
+      { id: 'scans' as TabType, label: 'Scans', icon: FileText },
+      { id: 'feedback' as TabType, label: 'Feedback', icon: MessageSquare },
+      { id: 'ml' as TabType, label: 'ML System', icon: Brain },
+      { id: 'promos' as TabType, label: 'Promos', icon: Gift },
+      { id: 'settings' as TabType, label: 'Settings', icon: Settings },
+    ];
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -1133,13 +1320,483 @@ export default function AdminPanel() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-      </div>
+                  </div>
+                </div>
+              )}
 
-      {/* Edit User Modal */}
-      {editingUser && (
+              {/* Promos Tab */}
+              {activeTab === 'promos' && (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                      <Gift className="w-5 h-5 text-pink-500" />
+                      Promo Management
+                    </h2>
+                    <button
+                      onClick={() => setCreatingPromo(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Create Promo
+                    </button>
+                  </div>
+
+                  {/* Promos List */}
+                  {promosLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <RefreshCw className="w-8 h-8 text-emerald-500 animate-spin" />
+                    </div>
+                  ) : promos.length === 0 ? (
+                    <div className="bg-gray-800 rounded-xl p-12 border border-gray-700 text-center">
+                      <Gift className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-white mb-2">No Promos Yet</h3>
+                      <p className="text-gray-400 mb-4">Create your first promo to attract users</p>
+                      <button
+                        onClick={() => setCreatingPromo(true)}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                      >
+                        Create Promo
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {promos.map((promo) => {
+                        const isExpired = promo.end_date && new Date(promo.end_date) < new Date();
+                        const daysLeft = promo.end_date 
+                          ? Math.ceil((new Date(promo.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                          : null;
+                  
+                        return (
+                          <div key={promo.id} className={`bg-gray-800 rounded-xl p-6 border ${isExpired ? 'border-red-500/30' : promo.is_active ? 'border-emerald-500/30' : 'border-gray-700'}`}>
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h3 className="text-lg font-semibold text-white">{promo.title}</h3>
+                                  {promo.show_on_landing && (
+                                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">Landing</span>
+                                  )}
+                                </div>
+                                <code className="text-emerald-400 text-sm bg-emerald-500/10 px-2 py-0.5 rounded mt-1 inline-block">
+                                  {promo.code}
+                                </code>
+                              </div>
+                              <div className={`px-2 py-1 rounded-full text-xs ${
+                                isExpired ? 'bg-red-500/20 text-red-400' :
+                                promo.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                              }`}>
+                                {isExpired ? 'Expired' : promo.is_active ? 'Active' : 'Inactive'}
+                              </div>
+                            </div>
+                      
+                            <p className="text-gray-400 text-sm mb-4 line-clamp-2">{promo.description}</p>
+                      
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Type</span>
+                                <span className="text-white capitalize">{promo.promo_type.replace('_', ' ')}</span>
+                              </div>
+                              {promo.plan_tier && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-500">Plan</span>
+                                  <span className="text-white capitalize">{promo.plan_tier}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Duration</span>
+                                <span className="text-white">{promo.duration_days} days</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Redemptions</span>
+                                <span className="text-white">
+                                  {promo.current_redemptions}{promo.max_redemptions ? ` / ${promo.max_redemptions}` : ''}
+                                </span>
+                              </div>
+                              {daysLeft !== null && daysLeft > 0 && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-500">Expires in</span>
+                                  <span className={`${daysLeft <= 7 ? 'text-yellow-400' : 'text-white'}`}>
+                                    {daysLeft} days
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                      
+                            <div className="flex gap-2 mt-4 pt-4 border-t border-gray-700">
+                              <button
+                                onClick={() => setEditingPromo(promo)}
+                                className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg"
+                              >
+                                <Edit className="w-3 h-3" />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => fetchRedemptions(promo.id)}
+                                className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg"
+                              >
+                                <Users className="w-3 h-3" />
+                                Users
+                              </button>
+                              <button
+                                onClick={() => deletePromo(promo.id)}
+                                className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm rounded-lg"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Create Promo Modal */}
+            {creatingPromo && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
+                <div className="bg-gray-800 rounded-xl p-6 w-full max-w-2xl border border-gray-700 mx-4">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <Gift className="w-5 h-5 text-pink-500" />
+                    Create New Promo
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Promo Code *</label>
+                      <input
+                        type="text"
+                        value={newPromo.code}
+                        onChange={(e) => setNewPromo({ ...newPromo, code: e.target.value.toUpperCase() })}
+                        placeholder="STARTER1MONTH"
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white uppercase"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Title *</label>
+                      <input
+                        type="text"
+                        value={newPromo.title}
+                        onChange={(e) => setNewPromo({ ...newPromo, title: e.target.value })}
+                        placeholder="1 Month Free Starter Plan"
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-gray-400 text-sm block mb-1">Description</label>
+                      <textarea
+                        value={newPromo.description}
+                        onChange={(e) => setNewPromo({ ...newPromo, description: e.target.value })}
+                        placeholder="Get a free month of our Starter plan..."
+                        rows={2}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Promo Type</label>
+                      <select
+                        value={newPromo.promo_type}
+                        onChange={(e) => setNewPromo({ ...newPromo, promo_type: e.target.value })}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      >
+                        <option value="free_plan">Free Plan</option>
+                        <option value="percentage">Percentage Discount</option>
+                        <option value="fixed_credits">Fixed Credits</option>
+                        <option value="trial_extension">Trial Extension</option>
+                      </select>
+                    </div>
+                    {newPromo.promo_type === 'free_plan' && (
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Plan Tier</label>
+                        <select
+                          value={newPromo.plan_tier}
+                          onChange={(e) => setNewPromo({ ...newPromo, plan_tier: e.target.value })}
+                          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                        >
+                          <option value="starter">Starter</option>
+                          <option value="pro">Pro</option>
+                          <option value="enterprise">Enterprise</option>
+                        </select>
+                      </div>
+                    )}
+                    {newPromo.promo_type === 'percentage' && (
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Discount %</label>
+                        <input
+                          type="number"
+                          value={newPromo.discount_percentage}
+                          onChange={(e) => setNewPromo({ ...newPromo, discount_percentage: parseInt(e.target.value) || 0 })}
+                          min={1}
+                          max={100}
+                          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                        />
+                      </div>
+                    )}
+                    {newPromo.promo_type === 'fixed_credits' && (
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Credits Amount</label>
+                        <input
+                          type="number"
+                          value={newPromo.credits_amount}
+                          onChange={(e) => setNewPromo({ ...newPromo, credits_amount: parseInt(e.target.value) || 0 })}
+                          min={1}
+                          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Duration (days)</label>
+                      <input
+                        type="number"
+                        value={newPromo.duration_days}
+                        onChange={(e) => setNewPromo({ ...newPromo, duration_days: parseInt(e.target.value) || 30 })}
+                        min={1}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Expiry Date (optional)</label>
+                      <input
+                        type="date"
+                        value={newPromo.end_date}
+                        onChange={(e) => setNewPromo({ ...newPromo, end_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Max Redemptions (0 = unlimited)</label>
+                      <input
+                        type="number"
+                        value={newPromo.max_redemptions}
+                        onChange={(e) => setNewPromo({ ...newPromo, max_redemptions: parseInt(e.target.value) || 0 })}
+                        min={0}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+              
+                    <div className="md:col-span-2 border-t border-gray-700 pt-4 mt-2">
+                      <h4 className="text-white font-medium mb-3">Landing Page Settings</h4>
+                      <div className="flex items-center gap-4 mb-4">
+                        <label className="flex items-center gap-2 text-white">
+                          <input
+                            type="checkbox"
+                            checked={newPromo.is_active}
+                            onChange={(e) => setNewPromo({ ...newPromo, is_active: e.target.checked })}
+                            className="rounded"
+                          />
+                          Active
+                        </label>
+                        <label className="flex items-center gap-2 text-white">
+                          <input
+                            type="checkbox"
+                            checked={newPromo.show_on_landing}
+                            onChange={(e) => setNewPromo({ ...newPromo, show_on_landing: e.target.checked })}
+                            className="rounded"
+                          />
+                          Show on Landing Page
+                        </label>
+                      </div>
+                      {newPromo.show_on_landing && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-gray-400 text-sm block mb-1">Headline</label>
+                            <input
+                              type="text"
+                              value={newPromo.landing_headline}
+                              onChange={(e) => setNewPromo({ ...newPromo, landing_headline: e.target.value })}
+                              placeholder="Limited Time Offer!"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-gray-400 text-sm block mb-1">Badge Text</label>
+                            <input
+                              type="text"
+                              value={newPromo.landing_badge_text}
+                              onChange={(e) => setNewPromo({ ...newPromo, landing_badge_text: e.target.value })}
+                              placeholder="Limited Time"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="text-gray-400 text-sm block mb-1">Subtext</label>
+                            <input
+                              type="text"
+                              value={newPromo.landing_subtext}
+                              onChange={(e) => setNewPromo({ ...newPromo, landing_subtext: e.target.value })}
+                              placeholder="Sign up now and get 1 month free!"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-gray-400 text-sm block mb-1">Button Text</label>
+                            <input
+                              type="text"
+                              value={newPromo.landing_button_text}
+                              onChange={(e) => setNewPromo({ ...newPromo, landing_button_text: e.target.value })}
+                              placeholder="Claim Now"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      onClick={() => setCreatingPromo(false)}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={createPromo}
+                      disabled={!newPromo.code || !newPromo.title}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg"
+                    >
+                      Create Promo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Promo Modal */}
+            {editingPromo && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
+                <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-700 mx-4">
+                  <h3 className="text-xl font-semibold text-white mb-4">Edit Promo</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={editingPromo.title}
+                        onChange={(e) => setEditingPromo({ ...editingPromo, title: e.target.value })}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">Description</label>
+                      <textarea
+                        value={editingPromo.description}
+                        onChange={(e) => setEditingPromo({ ...editingPromo, description: e.target.value })}
+                        rows={2}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2 text-white">
+                        <input
+                          type="checkbox"
+                          checked={editingPromo.is_active}
+                          onChange={(e) => setEditingPromo({ ...editingPromo, is_active: e.target.checked })}
+                          className="rounded"
+                        />
+                        Active
+                      </label>
+                      <label className="flex items-center gap-2 text-white">
+                        <input
+                          type="checkbox"
+                          checked={editingPromo.show_on_landing}
+                          onChange={(e) => setEditingPromo({ ...editingPromo, show_on_landing: e.target.checked })}
+                          className="rounded"
+                        />
+                        Show on Landing
+                      </label>
+                    </div>
+                    {editingPromo.show_on_landing && (
+                      <>
+                        <div>
+                          <label className="text-gray-400 text-sm block mb-1">Landing Headline</label>
+                          <input
+                            type="text"
+                            value={editingPromo.landing_headline || ''}
+                            onChange={(e) => setEditingPromo({ ...editingPromo, landing_headline: e.target.value })}
+                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-gray-400 text-sm block mb-1">Landing Subtext</label>
+                          <input
+                            type="text"
+                            value={editingPromo.landing_subtext || ''}
+                            onChange={(e) => setEditingPromo({ ...editingPromo, landing_subtext: e.target.value })}
+                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      onClick={() => setEditingPromo(null)}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => updatePromo(editingPromo.id, {
+                        title: editingPromo.title,
+                        description: editingPromo.description,
+                        is_active: editingPromo.is_active,
+                        show_on_landing: editingPromo.show_on_landing,
+                        landing_headline: editingPromo.landing_headline,
+                        landing_subtext: editingPromo.landing_subtext
+                      })}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Redemptions Modal */}
+            {viewingRedemptions && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-gray-800 rounded-xl p-6 w-full max-w-lg border border-gray-700 mx-4">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-500" />
+                    Promo Redemptions
+                  </h3>
+                  {redemptions.length === 0 ? (
+                    <p className="text-gray-400 text-center py-8">No redemptions yet</p>
+                  ) : (
+                    <div className="max-h-96 overflow-y-auto space-y-2">
+                      {redemptions.map((r) => (
+                        <div key={r.id} className="bg-gray-700/50 rounded-lg p-3 flex items-center justify-between">
+                          <div>
+                            <p className="text-white">{r.user_email}</p>
+                            <p className="text-gray-400 text-xs">
+                              {new Date(r.redeemed_at).toLocaleString()}
+                            </p>
+                          </div>
+                          {r.ip_address && (
+                            <span className="text-gray-500 text-xs">{r.ip_address}</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex justify-end mt-6">
+                    <button
+                      onClick={() => {
+                        setViewingRedemptions(null);
+                        setRedemptions([]);
+                      }}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit User Modal */}
+            {editingUser && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-700">
             <h3 className="text-xl font-semibold text-white mb-4">Edit User</h3>

@@ -12,3 +12,6 @@ from app.models.training_run import TrainingRun, TrainingStatus, TrainingTrigger
 from app.models.ab_test import ABTestAssignment, ABTestGroup
 from app.models.model_metrics import ModelMetrics
 from app.models.training_sample import TrainingSampleQueue, SampleStatus, SampleSourceType
+
+# Promo system models
+from app.models.promo import Promo, PromoRedemption, PromoType
