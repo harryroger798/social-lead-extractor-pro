@@ -24,7 +24,7 @@ export function FeedbackWidget({
   const { token, isAuthenticated } = useAuthStore();
   const [showForm, setShowForm] = useState(false);
   const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(null);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isCorrect] = useState<boolean | null>(null);
   const [correctLabel, setCorrectLabel] = useState('');
   const [confidenceRating, setConfidenceRating] = useState<number>(3);
   const [userComment, setUserComment] = useState('');
