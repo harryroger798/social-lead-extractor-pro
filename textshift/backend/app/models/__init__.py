@@ -15,3 +15,6 @@ from app.models.training_sample import TrainingSampleQueue, SampleStatus, Sample
 
 # Promo system models
 from app.models.promo import Promo, PromoRedemption, PromoType
+
+# Email campaign system models
+from app.models.email_campaign import EmailCampaign, EmailSend, EmailType, CampaignStatus, TargetAudience

@@ -24,13 +24,16 @@ import {
   TrendingUp,
   CreditCard,
   Shield,
-  Gift
+  Gift,
+  Mail,
+  Send,
+  Eye
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
-type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'promos' | 'settings';
+type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'promos' | 'emails' | 'settings';
 
 interface DashboardSummary {
   users: { total: number; today: number; this_week: number; this_month: number };
@@ -162,6 +165,16 @@ export default function AdminPanel() {
     const [creatingPromo, setCreatingPromo] = useState(false);
     const [viewingRedemptions, setViewingRedemptions] = useState<number | null>(null);
     const [redemptions, setRedemptions] = useState<PromoRedemption[]>([]);
+    
+    // Email campaigns data
+    const [emailTypes, setEmailTypes] = useState<any>(null);
+    const [emailStats, setEmailStats] = useState<any>(null);
+    const [campaigns, setCampaigns] = useState<any[]>([]);
+    const [sendingTestEmail, setSendingTestEmail] = useState(false);
+    const [testEmailType, setTestEmailType] = useState('scan_complete');
+    const [testEmailAddress, setTestEmailAddress] = useState('');
+    const [emailMessage, setEmailMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+    
     const [newPromo, setNewPromo] = useState({
       code: '',
       title: '',
@@ -307,6 +320,66 @@ export default function AdminPanel() {
         console.error('Failed to fetch promos:', err);
       } finally {
         setPromosLoading(false);
+      }
+    };
+
+    const fetchEmailData = async () => {
+      try {
+        const [typesRes, statsRes, campaignsRes] = await Promise.all([
+          fetch(`${API_URL}/api/v1/admin/email-campaigns/types`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/v1/admin/email-campaigns/stats/overview`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/v1/admin/email-campaigns/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        ]);
+        
+        if (typesRes.ok) {
+          const data = await typesRes.json();
+          setEmailTypes(data);
+        }
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          setEmailStats(data);
+        }
+        if (campaignsRes.ok) {
+          const data = await campaignsRes.json();
+          setCampaigns(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch email data:', err);
+      }
+    };
+
+    const sendTestEmail = async () => {
+      setSendingTestEmail(true);
+      setEmailMessage(null);
+      try {
+        const response = await fetch(`${API_URL}/api/v1/admin/email-campaigns/send-test`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            email_type: testEmailType,
+            to_email: testEmailAddress || user?.email
+          })
+        });
+        
+        if (response.ok) {
+          setEmailMessage({ type: 'success', text: `Test email sent to ${testEmailAddress || user?.email}` });
+        } else {
+          const data = await response.json();
+          setEmailMessage({ type: 'error', text: data.detail || 'Failed to send test email' });
+        }
+      } catch (err) {
+        setEmailMessage({ type: 'error', text: 'Failed to send test email' });
+      } finally {
+        setSendingTestEmail(false);
       }
     };
 
@@ -544,6 +617,7 @@ export default function AdminPanel() {
       if (activeTab === 'ml') fetchMlMetrics();
       if (activeTab === 'settings') fetchSettings();
       if (activeTab === 'promos') fetchPromos();
+      if (activeTab === 'emails') fetchEmailData();
     }, [activeTab, usersPage, userSearch, userTierFilter, scansPage, scanTypeFilter, feedbackPage]);
 
   if (!user?.is_admin) {
@@ -565,6 +639,7 @@ export default function AdminPanel() {
       { id: 'feedback' as TabType, label: 'Feedback', icon: MessageSquare },
       { id: 'ml' as TabType, label: 'ML System', icon: Brain },
       { id: 'promos' as TabType, label: 'Promos', icon: Gift },
+      { id: 'emails' as TabType, label: 'Emails', icon: Mail },
       { id: 'settings' as TabType, label: 'Settings', icon: Settings },
     ];
 
@@ -1218,6 +1293,257 @@ export default function AdminPanel() {
                     ))}
                   </tbody>
                 </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Emails Tab */}
+        {activeTab === 'emails' && (
+          <div className="space-y-6">
+            {/* Email Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <Mail className="w-5 h-5 text-blue-500" />
+                  <span className="text-gray-400">Total Campaigns</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{emailStats?.total_campaigns || 0}</p>
+              </div>
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <Send className="w-5 h-5 text-emerald-500" />
+                  <span className="text-gray-400">Emails Sent</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{emailStats?.total_emails_sent || 0}</p>
+              </div>
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <Eye className="w-5 h-5 text-purple-500" />
+                  <span className="text-gray-400">Open Rate</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{emailStats?.open_rate || '0%'}</p>
+              </div>
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <TrendingUp className="w-5 h-5 text-yellow-500" />
+                  <span className="text-gray-400">Click Rate</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{emailStats?.click_rate || '0%'}</p>
+              </div>
+            </div>
+
+            {/* Send Test Email Section */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Send className="w-5 h-5 text-emerald-500" />
+                Send Test Email
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Test any email type by sending it to a specific address. Great for previewing templates before campaigns.
+              </p>
+              
+              {emailMessage && (
+                <div className={`mb-4 p-3 rounded-lg ${
+                  emailMessage.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                }`}>
+                  {emailMessage.text}
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-gray-400 text-sm block mb-2">Email Type</label>
+                  <select
+                    value={testEmailType}
+                    onChange={(e) => setTestEmailType(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                  >
+                    <optgroup label="Notification Emails">
+                      <option value="scan_complete">Scan Complete</option>
+                      <option value="low_credits">Low Credits Warning</option>
+                      <option value="weekly_summary">Weekly Summary</option>
+                      <option value="subscription_expiring">Subscription Expiring</option>
+                      <option value="password_changed">Password Changed</option>
+                    </optgroup>
+                    <optgroup label="Marketing Emails">
+                      <option value="new_feature">New Feature Announcement</option>
+                      <option value="promotional">Promotional Offer</option>
+                      <option value="tips_tricks">Tips & Tricks</option>
+                      <option value="product_update">Product Update</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-gray-400 text-sm block mb-2">Send To (leave empty for your email)</label>
+                  <input
+                    type="email"
+                    value={testEmailAddress}
+                    onChange={(e) => setTestEmailAddress(e.target.value)}
+                    placeholder={user?.email || 'your@email.com'}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={sendTestEmail}
+                    disabled={sendingTestEmail}
+                    className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-600 text-white rounded-lg flex items-center justify-center gap-2"
+                  >
+                    {sendingTestEmail ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Send Test Email
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Email Types Reference */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Notification Emails */}
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                  Notification Emails
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Sent to users with email notifications enabled
+                </p>
+                <div className="space-y-3">
+                  {emailTypes?.notification_types?.map((type: any) => (
+                    <div key={type.type} className="bg-gray-700/50 rounded-lg p-3">
+                      <p className="text-white font-medium">{type.name}</p>
+                      <p className="text-gray-400 text-sm">{type.description}</p>
+                    </div>
+                  )) || (
+                    <>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Scan Complete</p>
+                        <p className="text-gray-400 text-sm">Sent when a scan finishes</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Low Credits Warning</p>
+                        <p className="text-gray-400 text-sm">Sent when credits drop below 1,000</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Weekly Summary</p>
+                        <p className="text-gray-400 text-sm">Weekly usage digest</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Subscription Expiring</p>
+                        <p className="text-gray-400 text-sm">7 days before subscription ends</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Password Changed</p>
+                        <p className="text-gray-400 text-sm">Security notification</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Marketing Emails */}
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-pink-500" />
+                  Marketing Emails
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Sent to users with marketing emails enabled
+                </p>
+                <div className="space-y-3">
+                  {emailTypes?.marketing_types?.map((type: any) => (
+                    <div key={type.type} className="bg-gray-700/50 rounded-lg p-3">
+                      <p className="text-white font-medium">{type.name}</p>
+                      <p className="text-gray-400 text-sm">{type.description}</p>
+                    </div>
+                  )) || (
+                    <>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">New Feature</p>
+                        <p className="text-gray-400 text-sm">Announce new features</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Promotional</p>
+                        <p className="text-gray-400 text-sm">Special offers and discounts</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Tips & Tricks</p>
+                        <p className="text-gray-400 text-sm">Best practices and tips</p>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-3">
+                        <p className="text-white font-medium">Product Update</p>
+                        <p className="text-gray-400 text-sm">Platform improvements</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Campaigns */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-500" />
+                Recent Campaigns
+              </h3>
+              {campaigns.length === 0 ? (
+                <div className="text-center py-8">
+                  <Mail className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400">No campaigns yet</p>
+                  <p className="text-gray-500 text-sm">Use the test email feature above to preview email templates</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left text-gray-400 text-sm border-b border-gray-700">
+                        <th className="pb-3 font-medium">Campaign</th>
+                        <th className="pb-3 font-medium">Type</th>
+                        <th className="pb-3 font-medium">Status</th>
+                        <th className="pb-3 font-medium">Sent</th>
+                        <th className="pb-3 font-medium">Opens</th>
+                        <th className="pb-3 font-medium">Clicks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {campaigns.map((campaign: any) => (
+                        <tr key={campaign.id} className="border-b border-gray-700/50">
+                          <td className="py-3">
+                            <p className="text-white font-medium">{campaign.name}</p>
+                            <p className="text-gray-400 text-sm">{campaign.subject}</p>
+                          </td>
+                          <td className="py-3">
+                            <span className="px-2 py-1 bg-gray-700 rounded text-xs text-gray-300">
+                              {campaign.email_type}
+                            </span>
+                          </td>
+                          <td className="py-3">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              campaign.status === 'sent' ? 'bg-emerald-500/20 text-emerald-400' :
+                              campaign.status === 'draft' ? 'bg-gray-500/20 text-gray-400' :
+                              campaign.status === 'scheduled' ? 'bg-blue-500/20 text-blue-400' :
+                              'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {campaign.status}
+                            </span>
+                          </td>
+                          <td className="py-3 text-gray-300">{campaign.emails_sent}</td>
+                          <td className="py-3 text-gray-300">{campaign.emails_opened}</td>
+                          <td className="py-3 text-gray-300">{campaign.emails_clicked}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>
