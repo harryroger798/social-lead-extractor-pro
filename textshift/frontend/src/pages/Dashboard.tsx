@@ -27,7 +27,7 @@ import {
   Globe
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
-import { scanApi, creditsApi } from '@/lib/api';
+import { scanApi, creditsApi, authApi } from '@/lib/api';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 // Animated Loading Component for AI Detection
@@ -249,7 +249,7 @@ const PlagiarismLoader = () => {
 };
 
 export default function Dashboard() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
@@ -307,6 +307,19 @@ export default function Dashboard() {
     queryKey: ['credits'],
     queryFn: creditsApi.getBalance,
   });
+
+  // Refresh user data on dashboard load to get latest subscription tier
+  useEffect(() => {
+    const refreshUserData = async () => {
+      try {
+        const userData = await authApi.getMe();
+        updateUser(userData);
+      } catch (error) {
+        console.error('Failed to refresh user data:', error);
+      }
+    };
+    refreshUserData();
+  }, [updateUser]);
 
   const detectMutation = useMutation({
     mutationFn: scanApi.detectAI,
