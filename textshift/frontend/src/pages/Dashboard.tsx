@@ -27,7 +27,7 @@ import {
   Globe
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
-import { scanApi, creditsApi, authApi } from '@/lib/api';
+import { scanApi, creditsApi, authApi, promoApi } from '@/lib/api';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
 
@@ -258,8 +258,13 @@ export default function Dashboard() {
   const [detectText, setDetectText] = useState('');
   const [humanizeText, setHumanizeText] = useState('');
   const [plagiarismText, setPlagiarismText] = useState('');
-  const [result, setResult] = useState<any>(null);
-  const [copied, setCopied] = useState(false);
+    const [result, setResult] = useState<any>(null);
+    const [copied, setCopied] = useState(false);
+  
+    // Promo code state
+    const [promoCode, setPromoCode] = useState('');
+    const [promoLoading, setPromoLoading] = useState(false);
+    const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Get current text based on active tab
   const getCurrentText = () => {
@@ -346,10 +351,32 @@ export default function Dashboard() {
     },
   });
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+    const handleLogout = () => {
+      logout();
+      navigate('/');
+    };
+
+    const handleRedeemPromo = async () => {
+      if (!promoCode.trim()) return;
+    
+      setPromoLoading(true);
+      setPromoMessage(null);
+    
+      try {
+        const result = await promoApi.redeem(promoCode.trim());
+        setPromoMessage({ type: 'success', text: result.message || 'Promo code redeemed successfully!' });
+        setPromoCode('');
+        // Refresh user data and credits
+        const userData = await authApi.getMe();
+        updateUser(userData);
+        refetchCredits();
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.detail || 'Failed to redeem promo code';
+        setPromoMessage({ type: 'error', text: errorMessage });
+      } finally {
+        setPromoLoading(false);
+      }
+    };
 
   const handleAnalyze = () => {
     setResult(null);
@@ -1055,11 +1082,45 @@ export default function Dashboard() {
                   <span className="text-white text-sm">1 word = 1.5 credits</span>
                 </div>
               </div>
-              <p className="text-gray-500 text-xs mt-4">Pro and Enterprise plans have unlimited words!</p>
-            </div>
+                          <p className="text-gray-500 text-xs mt-4">Pro and Enterprise plans have unlimited words!</p>
+                        </div>
 
-            <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
-              <Link to="/history" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+                        {/* Promo Code Redemption */}
+                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
+                          <h3 className="text-lg font-medium text-white mb-4">Have a Promo Code?</h3>
+                          <div className="space-y-3">
+                            <input
+                              type="text"
+                              value={promoCode}
+                              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                              placeholder="Enter promo code"
+                              className="w-full px-4 py-2 bg-black/30 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-emerald-500/50 focus:outline-none"
+                            />
+                            <Button
+                              onClick={handleRedeemPromo}
+                              disabled={!promoCode.trim() || promoLoading}
+                              className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-xl"
+                            >
+                              {promoLoading ? (
+                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Redeeming...</>
+                              ) : (
+                                'Redeem Code'
+                              )}
+                            </Button>
+                            {promoMessage && (
+                              <div className={`p-3 rounded-xl text-sm ${
+                                promoMessage.type === 'success' 
+                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
+                                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                              }`}>
+                                {promoMessage.text}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
+                          <Link to="/history"className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <History className="w-4 h-4" />
                   <span>Scan History</span>

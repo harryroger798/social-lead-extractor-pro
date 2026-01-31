@@ -194,6 +194,19 @@ export const batchApi = {
   },
 };
 
+// Promo API
+export const promoApi = {
+  validate: async (code: string) => {
+    const response = await api.get(`/api/promo/validate/${code}`);
+    return response.data;
+  },
+
+  redeem: async (code: string) => {
+    const response = await api.post('/api/promo/redeem', { code });
+    return response.data;
+  },
+};
+
 // Payment API
 export const paymentApi = {
   getPlans: async () => {
