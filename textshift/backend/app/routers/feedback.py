@@ -14,7 +14,7 @@ from app.models.user import User
 from app.models.feedback import UserFeedback
 from app.services.feedback_service import FeedbackService
 
-router = APIRouter(prefix="/api/v1/feedback", tags=["feedback"])
+router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 
 
 class FeedbackSubmitRequest(BaseModel):

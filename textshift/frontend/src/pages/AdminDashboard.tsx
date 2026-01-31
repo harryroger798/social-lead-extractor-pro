@@ -17,7 +17,9 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// In production, use empty string for same-origin requests (nginx proxies /api/ to backend)
+// In development, use localhost:8000
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
 interface ModelStatus {
   deployed_version: string | null;
@@ -80,7 +82,7 @@ export default function AdminDashboard() {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/metrics/overview`, {
+      const response = await fetch(`${API_URL}/api/admin/metrics/overview`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -100,7 +102,7 @@ export default function AdminDashboard() {
 
   const fetchTrainingHistory = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/training/history?limit=10`, {
+      const response = await fetch(`${API_URL}/api/admin/training/history?limit=10`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -116,7 +118,7 @@ export default function AdminDashboard() {
   const triggerTraining = async (modelType: string) => {
     setTriggeringTraining(modelType);
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/training/trigger`, {
+      const response = await fetch(`${API_URL}/api/admin/training/trigger`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

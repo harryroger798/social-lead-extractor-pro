@@ -29,6 +29,7 @@ import {
 import { useAuthStore } from '@/store/authStore';
 import { scanApi, creditsApi, authApi } from '@/lib/api';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
 
 // Animated Loading Component for AI Detection
 const AIDetectionLoader = () => {
@@ -765,6 +766,16 @@ export default function Dashboard() {
                                       : 'No sentences with high AI probability detected'}
                                   </p>
                                 </div>
+
+                                {/* Feedback Widget */}
+                                {result.id && (
+                                  <FeedbackWidget 
+                                    scanId={result.id} 
+                                    scanType="ai_detection"
+                                    modelPrediction={result.results?.ai_probability >= 50 ? 'AI Generated' : 'Human Written'}
+                                    modelConfidence={result.results?.ai_probability / 100}
+                                  />
+                                )}
                               </div>
                             )}
 
@@ -869,6 +880,15 @@ export default function Dashboard() {
                                     Check if your humanized text passes AI detection
                                   </p>
                                 </div>
+
+                                {/* Feedback Widget */}
+                                {result.id && (
+                                  <FeedbackWidget 
+                                    scanId={result.id} 
+                                    scanType="humanize"
+                                    modelPrediction="Humanized"
+                                  />
+                                )}
                               </div>
                             )}
 
@@ -965,6 +985,16 @@ export default function Dashboard() {
                                       <span>No matching sources found. Your content appears to be original!</span>
                                     </div>
                                   </div>
+                                )}
+
+                                {/* Feedback Widget */}
+                                {result.id && (
+                                  <FeedbackWidget 
+                                    scanId={result.id} 
+                                    scanType="plagiarism"
+                                    modelPrediction={result.plagiarism_score > 50 ? 'Plagiarized' : 'Original'}
+                                    modelConfidence={result.plagiarism_score / 100}
+                                  />
                                 )}
                               </div>
                             )}

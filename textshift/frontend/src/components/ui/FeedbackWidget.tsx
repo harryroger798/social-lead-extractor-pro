@@ -12,7 +12,9 @@ interface FeedbackWidgetProps {
 
 type FeedbackType = 'good_result' | 'incorrect_prediction' | 'false_positive' | 'false_negative' | 'poor_quality';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// In production, use empty string for same-origin requests (nginx proxies /api/ to backend)
+// In development, use localhost:8000
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
 export function FeedbackWidget({
   scanId,
@@ -42,7 +44,7 @@ export function FeedbackWidget({
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/feedback/submit`, {
+      const response = await fetch(`${API_URL}/api/feedback/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +87,7 @@ export function FeedbackWidget({
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/feedback/submit`, {
+      const response = await fetch(`${API_URL}/api/feedback/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

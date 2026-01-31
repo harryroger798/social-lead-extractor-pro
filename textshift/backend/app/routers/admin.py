@@ -15,7 +15,7 @@ from app.services.feedback_service import FeedbackService
 from app.services.training_pipeline import TrainingPipeline
 from app.services.ab_testing_service import ABTestingService
 
-router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:
