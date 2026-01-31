@@ -11,6 +11,7 @@ import VerifyEmailPendingPage from '@/pages/VerifyEmailPendingPage';
 import Dashboard from '@/pages/Dashboard';
 import PricingPage from '@/pages/PricingPage';
 import HistoryPage from '@/pages/HistoryPage';
+import AdminDashboard from '@/pages/AdminDashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,16 +106,25 @@ function App() {
             } 
           />
           
-          <Route 
-            path="/history"
-            element={
-              <ProtectedRoute>
-                <HistoryPage />
-              </ProtectedRoute>
-            } 
-          />
+                    <Route 
+                      path="/history"
+                      element={
+                        <ProtectedRoute>
+                          <HistoryPage />
+                        </ProtectedRoute>
+                      } 
+                    />
           
-          <Route path="*" element={<Navigate to="/" replace />} />
+                    <Route 
+                      path="/admin/ml-dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      } 
+                    />
+          
+                    <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </QueryClientProvider>
