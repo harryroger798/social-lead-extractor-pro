@@ -5,7 +5,7 @@ import logging
 
 from app.core.database import engine, Base
 from app.core.config import settings
-from app.routers import auth, scan, credits, payment, api_keys, batch, contact, feedback, admin
+from app.routers import auth, scan, credits, payment, api_keys, batch, contact, feedback, admin, admin_extended
 from app.models import User, Scan, CreditTransaction, Subscription, APIKey  # Import models to register with Base
 # Phase 3: Self-Learning ML System models
 from app.models import UserFeedback, ModelVersion, TrainingRun, ABTestAssignment, ModelMetrics, TrainingSampleQueue
@@ -54,6 +54,7 @@ app.include_router(contact.router)
 # Phase 3: Self-Learning ML System routers
 app.include_router(feedback.router)
 app.include_router(admin.router)
+app.include_router(admin_extended.router)
 
 
 @app.get("/healthz")

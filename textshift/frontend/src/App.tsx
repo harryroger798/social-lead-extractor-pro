@@ -12,6 +12,7 @@ import Dashboard from '@/pages/Dashboard';
 import PricingPage from '@/pages/PricingPage';
 import HistoryPage from '@/pages/HistoryPage';
 import AdminDashboard from '@/pages/AdminDashboard';
+import AdminPanel from '@/pages/AdminPanel';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,16 +116,25 @@ function App() {
                       } 
                     />
           
-                    <Route 
-                      path="/admin/ml-dashboard"
-                      element={
-                        <ProtectedRoute>
-                          <AdminDashboard />
-                        </ProtectedRoute>
-                      } 
-                    />
+                                        <Route 
+                                          path="/admin/ml-dashboard"
+                                          element={
+                                            <ProtectedRoute>
+                                              <AdminDashboard />
+                                            </ProtectedRoute>
+                                          } 
+                                        />
           
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                                        <Route 
+                                          path="/admin"
+                                          element={
+                                            <ProtectedRoute>
+                                              <AdminPanel />
+                                            </ProtectedRoute>
+                                          } 
+                                        />
+          
+                                        <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </QueryClientProvider>
