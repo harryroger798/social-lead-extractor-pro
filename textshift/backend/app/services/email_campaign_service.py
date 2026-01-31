@@ -52,14 +52,14 @@ class EmailCampaignService:
             EmailType.PRODUCT_UPDATE
         ]
         
-        # Build CTA button if provided
+        # Build CTA button if provided - mobile optimized with proper width
         cta_html = ""
         if cta_text and cta_url:
             cta_html = f"""
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
-                        <td align="center" style="padding-top: 32px;">
-                            <a href="{cta_url}" class="button" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #000000; font-size: 16px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 50px; text-align: center;">
+                        <td align="center" class="button-td" style="padding: 24px 16px 0 16px;">
+                            <a href="{cta_url}" class="button-a" style="display: inline-block; background-color: #10b981; color: #000000; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 50px; text-align: center; max-width: 280px;">
                                 {cta_text}
                             </a>
                         </td>
@@ -72,34 +72,38 @@ class EmailCampaignService:
         if is_marketing:
             marketing_banner = f"""
                 <tr>
-                    <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 16px; text-align: center;">
-                        <span style="color: #000000; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+                    <td style="background-color: #10b981; padding: 12px 16px; text-align: center;" bgcolor="#10b981">
+                        <span style="color: #000000; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
                             {'NEW FEATURE' if email_type == EmailType.NEW_FEATURE else 'SPECIAL OFFER' if email_type == EmailType.PROMOTIONAL else 'PRO TIP' if email_type == EmailType.TIPS_TRICKS else 'PRODUCT UPDATE'}
                         </span>
                     </td>
                 </tr>
             """
         
+        # Use solid dark colors for icon background
+        icon_bg = '#0d3d2e' if is_marketing else '#1f3d32'
+        icon_border = 'border: 2px solid #10b981;' if is_marketing else ''
+        
         content = f"""
         {marketing_banner}
         <tr>
-            <td class="content-cell" style="padding: 48px 40px;">
+            <td class="content-cell" style="padding: 32px 20px;" bgcolor="#1a1a1a">
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
-                        <td align="center" style="padding-bottom: 24px;">
-                            <div style="width: 72px; height: 72px; background: {'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1))' if is_marketing else 'rgba(16, 185, 129, 0.15)'}; border-radius: 50%; display: inline-block; line-height: 72px; text-align: center; {'border: 2px solid rgba(16, 185, 129, 0.3);' if is_marketing else ''}">
-                                <span style="font-size: 32px;">{icon}</span>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <div style="width: 64px; height: 64px; background-color: {icon_bg}; border-radius: 50%; display: inline-block; line-height: 64px; text-align: center; {icon_border}">
+                                <span style="font-size: 28px;">{icon}</span>
                             </div>
                         </td>
                     </tr>
                 </table>
-                <h1 style="margin: 0 0 16px 0; font-size: 28px; font-weight: 600; color: #ffffff; text-align: center; line-height: 1.3;">
+                <h1 style="margin: 0 0 12px 0; font-size: 24px; font-weight: 600; color: #ffffff; text-align: center; line-height: 1.3;">
                     {headline}
                 </h1>
-                <p style="margin: 0 0 8px 0; font-size: 15px; color: #9ca3af; text-align: center; line-height: 1.6;">
+                <p style="margin: 0 0 8px 0; font-size: 14px; color: #9ca3af; text-align: center; line-height: 1.6;">
                     Hi {user_name},
                 </p>
-                <div style="margin: 24px 0; font-size: 16px; color: #d1d5db; line-height: 1.7;">
+                <div style="margin: 20px 0; font-size: 15px; color: #d1d5db; line-height: 1.6;">
                     {body_content}
                 </div>
                 {cta_html}
@@ -129,24 +133,24 @@ class EmailCampaignService:
         }.get(scan_type, scan_type.title())
         
         body_content = f"""
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; margin-bottom: 16px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <div style="background-color: #252525; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#252525">
                     <tr>
-                        <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 8px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Scan Type</td>
-                                    <td align="right" style="color: #10b981; font-size: 14px; font-weight: 600;">{scan_type_display}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Scan Type</td>
+                                    <td align="right" style="color: #10b981; font-size: 13px; font-weight: 600;">{scan_type_display}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 8px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Result</td>
-                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{result_summary}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Result</td>
+                                    <td align="right" style="color: #ffffff; font-size: 13px; font-weight: 600;">{result_summary}</td>
                                 </tr>
                             </table>
                         </td>
@@ -155,15 +159,15 @@ class EmailCampaignService:
                         <td style="padding: 8px 0;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Credits Used</td>
-                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{credits_used:,} words</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Credits Used</td>
+                                    <td align="right" style="color: #ffffff; font-size: 13px; font-weight: 600;">{credits_used:,} words</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                 </table>
             </div>
-            <p style="text-align: center; color: #6b7280; font-size: 13px;">
+            <p style="text-align: center; color: #6b7280; font-size: 12px;">
                 View your complete results in your dashboard.
             </p>
         """
@@ -196,12 +200,12 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         body_content = f"""
-            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
-                <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 14px;">Current Balance</p>
-                <p style="margin: 0; color: #ef4444; font-size: 36px; font-weight: 700;">{current_balance:,}</p>
-                <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 14px;">words remaining</p>
+            <div style="background-color: #2d1f1f; border: 1px solid #4a2525; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 13px;">Current Balance</p>
+                <p style="margin: 0; color: #ef4444; font-size: 32px; font-weight: 700;">{current_balance:,}</p>
+                <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 13px;">words remaining</p>
             </div>
-            <p style="text-align: center; color: #d1d5db; font-size: 15px; line-height: 1.6;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6;">
                 Your credit balance is running low. Top up now to continue using TextShift without interruption.
             </p>
         """
@@ -239,66 +243,66 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         body_content = f"""
-            <p style="text-align: center; color: #9ca3af; font-size: 14px; margin-bottom: 24px;">
+            <p style="text-align: center; color: #9ca3af; font-size: 13px; margin-bottom: 20px;">
                 Here's your activity summary for the past week
             </p>
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <div style="background-color: #252525; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#252525">
                     <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 10px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Total Scans</td>
-                                    <td align="right" style="color: #10b981; font-size: 20px; font-weight: 700;">{total_scans}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Total Scans</td>
+                                    <td align="right" style="color: #10b981; font-size: 18px; font-weight: 700;">{total_scans}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 10px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">AI Detections</td>
-                                    <td align="right" style="color: #ffffff; font-size: 16px; font-weight: 600;">{ai_detections}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">AI Detections</td>
+                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{ai_detections}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 10px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Humanizations</td>
-                                    <td align="right" style="color: #ffffff; font-size: 16px; font-weight: 600;">{humanizations}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Humanizations</td>
+                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{humanizations}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 10px 0; border-bottom: 1px solid #333333;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Plagiarism Checks</td>
-                                    <td align="right" style="color: #ffffff; font-size: 16px; font-weight: 600;">{plagiarism_checks}</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Plagiarism Checks</td>
+                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{plagiarism_checks}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 12px 0;">
+                        <td style="padding: 10px 0;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="color: #9ca3af; font-size: 14px;">Credits Used</td>
-                                    <td align="right" style="color: #ffffff; font-size: 16px; font-weight: 600;">{credits_used:,} words</td>
+                                    <td style="color: #9ca3af; font-size: 13px;">Credits Used</td>
+                                    <td align="right" style="color: #ffffff; font-size: 14px; font-weight: 600;">{credits_used:,} words</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                 </table>
             </div>
-            <div style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 16px; text-align: center;">
-                <p style="margin: 0; color: #9ca3af; font-size: 12px;">Current Balance</p>
-                <p style="margin: 4px 0 0 0; color: #10b981; font-size: 24px; font-weight: 700;">{'Unlimited' if credits_remaining == -1 else f'{credits_remaining:,}'} words</p>
+            <div style="background-color: #1f3d32; border-radius: 10px; padding: 14px; text-align: center;">
+                <p style="margin: 0; color: #9ca3af; font-size: 11px;">Current Balance</p>
+                <p style="margin: 4px 0 0 0; color: #10b981; font-size: 20px; font-weight: 700;">{'Unlimited' if credits_remaining == -1 else f'{credits_remaining:,}'} words</p>
             </div>
         """
         
@@ -331,12 +335,12 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         body_content = f"""
-            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
-                <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 14px;">Your {plan_name} plan expires in</p>
-                <p style="margin: 0; color: #fbbf24; font-size: 48px; font-weight: 700;">{days_remaining}</p>
-                <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 14px;">days</p>
+            <div style="background-color: #3d3520; border: 1px solid #5a4a25; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 13px;">Your {plan_name} plan expires in</p>
+                <p style="margin: 0; color: #fbbf24; font-size: 40px; font-weight: 700;">{days_remaining}</p>
+                <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 13px;">days</p>
             </div>
-            <p style="text-align: center; color: #d1d5db; font-size: 15px; line-height: 1.6;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6;">
                 Renew now to keep your unlimited access and avoid any interruption to your workflow.
             </p>
         """
@@ -368,15 +372,15 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         body_content = f"""
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center;">
-                <p style="margin: 0; color: #10b981; font-size: 16px; font-weight: 600;">
+            <div style="background-color: #1f3d32; border: 1px solid #2a5a42; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                <p style="margin: 0; color: #10b981; font-size: 15px; font-weight: 600;">
                     Your password has been successfully changed
                 </p>
             </div>
-            <p style="text-align: center; color: #d1d5db; font-size: 15px; line-height: 1.6;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6;">
                 If you didn't make this change, please contact our support team immediately or reset your password.
             </p>
-            <p style="text-align: center; color: #6b7280; font-size: 13px; margin-top: 24px;">
+            <p style="text-align: center; color: #6b7280; font-size: 12px; margin-top: 20px;">
                 Changed on: {datetime.utcnow().strftime('%B %d, %Y at %H:%M UTC')}
             </p>
         """
@@ -413,17 +417,17 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         benefits_html = "".join([
-            f'<li style="color: #d1d5db; font-size: 15px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">'
+            f'<li style="color: #d1d5db; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #333333;">'
             f'<span style="color: #10b981; margin-right: 8px;">&#x2713;</span> {benefit}</li>'
             for benefit in feature_benefits
         ])
         
         body_content = f"""
-            <p style="text-align: center; color: #d1d5db; font-size: 16px; line-height: 1.7; margin-bottom: 24px;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                 {feature_description}
             </p>
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-                <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 1px;">
+            <div style="background-color: #252525; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px;">
                     What's New
                 </p>
                 <ul style="list-style: none; padding: 0; margin: 0;">
@@ -466,18 +470,18 @@ class EmailCampaignService:
         promo_code_html = ""
         if promo_code:
             promo_code_html = f"""
-                <div style="background: rgba(16, 185, 129, 0.15); border: 2px dashed rgba(16, 185, 129, 0.5); border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
-                    <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Use Code</p>
-                    <p style="margin: 0; color: #10b981; font-size: 28px; font-weight: 700; letter-spacing: 4px;">{promo_code}</p>
-                    {f'<p style="margin: 8px 0 0 0; color: #6b7280; font-size: 12px;">Expires: {expiry_date}</p>' if expiry_date else ''}
+                <div style="background-color: #1f3d32; border: 2px dashed #10b981; border-radius: 10px; padding: 16px; margin: 20px 0; text-align: center;">
+                    <p style="margin: 0 0 8px 0; color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Use Code</p>
+                    <p style="margin: 0; color: #10b981; font-size: 24px; font-weight: 700; letter-spacing: 3px;">{promo_code}</p>
+                    {f'<p style="margin: 8px 0 0 0; color: #6b7280; font-size: 11px;">Expires: {expiry_date}</p>' if expiry_date else ''}
                 </div>
             """
         
         discount_html = ""
         if discount_amount:
             discount_html = f"""
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <span style="background: linear-gradient(135deg, #10b981, #059669); color: #000000; font-size: 32px; font-weight: 700; padding: 12px 24px; border-radius: 12px; display: inline-block;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="background-color: #10b981; color: #000000; font-size: 28px; font-weight: 700; padding: 10px 20px; border-radius: 10px; display: inline-block;">
                         {discount_amount}
                     </span>
                 </div>
@@ -485,7 +489,7 @@ class EmailCampaignService:
         
         body_content = f"""
             {discount_html}
-            <p style="text-align: center; color: #d1d5db; font-size: 16px; line-height: 1.7; margin-bottom: 24px;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                 {promo_description}
             </p>
             {promo_code_html}
@@ -522,21 +526,25 @@ class EmailCampaignService:
         tips_html = ""
         for i, tip in enumerate(tips, 1):
             tips_html += f"""
-                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: flex-start;">
-                        <div style="background: linear-gradient(135deg, #10b981, #059669); color: #000000; font-size: 14px; font-weight: 700; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 16px; flex-shrink: 0;">
-                            {i}
-                        </div>
-                        <div>
-                            <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">{tip['title']}</p>
-                            <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.6;">{tip['description']}</p>
-                        </div>
-                    </div>
+                <div style="background-color: #252525; border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td width="36" valign="top">
+                                <div style="background-color: #10b981; color: #000000; font-size: 13px; font-weight: 700; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px;">
+                                    {i}
+                                </div>
+                            </td>
+                            <td valign="top">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-size: 14px; font-weight: 600;">{tip['title']}</p>
+                                <p style="margin: 0; color: #9ca3af; font-size: 13px; line-height: 1.5;">{tip['description']}</p>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             """
         
         body_content = f"""
-            <p style="text-align: center; color: #9ca3af; font-size: 14px; margin-bottom: 24px;">
+            <p style="text-align: center; color: #9ca3af; font-size: 13px; margin-bottom: 20px;">
                 Get the most out of TextShift with these pro tips
             </p>
             {tips_html}
@@ -572,17 +580,17 @@ class EmailCampaignService:
         name = full_name.split()[0] if full_name else "there"
         
         updates_html = "".join([
-            f'<li style="color: #d1d5db; font-size: 15px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">'
+            f'<li style="color: #d1d5db; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #333333;">'
             f'<span style="color: #10b981; margin-right: 8px;">&#x1F680;</span> {update}</li>'
             for update in updates
         ])
         
         body_content = f"""
-            <p style="text-align: center; color: #d1d5db; font-size: 16px; line-height: 1.7; margin-bottom: 24px;">
+            <p style="text-align: center; color: #d1d5db; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                 {update_description}
             </p>
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-                <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 1px;">
+            <div style="background-color: #252525; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px;">
                     What's Changed
                 </p>
                 <ul style="list-style: none; padding: 0; margin: 0;">

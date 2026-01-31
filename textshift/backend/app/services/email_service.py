@@ -6,7 +6,7 @@ from app.core.config import settings
 
 
 def get_base_email_template(content: str, preview_text: str = "") -> str:
-    """Generate a professional, mobile-optimized email template."""
+    """Generate a professional, mobile-optimized email template with solid dark colors for maximum email client compatibility."""
     current_year = datetime.now().year
     return f"""
     <!DOCTYPE html>
@@ -16,6 +16,11 @@ def get_base_email_template(content: str, preview_text: str = "") -> str:
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>TextShift</title>
+        <!--[if mso]>
+        <style type="text/css">
+            body, table, td {{font-family: Arial, Helvetica, sans-serif !important;}}
+        </style>
+        <![endif]-->
         <style>
             body, table, td, p, a, li, blockquote {{
                 -webkit-text-size-adjust: 100%;
@@ -39,67 +44,86 @@ def get_base_email_template(content: str, preview_text: str = "") -> str:
                 background-color: #0a0a0a;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             }}
+            .button-td {{
+                padding: 0 20px;
+            }}
+            .button-a {{
+                background-color: #10b981;
+                color: #000000 !important;
+                font-size: 16px;
+                font-weight: 600;
+                text-decoration: none;
+                padding: 14px 28px;
+                border-radius: 50px;
+                display: inline-block;
+                text-align: center;
+            }}
             @media only screen and (max-width: 600px) {{
                 .container {{
                     width: 100% !important;
-                    padding: 0 16px !important;
+                    padding: 0 12px !important;
                 }}
                 .content-cell {{
-                    padding: 24px 20px !important;
+                    padding: 24px 16px !important;
                 }}
-                .button {{
-                    width: 100% !important;
+                .button-td {{
+                    padding: 0 16px !important;
+                }}
+                .button-a {{
                     display: block !important;
+                    width: 100% !important;
+                    padding: 14px 20px !important;
+                    box-sizing: border-box !important;
                 }}
             }}
         </style>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #0a0a0a;">
+    <body style="margin: 0; padding: 0; background-color: #0a0a0a;" bgcolor="#0a0a0a">
         <div style="display: none; max-height: 0; overflow: hidden;">
             {preview_text}
         </div>
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0a0a;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0a0a;" bgcolor="#0a0a0a">
             <tr>
-                <td align="center" style="padding: 40px 0;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="container" style="max-width: 600px; width: 100%;">
+                <td align="center" style="padding: 24px 12px;" bgcolor="#0a0a0a">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="container" style="max-width: 560px; width: 100%;">
                         <tr>
-                            <td align="center" style="padding: 0 0 32px 0;">
+                            <td align="center" style="padding: 0 0 24px 0;" bgcolor="#0a0a0a">
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                                     <tr>
                                         <td style="vertical-align: middle; padding-right: 10px;">
-                                            <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%;"></div>
+                                            <div style="width: 12px; height: 12px; background-color: #10b981; border-radius: 50%;"></div>
                                         </td>
                                         <td style="vertical-align: middle;">
-                                            <span style="font-size: 24px; font-weight: 600; color: #ffffff; letter-spacing: 2px;">TEXTSHIFT</span>
+                                            <span style="font-size: 22px; font-weight: 600; color: #ffffff; letter-spacing: 2px;">TEXTSHIFT</span>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; overflow: hidden;">
+                            <td style="padding: 0 8px;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 16px; overflow: hidden;" bgcolor="#1a1a1a">
                                     {content}
                                 </table>
                             </td>
                         </tr>
                         <tr>
-                            <td align="center" style="padding: 32px 20px;">
+                            <td align="center" style="padding: 24px 16px;" bgcolor="#0a0a0a">
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                                     <tr>
-                                        <td align="center" style="padding-bottom: 16px;">
-                                            <a href="https://textshift.org" style="color: #10b981; text-decoration: none; font-size: 14px; margin: 0 12px;">Website</a>
+                                        <td align="center" style="padding-bottom: 12px;">
+                                            <a href="https://textshift.org" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Website</a>
                                             <span style="color: #4b5563;">|</span>
-                                            <a href="https://textshift.org/pricing" style="color: #10b981; text-decoration: none; font-size: 14px; margin: 0 12px;">Pricing</a>
+                                            <a href="https://textshift.org/pricing" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Pricing</a>
                                             <span style="color: #4b5563;">|</span>
-                                            <a href="mailto:support@textshift.org" style="color: #10b981; text-decoration: none; font-size: 14px; margin: 0 12px;">Support</a>
+                                            <a href="mailto:support@textshift.org" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Support</a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <p style="margin: 0; color: #6b7280; font-size: 12px; line-height: 1.5;">
+                                            <p style="margin: 0; color: #6b7280; font-size: 11px; line-height: 1.5;">
                                                 &copy; {current_year} TextShift. All rights reserved.<br>
-                                                AI Content Detection, Humanization & Plagiarism Checking
+                                                AI Content Detection, Humanization &amp; Plagiarism Checking
                                             </p>
                                         </td>
                                     </tr>
