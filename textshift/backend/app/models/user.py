@@ -34,6 +34,13 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     is_verified = Column(Boolean, default=False)
     
+    # Notification preferences
+    email_notifications = Column(Boolean, default=True)
+    marketing_emails = Column(Boolean, default=False)
+    
+    # Billing period for subscriptions
+    billing_period = Column(String(20), default="monthly")  # "monthly" or "yearly"
+    
     # Email verification and password reset tokens
     verification_token = Column(String(255), nullable=True)
     verification_token_expires_at = Column(DateTime, nullable=True)

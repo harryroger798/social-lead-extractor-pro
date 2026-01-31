@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft,
@@ -12,30 +12,120 @@ import {
   Trash2,
   Save,
   Eye,
-  EyeOff
+  EyeOff,
+  AlertTriangle
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import api from '@/lib/api';
 
 export default function SettingsPage() {
-  const { user } = useAuthStore();
+  const { user, updateUser, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
-    const [formData, setFormData] = useState({
-      name: user?.full_name || '',
-      email: user?.email || '',
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [clearingHistory, setClearingHistory] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  
+  const [formData, setFormData] = useState({
+    name: user?.full_name || '',
+    email: user?.email || '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    emailNotifications: true,
-    marketingEmails: false,
+    emailNotifications: (user as any)?.email_notifications ?? true,
+    marketingEmails: (user as any)?.marketing_emails ?? false,
   });
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.full_name || '',
+        email: user.email || '',
+        emailNotifications: (user as any).email_notifications ?? true,
+        marketingEmails: (user as any).marketing_emails ?? false,
+      }));
+    }
+  }, [user]);
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  const handleSaveSettings = async () => {
     setSaving(true);
-    setTimeout(() => {
+    try {
+      const response = await api.put('/api/v1/user/settings', {
+        full_name: formData.name,
+        email_notifications: formData.emailNotifications,
+        marketing_emails: formData.marketingEmails,
+      });
+      updateUser(response.data);
+      showMessage('success', 'Settings saved successfully!');
+    } catch (error: any) {
+      showMessage('error', error.response?.data?.detail || 'Failed to save settings');
+    } finally {
       setSaving(false);
-      alert('Settings saved successfully!');
-    }, 1000);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (formData.newPassword !== formData.confirmPassword) {
+      showMessage('error', 'New passwords do not match');
+      return;
+    }
+    if (formData.newPassword.length < 8) {
+      showMessage('error', 'Password must be at least 8 characters');
+      return;
+    }
+    
+    setChangingPassword(true);
+    try {
+      await api.put('/api/v1/user/password', {
+        current_password: formData.currentPassword,
+        new_password: formData.newPassword,
+      });
+      showMessage('success', 'Password changed successfully!');
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      }));
+    } catch (error: any) {
+      showMessage('error', error.response?.data?.detail || 'Failed to change password');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    setClearingHistory(true);
+    try {
+      const response = await api.delete('/api/v1/user/history');
+      showMessage('success', `Scan history cleared! ${response.data.deleted_scans} scans deleted.`);
+    } catch (error: any) {
+      showMessage('error', error.response?.data?.detail || 'Failed to clear history');
+    } finally {
+      setClearingHistory(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      await api.delete('/api/v1/user/account');
+      logout();
+      navigate('/');
+    } catch (error: any) {
+      showMessage('error', error.response?.data?.detail || 'Failed to delete account');
+      setDeletingAccount(false);
+      setShowDeleteConfirm(false);
+    }
   };
 
   const getTierBadgeColor = (tier: string) => {
@@ -67,6 +157,17 @@ export default function SettingsPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-light text-white mb-2">Settings</h1>
         <p className="text-gray-400 mb-8">Manage your account settings and preferences</p>
+
+        {/* Message Toast */}
+        {message && (
+          <div className={`mb-6 p-4 rounded-xl border ${
+            message.type === 'success' 
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+          }`}>
+            {message.text}
+          </div>
+        )}
 
         <div className="space-y-6">
           {/* Profile Section */}
@@ -186,6 +287,16 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
+              <div className="flex justify-end">
+                <Button 
+                  onClick={handleChangePassword}
+                  disabled={changingPassword || !formData.currentPassword || !formData.newPassword}
+                  variant="outline"
+                  className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                >
+                  {changingPassword ? 'Changing...' : 'Change Password'}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -239,18 +350,52 @@ export default function SettingsPage() {
               <div className="p-4 bg-black/30 rounded-xl border border-white/5">
                 <h3 className="text-white font-medium mb-1">Data Retention</h3>
                 <p className="text-gray-500 text-sm mb-3">Your scan history is retained for 90 days. You can delete it anytime.</p>
-                <Button variant="outline" size="sm" className="border-white/20 text-gray-300 hover:bg-white/10">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-white/20 text-gray-300 hover:bg-white/10"
+                  onClick={handleClearHistory}
+                  disabled={clearingHistory}
+                >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Clear Scan History
+                  {clearingHistory ? 'Clearing...' : 'Clear Scan History'}
                 </Button>
               </div>
               <div className="p-4 bg-rose-500/10 rounded-xl border border-rose-500/20">
                 <h3 className="text-rose-400 font-medium mb-1">Delete Account</h3>
                 <p className="text-gray-500 text-sm mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
-                <Button variant="outline" size="sm" className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10">
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Account
-                </Button>
+                {!showDeleteConfirm ? (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Account
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-rose-400" />
+                    <span className="text-rose-400 text-sm">Are you sure? This cannot be undone.</span>
+                    <Button 
+                      size="sm" 
+                      className="bg-rose-500 hover:bg-rose-600 text-white"
+                      onClick={handleDeleteAccount}
+                      disabled={deletingAccount}
+                    >
+                      {deletingAccount ? 'Deleting...' : 'Yes, Delete'}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-white/20 text-gray-300"
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -258,7 +403,7 @@ export default function SettingsPage() {
           {/* Save Button */}
           <div className="flex justify-end">
             <Button 
-              onClick={handleSave} 
+              onClick={handleSaveSettings} 
               disabled={saving}
               className="bg-emerald-500 hover:bg-emerald-600 text-black px-8"
             >

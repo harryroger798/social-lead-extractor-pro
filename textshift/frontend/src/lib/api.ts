@@ -141,6 +141,16 @@ export const creditsApi = {
     const response = await api.get('/api/credits/usage-stats');
     return response.data;
   },
+
+  getPackages: async () => {
+    const response = await api.get('/api/v1/user/credit-packages');
+    return response.data;
+  },
+
+  topup: async (packageId: string) => {
+    const response = await api.post('/api/v1/user/topup', { package: packageId });
+    return response.data;
+  },
 };
 
 // Contact API
@@ -214,8 +224,8 @@ export const paymentApi = {
     return response.data;
   },
 
-  createOrder: async (planId: string) => {
-    const response = await api.post(`/api/payment/create-order?plan_id=${planId}`);
+  createOrder: async (planId: string, billingPeriod: 'monthly' | 'yearly' = 'monthly') => {
+    const response = await api.post(`/api/payment/create-order?plan_id=${planId}&billing_period=${billingPeriod}`);
     return response.data;
   },
 

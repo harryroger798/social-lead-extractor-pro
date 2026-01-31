@@ -25,6 +25,9 @@ class UserResponse(BaseModel):
     is_active: bool
     is_admin: bool
     is_verified: bool
+    email_notifications: bool = True
+    marketing_emails: bool = False
+    billing_period: str = "monthly"
     created_at: datetime
     last_login_at: Optional[datetime]
 
@@ -63,3 +66,21 @@ class VerifyEmailRequest(BaseModel):
 
 class ResendVerificationRequest(BaseModel):
     email: EmailStr
+
+
+class UserSettingsUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email_notifications: Optional[bool] = None
+    marketing_emails: Optional[bool] = None
+
+
+class CreditTopUpRequest(BaseModel):
+    package: str  # "10k", "25k", "50k", "100k"
+
+
+class CreditTopUpResponse(BaseModel):
+    success: bool
+    credits_added: int
+    new_balance: int
+    package: str
+    price: float

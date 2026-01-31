@@ -5,7 +5,7 @@ import logging
 
 from app.core.database import engine, Base
 from app.core.config import settings
-from app.routers import auth, scan, credits, payment, api_keys, batch, contact, feedback, admin, admin_extended, promo
+from app.routers import auth, scan, credits, payment, api_keys, batch, contact, feedback, admin, admin_extended, promo, user_settings
 from app.models import User, Scan, CreditTransaction, Subscription, APIKey  # Import models to register with Base
 # Phase 3: Self-Learning ML System models
 from app.models import UserFeedback, ModelVersion, TrainingRun, ABTestAssignment, ModelMetrics, TrainingSampleQueue
@@ -60,6 +60,9 @@ app.include_router(admin_extended.router)
 
 # Promo system router
 app.include_router(promo.router)
+
+# User settings router
+app.include_router(user_settings.router)
 
 
 @app.get("/healthz")

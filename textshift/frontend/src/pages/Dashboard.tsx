@@ -265,6 +265,18 @@ export default function Dashboard() {
     const [promoCode, setPromoCode] = useState('');
     const [promoLoading, setPromoLoading] = useState(false);
     const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    
+    // Buy Credits modal state
+    const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
+    const [buyCreditsLoading, setBuyCreditsLoading] = useState<string | null>(null);
+    const [buyCreditsMessage, setBuyCreditsMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    
+    const creditPackages = [
+      { id: '10k', name: '10,000 Words', price: 4.99, credits: 10000 },
+      { id: '25k', name: '25,000 Words', price: 9.99, credits: 25000 },
+      { id: '50k', name: '50,000 Words', price: 17.99, credits: 50000 },
+      { id: '100k', name: '100,000 Words', price: 29.99, credits: 100000 },
+    ];
 
   // Get current text based on active tab
   const getCurrentText = () => {
@@ -375,6 +387,44 @@ export default function Dashboard() {
         setPromoMessage({ type: 'error', text: errorMessage });
       } finally {
         setPromoLoading(false);
+      }
+    };
+
+    const handleBuyCredits = async (packageId: string) => {
+      // Check if user is on a paid plan
+      if (user?.subscription_tier === 'free') {
+        setBuyCreditsMessage({ type: 'error', text: 'Credit top-ups are only available for paid plan users. Please upgrade to Starter, Pro, or Enterprise.' });
+        return;
+      }
+      
+      setBuyCreditsLoading(packageId);
+      setBuyCreditsMessage(null);
+      
+      try {
+        const result = await creditsApi.topup(packageId);
+        setBuyCreditsMessage({ 
+          type: 'success', 
+          text: `Successfully added ${result.credits_added.toLocaleString()} credits! New balance: ${result.new_balance.toLocaleString()} words` 
+        });
+        // Refresh user data and credits
+        const userData = await authApi.getMe();
+        updateUser(userData);
+        refetchCredits();
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.detail || 'Failed to purchase credits';
+        setBuyCreditsMessage({ type: 'error', text: errorMessage });
+      } finally {
+        setBuyCreditsLoading(null);
+      }
+    };
+
+    const handleOpenBuyCredits = () => {
+      if (user?.subscription_tier === 'free') {
+        // Redirect free users to pricing page
+        navigate('/pricing');
+      } else {
+        setShowBuyCreditsModal(true);
+        setBuyCreditsMessage(null);
       }
     };
 
@@ -1127,13 +1177,13 @@ export default function Dashboard() {
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-500" />
               </Link>
-              <Link to="/pricing" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+              <button onClick={handleOpenBuyCredits} className="w-full flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-4 h-4" />
                   <span>Buy Credits</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-500" />
-              </Link>
+              </button>
               <Link to="/settings" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
                 <div className="flex items-center gap-3">
                   <Settings className="w-4 h-4" />
@@ -1145,6 +1195,66 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Buy Credits Modal */}
+      {showBuyCreditsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowBuyCreditsModal(false)} />
+          <div className="relative w-full max-w-lg bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <button 
+              onClick={() => setShowBuyCreditsModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-2xl font-medium text-white mb-2">Buy Credits</h3>
+              <p className="text-gray-400">
+                Current balance: <span className="text-emerald-400 font-medium">{credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0}</span> words
+              </p>
+            </div>
+
+            {buyCreditsMessage && (
+              <div className={`mb-4 p-3 rounded-xl text-sm ${
+                buyCreditsMessage.type === 'success' 
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
+                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+              }`}>
+                {buyCreditsMessage.text}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {creditPackages.map((pkg) => (
+                <button
+                  key={pkg.id}
+                  onClick={() => handleBuyCredits(pkg.id)}
+                  disabled={buyCreditsLoading !== null}
+                  className={`p-4 rounded-xl border transition-all ${
+                    buyCreditsLoading === pkg.id
+                      ? 'bg-emerald-500/20 border-emerald-500/50'
+                      : 'bg-white/5 border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10'
+                  }`}
+                >
+                  <div className="text-white font-medium">{pkg.name}</div>
+                  <div className="text-emerald-400 text-lg font-bold">${pkg.price.toFixed(2)}</div>
+                  {buyCreditsLoading === pkg.id && (
+                    <Loader2 className="w-4 h-4 animate-spin mx-auto mt-2 text-emerald-400" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <p className="text-center text-gray-500 text-xs">
+              Credits are added instantly to your account. No expiration.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

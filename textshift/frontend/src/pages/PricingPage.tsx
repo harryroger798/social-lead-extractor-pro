@@ -24,6 +24,7 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [contactForm, setContactForm] = useState({
     name: '',
     email: user?.email || '',
@@ -34,12 +35,28 @@ export default function PricingPage() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
 
-    const plans = [
-      { id: 'free', name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
-      { id: 'starter', name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode', 'Email support'], cta: 'Subscribe', popular: false },
-      { id: 'pro', name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
-      { id: 'enterprise', name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
-    ];
+  const monthlyPlans = [
+    { id: 'free', name: 'Free', price: 0, credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
+    { id: 'starter', name: 'Starter', price: 9.99, credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode', 'Email support'], cta: 'Subscribe', popular: false },
+    { id: 'pro', name: 'Pro', price: 24.99, credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
+    { id: 'enterprise', name: 'Enterprise', price: 49.99, credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
+  ];
+
+  const getYearlyPrice = (monthlyPrice: number) => {
+    if (monthlyPrice === 0) return 0;
+    return Math.round(monthlyPrice * 10 * 100) / 100;
+  };
+
+  const getYearlySavings = (monthlyPrice: number) => {
+    if (monthlyPrice === 0) return 0;
+    return Math.round(monthlyPrice * 2 * 100) / 100;
+  };
+
+  const plans = monthlyPlans.map(plan => ({
+    ...plan,
+    displayPrice: billingPeriod === 'monthly' ? plan.price : getYearlyPrice(plan.price),
+    savings: billingPeriod === 'yearly' ? getYearlySavings(plan.price) : 0,
+  }));
 
   const faqs = [
     { q: 'What does "words" mean in the plans?', a: 'Words are the unit we use to measure usage. Each word you scan counts toward your monthly limit. Pro and Enterprise plans have unlimited words!' },
@@ -83,7 +100,7 @@ export default function PricingPage() {
     }
     setLoading(planId);
     try {
-      const order = await paymentApi.createOrder(planId);
+      const order = await paymentApi.createOrder(planId, billingPeriod);
       if (order.approval_url) {
         window.location.href = order.approval_url;
       }
@@ -135,9 +152,32 @@ export default function PricingPage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white mb-4">
             Plans to suit <span className="text-emerald-400">your needs</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
             Credits never expire. No hidden fees. Cancel anytime. Pay with PayPal for secure transactions.
           </p>
+          
+          {/* Billing Period Toggle */}
+          <div className="flex items-center justify-center gap-4">
+            <span className={`text-sm ${billingPeriod === 'monthly' ? 'text-white' : 'text-gray-500'}`}>Monthly</span>
+            <button
+              onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
+              className={`relative w-14 h-7 rounded-full transition-colors ${
+                billingPeriod === 'yearly' ? 'bg-emerald-500' : 'bg-white/20'
+              }`}
+            >
+              <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                billingPeriod === 'yearly' ? 'translate-x-8' : 'translate-x-1'
+              }`} />
+            </button>
+            <span className={`text-sm ${billingPeriod === 'yearly' ? 'text-white' : 'text-gray-500'}`}>
+              Yearly
+            </span>
+            {billingPeriod === 'yearly' && (
+              <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full border border-emerald-500/30">
+                2 months FREE
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
@@ -156,9 +196,16 @@ export default function PricingPage() {
               <div className="text-center mb-6">
                 <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
                 <div className="mb-2">
-                  <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
-                  {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
+                  <span className="text-3xl md:text-4xl font-light text-white">
+                    ${plan.displayPrice === 0 ? '0' : plan.displayPrice.toFixed(2)}
+                  </span>
+                  {plan.displayPrice !== 0 && (
+                    <span className="text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'year'}</span>
+                  )}
                 </div>
+                {billingPeriod === 'yearly' && plan.savings > 0 && (
+                  <div className="text-emerald-400 text-xs mb-1">Save ${plan.savings.toFixed(2)}/year</div>
+                )}
                 <div className="text-gray-500 text-sm">{plan.credits}</div>
               </div>
               <ul className="space-y-3 mb-8">
