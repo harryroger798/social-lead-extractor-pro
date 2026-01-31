@@ -253,17 +253,47 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
-  const [inputText, setInputText] = useState('');
+  // Separate text state for each tool to prevent cross-contamination
+  const [detectText, setDetectText] = useState('');
+  const [humanizeText, setHumanizeText] = useState('');
+  const [plagiarismText, setPlagiarismText] = useState('');
   const [result, setResult] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+
+  // Get current text based on active tab
+  const getCurrentText = () => {
+    switch (activeTab) {
+      case 'detect': return detectText;
+      case 'humanize': return humanizeText;
+      case 'plagiarism': return plagiarismText;
+      default: return detectText;
+    }
+  };
+
+  // Set current text based on active tab
+  const setCurrentText = (text: string) => {
+    switch (activeTab) {
+      case 'detect': setDetectText(text); break;
+      case 'humanize': setHumanizeText(text); break;
+      case 'plagiarism': setPlagiarismText(text); break;
+    }
+  };
 
   // Handle pre-filled text from navigation state (e.g., from History page re-analyze)
   useEffect(() => {
     const state = location.state as { text?: string; tool?: string } | null;
-    if (state?.text) {
-      setInputText(state.text);
-    }
-    if (state?.tool) {
+    if (state?.text && state?.tool) {
+      // Only set text for the specific tool requested
+      const toolMap: Record<string, string> = { 'humanize': 'humanize', 'plagiarism': 'plagiarism', 'detect': 'detect', 'ai_detection': 'detect' };
+      const targetTool = toolMap[state.tool] || 'detect';
+      setActiveTab(targetTool);
+      // Set text only for the target tool
+      switch (targetTool) {
+        case 'detect': setDetectText(state.text); break;
+        case 'humanize': setHumanizeText(state.text); break;
+        case 'plagiarism': setPlagiarismText(state.text); break;
+      }
+    } else if (state?.tool) {
       const toolMap: Record<string, string> = { 'humanize': 'humanize', 'plagiarism': 'plagiarism', 'detect': 'detect', 'ai_detection': 'detect' };
       setActiveTab(toolMap[state.tool] || 'detect');
     }
@@ -309,12 +339,13 @@ export default function Dashboard() {
 
   const handleAnalyze = () => {
     setResult(null);
+    const text = getCurrentText();
     if (activeTab === 'detect') {
-      detectMutation.mutate(inputText);
+      detectMutation.mutate(text);
     } else if (activeTab === 'humanize') {
-      humanizeMutation.mutate(inputText);
+      humanizeMutation.mutate(text);
     } else if (activeTab === 'plagiarism') {
-      plagiarismMutation.mutate(inputText);
+      plagiarismMutation.mutate(text);
     }
   };
 
@@ -328,7 +359,8 @@ export default function Dashboard() {
   };
 
   const getWordCount = () => {
-    return inputText.trim().split(/\s+/).filter(w => w.length > 0).length;
+    const text = getCurrentText();
+    return text.trim().split(/\s+/).filter(w => w.length > 0).length;
   };
 
   const getCreditCost = () => {
@@ -469,8 +501,8 @@ export default function Dashboard() {
               <Textarea
                 placeholder="Paste your text here..."
                 className="min-h-[250px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-4"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                value={getCurrentText()}
+                onChange={(e) => setCurrentText(e.target.value)}
               />
 
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -479,7 +511,7 @@ export default function Dashboard() {
                 </div>
                 <Button
                   onClick={handleAnalyze}
-                  disabled={inputText.length < 50 || isLoading}
+                  disabled={getCurrentText().length < 50 || isLoading}
                   className={`rounded-full px-8 ${
                     activeTab === 'detect' ? 'bg-emerald-500 hover:bg-emerald-600 text-black' :
                     activeTab === 'humanize' ? 'bg-purple-500 hover:bg-purple-600 text-white' :
@@ -630,7 +662,7 @@ export default function Dashboard() {
                                         size="sm"
                                         onClick={() => {
                                           const highAI = result.results.sentence_analysis.filter((s: any) => s.ai_probability > 50).map((s: any) => s.text).join(' ');
-                                          navigator.clipboard.writeText(highAI || inputText);
+                                          navigator.clipboard.writeText(highAI || getCurrentText());
                                           alert('Copied to clipboard!');
                                         }}
                                         className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full text-xs"
@@ -679,6 +711,47 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
+
+                                {/* Humanize Actions */}
+                                <div className="p-4 bg-gradient-to-r from-purple-500/10 to-emerald-500/10 rounded-2xl border border-purple-500/30">
+                                  <h4 className="text-gray-300 text-sm font-medium mb-3">Want to humanize this text?</h4>
+                                  <div className="flex flex-wrap gap-3">
+                                    <Button
+                                      onClick={() => {
+                                        setHumanizeText(detectText);
+                                        setActiveTab('humanize');
+                                        setResult(null);
+                                      }}
+                                      className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-6"
+                                    >
+                                      <Wand2 className="w-4 h-4 mr-2" />
+                                      Humanize Entire Text
+                                    </Button>
+                                    {result.results?.sentence_analysis && result.results.sentence_analysis.some((s: any) => s.ai_probability >= 50) && (
+                                      <Button
+                                        onClick={() => {
+                                          const aiParts = result.results.sentence_analysis
+                                            .filter((s: any) => s.ai_probability >= 50)
+                                            .map((s: any) => s.text)
+                                            .join(' ');
+                                          setHumanizeText(aiParts);
+                                          setActiveTab('humanize');
+                                          setResult(null);
+                                        }}
+                                        variant="outline"
+                                        className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 rounded-full px-6"
+                                      >
+                                        <Sparkles className="w-4 h-4 mr-2" />
+                                        Humanize AI Parts Only ({result.results.sentence_analysis.filter((s: any) => s.ai_probability >= 50).length} sentences)
+                                      </Button>
+                                    )}
+                                  </div>
+                                  <p className="text-gray-500 text-xs mt-3">
+                                    {result.results?.sentence_analysis?.some((s: any) => s.ai_probability >= 50) 
+                                      ? `${result.results.sentence_analysis.filter((s: any) => s.ai_probability >= 50).length} of ${result.results.sentence_analysis.length} sentences detected as AI-generated (50%+ probability)`
+                                      : 'No sentences with high AI probability detected'}
+                                  </p>
+                                </div>
                               </div>
                             )}
 
@@ -689,7 +762,7 @@ export default function Dashboard() {
                                 <div className="grid grid-cols-3 gap-4">
                                   <div className="p-4 bg-black/30 rounded-2xl border border-white/10">
                                     <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Original</div>
-                                    <div className="text-lg font-light text-white">{result.results?.original_length || inputText.length} chars</div>
+                                    <div className="text-lg font-light text-white">{result.results?.original_length || getCurrentText().length} chars</div>
                                   </div>
                                   <div className="p-4 bg-black/30 rounded-2xl border border-white/10">
                                     <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Humanized</div>
@@ -707,7 +780,7 @@ export default function Dashboard() {
                                     <div className="flex items-center justify-between mb-3">
                                       <div className="text-gray-500 text-sm uppercase tracking-wider">Original Text</div>
                                     </div>
-                                    <p className="text-gray-400 whitespace-pre-wrap leading-relaxed text-sm">{inputText}</p>
+                                    <p className="text-gray-400 whitespace-pre-wrap leading-relaxed text-sm">{getCurrentText()}</p>
                                   </div>
                                   <div className="p-4 bg-purple-500/10 rounded-2xl border border-purple-500/30">
                                     <div className="flex items-center justify-between mb-3">
@@ -729,7 +802,7 @@ export default function Dashboard() {
                                   </div>
                                   <div className="text-sm leading-relaxed">
                                     {(() => {
-                                      const originalWords = inputText.split(/\s+/);
+                                      const originalWords = getCurrentText().split(/\s+/);
                                       const humanizedWords = result.output_text.split(/\s+/);
                                       const originalSet = new Set(originalWords.map((w: string) => w.toLowerCase()));
                                       const humanizedSet = new Set(humanizedWords.map((w: string) => w.toLowerCase()));
@@ -761,6 +834,27 @@ export default function Dashboard() {
                                       );
                                     })()}
                                   </div>
+                                </div>
+
+                                {/* Scan for AI Detection */}
+                                <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-purple-500/10 rounded-2xl border border-emerald-500/30">
+                                  <h4 className="text-gray-300 text-sm font-medium mb-3">Verify your humanized text</h4>
+                                  <div className="flex flex-wrap gap-3">
+                                    <Button
+                                      onClick={() => {
+                                        setDetectText(result.output_text);
+                                        setActiveTab('detect');
+                                        setResult(null);
+                                      }}
+                                      className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-6"
+                                    >
+                                      <Shield className="w-4 h-4 mr-2" />
+                                      Scan Humanized Text for AI
+                                    </Button>
+                                  </div>
+                                  <p className="text-gray-500 text-xs mt-3">
+                                    Check if your humanized text passes AI detection
+                                  </p>
                                 </div>
                               </div>
                             )}
