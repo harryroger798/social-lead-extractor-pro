@@ -1,16 +1,281 @@
 import os
 import gc
 import re
+import json
+import hashlib
 import torch
 import torch.nn as nn
 import logging
 import random
+import httpx
+import asyncio
+import boto3
+from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, T5Tokenizer, T5ForConditionalGeneration
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from collections import Counter
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
+
+
+class IDriveCacheService:
+    """Service for caching plagiarism search results on iDrive e2."""
+    
+    _instance = None
+    _s3_client = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def _get_s3_client(self):
+        """Get or create S3 client for iDrive e2."""
+        if self._s3_client is None:
+            try:
+                self._s3_client = boto3.client(
+                    's3',
+                    endpoint_url=getattr(settings, 'S3_ENDPOINT', 'https://s3.us-west-1.idrivee2.com'),
+                    aws_access_key_id=getattr(settings, 'S3_ACCESS_KEY', ''),
+                    aws_secret_access_key=getattr(settings, 'S3_SECRET_KEY', '')
+                )
+            except Exception as e:
+                logger.warning(f"Failed to create S3 client: {e}")
+        return self._s3_client
+    
+    def _get_cache_key(self, text: str) -> str:
+        """Generate a cache key from text hash."""
+        text_hash = hashlib.md5(text.encode()).hexdigest()
+        return f"plagiarism-cache/{text_hash}.json"
+    
+    def get_cached_results(self, text: str) -> Optional[Dict[str, Any]]:
+        """Get cached plagiarism results from iDrive e2."""
+        try:
+            s3 = self._get_s3_client()
+            if not s3:
+                return None
+            
+            bucket = getattr(settings, 'S3_BUCKET', 'crop-spray-uploads')
+            cache_key = self._get_cache_key(text)
+            
+            response = s3.get_object(Bucket=bucket, Key=cache_key)
+            cached_data = json.loads(response['Body'].read().decode('utf-8'))
+            
+            cached_time = datetime.fromisoformat(cached_data.get('cached_at', '2000-01-01'))
+            if datetime.utcnow() - cached_time > timedelta(days=7):
+                return None
+            
+            logger.info(f"Cache hit for plagiarism check")
+            return cached_data.get('results')
+        except Exception as e:
+            logger.debug(f"Cache miss or error: {e}")
+            return None
+    
+    def cache_results(self, text: str, results: Dict[str, Any]) -> bool:
+        """Cache plagiarism results to iDrive e2."""
+        try:
+            s3 = self._get_s3_client()
+            if not s3:
+                return False
+            
+            bucket = getattr(settings, 'S3_BUCKET', 'crop-spray-uploads')
+            cache_key = self._get_cache_key(text)
+            
+            cache_data = {
+                'cached_at': datetime.utcnow().isoformat(),
+                'text_preview': text[:100],
+                'results': results
+            }
+            
+            s3.put_object(
+                Bucket=bucket,
+                Key=cache_key,
+                Body=json.dumps(cache_data),
+                ContentType='application/json'
+            )
+            logger.info(f"Cached plagiarism results to iDrive e2")
+            return True
+        except Exception as e:
+            logger.warning(f"Failed to cache results: {e}")
+            return False
+
+
+idrive_cache = IDriveCacheService()
+
+
+# Stop words for Jaccard similarity calculation
+STOP_WORDS = {
+    'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with',
+    'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had',
+    'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must',
+    'shall', 'can', 'need', 'dare', 'ought', 'used', 'it', 'its', 'this', 'that',
+    'these', 'those', 'i', 'you', 'he', 'she', 'we', 'they', 'what', 'which', 'who',
+    'whom', 'whose', 'where', 'when', 'why', 'how', 'all', 'each', 'every', 'both',
+    'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own',
+    'same', 'so', 'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there', 'then'
+}
+
+
+class WebSearchService:
+    """Service for searching the web using DuckDuckGo + Serper.dev fallback for plagiarism detection."""
+    
+    DUCKDUCKGO_URL = "https://html.duckduckgo.com/html/"
+    SERPER_URL = "https://google.serper.dev/search"
+    
+    @staticmethod
+    def _extract_key_sentences(text: str, max_queries: int = 5) -> List[str]:
+        """Extract 5 most distinctive sentences (8-25 words each) for searching."""
+        sentences = re.split(r'[.!?]+', text)
+        sentences = [s.strip() for s in sentences if s.strip()]
+        
+        valid_sentences = []
+        for sentence in sentences:
+            words = sentence.split()
+            word_count = len(words)
+            if 8 <= word_count <= 25:
+                valid_sentences.append(sentence)
+        
+        if len(valid_sentences) < max_queries:
+            for sentence in sentences:
+                words = sentence.split()
+                if len(words) >= 5 and sentence not in valid_sentences:
+                    valid_sentences.append(sentence)
+                if len(valid_sentences) >= max_queries:
+                    break
+        
+        return valid_sentences[:max_queries]
+    
+    @staticmethod
+    def _calculate_jaccard_similarity(text1: str, text2: str) -> float:
+        """Calculate Jaccard similarity between two texts (matching user's algorithm)."""
+        words1 = set(text1.lower().split()) - STOP_WORDS
+        words2 = set(text2.lower().split()) - STOP_WORDS
+        intersection = words1 & words2
+        union = words1 | words2
+        return len(intersection) / len(union) if union else 0.0
+    
+    @staticmethod
+    async def search_duckduckgo(query: str, timeout: float = 10.0) -> List[Dict[str, str]]:
+        """Search DuckDuckGo and return results."""
+        results = []
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+                response = await client.post(
+                    WebSearchService.DUCKDUCKGO_URL,
+                    data={"q": f'"{query}"', "b": ""},
+                    headers=headers
+                )
+                if response.status_code == 200:
+                    html = response.text
+                    result_pattern = r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>([^<]*)</a>'
+                    snippet_pattern = r'<a[^>]*class="result__snippet"[^>]*>([^<]*)</a>'
+                    
+                    urls = re.findall(result_pattern, html)
+                    snippets = re.findall(snippet_pattern, html)
+                    
+                    for i, (url, title) in enumerate(urls[:5]):
+                        snippet = snippets[i] if i < len(snippets) else ""
+                        snippet = re.sub(r'<[^>]+>', '', snippet)
+                        results.append({
+                            "url": url,
+                            "title": title.strip(),
+                            "snippet": snippet.strip(),
+                            "source": "duckduckgo"
+                        })
+        except Exception as e:
+            logger.warning(f"DuckDuckGo search failed: {e}")
+        
+        return results
+    
+    @staticmethod
+    async def search_serper(query: str, timeout: float = 10.0) -> List[Dict[str, str]]:
+        """Search using Serper.dev API as fallback (2,500 free queries/month)."""
+        results = []
+        try:
+            serper_api_key = getattr(settings, 'SERPER_API_KEY', None)
+            if not serper_api_key:
+                return results
+            
+            headers = {
+                "X-API-KEY": serper_api_key,
+                "Content-Type": "application/json"
+            }
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.post(
+                    WebSearchService.SERPER_URL,
+                    json={"q": f'"{query}"', "num": 5},
+                    headers=headers
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    organic = data.get("organic", [])
+                    for item in organic[:5]:
+                        results.append({
+                            "url": item.get("link", ""),
+                            "title": item.get("title", ""),
+                            "snippet": item.get("snippet", ""),
+                            "source": "serper"
+                        })
+        except Exception as e:
+            logger.warning(f"Serper search failed: {e}")
+        
+        return results
+    
+    @staticmethod
+    async def fetch_page_content(url: str, timeout: float = 10.0) -> str:
+        """Fetch and extract text content from a URL."""
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+                response = await client.get(url, headers=headers)
+                if response.status_code == 200:
+                    html = response.text
+                    text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
+                    text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
+                    text = re.sub(r'<[^>]+>', ' ', text)
+                    text = re.sub(r'\s+', ' ', text)
+                    return text.strip()[:5000]
+        except Exception as e:
+            logger.warning(f"Failed to fetch {url}: {e}")
+        return ""
+    
+    @staticmethod
+    async def search_for_plagiarism(text: str) -> List[Dict[str, Any]]:
+        """Search the web for potential plagiarism sources using DuckDuckGo + Serper fallback."""
+        sentences = WebSearchService._extract_key_sentences(text)
+        all_results = []
+        seen_urls = set()
+        
+        for sentence in sentences:
+            results = await WebSearchService.search_duckduckgo(sentence)
+            
+            if len(results) < 2:
+                serper_results = await WebSearchService.search_serper(sentence)
+                results.extend(serper_results)
+            
+            for result in results:
+                url = result.get("url", "")
+                if url and url not in seen_urls:
+                    seen_urls.add(url)
+                    snippet = result.get("snippet", "")
+                    jaccard_score = WebSearchService._calculate_jaccard_similarity(sentence, snippet)
+                    result["jaccard_similarity"] = round(jaccard_score * 100, 2)
+                    result["matched_sentence"] = sentence
+                    all_results.append(result)
+        
+        all_results.sort(key=lambda x: x.get("jaccard_similarity", 0), reverse=True)
+        return all_results[:10]
+
+
+web_search_service = WebSearchService()
 
 logger = logging.getLogger(__name__)
 
@@ -416,26 +681,99 @@ class MLModelService:
             "passes": passes
         }
     
+    def _sync_web_search(self, text: str) -> List[Dict[str, Any]]:
+        """Perform synchronous web search for plagiarism detection."""
+        import concurrent.futures
+        
+        def run_async_search():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                return loop.run_until_complete(web_search_service.search_for_plagiarism(text))
+            finally:
+                loop.close()
+        
+        try:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(run_async_search)
+                web_results = future.result(timeout=30)
+        except Exception as e:
+            logger.warning(f"Web search failed: {e}")
+            web_results = []
+        
+        return web_results
+    
     def check_plagiarism(self, text: str, source_text: Optional[str] = None) -> Dict[str, Any]:
+        """Check text for plagiarism using web search with Jaccard + semantic similarity.
+        
+        Risk Assessment Thresholds (matching documentation):
+        - 70-100%: HIGH RISK - Strong matches found
+        - 50-70%: MEDIUM RISK - Some similarities detected
+        - 30-50%: LOW RISK - Minor similarities found
+        - 0-30%: MINIMAL RISK - Very low similarity
+        
+        Uses iDrive e2 caching for faster repeated checks (7-day cache).
+        """
         self._load_plagiarism()
-        if not source_text:
+        
+        if source_text:
+            return self._check_against_source(text, source_text)
+        
+        cached_results = idrive_cache.get_cached_results(text)
+        if cached_results:
+            cached_results["from_cache"] = True
+            return cached_results
+        
+        web_results = self._sync_web_search(text)
+        
+        if not web_results:
             return {
                 "plagiarism_score": 0.0,
                 "risk_level": "minimal",
                 "sources_found": 0,
                 "sources": [],
                 "original_content_percentage": 100.0,
-                "message": "No source text provided"
+                "message": "No matching sources found on the web"
             }
-        text_embedding = self._plagiarism_encoder.encode([text], convert_to_tensor=True)
-        source_embedding = self._plagiarism_encoder.encode([source_text], convert_to_tensor=True)
-        if self._plagiarism_classifier is not None:
-            with torch.no_grad():
-                plagiarism_prob = self._plagiarism_classifier(text_embedding, source_embedding).item()
-            plagiarism_score = plagiarism_prob * 100
-        else:
-            similarity = torch.nn.functional.cosine_similarity(text_embedding, source_embedding).item()
-            plagiarism_score = similarity * 100
+        
+        sources_with_scores = []
+        max_similarity = 0.0
+        
+        for result in web_results:
+            snippet = result.get("snippet", "")
+            if len(snippet) < 20:
+                continue
+            
+            jaccard_score = result.get("jaccard_similarity", 0)
+            
+            matched_sentence = result.get("matched_sentence", "")
+            if matched_sentence and snippet:
+                text_embedding = self._plagiarism_encoder.encode([matched_sentence], convert_to_tensor=True)
+                snippet_embedding = self._plagiarism_encoder.encode([snippet], convert_to_tensor=True)
+                semantic_similarity = torch.nn.functional.cosine_similarity(text_embedding, snippet_embedding).item()
+                semantic_score = max(0, semantic_similarity) * 100
+            else:
+                semantic_score = 0
+            
+            combined_score = (jaccard_score * 0.6) + (semantic_score * 0.4)
+            
+            if combined_score >= 30:
+                sources_with_scores.append({
+                    "url": result.get("url", ""),
+                    "title": result.get("title", "Unknown Source"),
+                    "similarity_score": round(combined_score, 2),
+                    "jaccard_score": round(jaccard_score, 2),
+                    "semantic_score": round(semantic_score, 2),
+                    "matched_text": snippet[:200] + "..." if len(snippet) > 200 else snippet,
+                    "source_api": result.get("source", "unknown")
+                })
+                max_similarity = max(max_similarity, combined_score)
+        
+        sources_with_scores.sort(key=lambda x: x["similarity_score"], reverse=True)
+        sources_with_scores = sources_with_scores[:10]
+        
+        plagiarism_score = max_similarity if sources_with_scores else 0.0
+        
         if plagiarism_score >= 70:
             risk_level = "high"
         elif plagiarism_score >= 50:
@@ -444,6 +782,44 @@ class MLModelService:
             risk_level = "low"
         else:
             risk_level = "minimal"
+        
+        results = {
+            "plagiarism_score": round(plagiarism_score, 2),
+            "risk_level": risk_level,
+            "sources_found": len(sources_with_scores),
+            "sources": sources_with_scores,
+            "original_content_percentage": round(100 - plagiarism_score, 2),
+            "web_search_performed": True,
+            "total_sources_checked": len(web_results),
+            "search_apis_used": list(set(r.get("source", "unknown") for r in web_results))
+        }
+        
+        idrive_cache.cache_results(text, results)
+        
+        return results
+    
+    def _check_against_source(self, text: str, source_text: str) -> Dict[str, Any]:
+        """Check text against a provided source text."""
+        text_embedding = self._plagiarism_encoder.encode([text], convert_to_tensor=True)
+        source_embedding = self._plagiarism_encoder.encode([source_text], convert_to_tensor=True)
+        
+        if self._plagiarism_classifier is not None:
+            with torch.no_grad():
+                plagiarism_prob = self._plagiarism_classifier(text_embedding, source_embedding).item()
+            plagiarism_score = plagiarism_prob * 100
+        else:
+            similarity = torch.nn.functional.cosine_similarity(text_embedding, source_embedding).item()
+            plagiarism_score = similarity * 100
+        
+        if plagiarism_score >= 70:
+            risk_level = "high"
+        elif plagiarism_score >= 50:
+            risk_level = "medium"
+        elif plagiarism_score >= 30:
+            risk_level = "low"
+        else:
+            risk_level = "minimal"
+        
         return {
             "plagiarism_score": round(plagiarism_score, 2),
             "risk_level": risk_level,
@@ -454,7 +830,8 @@ class MLModelService:
                 "similarity_score": round(plagiarism_score, 2),
                 "matched_text": source_text[:200] + "..." if len(source_text) > 200 else source_text
             }] if plagiarism_score > 30 else [],
-            "original_content_percentage": round(100 - plagiarism_score, 2)
+            "original_content_percentage": round(100 - plagiarism_score, 2),
+            "web_search_performed": False
         }
 
 
