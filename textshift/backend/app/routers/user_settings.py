@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.core.config import settings
 from app.core.security import get_current_active_user, verify_password, get_password_hash
 from app.models.user import User, SubscriptionTier
 from app.models.scan import Scan
@@ -12,9 +13,44 @@ from app.schemas.user import (
     CreditTopUpRequest,
     CreditTopUpResponse
 )
+from app.services.email_service import email_service
 from datetime import datetime
+import httpx
+import base64
+import logging
+
+logger = logging.getLogger(__name__)
+
+# PayPal API URLs
+PAYPAL_API_BASE = "https://api-m.paypal.com" if settings.PAYPAL_MODE == "live" else "https://api-m.sandbox.paypal.com"
 
 router = APIRouter(prefix="/api/v1/user", tags=["User Settings"])
+
+
+async def get_paypal_access_token() -> str:
+    """Get PayPal access token."""
+    auth = base64.b64encode(
+        f"{settings.PAYPAL_CLIENT_ID}:{settings.PAYPAL_SECRET_KEY}".encode()
+    ).decode()
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{PAYPAL_API_BASE}/v1/oauth2/token",
+            headers={
+                "Authorization": f"Basic {auth}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data={"grant_type": "client_credentials"}
+        )
+        
+        if response.status_code != 200:
+            logger.error(f"PayPal auth error: {response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to authenticate with PayPal"
+            )
+        
+        return response.json()["access_token"]
 
 # Credit top-up packages (only for paid users)
 CREDIT_PACKAGES = {
@@ -32,18 +68,42 @@ async def update_user_settings(
     db: Session = Depends(get_db)
 ):
     """Update user settings (name, notification preferences)."""
+    # Track if notification settings changed
+    notifications_changed = False
+    old_email_notifications = current_user.email_notifications
+    old_marketing_emails = current_user.marketing_emails
+    
     if settings_data.full_name is not None:
         current_user.full_name = settings_data.full_name
     
     if settings_data.email_notifications is not None:
+        if current_user.email_notifications != settings_data.email_notifications:
+            notifications_changed = True
         current_user.email_notifications = settings_data.email_notifications
     
     if settings_data.marketing_emails is not None:
+        if current_user.marketing_emails != settings_data.marketing_emails:
+            notifications_changed = True
         current_user.marketing_emails = settings_data.marketing_emails
     
     current_user.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(current_user)
+    
+    # Send notification email if preferences changed and user has email notifications enabled
+    if notifications_changed and current_user.email_notifications:
+        logger.info(f"Notification preferences changed for user {current_user.email}, sending email...")
+        try:
+            result = email_service.send_notification_preferences_email(
+                to_email=current_user.email,
+                email_notifications=current_user.email_notifications,
+                marketing_emails=current_user.marketing_emails,
+                full_name=current_user.full_name
+            )
+            logger.info(f"Email send result: {result}")
+        except Exception as e:
+            # Don't fail the request if email fails
+            logger.error(f"Failed to send notification preferences email: {e}")
     
     return UserResponse.model_validate(current_user)
 
@@ -191,3 +251,177 @@ async def topup_credits(
         package=topup_data.package,
         price=price
     )
+
+
+@router.post("/topup/create-order")
+async def create_topup_order(
+    topup_data: CreditTopUpRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Create a PayPal order for credit top-up (paid users only)."""
+    # Check if user is on a paid plan
+    if current_user.subscription_tier == SubscriptionTier.FREE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Credit top-up is only available for paid plan users. Please upgrade your plan first."
+        )
+    
+    # Validate package
+    if topup_data.package not in CREDIT_PACKAGES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid package. Available packages: {', '.join(CREDIT_PACKAGES.keys())}"
+        )
+    
+    package = CREDIT_PACKAGES[topup_data.package]
+    price = package["price"]
+    credits = package["credits"]
+    
+    access_token = await get_paypal_access_token()
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "intent": "CAPTURE",
+                "purchase_units": [{
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": str(price)
+                    },
+                    "description": f"TextShift Credit Top-up: {credits:,} words"
+                }],
+                "application_context": {
+                    "brand_name": "TextShift",
+                    "landing_page": "NO_PREFERENCE",
+                    "user_action": "PAY_NOW",
+                    "return_url": f"{settings.FRONTEND_URL}/dashboard?topup=success&package={topup_data.package}",
+                    "cancel_url": f"{settings.FRONTEND_URL}/dashboard?topup=cancelled"
+                }
+            }
+        )
+        
+        if response.status_code not in [200, 201]:
+            logger.error(f"PayPal order creation error: {response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create PayPal order"
+            )
+        
+        order_data = response.json()
+        
+        return {
+            "order_id": order_data["id"],
+            "package": topup_data.package,
+            "credits": credits,
+            "price": price,
+            "approval_url": next(
+                (link["href"] for link in order_data["links"] if link["rel"] == "approve"),
+                None
+            )
+        }
+
+
+@router.post("/topup/capture-order")
+async def capture_topup_order(
+    order_id: str,
+    package: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Capture a PayPal order after approval and add credits."""
+    # Check if user is on a paid plan
+    if current_user.subscription_tier == SubscriptionTier.FREE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Credit top-up is only available for paid plan users."
+        )
+    
+    # Validate package
+    if package not in CREDIT_PACKAGES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid package"
+        )
+    
+    pkg = CREDIT_PACKAGES[package]
+    credits_to_add = pkg["credits"]
+    price = pkg["price"]
+    
+    access_token = await get_paypal_access_token()
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json"
+            }
+        )
+        
+        if response.status_code not in [200, 201]:
+            logger.error(f"PayPal capture error: {response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to capture PayPal order"
+            )
+        
+        capture_data = response.json()
+        
+        if capture_data["status"] == "COMPLETED":
+            # Add credits to user balance
+            if current_user.credits_balance == -1:
+                # User has unlimited credits
+                return {
+                    "status": "success",
+                    "message": "Payment successful! You have unlimited credits.",
+                    "credits_added": 0,
+                    "new_balance": -1
+                }
+            
+            current_user.credits_balance += credits_to_add
+            new_balance = current_user.credits_balance
+            current_user.updated_at = datetime.utcnow()
+            
+            # Record the transaction
+            transaction = CreditTransaction(
+                user_id=current_user.id,
+                amount=credits_to_add,
+                balance_after=new_balance,
+                transaction_type="topup",
+                description=f"Credit top-up via PayPal: {credits_to_add:,} words (${price})",
+                reference_id=order_id
+            )
+            db.add(transaction)
+            db.commit()
+            db.refresh(current_user)
+            
+            # Send confirmation email
+            try:
+                email_service.send_credit_topup_confirmation(
+                    to_email=current_user.email,
+                    credits_added=credits_to_add,
+                    new_balance=new_balance,
+                    price=price,
+                    full_name=current_user.full_name
+                )
+            except Exception as e:
+                logger.error(f"Failed to send credit top-up confirmation email: {e}")
+            
+            return {
+                "status": "success",
+                "message": f"Successfully added {credits_to_add:,} credits!",
+                "credits_added": credits_to_add,
+                "new_balance": new_balance,
+                "paypal_order_id": order_id
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Payment not completed. Status: {capture_data['status']}"
+            )

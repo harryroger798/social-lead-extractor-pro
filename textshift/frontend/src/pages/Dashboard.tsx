@@ -401,22 +401,57 @@ export default function Dashboard() {
       setBuyCreditsMessage(null);
       
       try {
-        const result = await creditsApi.topup(packageId);
-        setBuyCreditsMessage({ 
-          type: 'success', 
-          text: `Successfully added ${result.credits_added.toLocaleString()} credits! New balance: ${result.new_balance.toLocaleString()} words` 
-        });
-        // Refresh user data and credits
-        const userData = await authApi.getMe();
-        updateUser(userData);
-        refetchCredits();
+        // Create PayPal order for credit top-up
+        const orderResult = await creditsApi.createTopupOrder(packageId);
+        
+        if (orderResult.approval_url) {
+          // Redirect to PayPal for payment
+          window.location.href = orderResult.approval_url;
+        } else {
+          setBuyCreditsMessage({ type: 'error', text: 'Failed to create payment order' });
+        }
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.detail || 'Failed to purchase credits';
+        const errorMessage = error?.response?.data?.detail || 'Failed to initiate payment';
         setBuyCreditsMessage({ type: 'error', text: errorMessage });
       } finally {
         setBuyCreditsLoading(null);
       }
     };
+
+    // Handle PayPal return from credit top-up
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const topupStatus = urlParams.get('topup');
+      const packageId = urlParams.get('package');
+      const token = urlParams.get('token'); // PayPal order ID
+      
+      if (topupStatus === 'success' && packageId && token) {
+        // Capture the PayPal order
+        const captureOrder = async () => {
+          try {
+            const result = await creditsApi.captureTopupOrder(token, packageId);
+            setBuyCreditsMessage({ 
+              type: 'success', 
+              text: result.message || `Successfully added ${result.credits_added?.toLocaleString()} credits!` 
+            });
+            // Refresh user data and credits
+            const userData = await authApi.getMe();
+            updateUser(userData);
+            refetchCredits();
+            // Clean up URL
+            window.history.replaceState({}, '', '/dashboard');
+          } catch (error: any) {
+            const errorMessage = error?.response?.data?.detail || 'Failed to complete payment';
+            setBuyCreditsMessage({ type: 'error', text: errorMessage });
+            window.history.replaceState({}, '', '/dashboard');
+          }
+        };
+        captureOrder();
+      } else if (topupStatus === 'cancelled') {
+        setBuyCreditsMessage({ type: 'error', text: 'Payment was cancelled' });
+        window.history.replaceState({}, '', '/dashboard');
+      }
+    }, []);
 
     const handleOpenBuyCredits = () => {
       if (user?.subscription_tier === 'free') {
@@ -1214,7 +1249,7 @@ export default function Dashboard() {
               </div>
               <h3 className="text-2xl font-medium text-white mb-2">Buy Credits</h3>
               <p className="text-gray-400">
-                Current balance: <span className="text-emerald-400 font-medium">{credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0}</span> words
+                Current balance: <span className="text-emerald-400 font-medium">{credits?.balance === -1 || user?.credits_balance === -1 ? 'Unlimited' : (credits?.balance?.toLocaleString() || user?.credits_balance?.toLocaleString() || 0)}</span> words
               </p>
             </div>
 

@@ -151,6 +151,16 @@ export const creditsApi = {
     const response = await api.post('/api/v1/user/topup', { package: packageId });
     return response.data;
   },
+
+  createTopupOrder: async (packageId: string) => {
+    const response = await api.post('/api/v1/user/topup/create-order', { package: packageId });
+    return response.data;
+  },
+
+  captureTopupOrder: async (orderId: string, packageId: string) => {
+    const response = await api.post(`/api/v1/user/topup/capture-order?order_id=${orderId}&package=${packageId}`);
+    return response.data;
+  },
 };
 
 // Contact API
@@ -213,6 +223,32 @@ export const promoApi = {
 
   redeem: async (code: string) => {
     const response = await api.post('/api/promo/redeem', { code });
+    return response.data;
+  },
+};
+
+// User Settings API
+export const userSettingsApi = {
+  updateSettings: async (data: { full_name?: string; email_notifications?: boolean; marketing_emails?: boolean }) => {
+    const response = await api.put('/api/v1/user/settings', data);
+    return response.data;
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    const response = await api.put('/api/v1/user/password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+    return response.data;
+  },
+
+  clearHistory: async () => {
+    const response = await api.delete('/api/v1/user/history');
+    return response.data;
+  },
+
+  deleteAccount: async () => {
+    const response = await api.delete('/api/v1/user/account');
     return response.data;
   },
 };

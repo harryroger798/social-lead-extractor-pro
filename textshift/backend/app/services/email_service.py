@@ -478,6 +478,197 @@ Go to Dashboard: {dashboard_url}
         )
 
 
+    def send_notification_preferences_email(self, to_email: str, email_notifications: bool, marketing_emails: bool, full_name: Optional[str] = None) -> bool:
+        """Send email confirming notification preference changes."""
+        name = full_name.split()[0] if full_name else "there"
+        settings_url = f"{settings.FRONTEND_URL}/settings"
+        
+        email_status = "enabled" if email_notifications else "disabled"
+        marketing_status = "enabled" if marketing_emails else "disabled"
+        
+        content = f"""
+        <tr>
+            <td class="content-cell" style="padding: 48px 40px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                        <td align="center" style="padding-bottom: 24px;">
+                            <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: inline-block; line-height: 64px; text-align: center;">
+                                <span style="font-size: 28px;">🔔</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <h1 style="margin: 0 0 16px 0; font-size: 28px; font-weight: 600; color: #ffffff; text-align: center; line-height: 1.3;">
+                    Notification Preferences Updated
+                </h1>
+                <p style="margin: 0 0 32px 0; font-size: 16px; color: #9ca3af; text-align: center; line-height: 1.6;">
+                    Hi {name}, your notification preferences have been updated.
+                </p>
+                
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 24px; margin-bottom: 32px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="color: #9ca3af; font-size: 14px;">Email Notifications</td>
+                                        <td align="right" style="color: {'#10b981' if email_notifications else '#ef4444'}; font-size: 14px; font-weight: 600;">{email_status.upper()}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 0;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="color: #9ca3af; font-size: 14px;">Marketing Emails</td>
+                                        <td align="right" style="color: {'#10b981' if marketing_emails else '#ef4444'}; font-size: 14px; font-weight: 600;">{marketing_status.upper()}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                        <td align="center">
+                            <a href="{settings_url}" class="button" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #000000; font-size: 16px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 50px; text-align: center;">
+                                Manage Settings
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin: 32px 0 0 0; font-size: 13px; color: #6b7280; text-align: center; line-height: 1.6;">
+                    You can change these preferences anytime in your account settings.
+                </p>
+            </td>
+        </tr>
+        """
+        
+        html_content = get_base_email_template(content, "Your notification preferences have been updated")
+        
+        text_content = f"""
+Notification Preferences Updated
+
+Hi {name}, your notification preferences have been updated.
+
+Email Notifications: {email_status.upper()}
+Marketing Emails: {marketing_status.upper()}
+
+You can change these preferences anytime at: {settings_url}
+
+- The TextShift Team
+        """
+        
+        return self.send_email(
+            to_email=to_email,
+            subject="Notification Preferences Updated - TextShift",
+            html_content=html_content,
+            text_content=text_content
+        )
+    
+    def send_credit_topup_confirmation(self, to_email: str, credits_added: int, new_balance: int, price: float, full_name: Optional[str] = None) -> bool:
+        """Send email confirming credit top-up purchase."""
+        name = full_name.split()[0] if full_name else "there"
+        dashboard_url = f"{settings.FRONTEND_URL}/dashboard"
+        
+        content = f"""
+        <tr>
+            <td class="content-cell" style="padding: 48px 40px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                        <td align="center" style="padding-bottom: 24px;">
+                            <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: inline-block; line-height: 64px; text-align: center;">
+                                <span style="font-size: 28px;">💰</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <h1 style="margin: 0 0 16px 0; font-size: 28px; font-weight: 600; color: #ffffff; text-align: center; line-height: 1.3;">
+                    Credits Added Successfully!
+                </h1>
+                <p style="margin: 0 0 32px 0; font-size: 16px; color: #9ca3af; text-align: center; line-height: 1.6;">
+                    Thanks for your purchase, {name}! Your credits have been added to your account.
+                </p>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 24px; margin-bottom: 32px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="color: #9ca3af; font-size: 14px;">Credits Added</td>
+                                        <td align="right" style="color: #10b981; font-size: 18px; font-weight: 700;">+{credits_added:,}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="color: #9ca3af; font-size: 14px;">Amount Paid</td>
+                                        <td align="right" style="color: #ffffff; font-size: 16px; font-weight: 600;">${price:.2f}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="color: #9ca3af; font-size: 14px;">New Balance</td>
+                                        <td align="right" style="color: #ffffff; font-size: 18px; font-weight: 700;">{new_balance:,} words</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                        <td align="center">
+                            <a href="{dashboard_url}" class="button" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #000000; font-size: 16px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 50px; text-align: center;">
+                                Use Your Credits
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin: 32px 0 0 0; font-size: 13px; color: #6b7280; text-align: center; line-height: 1.6;">
+                    Your credits never expire. Use them anytime!
+                </p>
+            </td>
+        </tr>
+        """
+        
+        html_content = get_base_email_template(content, f"You've added {credits_added:,} credits to your account!")
+        
+        text_content = f"""
+Credits Added Successfully!
+
+Thanks for your purchase, {name}! Your credits have been added to your account.
+
+Credits Added: +{credits_added:,}
+Amount Paid: ${price:.2f}
+New Balance: {new_balance:,} words
+
+Your credits never expire. Use them anytime!
+
+Go to Dashboard: {dashboard_url}
+
+- The TextShift Team
+        """
+        
+        return self.send_email(
+            to_email=to_email,
+            subject="Credits Added - TextShift",
+            html_content=html_content,
+            text_content=text_content
+        )
+
+
 def generate_token() -> str:
     return secrets.token_urlsafe(32)
 
