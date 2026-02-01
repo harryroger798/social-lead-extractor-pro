@@ -213,11 +213,21 @@ const tools: ToolConfig[] = [
   {
     id: 'bulk',
     name: 'Bulk Processing',
-    description: 'Process multiple texts at once',
+    description: 'Process multiple texts at once (one per line)',
     icon: Layers,
     color: 'rose',
     minTier: 'pro',
-    endpoint: '/bulk'
+    endpoint: '/bulk',
+    hasOptions: true,
+    optionLabel: 'Operation',
+    options: [
+      { value: 'word_count', label: 'Word Count' },
+      { value: 'grammar', label: 'Grammar Check' },
+      { value: 'tone_detect', label: 'Tone Detection' },
+      { value: 'readability', label: 'Readability' },
+      { value: 'summarize', label: 'Summarize' },
+      { value: 'paraphrase', label: 'Paraphrase' }
+    ]
   },
   {
     id: 'api-access',
@@ -330,6 +340,13 @@ export default function WritingTools() {
         body.focus = option;
       } else if (currentTool.id === 'readability') {
         body.detailed = userTierLevel >= tierOrder.starter;
+      } else if (currentTool.id === 'bulk') {
+        // Split text by newlines to create multiple texts for bulk processing
+        const texts = text.split('\n').filter(t => t.trim().length > 0);
+        body = { texts, operation: option || 'word_count' };
+      } else if (currentTool.id === 'api-access') {
+        // API docs endpoint just needs any text to trigger
+        body = { text: text || 'get docs' };
       }
 
       const response = await fetch(`${API_BASE}${currentTool.endpoint}`, {
