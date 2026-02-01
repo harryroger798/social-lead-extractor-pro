@@ -869,10 +869,10 @@ export default function LandingPage() {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-                            { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Heat map visualization', 'Basic reports'], cta: 'Get Started', highlight: false },
-                            { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode'], cta: 'Subscribe', highlight: false },
-                            { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Priority support'], cta: 'Subscribe', highlight: true },
-                            { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+                            { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only (10 scans/day)', 'Basic heat map reports', '6 Writing Tools (limited)', 'Export to TXT'], cta: 'Get Started', highlight: false },
+                            { name: 'Starter', price: '$9.99', credits: '25,000 words/mo', features: ['AI Detection + Humanizer + Plagiarism', '100 scans/day', '12 Writing Tools', 'PDF export & Word-level diff', 'Export to HTML/Markdown'], cta: 'Subscribe', highlight: false },
+                            { name: 'Pro', price: '$24.99', credits: 'Unlimited', features: ['All 3 core tools (500 scans/day)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (10 files)', 'Shareable reports', 'Priority support'], cta: 'Subscribe', highlight: true },
+                            { name: 'Enterprise', price: '$49.99', credits: 'True Unlimited', features: ['Unlimited scans (no daily limit)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (50 files)', 'Full REST API Access', 'White-label API', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
@@ -935,9 +935,9 @@ export default function LandingPage() {
           
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { quote: "TextShift's AI detection is incredibly accurate. It's become an essential tool for our content team.", author: "Sarah M.", role: "Content Manager", company: "TechCorp", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" },
-              { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James K.", role: "Marketing Director", company: "GrowthLabs", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" },
-              { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily R.", role: "University Professor", company: "Stanford", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" }
+              { quote: "TextShift's AI detection is incredibly accurate. It's become an essential tool for our content team.", author: "Sarah Mitchell", role: "Content Manager", company: "TechCorp", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face" },
+              { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James Kowalski", role: "Marketing Director", company: "GrowthLabs", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" },
+              { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily Rodriguez", role: "University Professor", company: "Stanford", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face" }
             ].map((testimonial, i) => (
               <ScrollReveal key={i} delay={i * 0.15}>
                 <TiltCard className="h-full">
