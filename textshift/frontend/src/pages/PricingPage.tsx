@@ -320,15 +320,24 @@ export default function PricingPage() {
                   ))}
                 </ul>
               )}
-              <Button 
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={loading === plan.id}
-                className={`w-full rounded-full ${
-                  plan.popular ? 'bg-emerald-500 hover:bg-emerald-600 text-black' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
-                }`}
-              >
-                {loading === plan.id ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>) : plan.cta}
-              </Button>
+              {isAuthenticated && user?.subscription_tier?.toLowerCase() === plan.id ? (
+                <Button 
+                  disabled
+                  className="w-full rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />Current Plan
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => handleSubscribe(plan.id)}
+                  disabled={loading === plan.id}
+                  className={`w-full rounded-full ${
+                    plan.popular ? 'bg-emerald-500 hover:bg-emerald-600 text-black' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                  }`}
+                >
+                  {loading === plan.id ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>) : plan.cta}
+                </Button>
+              )}
             </div>
           ))}
         </div>

@@ -31,8 +31,14 @@ import {
   Quote,
   Wand2,
   Palette,
-  Lightbulb
+  Lightbulb,
+  Loader2,
+  Mail,
+  Building,
+  Phone,
+  MessageSquare
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import {
   ParticlesBackground,
   AnimatedCounter,
@@ -71,6 +77,20 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePromos, setActivePromos] = useState<LandingPromo[]>([]);
   const { isAuthenticated, logout } = useAuthStore();
+  
+  // Contact modal state
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+    message: '',
+    plan_interest: 'General'
+  });
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
+  const [contactError, setContactError] = useState('');
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -94,6 +114,41 @@ export default function LandingPage() {
         type: score > 50 ? 'AI Generated' : 'Human Written',
         score: Math.round(score)
       });
+    }
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactLoading(true);
+    setContactError('');
+    
+    try {
+      const response = await fetch(`${API_URL}/api/contact/sales`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactForm),
+      });
+      
+      if (response.ok) {
+        setContactSuccess(true);
+        setContactForm({
+          name: '',
+          email: '',
+          company: '',
+          phone: '',
+          message: '',
+          plan_interest: 'General'
+        });
+      } else {
+        const data = await response.json();
+        setContactError(data.detail || 'Failed to send message. Please try again.');
+      }
+    } catch {
+      setContactError('Failed to send message. Please try again or email us directly at support@textshift.org');
+    } finally {
+      setContactLoading(false);
     }
   };
 
@@ -417,7 +472,10 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-16 md:mb-20">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Our <span className="text-emerald-400">Tools</span></h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
+              <Link to="/features" className="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
+                View all features <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
             </div>
           </ScrollReveal>
           
@@ -863,16 +921,19 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Plans to suit <span className="text-emerald-400">your needs</span></h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Credits never expire. No hidden fees. Cancel anytime.</p>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">Credits never expire. No hidden fees. Cancel anytime.</p>
+              <Link to="/pricing" className="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
+                View full pricing details <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
             </div>
           </ScrollReveal>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-                            { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only (10 scans/day)', 'Basic heat map reports', '6 Writing Tools (limited)', 'Export to TXT'], cta: 'Get Started', highlight: false },
-                            { name: 'Starter', price: '$9.99', credits: '25,000 words/mo', features: ['AI Detection + Humanizer + Plagiarism', '100 scans/day', '12 Writing Tools', 'PDF export & Word-level diff', 'Export to HTML/Markdown'], cta: 'Subscribe', highlight: false },
-                            { name: 'Pro', price: '$24.99', credits: 'Unlimited', features: ['All 3 core tools (500 scans/day)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (10 files)', 'Shareable reports', 'Priority support'], cta: 'Subscribe', highlight: true },
-                            { name: 'Enterprise', price: '$49.99', credits: 'True Unlimited', features: ['Unlimited scans (no daily limit)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (50 files)', 'Full REST API Access', 'White-label API', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+                            { name: 'Free', price: '$0', yearlyPrice: '$0', credits: '5,000 words/mo', features: ['AI Detection only (10 scans/day)', 'Basic heat map reports', '6 Writing Tools (limited)', 'Export to TXT'], cta: 'Get Started', highlight: false },
+                            { name: 'Starter', price: '$9.99', yearlyPrice: '$99.90', credits: '25,000 words/mo', features: ['AI Detection + Humanizer + Plagiarism', '100 scans/day', '12 Writing Tools', 'PDF export & Word-level diff', 'Export to HTML/Markdown'], cta: 'Subscribe', highlight: false },
+                            { name: 'Pro', price: '$24.99', yearlyPrice: '$249.90', credits: 'Unlimited', features: ['All 3 core tools (500 scans/day)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (10 files)', 'Shareable reports', 'Priority support'], cta: 'Subscribe', highlight: true },
+                            { name: 'Enterprise', price: '$49.99', yearlyPrice: '$499.90', credits: 'True Unlimited', features: ['Unlimited scans (no daily limit)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (50 files)', 'Full REST API Access', 'White-label API', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
@@ -893,6 +954,9 @@ export default function LandingPage() {
                         <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
                         {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
                       </div>
+                      {plan.yearlyPrice !== '$0' && (
+                        <div className="text-emerald-400 text-xs mb-1">or {plan.yearlyPrice}/year (save 2 months)</div>
+                      )}
                       <div className="text-gray-500 text-sm">{plan.credits}</div>
                     </div>
                     <ul className="space-y-3 mb-8">
@@ -909,7 +973,7 @@ export default function LandingPage() {
                       ))}
                     </ul>
                     <MagneticButton className="w-full">
-                      <Link to="/register" className="block">
+                      <Link to={isAuthenticated ? "/pricing" : "/register"} className="block">
                         <Button className={`w-full rounded-full transition-all duration-300 ${plan.highlight ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/25' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}>{plan.cta}</Button>
                       </Link>
                     </MagneticButton>
@@ -1034,9 +1098,13 @@ export default function LandingPage() {
                 </Link>
               </MagneticButton>
               <MagneticButton>
-                <a href="mailto:support@textshift.org">
-                  <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto transition-all duration-300">Contact Us</Button>
-                </a>
+                <Button 
+                  variant="outline" 
+                  className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto transition-all duration-300"
+                  onClick={() => setContactModalOpen(true)}
+                >
+                  Contact Us
+                </Button>
               </MagneticButton>
             </div>
           </ScrollReveal>
@@ -1071,6 +1139,181 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Contact Modal */}
+      {contactModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => {
+              setContactModalOpen(false);
+              setContactSuccess(false);
+              setContactError('');
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="relative bg-[#111] border border-white/10 rounded-2xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          >
+            <button
+              onClick={() => {
+                setContactModalOpen(false);
+                setContactSuccess(false);
+                setContactError('');
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {contactSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-semibold text-white mb-2">Message Sent!</h3>
+                <p className="text-gray-400 mb-6">Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+                <Button
+                  onClick={() => {
+                    setContactModalOpen(false);
+                    setContactSuccess(false);
+                  }}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-8"
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-6">
+                  <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white mb-2">Contact Us</h3>
+                  <p className="text-gray-400">Have a question or need help? We'd love to hear from you.</p>
+                </div>
+
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Name *</label>
+                      <div className="relative">
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Input
+                          type="text"
+                          required
+                          value={contactForm.name}
+                          onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          placeholder="Your name"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Email *</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Input
+                          type="email"
+                          required
+                          value={contactForm.email}
+                          onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          placeholder="you@example.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Company</label>
+                      <div className="relative">
+                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Input
+                          type="text"
+                          value={contactForm.company}
+                          onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          placeholder="Your company"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Phone</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Input
+                          type="tel"
+                          value={contactForm.phone}
+                          onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Topic</label>
+                    <select
+                      value={contactForm.plan_interest}
+                      onChange={(e) => setContactForm({ ...contactForm, plan_interest: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2"
+                    >
+                      <option value="General">General Inquiry</option>
+                      <option value="Enterprise">Enterprise Plan</option>
+                      <option value="Support">Technical Support</option>
+                      <option value="Partnership">Partnership</option>
+                      <option value="Feedback">Feedback</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Message *</label>
+                    <div className="relative">
+                      <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                      <Textarea
+                        required
+                        value={contactForm.message}
+                        onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 min-h-[120px]"
+                        placeholder="How can we help you?"
+                      />
+                    </div>
+                  </div>
+
+                  {contactError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                      {contactError}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={contactLoading}
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-black rounded-full py-6"
+                  >
+                    {contactLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

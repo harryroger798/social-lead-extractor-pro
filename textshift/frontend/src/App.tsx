@@ -16,6 +16,7 @@ import AdminPanel from '@/pages/AdminPanel';
 import SettingsPage from '@/pages/SettingsPage';
 import WritingTools from '@/pages/WritingTools';
 import ApiDocsPage from '@/pages/ApiDocsPage';
+import FeaturesPage from '@/pages/FeaturesPage';
 
 const queryClient= new QueryClient({
   defaultOptions: {
@@ -59,7 +60,8 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/pricing" element={<PricingPage />} />
                     <Route path="/api-docs" element={<ApiDocsPage />} />
-          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+                    <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/login"element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
           <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
