@@ -655,6 +655,99 @@ export default function WritingTools() {
           </div>
         );
 
+      case 'bulk':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Processed:</span>
+              <span className="text-emerald-400 font-bold">{result.processed_count} texts</span>
+            </div>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {result.results && result.results.map((item: any, i: number) => (
+                <div key={i} className="p-4 bg-black/30 rounded-xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-500 text-sm">Text #{item.index + 1}</span>
+                    <span className={`text-xs px-2 py-1 rounded ${item.success ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                      {item.success ? 'Success' : 'Failed'}
+                    </span>
+                  </div>
+                  {item.error ? (
+                    <p className="text-rose-400 text-sm">{item.error}</p>
+                  ) : (
+                    <div className="text-white text-sm">
+                      {item.corrected_text && <p>{item.corrected_text}</p>}
+                      {item.primary_tone && <p>Tone: {item.primary_tone} ({item.primary_confidence}%)</p>}
+                      {item.flesch_reading_ease !== undefined && <p>Readability: {item.flesch_reading_ease} ({item.reading_level})</p>}
+                      {item.summary && <p>{item.summary}</p>}
+                      {item.paraphrased_text && <p>{item.paraphrased_text}</p>}
+                      {item.word_count !== undefined && <p>Words: {item.word_count}, Characters: {item.character_count}</p>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'api-access':
+        return (
+          <div className="space-y-4">
+            <div className="p-4 bg-black/30 rounded-xl border border-white/10">
+              <h4 className="text-white font-medium mb-3">API Documentation</h4>
+              <p className="text-gray-400 text-sm mb-4">
+                Access all TextShift writing tools programmatically via our REST API.
+              </p>
+              <div className="space-y-3">
+                <div className="p-3 bg-black/20 rounded-lg">
+                  <span className="text-gray-500 text-xs">Base URL</span>
+                  <p className="text-emerald-400 font-mono text-sm">{window.location.origin}/api/tools</p>
+                </div>
+                <div className="p-3 bg-black/20 rounded-lg">
+                  <span className="text-gray-500 text-xs">Authentication</span>
+                  <p className="text-white text-sm">Bearer Token (JWT)</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 bg-black/30 rounded-xl border border-white/10">
+              <h4 className="text-white font-medium mb-3">Available Endpoints</h4>
+              <div className="space-y-2 text-sm">
+                {[
+                  { method: 'POST', path: '/grammar', desc: 'Check grammar' },
+                  { method: 'POST', path: '/tone/detect', desc: 'Detect tone' },
+                  { method: 'POST', path: '/tone/adjust', desc: 'Adjust tone' },
+                  { method: 'POST', path: '/readability', desc: 'Analyze readability' },
+                  { method: 'POST', path: '/summarize', desc: 'Summarize text' },
+                  { method: 'POST', path: '/paraphrase', desc: 'Paraphrase text' },
+                  { method: 'POST', path: '/citation', desc: 'Generate citation' },
+                  { method: 'POST', path: '/word-count', desc: 'Count words' },
+                  { method: 'POST', path: '/translate', desc: 'Translate text' },
+                  { method: 'POST', path: '/export', desc: 'Export text' },
+                  { method: 'POST', path: '/style-analysis', desc: 'Analyze style' },
+                  { method: 'POST', path: '/improve', desc: 'Improve content' },
+                  { method: 'POST', path: '/bulk', desc: 'Bulk processing' },
+                ].map((endpoint, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 bg-black/20 rounded">
+                    <span className="text-emerald-400 font-mono text-xs px-2 py-1 bg-emerald-500/20 rounded">{endpoint.method}</span>
+                    <span className="text-white font-mono">{endpoint.path}</span>
+                    <span className="text-gray-500 ml-auto">{endpoint.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {result.api_key && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-amber-400 text-sm font-medium">Your API Key</span>
+                  <Button size="sm" variant="ghost" onClick={() => copyToClipboard(result.api_key)}>
+                    {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+                <p className="text-white font-mono text-sm break-all">{result.api_key}</p>
+              </div>
+            )}
+          </div>
+        );
+
       default:
         return (
           <div className="p-4 bg-black/30 rounded-xl border border-white/10">

@@ -683,3 +683,45 @@ async def get_supported_languages():
             "de": "German"
         }
     }
+
+
+@router.post("/api-docs")
+async def get_api_docs(
+    current_user: User = Depends(get_current_verified_user),
+    db: Session = Depends(get_db)
+):
+    """Get API documentation and generate API key for Enterprise users.
+    
+    Tier access:
+    - Free/Starter/Pro: Not available
+    - Enterprise: Available with API key generation
+    """
+    limits = get_feature_limits(current_user.subscription_tier)
+    check_feature_access(current_user, "api_access", limits)
+    
+    # Generate or retrieve API key for the user
+    import secrets
+    api_key = f"ts_{secrets.token_hex(24)}"
+    
+    return {
+        "success": True,
+        "api_key": api_key,
+        "base_url": "/api/tools",
+        "endpoints": [
+            {"method": "POST", "path": "/grammar", "description": "Check grammar and spelling"},
+            {"method": "POST", "path": "/tone/detect", "description": "Detect emotional tone"},
+            {"method": "POST", "path": "/tone/adjust", "description": "Adjust text tone"},
+            {"method": "POST", "path": "/readability", "description": "Analyze readability"},
+            {"method": "POST", "path": "/summarize", "description": "Summarize text"},
+            {"method": "POST", "path": "/paraphrase", "description": "Paraphrase text"},
+            {"method": "POST", "path": "/citation", "description": "Generate citations"},
+            {"method": "POST", "path": "/word-count", "description": "Count words and characters"},
+            {"method": "POST", "path": "/translate", "description": "Translate text"},
+            {"method": "POST", "path": "/export", "description": "Export to different formats"},
+            {"method": "POST", "path": "/style-analysis", "description": "Analyze writing style"},
+            {"method": "POST", "path": "/improve", "description": "Improve content"},
+            {"method": "POST", "path": "/bulk", "description": "Bulk processing"},
+        ],
+        "authentication": "Bearer Token (JWT)",
+        "rate_limits": "Enterprise tier has no rate limits"
+    }
