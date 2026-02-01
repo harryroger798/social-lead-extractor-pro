@@ -937,7 +937,7 @@ export default function LandingPage() {
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
-                  <div className={`relative bg-gradient-to-b from-white/5 to-transparent border rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm ${plan.highlight ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-white/10'}`}>
+                  <div className={`relative bg-gradient-to-b from-white/5 to-transparent border rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm flex flex-col ${plan.highlight ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-white/10'}`}>
                     {plan.highlight && (
                       <motion.div 
                         className="absolute -top-3 left-1/2 -translate-x-1/2"
@@ -954,12 +954,12 @@ export default function LandingPage() {
                         <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
                         {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
                       </div>
-                      {plan.yearlyPrice !== '$0' && (
-                        <div className="text-emerald-400 text-xs mb-1">or {plan.yearlyPrice}/year (save 2 months)</div>
-                      )}
+                      <div className="text-emerald-400 text-xs mb-1 h-4">
+                        {plan.yearlyPrice !== '$0' ? `or ${plan.yearlyPrice}/year (save 2 months)` : ''}
+                      </div>
                       <div className="text-gray-500 text-sm">{plan.credits}</div>
                     </div>
-                    <ul className="space-y-3 mb-8">
+                    <ul className="space-y-3 mb-8 flex-grow">
                       {plan.features.map((feature, j) => (
                         <motion.li 
                           key={j} 
@@ -1261,13 +1261,13 @@ export default function LandingPage() {
                     <select
                       value={contactForm.plan_interest}
                       onChange={(e) => setContactForm({ ...contactForm, plan_interest: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2"
+                      className="w-full bg-[#1a1a1a] border border-white/10 text-white rounded-md px-3 py-2 [&>option]:bg-[#1a1a1a] [&>option]:text-white"
                     >
-                      <option value="General">General Inquiry</option>
-                      <option value="Enterprise">Enterprise Plan</option>
-                      <option value="Support">Technical Support</option>
-                      <option value="Partnership">Partnership</option>
-                      <option value="Feedback">Feedback</option>
+                      <option value="General" className="bg-[#1a1a1a] text-white">General Inquiry</option>
+                      <option value="Enterprise" className="bg-[#1a1a1a] text-white">Enterprise Plan</option>
+                      <option value="Support" className="bg-[#1a1a1a] text-white">Technical Support</option>
+                      <option value="Partnership" className="bg-[#1a1a1a] text-white">Partnership</option>
+                      <option value="Feedback" className="bg-[#1a1a1a] text-white">Feedback</option>
                     </select>
                   </div>
 
