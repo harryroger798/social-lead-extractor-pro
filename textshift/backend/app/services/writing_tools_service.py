@@ -54,6 +54,8 @@ class WritingToolsService:
     _t5_tokenizer = None
     _general_t5_model = None
     _general_t5_tokenizer = None
+    _grammar_model = None
+    _grammar_tokenizer = None
     
     # Tone labels from SamLowe/roberta-base-go_emotions
     TONE_LABELS = [
@@ -225,6 +227,68 @@ class WritingToolsService:
             logger.error(f"Failed to load Flan-T5 model: {e}")
             return False
     
+    def _load_grammar_model(self):
+        """Load T5 grammar correction model from iDrive e2."""
+        if self._grammar_model is not None:
+            return True
+        
+        try:
+            model_dir = os.path.join(settings.MODELS_DIR, 't5-grammar-correction')
+            
+            # Download from iDrive if not present
+            if not os.path.exists(model_dir) or not os.listdir(model_dir):
+                success = self._download_model_from_s3('grammar-checker/t5-base-grammar-correction/', model_dir)
+                if not success:
+                    # Fallback to HuggingFace
+                    logger.info("Downloading t5-base-grammar-correction from HuggingFace...")
+                    self._grammar_tokenizer = T5Tokenizer.from_pretrained("vennify/t5-base-grammar-correction")
+                    self._grammar_model = T5ForConditionalGeneration.from_pretrained("vennify/t5-base-grammar-correction")
+                    self._grammar_model.eval()
+                    logger.info("Grammar T5 model loaded from HuggingFace")
+                    return True
+            
+            self._grammar_tokenizer = T5Tokenizer.from_pretrained(model_dir)
+            self._grammar_model = T5ForConditionalGeneration.from_pretrained(model_dir)
+            self._grammar_model.eval()
+            logger.info("Grammar T5 model loaded successfully from local storage")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to load Grammar T5 model: {e}")
+            return False
+    
+    def _correct_grammar_with_t5(self, text: str) -> Optional[str]:
+        """Correct grammar using T5 model."""
+        try:
+            if not self._load_grammar_model():
+                return None
+            
+            if self._grammar_model is None or self._grammar_tokenizer is None:
+                return None
+            
+            # T5 grammar model expects "grammar: " prefix
+            input_text = f"grammar: {text}"
+            
+            inputs = self._grammar_tokenizer(
+                input_text,
+                return_tensors="pt",
+                truncation=True,
+                max_length=512
+            )
+            
+            with torch.no_grad():
+                outputs = self._grammar_model.generate(
+                    **inputs,
+                    max_length=512,
+                    num_beams=5,
+                    early_stopping=True
+                )
+            
+            corrected_text = self._grammar_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            return corrected_text.strip() if corrected_text else None
+        except Exception as e:
+            logger.error(f"T5 grammar correction failed: {e}")
+            return None
+    
     def _generate_with_t5(self, prompt: str, max_length: int = 256, min_length: int = 10) -> Optional[str]:
         """Generate text using Flan-T5 model with error handling."""
         try:
@@ -266,61 +330,116 @@ class WritingToolsService:
             return None
     
     # ==================== Feature 1: Grammar Checker ====================
+    def _find_differences(self, original: str, corrected: str) -> List[Dict[str, Any]]:
+        """Find word-level differences between original and corrected text."""
+        import difflib
+        
+        errors = []
+        original_words = original.split()
+        corrected_words = corrected.split()
+        
+        matcher = difflib.SequenceMatcher(None, original_words, corrected_words)
+        
+        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+            if tag == 'replace':
+                original_segment = ' '.join(original_words[i1:i2])
+                corrected_segment = ' '.join(corrected_words[j1:j2])
+                errors.append({
+                    "message": f"Replace '{original_segment}' with '{corrected_segment}'",
+                    "short_message": "Grammar/Spelling",
+                    "original": original_segment,
+                    "replacement": corrected_segment,
+                    "rule_category": "Grammar Correction",
+                    "replacements": [corrected_segment]
+                })
+            elif tag == 'delete':
+                original_segment = ' '.join(original_words[i1:i2])
+                errors.append({
+                    "message": f"Remove '{original_segment}'",
+                    "short_message": "Unnecessary word(s)",
+                    "original": original_segment,
+                    "replacement": "",
+                    "rule_category": "Grammar Correction",
+                    "replacements": [""]
+                })
+            elif tag == 'insert':
+                corrected_segment = ' '.join(corrected_words[j1:j2])
+                errors.append({
+                    "message": f"Insert '{corrected_segment}'",
+                    "short_message": "Missing word(s)",
+                    "original": "",
+                    "replacement": corrected_segment,
+                    "rule_category": "Grammar Correction",
+                    "replacements": [corrected_segment]
+                })
+        
+        return errors
+    
     async def check_grammar(self, text: str) -> Dict[str, Any]:
-        """Check grammar using LanguageTool API (free, 20 requests/min)."""
+        """Check grammar using T5 model (primary) + LanguageTool API (supplementary)."""
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    "https://api.languagetool.org/v2/check",
-                    data={
-                        "text": text,
-                        "language": "en-US",
-                        "enabledOnly": "false"
-                    }
-                )
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    matches = data.get("matches", [])
-                    
-                    errors = []
-                    corrected_text = text
-                    offset_adjustment = 0
-                    
-                    for match in matches:
-                        error = {
-                            "message": match.get("message", ""),
-                            "short_message": match.get("shortMessage", ""),
-                            "offset": match.get("offset", 0),
-                            "length": match.get("length", 0),
-                            "context": match.get("context", {}).get("text", ""),
-                            "rule_id": match.get("rule", {}).get("id", ""),
-                            "rule_category": match.get("rule", {}).get("category", {}).get("name", ""),
-                            "replacements": [r.get("value", "") for r in match.get("replacements", [])[:3]]
+            errors = []
+            corrected_text = text
+            
+            # Step 1: Use T5 grammar model for correction (primary)
+            t5_corrected = self._correct_grammar_with_t5(text)
+            
+            if t5_corrected and t5_corrected != text:
+                corrected_text = t5_corrected
+                # Find differences between original and T5 corrected
+                t5_errors = self._find_differences(text, t5_corrected)
+                errors.extend(t5_errors)
+            
+            # Step 2: Also run LanguageTool for additional error explanations
+            lt_errors = []
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.post(
+                        "https://api.languagetool.org/v2/check",
+                        data={
+                            "text": text,
+                            "language": "en-US",
+                            "enabledOnly": "false"
                         }
-                        errors.append(error)
-                        
-                        # Apply first replacement to corrected text
-                        if error["replacements"]:
-                            start = error["offset"] + offset_adjustment
-                            end = start + error["length"]
-                            replacement = error["replacements"][0]
-                            corrected_text = corrected_text[:start] + replacement + corrected_text[end:]
-                            offset_adjustment += len(replacement) - error["length"]
+                    )
                     
-                    return {
-                        "success": True,
-                        "original_text": text,
-                        "corrected_text": corrected_text,
-                        "error_count": len(errors),
-                        "errors": errors,
-                        "language": "en-US"
-                    }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"LanguageTool API error: {response.status_code}"
-                    }
+                    if response.status_code == 200:
+                        data = response.json()
+                        matches = data.get("matches", [])
+                        
+                        for match in matches:
+                            lt_error = {
+                                "message": match.get("message", ""),
+                                "short_message": match.get("shortMessage", ""),
+                                "offset": match.get("offset", 0),
+                                "length": match.get("length", 0),
+                                "context": match.get("context", {}).get("text", ""),
+                                "rule_id": match.get("rule", {}).get("id", ""),
+                                "rule_category": match.get("rule", {}).get("category", {}).get("name", ""),
+                                "replacements": [r.get("value", "") for r in match.get("replacements", [])[:3]]
+                            }
+                            lt_errors.append(lt_error)
+            except Exception as lt_e:
+                logger.warning(f"LanguageTool API failed (using T5 only): {lt_e}")
+            
+            # Merge errors - avoid duplicates by checking if correction already exists
+            existing_corrections = {e.get("replacement", "").lower() for e in errors}
+            for lt_error in lt_errors:
+                if lt_error["replacements"]:
+                    replacement = lt_error["replacements"][0].lower()
+                    if replacement not in existing_corrections:
+                        errors.append(lt_error)
+                        existing_corrections.add(replacement)
+            
+            return {
+                "success": True,
+                "original_text": text,
+                "corrected_text": corrected_text,
+                "error_count": len(errors),
+                "errors": errors,
+                "language": "en-US",
+                "model": "T5-grammar-correction + LanguageTool"
+            }
         except Exception as e:
             logger.error(f"Grammar check failed: {e}")
             return {"success": False, "error": str(e)}
