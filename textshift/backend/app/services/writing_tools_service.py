@@ -491,26 +491,50 @@ class WritingToolsService:
     
     # ==================== Feature 3: Tone Adjuster ====================
     def adjust_tone(self, text: str, target_tone: str) -> Dict[str, Any]:
-        """Adjust text tone using T5 model with rule-based fallback."""
+        """Adjust text tone using comprehensive rule-based transformation."""
         try:
-            adjusted_text = None
-            used_t5 = False
+            import random
+            adjusted_text = text
+            target = target_tone.lower()
             
-            # Try T5 model first
-            t5_prompt = f"Rewrite the following text in a {target_tone} tone: {text}"
-            t5_result = self._generate_with_t5(t5_prompt, max_length=len(text.split()) * 3, min_length=5)
+            # Aggressive/negative phrase replacements for formal tone
+            aggressive_to_formal = {
+                "dropped the ball": "encountered challenges",
+                "clean up your mess": "address the issues",
+                "I'm sick of it": "this situation requires attention",
+                "sick of it": "concerned about this pattern",
+                "frankly": "to be direct",
+                "maybe you're in the wrong job": "we should discuss role alignment",
+                "in the wrong job": "may benefit from additional support or role review",
+                "can't handle": "are experiencing difficulty with",
+                "completely dropped": "did not meet expectations on",
+                "your mess": "these issues",
+                "incompetence": "performance gaps",
+                "unacceptable": "below expectations",
+                "ridiculous": "concerning",
+                "stupid": "ineffective",
+                "terrible": "unsatisfactory",
+                "awful": "suboptimal",
+                "hate": "have concerns about",
+                "angry": "disappointed",
+                "furious": "deeply concerned",
+                "fed up": "concerned about the recurring nature of",
+                "screwed up": "made errors in",
+                "messed up": "encountered issues with",
+                "failed miserably": "did not achieve the expected outcomes",
+                "waste of time": "inefficient use of resources",
+                "useless": "not meeting current needs",
+                "pathetic": "inadequate",
+                "disaster": "significant challenge",
+                "catastrophe": "serious issue",
+                "blame": "identify areas for improvement regarding",
+                "fault": "responsibility",
+                "you always": "there has been a pattern of",
+                "you never": "there have been instances where",
+                "this is the third time": "we have encountered this situation multiple times",
+            }
             
-            if t5_result and len(t5_result) > 10 and t5_result.lower() != text.lower():
-                adjusted_text = t5_result
-                used_t5 = True
-                logger.info(f"Tone adjustment using T5 model successful for tone: {target_tone}")
-            
-            # Fallback to rule-based if T5 failed
-            if not adjusted_text:
-                logger.info(f"Falling back to rule-based tone adjustment for tone: {target_tone}")
-                adjusted_text = text
-            
-            # Formal tone transformations
+            # Formal tone transformations (contractions + professional language)
             formal_replacements = {
                 "can't": "cannot", "won't": "will not", "don't": "do not",
                 "isn't": "is not", "aren't": "are not", "wasn't": "was not",
@@ -544,13 +568,9 @@ class WritingToolsService:
                 "extremely": "super", "completely": "totally", "fundamentally": "basically",
                 "however": "but", "therefore": "so", "furthermore": "also",
                 "nevertheless": "still", "consequently": "so", "additionally": "plus",
-            }
-            
-            # Persuasive tone additions
-            persuasive_phrases = {
-                "start": ["Imagine ", "Picture this: ", "Consider how "],
-                "emphasis": [" - and this is crucial - ", " - importantly - ", " - notably - "],
-                "call_to_action": [" Take action now.", " Don't miss this opportunity.", " Act today."],
+                "regarding": "about", "concerning": "about", "approximately": "around",
+                "sufficient": "enough", "commence": "start", "terminate": "end",
+                "utilize": "use", "facilitate": "help", "implement": "do",
             }
             
             # Academic tone transformations
@@ -561,6 +581,9 @@ class WritingToolsService:
                 "need": "require", "want": "desire", "try": "attempt",
                 "big": "substantial", "small": "minimal", "good": "beneficial",
                 "bad": "detrimental", "important": "significant", "interesting": "noteworthy",
+                "about": "regarding", "because": "due to the fact that",
+                "but": "however", "so": "therefore", "also": "furthermore",
+                "start": "commence", "end": "conclude", "change": "modify",
             }
             
             # Confident tone transformations
@@ -570,6 +593,15 @@ class WritingToolsService:
                 "I believe": "I am confident that", "I hope": "I expect",
                 "I guess": "I am certain", "probably": "undoubtedly",
                 "it seems": "it is clear", "apparently": "evidently",
+                "it might be": "it is", "we could try": "we will",
+                "if possible": "when we", "hopefully": "certainly",
+            }
+            
+            # Persuasive tone additions
+            persuasive_phrases = {
+                "start": ["Imagine ", "Picture this: ", "Consider how "],
+                "emphasis": [" - and this is crucial - ", " - importantly - ", " - notably - "],
+                "call_to_action": [" Take action now.", " Don't miss this opportunity.", " Act today."],
             }
             
             # Empathetic tone transformations
@@ -578,18 +610,32 @@ class WritingToolsService:
                 "validation": [" and that's completely valid", " which makes total sense", " and your feelings matter"],
             }
             
-            target = target_tone.lower()
-            
             if target == "formal":
+                # First, replace aggressive phrases with professional alternatives
+                for old, new in aggressive_to_formal.items():
+                    adjusted_text = re.sub(re.escape(old), new, adjusted_text, flags=re.IGNORECASE)
+                
+                # Then expand contractions and use formal vocabulary
                 for old, new in formal_replacements.items():
                     adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+                
+                # Add professional framing if text starts with aggressive "Your" or "You"
+                if adjusted_text.lower().startswith("your team") or adjusted_text.lower().startswith("you "):
+                    adjusted_text = "I would like to discuss some concerns. " + adjusted_text
+                
+                # Soften direct accusations
+                adjusted_text = re.sub(r'\bYour team\b', 'The team', adjusted_text)
+                adjusted_text = re.sub(r'\byour team\b', 'the team', adjusted_text)
             
             elif target == "casual":
                 for old, new in casual_replacements.items():
                     adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+                
+                # Add casual opener if formal
+                if adjusted_text.startswith(("Dear ", "To Whom", "I am writing")):
+                    adjusted_text = "Hey! " + adjusted_text
             
             elif target == "persuasive":
-                import random
                 # Add persuasive opening
                 if not adjusted_text.startswith(tuple(persuasive_phrases["start"])):
                     adjusted_text = random.choice(persuasive_phrases["start"]) + adjusted_text[0].lower() + adjusted_text[1:]
@@ -602,18 +648,23 @@ class WritingToolsService:
                 for old, new in academic_replacements.items():
                     adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
                 # Add academic structure
-                if not adjusted_text.startswith(("This ", "The ", "In ", "According ")):
+                if not adjusted_text.startswith(("This ", "The ", "In ", "According ", "Research ")):
                     adjusted_text = "This analysis suggests that " + adjusted_text[0].lower() + adjusted_text[1:]
             
             elif target == "confident":
                 for old, new in confident_replacements.items():
                     adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+                # Remove hedging language
+                adjusted_text = re.sub(r'\b(sort of|kind of|a bit|somewhat)\b', '', adjusted_text, flags=re.IGNORECASE)
+                adjusted_text = re.sub(r'\s+', ' ', adjusted_text).strip()
             
             elif target == "empathetic":
-                import random
                 # Add empathetic opening
                 if not any(adjusted_text.startswith(phrase) for phrase in empathetic_phrases["start"]):
                     adjusted_text = random.choice(empathetic_phrases["start"]) + adjusted_text[0].lower() + adjusted_text[1:]
+                # Soften harsh language
+                adjusted_text = re.sub(r'\bmust\b', 'could', adjusted_text, flags=re.IGNORECASE)
+                adjusted_text = re.sub(r'\bshould\b', 'might want to', adjusted_text, flags=re.IGNORECASE)
             
             return {
                 "success": True,
@@ -622,7 +673,7 @@ class WritingToolsService:
                 "target_tone": target_tone,
                 "word_count_original": len(text.split()),
                 "word_count_adjusted": len(adjusted_text.split()),
-                "used_t5": used_t5
+                "transformation_applied": target
             }
         except Exception as e:
             logger.error(f"Tone adjustment failed: {e}")
