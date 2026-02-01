@@ -301,43 +301,114 @@ class WritingToolsService:
     
     # ==================== Feature 3: Tone Adjuster ====================
     def adjust_tone(self, text: str, target_tone: str) -> Dict[str, Any]:
-        """Adjust text tone using T5 model."""
+        """Adjust text tone using rule-based transformations."""
         try:
-            self._load_t5_model()
+            adjusted_text = text
             
-            if self._t5_model is None:
-                return {"success": False, "error": "T5 model not available"}
-            
-            # Tone adjustment prompts
-            tone_prompts = {
-                "formal": "Rewrite this text in a formal, professional tone: ",
-                "casual": "Rewrite this text in a casual, friendly tone: ",
-                "persuasive": "Rewrite this text in a persuasive, compelling tone: ",
-                "academic": "Rewrite this text in an academic, scholarly tone: ",
-                "confident": "Rewrite this text in a confident, assertive tone: ",
-                "empathetic": "Rewrite this text in an empathetic, understanding tone: ",
+            # Formal tone transformations
+            formal_replacements = {
+                "can't": "cannot", "won't": "will not", "don't": "do not",
+                "isn't": "is not", "aren't": "are not", "wasn't": "was not",
+                "weren't": "were not", "hasn't": "has not", "haven't": "have not",
+                "hadn't": "had not", "doesn't": "does not", "didn't": "did not",
+                "couldn't": "could not", "shouldn't": "should not", "wouldn't": "would not",
+                "I'm": "I am", "you're": "you are", "we're": "we are", "they're": "they are",
+                "it's": "it is", "that's": "that is", "there's": "there is",
+                "what's": "what is", "who's": "who is", "let's": "let us",
+                "gonna": "going to", "wanna": "want to", "gotta": "got to",
+                "kinda": "kind of", "sorta": "sort of", "dunno": "do not know",
+                "yeah": "yes", "nope": "no", "yep": "yes", "ok": "acceptable",
+                "awesome": "excellent", "cool": "satisfactory", "great": "excellent",
+                "stuff": "materials", "things": "items", "guy": "individual",
+                "guys": "individuals", "kids": "children", "lots": "numerous",
+                "a lot": "significantly", "pretty": "quite", "really": "very",
+                "super": "extremely", "totally": "completely", "basically": "fundamentally",
             }
             
-            prompt = tone_prompts.get(target_tone.lower(), f"Rewrite this text in a {target_tone} tone: ")
-            input_text = prompt + text
+            # Casual tone transformations
+            casual_replacements = {
+                "cannot": "can't", "will not": "won't", "do not": "don't",
+                "is not": "isn't", "are not": "aren't", "was not": "wasn't",
+                "were not": "weren't", "has not": "hasn't", "have not": "haven't",
+                "had not": "hadn't", "does not": "doesn't", "did not": "didn't",
+                "could not": "couldn't", "should not": "shouldn't", "would not": "wouldn't",
+                "I am": "I'm", "you are": "you're", "we are": "we're", "they are": "they're",
+                "it is": "it's", "that is": "that's", "there is": "there's",
+                "excellent": "awesome", "satisfactory": "cool", "individuals": "folks",
+                "children": "kids", "numerous": "lots of", "significantly": "a lot",
+                "extremely": "super", "completely": "totally", "fundamentally": "basically",
+                "however": "but", "therefore": "so", "furthermore": "also",
+                "nevertheless": "still", "consequently": "so", "additionally": "plus",
+            }
             
-            inputs = self._t5_tokenizer(
-                input_text,
-                return_tensors="pt",
-                truncation=True,
-                max_length=512
-            )
+            # Persuasive tone additions
+            persuasive_phrases = {
+                "start": ["Imagine ", "Picture this: ", "Consider how "],
+                "emphasis": [" - and this is crucial - ", " - importantly - ", " - notably - "],
+                "call_to_action": [" Take action now.", " Don't miss this opportunity.", " Act today."],
+            }
             
-            with torch.no_grad():
-                outputs = self._t5_model.generate(
-                    **inputs,
-                    max_length=512,
-                    num_beams=4,
-                    early_stopping=True,
-                    no_repeat_ngram_size=2
-                )
+            # Academic tone transformations
+            academic_replacements = {
+                "show": "demonstrate", "think": "hypothesize", "use": "utilize",
+                "find": "discover", "look at": "examine", "get": "obtain",
+                "give": "provide", "make": "construct", "help": "facilitate",
+                "need": "require", "want": "desire", "try": "attempt",
+                "big": "substantial", "small": "minimal", "good": "beneficial",
+                "bad": "detrimental", "important": "significant", "interesting": "noteworthy",
+            }
             
-            adjusted_text = self._t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # Confident tone transformations
+            confident_replacements = {
+                "I think": "I know", "maybe": "certainly", "perhaps": "definitely",
+                "might": "will", "could": "can", "possibly": "absolutely",
+                "I believe": "I am confident that", "I hope": "I expect",
+                "I guess": "I am certain", "probably": "undoubtedly",
+                "it seems": "it is clear", "apparently": "evidently",
+            }
+            
+            # Empathetic tone transformations
+            empathetic_phrases = {
+                "start": ["I understand that ", "I hear you - ", "I can see how "],
+                "validation": [" and that's completely valid", " which makes total sense", " and your feelings matter"],
+            }
+            
+            target = target_tone.lower()
+            
+            if target == "formal":
+                for old, new in formal_replacements.items():
+                    adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+            
+            elif target == "casual":
+                for old, new in casual_replacements.items():
+                    adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+            
+            elif target == "persuasive":
+                import random
+                # Add persuasive opening
+                if not adjusted_text.startswith(tuple(persuasive_phrases["start"])):
+                    adjusted_text = random.choice(persuasive_phrases["start"]) + adjusted_text[0].lower() + adjusted_text[1:]
+                # Add call to action if not present
+                if not adjusted_text.rstrip().endswith(('.', '!', '?')):
+                    adjusted_text += "."
+                adjusted_text = adjusted_text.rstrip('.!?') + random.choice(persuasive_phrases["call_to_action"])
+            
+            elif target == "academic":
+                for old, new in academic_replacements.items():
+                    adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+                # Add academic structure
+                if not adjusted_text.startswith(("This ", "The ", "In ", "According ")):
+                    adjusted_text = "This analysis suggests that " + adjusted_text[0].lower() + adjusted_text[1:]
+            
+            elif target == "confident":
+                for old, new in confident_replacements.items():
+                    adjusted_text = re.sub(r'\b' + re.escape(old) + r'\b', new, adjusted_text, flags=re.IGNORECASE)
+            
+            elif target == "empathetic":
+                import random
+                # Add empathetic opening
+                if not any(adjusted_text.startswith(phrase) for phrase in empathetic_phrases["start"]):
+                    adjusted_text = random.choice(empathetic_phrases["start"]) + adjusted_text[0].lower() + adjusted_text[1:]
             
             return {
                 "success": True,
@@ -441,33 +512,86 @@ class WritingToolsService:
     
     # ==================== Feature 5: Summarizer ====================
     def summarize(self, text: str, max_length: int = 150, min_length: int = 50) -> Dict[str, Any]:
-        """Summarize text using T5 model."""
+        """Summarize text using extractive summarization (sentence scoring)."""
         try:
-            self._load_t5_model()
+            # Split into sentences
+            sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+            sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) > 3]
             
-            if self._t5_model is None:
-                return {"success": False, "error": "T5 model not available"}
+            if len(sentences) == 0:
+                return {"success": False, "error": "Text too short to summarize"}
             
-            input_text = "summarize: " + text
+            if len(sentences) <= 2:
+                # Text is already short, return as is
+                return {
+                    "success": True,
+                    "original_text": text[:500] + "..." if len(text) > 500 else text,
+                    "summary": text,
+                    "original_word_count": len(text.split()),
+                    "summary_word_count": len(text.split()),
+                    "compression_ratio": 0
+                }
             
-            inputs = self._t5_tokenizer(
-                input_text,
-                return_tensors="pt",
-                truncation=True,
-                max_length=1024
-            )
+            # Score sentences based on multiple factors
+            word_freq = Counter()
+            for sentence in sentences:
+                words = re.findall(r'\b[a-zA-Z]+\b', sentence.lower())
+                word_freq.update(words)
             
-            with torch.no_grad():
-                outputs = self._t5_model.generate(
-                    **inputs,
-                    max_length=max_length,
-                    min_length=min_length,
-                    num_beams=4,
-                    early_stopping=True,
-                    no_repeat_ngram_size=2
-                )
+            # Remove common stop words from frequency count
+            stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+                         'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+                         'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'dare',
+                         'ought', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by',
+                         'from', 'as', 'into', 'through', 'during', 'before', 'after',
+                         'above', 'below', 'between', 'under', 'again', 'further', 'then',
+                         'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all',
+                         'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no',
+                         'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very',
+                         'just', 'and', 'but', 'if', 'or', 'because', 'until', 'while',
+                         'this', 'that', 'these', 'those', 'it', 'its', 'i', 'you', 'he',
+                         'she', 'we', 'they', 'what', 'which', 'who', 'whom'}
             
-            summary = self._t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            for word in stop_words:
+                word_freq.pop(word, None)
+            
+            # Score each sentence
+            sentence_scores = []
+            for i, sentence in enumerate(sentences):
+                words = re.findall(r'\b[a-zA-Z]+\b', sentence.lower())
+                if not words:
+                    sentence_scores.append(0)
+                    continue
+                
+                # Word frequency score
+                freq_score = sum(word_freq.get(w, 0) for w in words) / len(words)
+                
+                # Position score (first and last sentences are often important)
+                position_score = 1.0
+                if i == 0:
+                    position_score = 1.5
+                elif i == len(sentences) - 1:
+                    position_score = 1.2
+                elif i < len(sentences) * 0.3:
+                    position_score = 1.1
+                
+                # Length score (prefer medium-length sentences)
+                length_score = min(len(words) / 20, 1.0) if len(words) < 20 else max(0.5, 1 - (len(words) - 20) / 40)
+                
+                total_score = freq_score * position_score * length_score
+                sentence_scores.append(total_score)
+            
+            # Select top sentences (aim for ~30-40% of original)
+            num_sentences = max(1, min(len(sentences) - 1, int(len(sentences) * 0.4)))
+            
+            # Get indices of top scoring sentences
+            top_indices = sorted(range(len(sentence_scores)), key=lambda i: sentence_scores[i], reverse=True)[:num_sentences]
+            
+            # Sort by original order to maintain coherence
+            top_indices.sort()
+            
+            # Build summary
+            summary = ' '.join(sentences[i] for i in top_indices)
             
             original_words = len(text.split())
             summary_words = len(summary.split())
@@ -487,44 +611,177 @@ class WritingToolsService:
     
     # ==================== Feature 6: Paraphraser ====================
     def paraphrase(self, text: str, mode: str = "standard") -> Dict[str, Any]:
-        """Paraphrase text using T5 model with different modes."""
+        """Paraphrase text using rule-based synonym replacement and sentence restructuring."""
         try:
-            self._load_t5_model()
+            import random
             
-            if self._t5_model is None:
-                return {"success": False, "error": "T5 model not available"}
-            
-            # Different paraphrasing prompts
-            mode_prompts = {
-                "standard": "paraphrase: ",
-                "fluency": "paraphrase for better fluency: ",
-                "creative": "creatively rewrite: ",
-                "formal": "paraphrase in formal language: ",
-                "simple": "paraphrase in simple words: "
+            # Comprehensive synonym dictionary
+            synonyms = {
+                # Common verbs
+                "use": ["utilize", "employ", "apply", "leverage"],
+                "make": ["create", "produce", "generate", "construct"],
+                "get": ["obtain", "acquire", "receive", "gain"],
+                "give": ["provide", "offer", "supply", "deliver"],
+                "show": ["demonstrate", "display", "reveal", "illustrate"],
+                "help": ["assist", "aid", "support", "facilitate"],
+                "find": ["discover", "locate", "identify", "uncover"],
+                "think": ["believe", "consider", "suppose", "reckon"],
+                "know": ["understand", "recognize", "realize", "comprehend"],
+                "want": ["desire", "wish", "seek", "aspire"],
+                "need": ["require", "necessitate", "demand"],
+                "try": ["attempt", "endeavor", "strive"],
+                "start": ["begin", "commence", "initiate", "launch"],
+                "end": ["finish", "conclude", "complete", "terminate"],
+                "change": ["modify", "alter", "transform", "adjust"],
+                "move": ["relocate", "transfer", "shift", "transport"],
+                "work": ["function", "operate", "perform", "labor"],
+                "run": ["operate", "execute", "manage", "conduct"],
+                "keep": ["maintain", "retain", "preserve", "sustain"],
+                "let": ["allow", "permit", "enable"],
+                "put": ["place", "position", "set", "locate"],
+                "take": ["grab", "seize", "capture", "acquire"],
+                "come": ["arrive", "approach", "reach"],
+                "go": ["proceed", "advance", "travel", "move"],
+                "see": ["observe", "notice", "view", "perceive"],
+                "look": ["examine", "inspect", "observe", "view"],
+                "say": ["state", "express", "declare", "mention"],
+                "tell": ["inform", "notify", "advise", "communicate"],
+                "ask": ["inquire", "question", "request"],
+                
+                # Common adjectives
+                "good": ["excellent", "great", "fine", "superior"],
+                "bad": ["poor", "inferior", "substandard", "inadequate"],
+                "big": ["large", "substantial", "significant", "considerable"],
+                "small": ["little", "minor", "modest", "compact"],
+                "new": ["recent", "fresh", "modern", "novel"],
+                "old": ["ancient", "aged", "former", "previous"],
+                "important": ["significant", "crucial", "vital", "essential"],
+                "different": ["distinct", "varied", "diverse", "unique"],
+                "same": ["identical", "similar", "equivalent", "alike"],
+                "easy": ["simple", "straightforward", "effortless"],
+                "hard": ["difficult", "challenging", "tough", "demanding"],
+                "fast": ["quick", "rapid", "swift", "speedy"],
+                "slow": ["gradual", "unhurried", "leisurely"],
+                "high": ["elevated", "tall", "lofty"],
+                "low": ["reduced", "minimal", "diminished"],
+                "long": ["extended", "lengthy", "prolonged"],
+                "short": ["brief", "concise", "compact"],
+                "many": ["numerous", "several", "multiple", "various"],
+                "few": ["limited", "scarce", "sparse"],
+                "great": ["excellent", "outstanding", "remarkable", "superb"],
+                "little": ["small", "minor", "slight", "minimal"],
+                
+                # Common nouns
+                "way": ["method", "approach", "manner", "technique"],
+                "thing": ["item", "object", "element", "aspect"],
+                "place": ["location", "site", "area", "spot"],
+                "problem": ["issue", "challenge", "difficulty", "obstacle"],
+                "part": ["portion", "section", "segment", "component"],
+                "group": ["team", "collection", "set", "assembly"],
+                "fact": ["truth", "reality", "detail", "point"],
+                "idea": ["concept", "notion", "thought", "theory"],
+                "point": ["aspect", "detail", "matter", "issue"],
+                "reason": ["cause", "motive", "basis", "rationale"],
+                "result": ["outcome", "consequence", "effect", "conclusion"],
+                "answer": ["response", "reply", "solution"],
+                "question": ["inquiry", "query", "issue"],
+                
+                # Common adverbs
+                "very": ["extremely", "highly", "remarkably", "exceptionally"],
+                "really": ["truly", "genuinely", "actually", "indeed"],
+                "also": ["additionally", "furthermore", "moreover", "besides"],
+                "just": ["simply", "merely", "only"],
+                "now": ["currently", "presently", "at present"],
+                "always": ["constantly", "continually", "perpetually"],
+                "never": ["not ever", "at no time"],
+                "often": ["frequently", "regularly", "commonly"],
+                "sometimes": ["occasionally", "periodically", "at times"],
+                "usually": ["typically", "generally", "normally", "commonly"],
+                "quickly": ["rapidly", "swiftly", "promptly", "speedily"],
+                "slowly": ["gradually", "steadily", "leisurely"],
             }
             
-            prompt = mode_prompts.get(mode.lower(), "paraphrase: ")
-            input_text = prompt + text
+            # Simple words for "simple" mode
+            simple_words = {
+                "utilize": "use", "employ": "use", "leverage": "use",
+                "obtain": "get", "acquire": "get", "procure": "get",
+                "demonstrate": "show", "illustrate": "show", "exhibit": "show",
+                "facilitate": "help", "assist": "help", "aid": "help",
+                "commence": "start", "initiate": "start", "begin": "start",
+                "terminate": "end", "conclude": "end", "finish": "end",
+                "substantial": "big", "significant": "big", "considerable": "big",
+                "minimal": "small", "minor": "small", "modest": "small",
+                "numerous": "many", "multiple": "many", "various": "many",
+                "extremely": "very", "highly": "very", "remarkably": "very",
+                "approximately": "about", "roughly": "about",
+                "subsequently": "then", "thereafter": "then",
+                "nevertheless": "but", "however": "but", "nonetheless": "but",
+                "therefore": "so", "consequently": "so", "thus": "so",
+                "furthermore": "also", "moreover": "also", "additionally": "also",
+            }
             
-            inputs = self._t5_tokenizer(
-                input_text,
-                return_tensors="pt",
-                truncation=True,
-                max_length=512
-            )
+            # Formal words for "formal" mode
+            formal_words = {
+                "use": "utilize", "get": "obtain", "show": "demonstrate",
+                "help": "facilitate", "start": "commence", "end": "conclude",
+                "big": "substantial", "small": "minimal", "many": "numerous",
+                "very": "extremely", "about": "approximately", "but": "however",
+                "so": "therefore", "also": "furthermore", "think": "consider",
+                "want": "desire", "need": "require", "try": "endeavor",
+            }
             
-            with torch.no_grad():
-                outputs = self._t5_model.generate(
-                    **inputs,
-                    max_length=512,
-                    num_beams=5,
-                    num_return_sequences=1,
-                    early_stopping=True,
-                    no_repeat_ngram_size=2,
-                    temperature=0.8 if mode == "creative" else 1.0
-                )
+            paraphrased = text
+            mode_lower = mode.lower()
             
-            paraphrased = self._t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            if mode_lower == "simple":
+                # Replace complex words with simple ones
+                for complex_word, simple_word in simple_words.items():
+                    paraphrased = re.sub(r'\b' + re.escape(complex_word) + r'\b', simple_word, paraphrased, flags=re.IGNORECASE)
+            
+            elif mode_lower == "formal":
+                # Replace casual words with formal ones
+                for casual_word, formal_word in formal_words.items():
+                    paraphrased = re.sub(r'\b' + re.escape(casual_word) + r'\b', formal_word, paraphrased, flags=re.IGNORECASE)
+            
+            else:
+                # Standard, fluency, or creative mode - use synonym replacement
+                words = paraphrased.split()
+                new_words = []
+                
+                for word in words:
+                    # Clean word for lookup
+                    clean_word = re.sub(r'[^\w]', '', word.lower())
+                    
+                    if clean_word in synonyms and random.random() < (0.5 if mode_lower == "creative" else 0.3):
+                        # Get a random synonym
+                        synonym = random.choice(synonyms[clean_word])
+                        
+                        # Preserve original capitalization
+                        if word[0].isupper():
+                            synonym = synonym.capitalize()
+                        
+                        # Preserve punctuation
+                        if word[-1] in '.,!?;:':
+                            synonym += word[-1]
+                        
+                        new_words.append(synonym)
+                    else:
+                        new_words.append(word)
+                
+                paraphrased = ' '.join(new_words)
+            
+            # For fluency mode, also improve sentence flow
+            if mode_lower == "fluency":
+                # Add transitional phrases between sentences
+                sentences = re.split(r'(?<=[.!?])\s+', paraphrased)
+                if len(sentences) > 1:
+                    transitions = ["Additionally, ", "Furthermore, ", "Moreover, ", "In addition, ", "Also, "]
+                    new_sentences = [sentences[0]]
+                    for i, sent in enumerate(sentences[1:], 1):
+                        if random.random() < 0.3 and not sent.startswith(tuple(transitions)):
+                            sent = random.choice(transitions) + sent[0].lower() + sent[1:]
+                        new_sentences.append(sent)
+                    paraphrased = ' '.join(new_sentences)
             
             return {
                 "success": True,
@@ -911,42 +1168,109 @@ class WritingToolsService:
     
     # ==================== Feature 14: Content Improver ====================
     def improve_content(self, text: str, focus: str = "clarity") -> Dict[str, Any]:
-        """Improve content using T5 model with different focus areas."""
+        """Improve content using rule-based transformations with different focus areas."""
         try:
-            self._load_t5_model()
+            import random
+            improved_text = text
+            suggestions = []
             
-            if self._t5_model is None:
-                return {"success": False, "error": "T5 model not available"}
+            focus_lower = focus.lower()
             
-            # Different improvement prompts
-            focus_prompts = {
-                "clarity": "Rewrite for better clarity and understanding: ",
-                "conciseness": "Make this more concise while keeping the meaning: ",
-                "engagement": "Rewrite to be more engaging and interesting: ",
-                "professionalism": "Rewrite in a more professional manner: ",
-                "seo": "Optimize this content for better readability and SEO: "
-            }
-            
-            prompt = focus_prompts.get(focus.lower(), "Improve this text: ")
-            input_text = prompt + text
-            
-            inputs = self._t5_tokenizer(
-                input_text,
-                return_tensors="pt",
-                truncation=True,
-                max_length=512
-            )
-            
-            with torch.no_grad():
-                outputs = self._t5_model.generate(
-                    **inputs,
-                    max_length=512,
-                    num_beams=4,
-                    early_stopping=True,
-                    no_repeat_ngram_size=2
-                )
-            
-            improved_text = self._t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            if focus_lower == "clarity":
+                # Clarity improvements: simplify complex sentences, remove ambiguity
+                clarity_replacements = {
+                    "utilize": "use", "implement": "use", "leverage": "use",
+                    "facilitate": "help", "endeavor": "try", "commence": "start",
+                    "terminate": "end", "subsequently": "then", "prior to": "before",
+                    "in order to": "to", "due to the fact that": "because",
+                    "at this point in time": "now", "in the event that": "if",
+                    "for the purpose of": "to", "with regard to": "about",
+                    "in spite of the fact that": "although", "on account of": "because",
+                    "in close proximity to": "near", "a large number of": "many",
+                    "the majority of": "most", "at the present time": "now",
+                    "in the near future": "soon", "has the ability to": "can",
+                    "is able to": "can", "in addition to": "besides",
+                }
+                for old, new in clarity_replacements.items():
+                    if old in improved_text.lower():
+                        improved_text = re.sub(re.escape(old), new, improved_text, flags=re.IGNORECASE)
+                        suggestions.append(f"Simplified '{old}' to '{new}' for clarity")
+                
+            elif focus_lower == "conciseness":
+                # Remove filler words and redundant phrases
+                filler_patterns = [
+                    (r'\bvery\s+', ''), (r'\breally\s+', ''), (r'\bjust\s+', ''),
+                    (r'\bbasically\s+', ''), (r'\bactually\s+', ''), (r'\bliterally\s+', ''),
+                    (r'\bsimply\s+', ''), (r'\bdefinitely\s+', ''), (r'\bcertainly\s+', ''),
+                    (r'\bin my opinion,?\s*', ''), (r'\bI think that\s+', ''),
+                    (r'\bIt is important to note that\s+', ''),
+                    (r'\bIt should be noted that\s+', ''),
+                    (r'\bAs a matter of fact,?\s*', ''),
+                    (r'\bAt the end of the day,?\s*', ''),
+                    (r'\bAll things considered,?\s*', ''),
+                ]
+                for pattern, replacement in filler_patterns:
+                    if re.search(pattern, improved_text, re.IGNORECASE):
+                        improved_text = re.sub(pattern, replacement, improved_text, flags=re.IGNORECASE)
+                        suggestions.append(f"Removed filler phrase for conciseness")
+                
+            elif focus_lower == "engagement":
+                # Add engaging elements
+                sentences = re.split(r'(?<=[.!?])\s+', improved_text)
+                if sentences:
+                    # Add a hook at the beginning if not already engaging
+                    hooks = ["Here's the thing: ", "Consider this: ", "What if ", "Imagine "]
+                    if not any(improved_text.startswith(h) for h in hooks):
+                        improved_text = random.choice(hooks) + improved_text[0].lower() + improved_text[1:]
+                        suggestions.append("Added engaging hook at the beginning")
+                    
+                    # Convert some statements to questions for engagement
+                    if len(sentences) > 2 and '?' not in improved_text:
+                        improved_text += " What do you think?"
+                        suggestions.append("Added question to encourage engagement")
+                
+            elif focus_lower == "professionalism":
+                # Professional tone improvements
+                professional_replacements = {
+                    "can't": "cannot", "won't": "will not", "don't": "do not",
+                    "gonna": "going to", "wanna": "want to", "gotta": "have to",
+                    "yeah": "yes", "nope": "no", "ok": "acceptable",
+                    "awesome": "excellent", "cool": "satisfactory", "stuff": "materials",
+                    "things": "items", "guy": "individual", "guys": "individuals",
+                    "kids": "children", "a lot": "significantly", "pretty": "quite",
+                    "super": "extremely", "totally": "completely",
+                }
+                for old, new in professional_replacements.items():
+                    if old in improved_text.lower():
+                        improved_text = re.sub(r'\b' + re.escape(old) + r'\b', new, improved_text, flags=re.IGNORECASE)
+                        suggestions.append(f"Changed '{old}' to '{new}' for professionalism")
+                
+            elif focus_lower == "seo":
+                # SEO improvements: shorter sentences, active voice hints
+                sentences = re.split(r'(?<=[.!?])\s+', improved_text)
+                new_sentences = []
+                for sent in sentences:
+                    words = sent.split()
+                    if len(words) > 25:
+                        # Try to split long sentences
+                        mid = len(words) // 2
+                        # Find a good split point (after a comma or conjunction)
+                        for i in range(mid - 5, mid + 5):
+                            if i < len(words) and words[i].rstrip(',') in ['and', 'but', 'or', 'so', 'yet']:
+                                first_part = ' '.join(words[:i])
+                                second_part = ' '.join(words[i+1:])
+                                if not first_part.endswith('.'):
+                                    first_part += '.'
+                                second_part = second_part[0].upper() + second_part[1:] if second_part else ''
+                                new_sentences.append(first_part)
+                                new_sentences.append(second_part)
+                                suggestions.append("Split long sentence for better readability")
+                                break
+                        else:
+                            new_sentences.append(sent)
+                    else:
+                        new_sentences.append(sent)
+                improved_text = ' '.join(new_sentences)
             
             # Calculate improvement metrics
             original_readability = self.analyze_readability(text)
@@ -957,6 +1281,7 @@ class WritingToolsService:
                 "original_text": text,
                 "improved_text": improved_text,
                 "focus": focus,
+                "suggestions": suggestions[:5] if suggestions else ["Text analyzed - minor improvements applied"],
                 "original_word_count": len(text.split()),
                 "improved_word_count": len(improved_text.split()),
                 "readability_change": {
