@@ -142,7 +142,7 @@ export default function SettingsPage() {
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-white font-semibold">TEXTSHIFT</span>
+            <span className="text-white font-semibold">TextShift</span>
           </Link>
           <span className="text-gray-400 text-sm">{user?.email}</span>
           <Link to="/dashboard">

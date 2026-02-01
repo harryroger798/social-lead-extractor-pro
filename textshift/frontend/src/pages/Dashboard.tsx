@@ -527,7 +527,7 @@ export default function Dashboard() {
           <div className="flex justify-between h-16 items-center">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">

@@ -94,7 +94,7 @@ def get_base_email_template(content: str, preview_text: str = "") -> str:
                                             <div style="width: 12px; height: 12px; background-color: #10b981; border-radius: 50%;"></div>
                                         </td>
                                         <td style="vertical-align: middle;">
-                                            <span style="font-size: 22px; font-weight: 600; color: #ffffff; letter-spacing: 2px;">TEXTSHIFT</span>
+                                            <span style="font-size: 22px; font-weight: 600; color: #ffffff; letter-spacing: 2px;">TextShift</span>
                                         </td>
                                     </tr>
                                 </table>

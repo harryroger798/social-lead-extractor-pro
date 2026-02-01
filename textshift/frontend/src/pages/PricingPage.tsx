@@ -123,7 +123,7 @@ export default function PricingPage() {
           <div className="flex justify-between h-16 items-center">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
             <div className="flex items-center gap-4">
               {isAuthenticated ? (

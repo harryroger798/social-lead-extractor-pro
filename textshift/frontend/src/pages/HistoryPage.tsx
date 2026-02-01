@@ -504,7 +504,7 @@ export default function HistoryPage() {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-            <span className="font-semibold tracking-tight">TEXTSHIFT</span>
+            <span className="font-semibold tracking-tight">TextShift</span>
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-gray-400 text-sm hidden sm:block">{user?.email}</span>

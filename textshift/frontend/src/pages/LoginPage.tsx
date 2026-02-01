@@ -41,7 +41,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+            <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
           <h1 className="text-3xl md:text-4xl font-light text-white mb-2">Welcome back</h1>
           <p className="text-gray-500">Sign in to your account to continue</p>

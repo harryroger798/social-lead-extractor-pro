@@ -86,7 +86,7 @@ export default function VerifyEmailPage() {
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 mb-8">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
           </div>
 
@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 mb-8">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
           </div>
 
@@ -156,7 +156,7 @@ export default function VerifyEmailPage() {
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 mb-8">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
           </div>
 
@@ -192,7 +192,7 @@ export default function VerifyEmailPage() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+            <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
           <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Mail className="w-8 h-8 text-emerald-400" />

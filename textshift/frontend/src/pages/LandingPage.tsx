@@ -128,7 +128,7 @@ export default function LandingPage() {
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
             />
-            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+            <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
           
           <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
@@ -1054,7 +1054,7 @@ export default function LandingPage() {
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.5 }}
               />
-              <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-gray-500 text-sm">
               <a href="mailto:support@textshift.org" className="hover:text-white transition">support@textshift.org</a>

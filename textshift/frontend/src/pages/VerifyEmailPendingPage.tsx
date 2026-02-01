@@ -68,7 +68,7 @@ export default function VerifyEmailPendingPage() {
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-            <span className="text-white font-medium tracking-wide">TEXTSHIFT</span>
+            <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
         </div>
 
