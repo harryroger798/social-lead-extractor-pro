@@ -63,10 +63,22 @@ class ReadabilityResponse(BaseModel):
     success: bool
     flesch_reading_ease: Optional[float] = None
     reading_level: Optional[str] = None
+    recommended_audience: Optional[str] = None
     word_count: Optional[int] = None
     sentence_count: Optional[int] = None
     flesch_kincaid_grade: Optional[float] = None
     gunning_fog_index: Optional[float] = None
+    smog_index: Optional[float] = None
+    coleman_liau_index: Optional[float] = None
+    automated_readability_index: Optional[float] = None
+    avg_sentence_length: Optional[float] = None
+    avg_word_length: Optional[float] = None
+    avg_syllables_per_word: Optional[float] = None
+    complex_word_count: Optional[int] = None
+    complex_word_percentage: Optional[float] = None
+    character_count: Optional[int] = None
+    total_syllables: Optional[int] = None
+    suggestions: Optional[List[str]] = None
     error: Optional[str] = None
 
 class SummarizeRequest(BaseModel):

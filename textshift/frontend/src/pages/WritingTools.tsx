@@ -517,16 +517,67 @@ export default function WritingTools() {
                 <p className="text-lg font-medium text-white mt-1">{result.reading_level}</p>
               </div>
             </div>
-            {result.flesch_kincaid_grade && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-black/20 rounded-lg">
-                  <span className="text-gray-500 text-xs">Grade Level</span>
-                  <p className="text-white">{result.flesch_kincaid_grade}</p>
-                </div>
-                <div className="p-3 bg-black/20 rounded-lg">
-                  <span className="text-gray-500 text-xs">Fog Index</span>
-                  <p className="text-white">{result.gunning_fog_index}</p>
-                </div>
+            {result.recommended_audience && (
+              <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <span className="text-emerald-400 text-sm font-medium">Recommended Audience</span>
+                <p className="text-white text-sm mt-1">{result.recommended_audience}</p>
+              </div>
+            )}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">Grade Level</span>
+                <p className="text-white font-medium">{result.flesch_kincaid_grade}</p>
+              </div>
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">Fog Index</span>
+                <p className="text-white font-medium">{result.gunning_fog_index}</p>
+              </div>
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">SMOG Index</span>
+                <p className="text-white font-medium">{result.smog_index}</p>
+              </div>
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">Coleman-Liau</span>
+                <p className="text-white font-medium">{result.coleman_liau_index}</p>
+              </div>
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">ARI</span>
+                <p className="text-white font-medium">{result.automated_readability_index}</p>
+              </div>
+              <div className="p-3 bg-black/20 rounded-lg text-center">
+                <span className="text-gray-500 text-xs">Avg Syllables/Word</span>
+                <p className="text-white font-medium">{result.avg_syllables_per_word}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Words</span>
+                <p className="text-white text-sm">{result.word_count}</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Sentences</span>
+                <p className="text-white text-sm">{result.sentence_count}</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Avg Sentence Length</span>
+                <p className="text-white text-sm">{result.avg_sentence_length}</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Complex Words</span>
+                <p className="text-white text-sm">{result.complex_word_percentage}%</p>
+              </div>
+            </div>
+            {result.suggestions && result.suggestions.length > 0 && (
+              <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <span className="text-amber-400 text-sm font-medium">Suggestions</span>
+                <ul className="text-white text-sm mt-1 space-y-1">
+                  {result.suggestions.map((suggestion: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-amber-400">•</span>
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

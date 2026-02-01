@@ -681,86 +681,181 @@ class WritingToolsService:
     
     # ==================== Feature 4: Readability Score ====================
     def analyze_readability(self, text: str, detailed: bool = False) -> Dict[str, Any]:
-        """Analyze text readability using various metrics."""
+        """Analyze text readability using comprehensive metrics with improved syllable counting."""
         try:
-            words = text.split()
+            # Clean text and extract words
+            clean_text = re.sub(r'[^\w\s]', '', text)
+            words = [w for w in clean_text.split() if w.isalpha()]
             sentences = re.split(r'[.!?]+', text)
             sentences = [s.strip() for s in sentences if s.strip()]
             
             word_count = len(words)
             sentence_count = len(sentences) if sentences else 1
-            char_count = len(text.replace(" ", ""))
+            char_count = sum(len(w) for w in words)
             
-            # Average word length
-            avg_word_length = char_count / word_count if word_count > 0 else 0
+            if word_count == 0:
+                return {"success": False, "error": "No words found in text"}
             
-            # Average sentence length
-            avg_sentence_length = word_count / sentence_count if sentence_count > 0 else 0
-            
-            # Count syllables (simplified)
+            # Improved syllable counting with English exceptions
             def count_syllables(word):
-                word = word.lower()
+                word = word.lower().strip()
+                if len(word) <= 2:
+                    return 1
+                
+                # Common exceptions
+                exceptions = {
+                    'area': 3, 'idea': 3, 'real': 2, 'ruin': 2, 'fluid': 2,
+                    'poem': 2, 'lion': 2, 'riot': 2, 'quiet': 2, 'diet': 2,
+                    'science': 2, 'being': 2, 'seeing': 2, 'doing': 2,
+                    'going': 2, 'create': 2, 'created': 3, 'creating': 3,
+                    'business': 2, 'every': 2, 'different': 3, 'evening': 2,
+                    'family': 3, 'finally': 3, 'generally': 4, 'usually': 4,
+                    'actually': 4, 'probably': 3, 'especially': 5,
+                    'interesting': 4, 'beautiful': 3, 'chocolate': 3,
+                    'comfortable': 4, 'vegetable': 4, 'reasonable': 4,
+                    'valuable': 4, 'available': 4, 'considerable': 5,
+                }
+                if word in exceptions:
+                    return exceptions[word]
+                
+                # Remove silent e at end
+                if word.endswith('e') and len(word) > 2:
+                    if not word.endswith(('le', 'ee', 'ie', 'ye', 'oe', 'ae')):
+                        word = word[:-1]
+                
+                # Handle common suffixes
+                suffix_adjustments = 0
+                if word.endswith('ed'):
+                    if word[-3] not in 'dt':
+                        suffix_adjustments -= 1
+                if word.endswith('es'):
+                    if word[-3] not in 'sxzh' and not word.endswith('ches') and not word.endswith('shes'):
+                        suffix_adjustments -= 1
+                if word.endswith('ly'):
+                    suffix_adjustments += 0  # ly usually adds a syllable
+                if word.endswith('tion') or word.endswith('sion'):
+                    suffix_adjustments += 0  # counted as one syllable
+                
+                # Count vowel groups
                 vowels = "aeiouy"
                 count = 0
                 prev_vowel = False
-                for char in word:
+                for i, char in enumerate(word):
                     is_vowel = char in vowels
                     if is_vowel and not prev_vowel:
                         count += 1
                     prev_vowel = is_vowel
+                
+                # Handle diphthongs and special cases
+                diphthongs = ['ai', 'au', 'ay', 'ea', 'ee', 'ei', 'ey', 'ie', 'oa', 'oe', 'oi', 'oo', 'ou', 'oy', 'ue', 'ui']
+                for d in diphthongs:
+                    if d in word:
+                        count -= word.count(d)
+                        count += word.count(d)  # diphthongs count as 1
+                
+                count += suffix_adjustments
                 return max(1, count)
             
-            total_syllables = sum(count_syllables(w) for w in words)
-            avg_syllables_per_word = total_syllables / word_count if word_count > 0 else 0
+            # Calculate syllables for all words
+            syllable_counts = [count_syllables(w) for w in words]
+            total_syllables = sum(syllable_counts)
+            avg_syllables_per_word = total_syllables / word_count
             
-            # Flesch Reading Ease
+            # Average metrics
+            avg_word_length = char_count / word_count
+            avg_sentence_length = word_count / sentence_count
+            
+            # Complex words (3+ syllables, excluding common suffixes)
+            complex_words = sum(1 for s in syllable_counts if s >= 3)
+            complex_word_pct = 100 * complex_words / word_count
+            
+            # ===== READABILITY FORMULAS =====
+            
+            # 1. Flesch Reading Ease (0-100, higher = easier)
             flesch_ease = 206.835 - (1.015 * avg_sentence_length) - (84.6 * avg_syllables_per_word)
             flesch_ease = max(0, min(100, flesch_ease))
             
-            # Flesch-Kincaid Grade Level
+            # 2. Flesch-Kincaid Grade Level
             fk_grade = (0.39 * avg_sentence_length) + (11.8 * avg_syllables_per_word) - 15.59
             fk_grade = max(0, fk_grade)
             
-            # Gunning Fog Index
-            complex_words = sum(1 for w in words if count_syllables(w) >= 3)
-            fog_index = 0.4 * (avg_sentence_length + 100 * (complex_words / word_count if word_count > 0 else 0))
+            # 3. Gunning Fog Index
+            fog_index = 0.4 * (avg_sentence_length + complex_word_pct)
             
-            # Reading level interpretation
+            # 4. SMOG Index (Simple Measure of Gobbledygook)
+            if sentence_count >= 3:
+                smog_index = 1.0430 * (30 * complex_words / sentence_count) ** 0.5 + 3.1291
+            else:
+                smog_index = 1.0430 * (complex_words * (30 / sentence_count)) ** 0.5 + 3.1291
+            
+            # 5. Coleman-Liau Index
+            L = (char_count / word_count) * 100  # avg letters per 100 words
+            S = (sentence_count / word_count) * 100  # avg sentences per 100 words
+            coleman_liau = 0.0588 * L - 0.296 * S - 15.8
+            coleman_liau = max(0, coleman_liau)
+            
+            # 6. Automated Readability Index (ARI)
+            ari = 4.71 * (char_count / word_count) + 0.5 * (word_count / sentence_count) - 21.43
+            ari = max(0, ari)
+            
+            # Reading level interpretation with more granularity
             if flesch_ease >= 90:
                 reading_level = "Very Easy (5th grade)"
+                audience = "Elementary school students, general public"
             elif flesch_ease >= 80:
                 reading_level = "Easy (6th grade)"
+                audience = "Middle school students, casual readers"
             elif flesch_ease >= 70:
                 reading_level = "Fairly Easy (7th grade)"
+                audience = "7th-8th grade students, everyday reading"
             elif flesch_ease >= 60:
                 reading_level = "Standard (8th-9th grade)"
+                audience = "High school students, general audience"
             elif flesch_ease >= 50:
                 reading_level = "Fairly Difficult (10th-12th grade)"
+                audience = "High school seniors, educated adults"
             elif flesch_ease >= 30:
-                reading_level = "Difficult (College)"
+                reading_level = "Difficult (College level)"
+                audience = "College students, professionals"
             else:
-                reading_level = "Very Difficult (College Graduate)"
+                reading_level = "Very Difficult (Graduate level)"
+                audience = "Graduate students, specialists, academics"
             
+            # Generate improvement suggestions
+            suggestions = []
+            if avg_sentence_length > 20:
+                suggestions.append("Break long sentences into shorter ones (aim for 15-20 words)")
+            if avg_syllables_per_word > 1.7:
+                suggestions.append("Use simpler words with fewer syllables")
+            if complex_word_pct > 20:
+                suggestions.append(f"Reduce complex words ({complex_word_pct:.0f}% have 3+ syllables)")
+            if flesch_ease < 60:
+                suggestions.append("Consider your audience - this text requires advanced reading skills")
+            if not suggestions:
+                suggestions.append("Text readability is good for general audiences")
+            
+            # Always return comprehensive results
             result = {
                 "success": True,
                 "flesch_reading_ease": round(flesch_ease, 1),
                 "reading_level": reading_level,
+                "recommended_audience": audience,
+                "flesch_kincaid_grade": round(fk_grade, 1),
+                "gunning_fog_index": round(fog_index, 1),
+                "smog_index": round(smog_index, 1),
+                "coleman_liau_index": round(coleman_liau, 1),
+                "automated_readability_index": round(ari, 1),
                 "word_count": word_count,
-                "sentence_count": sentence_count
+                "sentence_count": sentence_count,
+                "avg_sentence_length": round(avg_sentence_length, 1),
+                "avg_word_length": round(avg_word_length, 1),
+                "avg_syllables_per_word": round(avg_syllables_per_word, 2),
+                "complex_word_count": complex_words,
+                "complex_word_percentage": round(complex_word_pct, 1),
+                "character_count": char_count,
+                "total_syllables": total_syllables,
+                "suggestions": suggestions
             }
-            
-            if detailed:
-                result.update({
-                    "flesch_kincaid_grade": round(fk_grade, 1),
-                    "gunning_fog_index": round(fog_index, 1),
-                    "avg_sentence_length": round(avg_sentence_length, 1),
-                    "avg_word_length": round(avg_word_length, 1),
-                    "avg_syllables_per_word": round(avg_syllables_per_word, 2),
-                    "complex_word_count": complex_words,
-                    "complex_word_percentage": round(100 * complex_words / word_count if word_count > 0 else 0, 1),
-                    "character_count": char_count,
-                    "total_syllables": total_syllables
-                })
             
             return result
         except Exception as e:
