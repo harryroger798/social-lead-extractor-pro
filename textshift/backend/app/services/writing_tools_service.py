@@ -70,6 +70,7 @@ class WritingToolsService:
         'fr-en': 'French to English',
         'en-de': 'English to German',
         'de-en': 'German to English',
+        'en-hi': 'English to Hindi',
     }
     
     def __new__(cls):

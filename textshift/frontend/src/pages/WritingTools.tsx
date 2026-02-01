@@ -163,7 +163,8 @@ const tools: ToolConfig[] = [
       { value: 'en-fr', label: 'English to French' },
       { value: 'fr-en', label: 'French to English' },
       { value: 'en-de', label: 'English to German' },
-      { value: 'de-en', label: 'German to English' }
+      { value: 'de-en', label: 'German to English' },
+      { value: 'en-hi', label: 'English to Hindi' }
     ]
   },
   {
@@ -396,25 +397,46 @@ export default function WritingTools() {
                 {result.error_count}
               </span>
             </div>
-            {result.corrected_text && (
-              <div className="p-4 bg-black/30 rounded-xl border border-white/10">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-500 text-sm">Corrected Text</span>
-                  <Button size="sm" variant="ghost" onClick={() => copyToClipboard(result.corrected_text)}>
-                    <Copy className="w-4 h-4" />
-                  </Button>
+            {result.corrected_text && result.error_count > 0 && (
+              <>
+                <Button 
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3"
+                  onClick={() => {
+                    setText(result.corrected_text);
+                    setResult(null);
+                  }}
+                >
+                  <Wand2 className="w-4 h-4 mr-2" />
+                  Apply All Fixes ({result.error_count} corrections)
+                </Button>
+                <div className="p-4 bg-black/30 rounded-xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-500 text-sm">Corrected Text Preview</span>
+                    <Button size="sm" variant="ghost" onClick={() => copyToClipboard(result.corrected_text)}>
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
                 </div>
-                <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+              </>
+            )}
+            {result.error_count === 0 && (
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                <p className="text-emerald-400 font-medium">No errors found! Your text looks great.</p>
               </div>
             )}
             {result.errors && result.errors.length > 0 && (
               <div className="space-y-2">
-                <span className="text-gray-500 text-sm">Issues:</span>
+                <span className="text-gray-500 text-sm">Issues Found:</span>
                 {result.errors.map((err: any, i: number) => (
                   <div key={i} className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-                    <p className="text-rose-400 text-sm">{err.message}</p>
+                    <p className="text-rose-400 text-sm font-medium">{err.message}</p>
                     {err.replacements && err.replacements.length > 0 && (
-                      <p className="text-gray-400 text-xs mt-1">Suggestions: {err.replacements.join(', ')}</p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        <span className="text-emerald-400">Suggestion:</span> {err.replacements[0]}
+                        {err.replacements.length > 1 && ` (or: ${err.replacements.slice(1).join(', ')})`}
+                      </p>
                     )}
                   </div>
                 ))}
