@@ -16,6 +16,8 @@ import {
   CheckCircle,
   AlertCircle,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Mail,
   BarChart3,
   AlertTriangle,
@@ -24,7 +26,19 @@ import {
   ArrowRight,
   Brain,
   Wand2,
-  Globe
+  Globe,
+  Key,
+  Code,
+  FileCheck,
+  Type,
+  BookOpen,
+  Languages,
+  Repeat,
+  Volume2,
+  FileDown,
+  Quote,
+  Layers,
+  PenTool
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { scanApi, creditsApi, authApi, promoApi } from '@/lib/api';
@@ -261,10 +275,29 @@ export default function Dashboard() {
     const [result, setResult] = useState<any>(null);
     const [copied, setCopied] = useState(false);
   
-    // Promo code state
-    const [promoCode, setPromoCode] = useState('');
-    const [promoLoading, setPromoLoading] = useState(false);
-    const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+      // Promo code state
+      const [promoCode, setPromoCode] = useState('');
+      const [promoLoading, setPromoLoading] = useState(false);
+      const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    
+      // Writing tools expanded state
+      const [writingToolsExpanded, setWritingToolsExpanded] = useState(false);
+    
+      // Writing tools configuration
+      const writingTools = [
+        { id: 'grammar', name: 'Grammar Check', icon: FileCheck, color: 'emerald', description: 'Fix grammar errors' },
+        { id: 'readability', name: 'Readability', icon: BookOpen, color: 'blue', description: 'Analyze readability' },
+        { id: 'tone', name: 'Tone Adjust', icon: Volume2, color: 'purple', description: 'Change writing tone' },
+        { id: 'summarize', name: 'Summarize', icon: FileText, color: 'amber', description: 'Summarize content' },
+        { id: 'paraphrase', name: 'Paraphrase', icon: Repeat, color: 'cyan', description: 'Rewrite content' },
+        { id: 'translate', name: 'Translate', icon: Languages, color: 'rose', description: 'Translate text' },
+        { id: 'word_count', name: 'Word Count', icon: Type, color: 'gray', description: 'Count words & chars' },
+        { id: 'style', name: 'Style Analysis', icon: PenTool, color: 'indigo', description: 'Analyze writing style' },
+        { id: 'improve', name: 'Content Improve', icon: Wand2, color: 'pink', description: 'Enhance content' },
+        { id: 'citation', name: 'Citation Gen', icon: Quote, color: 'orange', description: 'Generate citations' },
+        { id: 'export', name: 'Export', icon: FileDown, color: 'teal', description: 'Export to formats' },
+        { id: 'bulk', name: 'Bulk Process', icon: Layers, color: 'violet', description: 'Process multiple files' },
+      ];
     
     // Buy Credits modal state
     const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
@@ -525,10 +558,9 @@ export default function Dashboard() {
       <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TextShift</span>
-            </Link>
+                        <Link to="/" className="flex items-center gap-2">
+                          <img src="/images/logo.png" alt="TextShift" className="h-8 w-auto" />
+                        </Link>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
                 <CreditCard className="w-4 h-4 text-emerald-400" />
@@ -1226,18 +1258,110 @@ export default function Dashboard() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-500" />
                     </Link>
-                    <Link to="/writing-tools" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
-                      <div className="flex items-center gap-3">
-                        <Wand2 className="w-4 h-4 text-purple-400" />
-                        <span>Writing Tools</span>
-                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">14 Tools</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                                <Link to="/writing-tools" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+                                  <div className="flex items-center gap-3">
+                                    <Wand2 className="w-4 h-4 text-purple-400" />
+                                    <span>Writing Tools</span>
+                                    <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">14 Tools</span>
+                                  </div>
+                                  <ChevronRight className="w-4 h-4 text-gray-500" />
+                                </Link>
+                                {/* API Access - Enterprise Only */}
+                                {user?.subscription_tier?.toLowerCase() === 'enterprise' && (
+                                  <Link to="/api-docs" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
+                                    <div className="flex items-center gap-3">
+                                      <Code className="w-4 h-4 text-amber-400" />
+                                      <span>API Access</span>
+                                      <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">Enterprise</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+
+                        {/* Writing Tools Quick Access - Collapsible */}
+                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
+                          <button 
+                            onClick={() => setWritingToolsExpanded(!writingToolsExpanded)}
+                            className="w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Wand2 className="w-5 h-5 text-purple-400" />
+                              <span className="font-medium">Writing Tools</span>
+                              <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">12 Tools</span>
+                            </div>
+                            {writingToolsExpanded ? (
+                              <ChevronUp className="w-4 h-4 text-gray-500" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-gray-500" />
+                            )}
+                          </button>
+              
+                          {writingToolsExpanded && (
+                            <div className="p-4 pt-0 border-t border-white/10">
+                              <div className="grid grid-cols-2 gap-2 mt-4">
+                                {writingTools.map((tool) => (
+                                  <Link
+                                    key={tool.id}
+                                    to={`/writing-tools?tool=${tool.id}`}
+                                    className={`p-3 rounded-xl border border-white/10 hover:border-${tool.color}-500/30 hover:bg-${tool.color}-500/10 transition group`}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <tool.icon className={`w-4 h-4 text-${tool.color}-400`} />
+                                      <span className="text-sm text-gray-300 group-hover:text-white truncate">{tool.name}</span>
+                                    </div>
+                                  </Link>
+                                ))}
+                              </div>
+                              <Link 
+                                to="/writing-tools"
+                                className="mt-3 flex items-center justify-center gap-2 p-2 text-purple-400 hover:text-purple-300 text-sm transition"
+                              >
+                                <span>View All Tools</span>
+                                <ArrowRight className="w-4 h-4" />
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* API Settings - Enterprise Only */}
+                        {user?.subscription_tier?.toLowerCase() === 'enterprise' && (
+                          <div className="bg-gradient-to-b from-amber-500/10 to-transparent border border-amber-500/30 rounded-3xl p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="p-2 bg-amber-500/20 rounded-full">
+                                <Key className="w-5 h-5 text-amber-400" />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-white">API Access</h3>
+                                <p className="text-xs text-amber-400">Enterprise Feature</p>
+                              </div>
+                            </div>
+                            <p className="text-gray-400 text-sm mb-4">
+                              Integrate TextShift into your applications with our REST API.
+                            </p>
+                            <div className="space-y-3">
+                              <Link 
+                                to="/api-docs"
+                                className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/10 hover:border-amber-500/30 transition"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-amber-400" />
+                                  <span className="text-gray-300 text-sm">API Documentation</span>
+                                </div>
+                                <ExternalLink className="w-4 h-4 text-gray-500" />
+                              </Link>
+                              <div className="p-3 bg-black/30 rounded-xl border border-white/10">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-gray-500 text-xs">API Endpoint</span>
+                                </div>
+                                <code className="text-amber-400 text-xs break-all">https://textshift.org/api</code>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                          </div>
+                        </div>
 
       {/* Buy Credits Modal */}
       {showBuyCreditsModal && (
