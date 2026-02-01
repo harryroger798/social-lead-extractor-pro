@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
@@ -24,6 +25,14 @@ import { useAuthStore } from '@/store/authStore';
 
 export default function FeaturesPage() {
   const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    document.title = 'Features - TextShift | AI Detection, Humanizer & 14 Writing Tools';
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Explore TextShift features: AI detection with 99% accuracy, text humanizer, plagiarism checker, grammar checker, tone adjuster, summarizer, paraphraser, and 14 more writing tools.');
+    }
+  }, []);
 
   const coreTools = [
     {

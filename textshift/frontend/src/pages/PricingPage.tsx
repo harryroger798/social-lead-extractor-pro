@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
@@ -163,6 +163,45 @@ export default function PricingPage() {
     { q: 'How accurate is the AI detection?', a: 'Our Advanced Neural Intelligence achieves industry-leading 99% accuracy with zero false positives, tested against all major AI writing tools.' },
     { q: 'Can I cancel anytime?', a: 'Absolutely. Cancel your subscription anytime with no questions asked.' }
   ];
+
+  useEffect(() => {
+    document.title = 'Pricing - TextShift | AI Detection & Humanization Plans';
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Choose the perfect TextShift plan. Free tier with 5,000 words/month. Starter at $9.99, Pro at $24.99, Enterprise at $49.99. AI detection, humanization, plagiarism checking.');
+    }
+    
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.a
+        }
+      }))
+    };
+    
+    const existingScript = document.getElementById('faq-schema');
+    if (existingScript) {
+      existingScript.remove();
+    }
+    
+    const script = document.createElement('script');
+    script.id = 'faq-schema';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(faqSchema);
+    document.head.appendChild(script);
+    
+    return () => {
+      const scriptToRemove = document.getElementById('faq-schema');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
