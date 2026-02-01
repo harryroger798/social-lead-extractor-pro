@@ -43,6 +43,8 @@ import { useAuthStore } from '@/store/authStore';
 import { scanApi, creditsApi, authApi, promoApi } from '@/lib/api';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
+import { detectFormat, FormatDetectionResult } from '@/lib/formatDetector';
+import { FormatBadge } from '@/components/ui/FormatBadge';
 
 // Animated Loading Component for AI Detection
 const AIDetectionLoader = () => {
@@ -270,9 +272,12 @@ export default function Dashboard() {
   // Separate text state for each tool to prevent cross-contamination
   const [detectText, setDetectText] = useState('');
   const [humanizeText, setHumanizeText] = useState('');
-  const [plagiarismText, setPlagiarismText] = useState('');
-    const [result, setResult] = useState<any>(null);
-    const [copied, setCopied] = useState(false);
+    const [plagiarismText, setPlagiarismText] = useState('');
+      const [result, setResult] = useState<any>(null);
+      const [copied, setCopied] = useState(false);
+    
+      // Format detection state
+      const [formatDetection, setFormatDetection] = useState<FormatDetectionResult | null>(null);
   
       // Promo code state
       const [promoCode, setPromoCode] = useState('');
@@ -320,14 +325,26 @@ export default function Dashboard() {
     }
   };
 
-  // Set current text based on active tab
-  const setCurrentText = (text: string) => {
-    switch (activeTab) {
-      case 'detect': setDetectText(text); break;
-      case 'humanize': setHumanizeText(text); break;
-      case 'plagiarism': setPlagiarismText(text); break;
-    }
-  };
+    // Set current text based on active tab
+    const setCurrentText = (text: string) => {
+      switch (activeTab) {
+        case 'detect': setDetectText(text); break;
+        case 'humanize': setHumanizeText(text); break;
+        case 'plagiarism': setPlagiarismText(text); break;
+      }
+      // Detect format when text changes
+      if (text.trim().length > 20) {
+        const detection = detectFormat(text);
+        setFormatDetection(detection);
+      } else {
+        setFormatDetection(null);
+      }
+    };
+  
+    // Handle stripping formatting
+    const handleStripFormatting = (strippedText: string) => {
+      setCurrentText(strippedText);
+    };
 
   // Handle pre-filled text from navigation state (e.g., from History page re-analyze)
   useEffect(() => {
@@ -653,20 +670,29 @@ export default function Dashboard() {
               ))}
             </div>
 
-            <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
-              <p className="text-gray-400 text-sm mb-4">{activeTabData?.description}</p>
+                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <p className="text-gray-400 text-sm">{activeTabData?.description}</p>
+                            {formatDetection && formatDetection.hasFormatting && (
+                              <FormatBadge 
+                                detection={formatDetection} 
+                                onStripFormatting={handleStripFormatting}
+                                originalText={getCurrentText()}
+                              />
+                            )}
+                          </div>
               
-              <Textarea
-                placeholder="Paste your text here..."
-                className="min-h-[250px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-4"
-                value={getCurrentText()}
-                onChange={(e) => setCurrentText(e.target.value)}
-              />
+                          <Textarea
+                            placeholder="Paste your text here..."
+                            className="min-h-[250px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-4"
+                            value={getCurrentText()}
+                            onChange={(e) => setCurrentText(e.target.value)}
+                          />
 
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="text-gray-500 text-sm">
-                  {getWordCount()} words | Cost: <span className="text-white">{getCreditCost()}</span> words
-                </div>
+                          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="text-gray-500 text-sm">
+                              {getWordCount()} words | Cost: <span className="text-white">{getCreditCost()}</span> words
+                            </div>
                 <Button
                   onClick={handleAnalyze}
                   disabled={getCurrentText().length < 50 || isLoading}

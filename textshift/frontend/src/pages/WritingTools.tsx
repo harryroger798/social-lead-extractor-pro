@@ -32,6 +32,8 @@ import {
 import { useAuthStore } from '@/store/authStore';
 import { creditsApi, authApi } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { detectFormat, FormatDetectionResult } from '@/lib/formatDetector';
+import { FormatBadge } from '@/components/ui/FormatBadge';
 
 const API_BASE = '/api/tools';
 
@@ -269,9 +271,26 @@ export default function WritingTools() {
   const [text, setText] = useState('');
   const [option, setOption] = useState('');
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+    const [formatDetection, setFormatDetection] = useState<FormatDetectionResult | null>(null);
+  
+    // Handle text change with format detection
+    const handleTextChange = (newText: string) => {
+      setText(newText);
+      if (newText.trim().length > 20) {
+        const detection = detectFormat(newText);
+        setFormatDetection(detection);
+      } else {
+        setFormatDetection(null);
+      }
+    };
+  
+    // Handle stripping formatting
+    const handleStripFormatting = (strippedText: string) => {
+      handleTextChange(strippedText);
+    };
 
   const { data: credits, refetch: refetchCredits } = useQuery({
     queryKey: ['credits'],
@@ -927,25 +946,36 @@ export default function WritingTools() {
                   </div>
                 </div>
 
-                {/* Input Area */}
-                <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-6">
-                  {currentTool.id === 'citation' ? (
-                    <div className="space-y-4">
-                      <Input
-                        placeholder="Enter search query, DOI, or title..."
-                        className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                      />
-                    </div>
-                  ) : (
-                    <Textarea
-                      placeholder="Paste your text here..."
-                      className="min-h-[200px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl resize-none focus:border-purple-500/50"
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                    />
-                  )}
+                                {/* Input Area */}
+                                <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-6">
+                                  {/* Format Detection Badge */}
+                                  {formatDetection && formatDetection.hasFormatting && (
+                                    <div className="mb-4 flex justify-end">
+                                      <FormatBadge 
+                                        detection={formatDetection} 
+                                        onStripFormatting={handleStripFormatting}
+                                        originalText={text}
+                                      />
+                                    </div>
+                                  )}
+                  
+                                  {currentTool.id === 'citation' ? (
+                                    <div className="space-y-4">
+                                      <Input
+                                        placeholder="Enter search query, DOI, or title..."
+                                        className="bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl"
+                                        value={text}
+                                        onChange={(e) => handleTextChange(e.target.value)}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <Textarea
+                                      placeholder="Paste your text here..."
+                                      className="min-h-[200px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-xl resize-none focus:border-purple-500/50"
+                                      value={text}
+                                      onChange={(e) => handleTextChange(e.target.value)}
+                                    />
+                                  )}
 
                   {currentTool.hasOptions && currentTool.options && (
                     <div className="mt-4">
