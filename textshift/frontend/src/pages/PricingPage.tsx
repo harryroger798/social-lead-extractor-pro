@@ -35,12 +35,12 @@ export default function PricingPage() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
 
-  const monthlyPlans = [
-    { id: 'free', name: 'Free', price: 0, credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Credits refresh monthly'], cta: 'Get Started', popular: false },
-    { id: 'starter', name: 'Starter', price: 9.99, credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode', 'Email support'], cta: 'Subscribe', popular: false },
-    { id: 'pro', name: 'Pro', price: 24.99, credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Batch processing', 'Priority support'], cta: 'Subscribe', popular: true },
-    { id: 'enterprise', name: 'Enterprise', price: 49.99, credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
-  ];
+    const monthlyPlans = [
+      { id: 'free', name: 'Free', price: 0, credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Grammar Checker (500 words/day)', 'Tone Detector (500 words/day)', 'Readability Score (basic)', 'Summarizer (500 words)', 'Paraphraser (standard mode)', 'Word Counter', 'Translator (500 words/day)', 'Export to TXT'], cta: 'Get Started', popular: false },
+      { id: 'starter', name: 'Starter', price: 9.99, credits: '25,000 words/mo', features: ['All 3 core tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Grammar Checker (5,000 words/day)', 'Tone Detector (unlimited)', 'Tone Adjuster', 'Readability Score (detailed)', 'Summarizer (5,000 words)', 'All Paraphraser modes', 'Citation Generator', 'Style Analysis', 'Content Improver', 'Translator (5,000 words/day)', 'Export to HTML/Markdown'], cta: 'Subscribe', popular: false },
+      { id: 'pro', name: 'Pro', price: 24.99, credits: 'Unlimited', features: ['All 3 core tools', '500 scans/day', 'All Starter features', 'Unlimited Grammar Checker', 'Unlimited Summarizer', 'Unlimited Translator', 'Bulk Processing (10 files)', 'API access', 'Shareable reports', 'Priority support'], cta: 'Subscribe', popular: true },
+      { id: 'enterprise', name: 'Enterprise', price: 49.99, credits: 'True Unlimited', features: ['All 3 core tools', 'Unlimited scans', 'All Pro features', 'Bulk Processing (50 files)', 'Full API Access', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
+    ];
 
   const getYearlyPrice = (monthlyPrice: number) => {
     if (monthlyPrice === 0) return 0;

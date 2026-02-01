@@ -14,6 +14,7 @@ import HistoryPage from '@/pages/HistoryPage';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminPanel from '@/pages/AdminPanel';
 import SettingsPage from '@/pages/SettingsPage';
+import WritingTools from '@/pages/WritingTools';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,8 +65,9 @@ function App() {
           <Route path="/verify-email-pending" element={<VerifyEmailPendingPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-          <Route path="/admin/ml-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                    <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                    <Route path="/writing-tools" element={<ProtectedRoute><WritingTools /></ProtectedRoute>} />
+                    <Route path="/admin/ml-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

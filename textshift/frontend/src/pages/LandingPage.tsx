@@ -23,7 +23,15 @@ import {
   Target,
   Cpu,
   Gift,
-  Clock
+  Clock,
+  Languages,
+  FileText,
+  PenTool,
+  BookOpen,
+  Quote,
+  Wand2,
+  Palette,
+  Lightbulb
 } from 'lucide-react';
 import {
   ParticlesBackground,
@@ -681,15 +689,101 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 px-6 border-y border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                        {[
-                          { value: 99, suffix: '%', label: 'Detection Accuracy' },
-                          { value: 0, suffix: '%', label: 'False Positives' },
-                          { value: 50, suffix: 'K+', label: 'Users Trust Us' },
-                          { value: 10, suffix: 'M+', label: 'Texts Analyzed' },
-                        ].map((stat, i) => (
+            {/* Writing Tools Section - 14 New Features */}
+            <section className="py-20 md:py-32 px-6 bg-gradient-to-b from-cyan-900/10 to-transparent">
+              <div className="max-w-7xl mx-auto">
+                <ScrollReveal>
+                  <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-6">
+                      <Wand2 className="w-4 h-4 text-cyan-400" />
+                      <span className="text-cyan-400 text-sm font-medium">14 Powerful Writing Tools</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">
+                      Complete <span className="text-cyan-400">Writing Suite</span>
+                    </h2>
+                    <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+                      Beyond detection and humanization - TextShift offers a complete suite of writing tools to enhance your content. Grammar checking, translation, summarization, and more.
+                    </p>
+                  </div>
+                </ScrollReveal>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                  {[
+                    { icon: CheckCircle, name: 'Grammar Checker', desc: 'Fix grammar, spelling & punctuation', color: 'emerald', tier: 'Free' },
+                    { icon: Palette, name: 'Tone Detector', desc: 'Analyze emotional tone of text', color: 'blue', tier: 'Free' },
+                    { icon: Sparkles, name: 'Tone Adjuster', desc: 'Adjust text to different tones', color: 'purple', tier: 'Starter' },
+                    { icon: BookOpen, name: 'Readability Score', desc: 'Flesch scores & reading level', color: 'amber', tier: 'Free' },
+                    { icon: FileText, name: 'Summarizer', desc: 'Create concise summaries', color: 'cyan', tier: 'Free' },
+                    { icon: PenTool, name: 'Paraphraser', desc: 'Rewrite in different styles', color: 'pink', tier: 'Free' },
+                    { icon: Quote, name: 'Citation Generator', desc: 'APA, MLA, Chicago citations', color: 'indigo', tier: 'Starter' },
+                    { icon: Languages, name: 'Translator', desc: '6 language pairs supported', color: 'teal', tier: 'Free' },
+                    { icon: Lightbulb, name: 'Content Improver', desc: 'Enhance clarity & engagement', color: 'yellow', tier: 'Starter' },
+                    { icon: Target, name: 'Style Analysis', desc: 'Vocabulary & structure insights', color: 'violet', tier: 'Starter' },
+                    { icon: FileText, name: 'Word Counter', desc: 'Detailed text statistics', color: 'gray', tier: 'Free' },
+                    { icon: Zap, name: 'Export Options', desc: 'TXT, HTML, Markdown export', color: 'orange', tier: 'Free' },
+                  ].map((tool, i) => (
+                    <ScrollReveal key={i} delay={i * 0.05}>
+                      <motion.div 
+                        className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all duration-300"
+                        whileHover={{ y: -5 }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`p-2 rounded-lg bg-${tool.color}-500/10`}>
+                            <tool.icon className={`w-5 h-5 text-${tool.color}-400`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-white font-medium text-sm">{tool.name}</h4>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                tool.tier === 'Free' 
+                                  ? 'bg-emerald-500/20 text-emerald-400' 
+                                  : 'bg-purple-500/20 text-purple-400'
+                              }`}>
+                                {tool.tier}
+                              </span>
+                            </div>
+                            <p className="text-gray-500 text-xs mt-1">{tool.desc}</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </ScrollReveal>
+                  ))}
+                </div>
+
+                <ScrollReveal delay={0.3}>
+                  <div className="bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 border border-cyan-500/20 rounded-3xl p-8 md:p-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="text-center md:text-left">
+                        <h3 className="text-2xl md:text-3xl font-light text-white mb-2">
+                          All-in-One Writing Platform
+                        </h3>
+                        <p className="text-gray-400 max-w-xl">
+                          No need for multiple subscriptions. TextShift combines AI detection, humanization, plagiarism checking, and 14 writing tools in one affordable platform.
+                        </p>
+                      </div>
+                      <MagneticButton>
+                        <Link to={isAuthenticated ? "/writing-tools" : "/register"}>
+                          <Button className="bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-full px-8 py-6 text-lg shadow-lg shadow-cyan-500/25 whitespace-nowrap">
+                            {isAuthenticated ? "Try Writing Tools" : "Get Started Free"}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                          </Button>
+                        </Link>
+                      </MagneticButton>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              </div>
+            </section>
+
+            <section className="py-16 md:py-20 px-6 border-y border-white/10">
+              <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                              {[
+                                { value: 99, suffix: '%', label: 'Detection Accuracy' },
+                                { value: 0, suffix: '%', label: 'False Positives' },
+                                { value: 50, suffix: 'K+', label: 'Users Trust Us' },
+                                { value: 10, suffix: 'M+', label: 'Texts Analyzed' },
+                              ].map((stat, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <div className="text-center">
                   <div className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-2">

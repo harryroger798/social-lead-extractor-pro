@@ -27,13 +27,14 @@ import {
   Gift,
   Mail,
   Send,
-  Eye
+  Eye,
+  Wand2
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
-type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'promos' | 'emails' | 'settings';
+type TabType = 'overview' | 'users' | 'scans' | 'feedback' | 'ml' | 'promos' | 'emails' | 'writing-tools' | 'settings';
 
 interface DashboardSummary {
   users: { total: number; today: number; this_week: number; this_month: number };
@@ -632,16 +633,17 @@ export default function AdminPanel() {
     );
   }
 
-    const tabs = [
-      { id: 'overview' as TabType, label: 'Overview', icon: BarChart3 },
-      { id: 'users' as TabType, label: 'Users', icon: Users },
-      { id: 'scans' as TabType, label: 'Scans', icon: FileText },
-      { id: 'feedback' as TabType, label: 'Feedback', icon: MessageSquare },
-      { id: 'ml' as TabType, label: 'ML System', icon: Brain },
-      { id: 'promos' as TabType, label: 'Promos', icon: Gift },
-      { id: 'emails' as TabType, label: 'Emails', icon: Mail },
-      { id: 'settings' as TabType, label: 'Settings', icon: Settings },
-    ];
+        const tabs = [
+          { id: 'overview' as TabType, label: 'Overview', icon: BarChart3 },
+          { id: 'users' as TabType, label: 'Users', icon: Users },
+          { id: 'scans' as TabType, label: 'Scans', icon: FileText },
+          { id: 'feedback' as TabType, label: 'Feedback', icon: MessageSquare },
+          { id: 'ml' as TabType, label: 'ML System', icon: Brain },
+          { id: 'promos' as TabType, label: 'Promos', icon: Gift },
+          { id: 'emails' as TabType, label: 'Emails', icon: Mail },
+          { id: 'writing-tools' as TabType, label: 'Writing Tools', icon: Wand2 },
+          { id: 'settings' as TabType, label: 'Settings', icon: Settings },
+        ];
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -1545,6 +1547,115 @@ export default function AdminPanel() {
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Writing Tools Tab */}
+        {activeTab === 'writing-tools' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Wand2 className="w-5 h-5 text-cyan-500" />
+                Writing Tools Overview
+              </h3>
+              <p className="text-gray-400 mb-6">
+                14 writing tools are available across different subscription tiers. Monitor usage and performance here.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                {[
+                  { name: 'Grammar Checker', tier: 'Free', icon: '✓', color: 'emerald' },
+                  { name: 'Tone Detector', tier: 'Free', icon: '🎭', color: 'blue' },
+                  { name: 'Tone Adjuster', tier: 'Starter', icon: '🎨', color: 'purple' },
+                  { name: 'Readability Score', tier: 'Free', icon: '📖', color: 'amber' },
+                  { name: 'Summarizer', tier: 'Free', icon: '📝', color: 'cyan' },
+                  { name: 'Paraphraser', tier: 'Free', icon: '✏️', color: 'pink' },
+                  { name: 'Citation Generator', tier: 'Starter', icon: '📚', color: 'indigo' },
+                  { name: 'Word Counter', tier: 'Free', icon: '🔢', color: 'gray' },
+                  { name: 'Translator', tier: 'Free', icon: '🌐', color: 'teal' },
+                  { name: 'Export Options', tier: 'Free', icon: '📤', color: 'orange' },
+                  { name: 'Bulk Processing', tier: 'Pro', icon: '📦', color: 'red' },
+                  { name: 'API Access', tier: 'Pro', icon: '🔌', color: 'violet' },
+                  { name: 'Style Analysis', tier: 'Starter', icon: '🎯', color: 'lime' },
+                  { name: 'Content Improver', tier: 'Starter', icon: '💡', color: 'yellow' },
+                ].map((tool, i) => (
+                  <div key={i} className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-2xl">{tool.icon}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        tool.tier === 'Free' ? 'bg-emerald-500/20 text-emerald-400' :
+                        tool.tier === 'Starter' ? 'bg-purple-500/20 text-purple-400' :
+                        'bg-orange-500/20 text-orange-400'
+                      }`}>
+                        {tool.tier}
+                      </span>
+                    </div>
+                    <h4 className="text-white font-medium text-sm">{tool.name}</h4>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
+                <h4 className="text-white font-medium mb-3">Tier Feature Limits</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-gray-400 border-b border-gray-600">
+                        <th className="text-left py-2">Feature</th>
+                        <th className="text-center py-2">Free</th>
+                        <th className="text-center py-2">Starter</th>
+                        <th className="text-center py-2">Pro</th>
+                        <th className="text-center py-2">Enterprise</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-300">
+                      <tr className="border-b border-gray-700">
+                        <td className="py-2">Grammar Checker</td>
+                        <td className="text-center">500/day</td>
+                        <td className="text-center">5,000/day</td>
+                        <td className="text-center">Unlimited</td>
+                        <td className="text-center">Unlimited</td>
+                      </tr>
+                      <tr className="border-b border-gray-700">
+                        <td className="py-2">Tone Detector</td>
+                        <td className="text-center">500/day</td>
+                        <td className="text-center">Unlimited</td>
+                        <td className="text-center">Unlimited</td>
+                        <td className="text-center">Unlimited</td>
+                      </tr>
+                      <tr className="border-b border-gray-700">
+                        <td className="py-2">Summarizer</td>
+                        <td className="text-center">500 words</td>
+                        <td className="text-center">5,000 words</td>
+                        <td className="text-center">Unlimited</td>
+                        <td className="text-center">Unlimited</td>
+                      </tr>
+                      <tr className="border-b border-gray-700">
+                        <td className="py-2">Translator</td>
+                        <td className="text-center">500/day</td>
+                        <td className="text-center">5,000/day</td>
+                        <td className="text-center">Unlimited</td>
+                        <td className="text-center">Unlimited</td>
+                      </tr>
+                      <tr className="border-b border-gray-700">
+                        <td className="py-2">Bulk Processing</td>
+                        <td className="text-center text-red-400">-</td>
+                        <td className="text-center text-red-400">-</td>
+                        <td className="text-center">10 files</td>
+                        <td className="text-center">50 files</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2">API Access</td>
+                        <td className="text-center text-red-400">-</td>
+                        <td className="text-center text-red-400">-</td>
+                        <td className="text-center text-emerald-400">Yes</td>
+                        <td className="text-center text-emerald-400">Full</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         )}

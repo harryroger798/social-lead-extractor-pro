@@ -1219,17 +1219,25 @@ export default function Dashboard() {
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-500" />
               </button>
-              <Link to="/settings" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
-                <div className="flex items-center gap-3">
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
+                    <Link to="/settings" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+                      <div className="flex items-center gap-3">
+                        <Settings className="w-4 h-4" />
+                        <span>Settings</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-500" />
+                    </Link>
+                    <Link to="/writing-tools" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
+                      <div className="flex items-center gap-3">
+                        <Wand2 className="w-4 h-4 text-purple-400" />
+                        <span>Writing Tools</span>
+                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">14 Tools</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-500" />
+                    </Link>
+                  </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </Link>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
       {/* Buy Credits Modal */}
       {showBuyCreditsModal && (

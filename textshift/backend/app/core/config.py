@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     DETECTOR_MODEL_PATH: str = "/opt/textshift/models/detector"
     HUMANIZER_MODEL_PATH: str = "/opt/textshift/models/humanizer"
     PLAGIARISM_MODEL_PATH: str = "/opt/textshift/models/plagiarism"
+    TONE_DETECTOR_MODEL_PATH: str = "/opt/textshift/models/tone-detector"
+    TRANSLATOR_MODELS_DIR: str = "/opt/textshift/models/translators"
     
     # External APIs (fallback)
     SERPER_API_KEY: str = "14e76cf7d90184e9053825ba67d99621705dc122"
