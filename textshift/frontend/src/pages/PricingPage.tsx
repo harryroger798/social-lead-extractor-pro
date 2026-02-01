@@ -35,12 +35,88 @@ export default function PricingPage() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
 
-    const monthlyPlans = [
-      { id: 'free', name: 'Free', price: 0, credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Basic reports', 'Heat map visualization', 'Grammar Checker (500 words/day)', 'Tone Detector (500 words/day)', 'Readability Score (basic)', 'Summarizer (500 words)', 'Paraphraser (standard mode)', 'Word Counter', 'Translator (500 words/day)', 'Export to TXT'], cta: 'Get Started', popular: false },
-      { id: 'starter', name: 'Starter', price: 9.99, credits: '25,000 words/mo', features: ['All 3 core tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Grammar Checker (5,000 words/day)', 'Tone Detector (unlimited)', 'Tone Adjuster', 'Readability Score (detailed)', 'Summarizer (5,000 words)', 'All Paraphraser modes', 'Citation Generator', 'Style Analysis', 'Content Improver', 'Translator (5,000 words/day)', 'Export to HTML/Markdown'], cta: 'Subscribe', popular: false },
-      { id: 'pro', name: 'Pro', price: 24.99, credits: 'Unlimited', features: ['All 3 core tools', '500 scans/day', 'All Starter features', 'Unlimited Grammar Checker', 'Unlimited Summarizer', 'Unlimited Translator', 'Bulk Processing (10 files)', 'API access', 'Shareable reports', 'Priority support'], cta: 'Subscribe', popular: true },
-      { id: 'enterprise', name: 'Enterprise', price: 49.99, credits: 'True Unlimited', features: ['All 3 core tools', 'Unlimited scans', 'All Pro features', 'Bulk Processing (50 files)', 'Full API Access', 'White-label API', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', popular: false }
-    ];
+        const monthlyPlans = [
+          { 
+            id: 'free', 
+            name: 'Free', 
+            price: 0, 
+            credits: '5,000 words/mo', 
+            features: [
+              'AI Detection (10 scans/day)',
+              'Basic heat map reports',
+              '6 Writing Tools:',
+              '• Grammar Checker (500 words/day)',
+              '• Readability Score',
+              '• Summarizer (500 words)',
+              '• Paraphraser (standard)',
+              '• Word Counter',
+              '• Translator (500 words/day)',
+              'Export to TXT'
+            ], 
+            cta: 'Get Started', 
+            popular: false 
+          },
+          { 
+            id: 'starter', 
+            name: 'Starter', 
+            price: 9.99, 
+            credits: '25,000 words/mo', 
+            features: [
+              'AI Detection + Humanizer + Plagiarism',
+              '100 scans/day',
+              'PDF export & Word-level diff',
+              '12 Writing Tools:',
+              '• Grammar Checker (5,000/day)',
+              '• Tone Detector & Adjuster',
+              '• Readability (detailed)',
+              '• Summarizer (5,000 words)',
+              '• All Paraphraser modes',
+              '• Citation Generator',
+              '• Style Analysis',
+              '• Content Improver',
+              '• Translator (5,000/day)',
+              'Export to HTML/Markdown'
+            ], 
+            cta: 'Subscribe', 
+            popular: false 
+          },
+          { 
+            id: 'pro', 
+            name: 'Pro', 
+            price: 24.99, 
+            credits: 'Unlimited', 
+            features: [
+              'All 3 core tools (500 scans/day)',
+              'All 14 Writing Tools - Unlimited',
+              'Bulk Processing (10 files)',
+              'API Access',
+              'Shareable reports',
+              'Priority support',
+              'All Starter features included'
+            ], 
+            cta: 'Subscribe', 
+            popular: true 
+          },
+          { 
+            id: 'enterprise', 
+            name: 'Enterprise', 
+            price: 49.99, 
+            credits: 'True Unlimited', 
+            features: [
+              'Unlimited scans (no daily limit)',
+              'All 14 Writing Tools - Unlimited',
+              'Bulk Processing (50 files)',
+              'Full API Access',
+              'White-label API',
+              'Custom integrations',
+              'Dedicated support',
+              'SLA guarantee',
+              'All Pro features included'
+            ], 
+            cta: 'Contact Sales', 
+            popular: false 
+          }
+        ];
 
   const getYearlyPrice = (monthlyPrice: number) => {
     if (monthlyPrice === 0) return 0;
@@ -121,10 +197,10 @@ export default function PricingPage() {
       <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-white font-medium tracking-wide">TextShift</span>
-            </Link>
+                        <Link to="/" className="flex items-center gap-2">
+                          <img src="/images/logo.png" alt="TextShift" className="h-8 w-auto" />
+                          <span className="text-white font-medium tracking-wide">TextShift</span>
+                        </Link>
             <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">

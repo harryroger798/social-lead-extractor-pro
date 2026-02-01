@@ -28,7 +28,6 @@ import {
   Wand2,
   Globe,
   Key,
-  Code,
   FileCheck,
   Type,
   BookOpen,
@@ -280,8 +279,8 @@ export default function Dashboard() {
       const [promoLoading, setPromoLoading] = useState(false);
       const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     
-      // Writing tools expanded state
-      const [writingToolsExpanded, setWritingToolsExpanded] = useState(false);
+            // Writing tools expanded state - default to open
+            const [writingToolsExpanded, setWritingToolsExpanded] = useState(true);
     
       // Writing tools configuration
       const writingTools = [
@@ -558,9 +557,10 @@ export default function Dashboard() {
       <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-                        <Link to="/" className="flex items-center gap-2">
-                          <img src="/images/logo.png" alt="TextShift" className="h-8 w-auto" />
-                        </Link>
+                                                <Link to="/" className="flex items-center gap-2">
+                                                  <img src="/images/logo.png" alt="TextShift" className="h-8 w-auto" />
+                                                  <span className="text-white font-medium tracking-wide">TextShift</span>
+                                                </Link>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
                 <CreditCard className="w-4 h-4 text-emerald-400" />
@@ -1196,172 +1196,153 @@ export default function Dashboard() {
                     <Search className="w-4 h-4 text-blue-400" />
                     <span className="text-gray-300">Plagiarism</span>
                   </div>
-                  <span className="text-white text-sm">1 word = 1.5 credits</span>
-                </div>
-              </div>
-                          <p className="text-gray-500 text-xs mt-4">Pro and Enterprise plans have unlimited words!</p>
+                          <span className="text-white text-sm">1 word = 1.5 credits</span>
                         </div>
-
-                        {/* Promo Code Redemption */}
-                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
-                          <h3 className="text-lg font-medium text-white mb-4">Have a Promo Code?</h3>
-                          <div className="space-y-3">
-                            <input
-                              type="text"
-                              value={promoCode}
-                              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                              placeholder="Enter promo code"
-                              className="w-full px-4 py-2 bg-black/30 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-emerald-500/50 focus:outline-none"
-                            />
-                            <Button
-                              onClick={handleRedeemPromo}
-                              disabled={!promoCode.trim() || promoLoading}
-                              className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-xl"
-                            >
-                              {promoLoading ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Redeeming...</>
-                              ) : (
-                                'Redeem Code'
-                              )}
-                            </Button>
-                            {promoMessage && (
-                              <div className={`p-3 rounded-xl text-sm ${
-                                promoMessage.type === 'success' 
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
-                                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                              }`}>
-                                {promoMessage.text}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
-                          <Link to="/history"className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <History className="w-4 h-4" />
-                  <span>Scan History</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </Link>
-              <button onClick={handleOpenBuyCredits} className="w-full flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <CreditCard className="w-4 h-4" />
-                  <span>Buy Credits</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </button>
-                    <Link to="/settings" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
-                      <div className="flex items-center gap-3">
-                        <Settings className="w-4 h-4" />
-                        <span>Settings</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
-                    </Link>
-                                <Link to="/writing-tools" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
-                                  <div className="flex items-center gap-3">
-                                    <Wand2 className="w-4 h-4 text-purple-400" />
-                                    <span>Writing Tools</span>
-                                    <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">14 Tools</span>
-                                  </div>
-                                  <ChevronRight className="w-4 h-4 text-gray-500" />
-                                </Link>
-                                {/* API Access - Enterprise Only */}
-                                {user?.subscription_tier?.toLowerCase() === 'enterprise' && (
-                                  <Link to="/api-docs" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
-                                    <div className="flex items-center gap-3">
-                                      <Code className="w-4 h-4 text-amber-400" />
-                                      <span>API Access</span>
-                                      <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">Enterprise</span>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-gray-500" />
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
+                      <p className="text-gray-500 text-xs mt-4">Pro and Enterprise plans have unlimited words!</p>
+                    </div>
 
-                        {/* Writing Tools Quick Access - Collapsible */}
-                        <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
-                          <button 
-                            onClick={() => setWritingToolsExpanded(!writingToolsExpanded)}
-                            className="w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition"
-                          >
-                            <div className="flex items-center gap-3">
-                              <Wand2 className="w-5 h-5 text-purple-400" />
-                              <span className="font-medium">Writing Tools</span>
-                              <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">12 Tools</span>
-                            </div>
-                            {writingToolsExpanded ? (
-                              <ChevronUp className="w-4 h-4 text-gray-500" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-gray-500" />
-                            )}
-                          </button>
-              
-                          {writingToolsExpanded && (
-                            <div className="p-4 pt-0 border-t border-white/10">
-                              <div className="grid grid-cols-2 gap-2 mt-4">
-                                {writingTools.map((tool) => (
-                                  <Link
-                                    key={tool.id}
-                                    to={`/writing-tools?tool=${tool.id}`}
-                                    className={`p-3 rounded-xl border border-white/10 hover:border-${tool.color}-500/30 hover:bg-${tool.color}-500/10 transition group`}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <tool.icon className={`w-4 h-4 text-${tool.color}-400`} />
-                                      <span className="text-sm text-gray-300 group-hover:text-white truncate">{tool.name}</span>
-                                    </div>
-                                  </Link>
-                                ))}
-                              </div>
-                              <Link 
-                                to="/writing-tools"
-                                className="mt-3 flex items-center justify-center gap-2 p-2 text-purple-400 hover:text-purple-300 text-sm transition"
-                              >
-                                <span>View All Tools</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </Link>
-                            </div>
-                          )}
+                    {/* Writing Tools Quick Access - Collapsible (default open) */}
+                    <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
+                      <button 
+                        onClick={() => setWritingToolsExpanded(!writingToolsExpanded)}
+                        className="w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Wand2 className="w-5 h-5 text-purple-400" />
+                          <span className="font-medium">Writing Tools</span>
+                          <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">14 Tools</span>
                         </div>
-
-                        {/* API Settings - Enterprise Only */}
-                        {user?.subscription_tier?.toLowerCase() === 'enterprise' && (
-                          <div className="bg-gradient-to-b from-amber-500/10 to-transparent border border-amber-500/30 rounded-3xl p-6">
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="p-2 bg-amber-500/20 rounded-full">
-                                <Key className="w-5 h-5 text-amber-400" />
-                              </div>
-                              <div>
-                                <h3 className="text-lg font-medium text-white">API Access</h3>
-                                <p className="text-xs text-amber-400">Enterprise Feature</p>
-                              </div>
-                            </div>
-                            <p className="text-gray-400 text-sm mb-4">
-                              Integrate TextShift into your applications with our REST API.
-                            </p>
-                            <div className="space-y-3">
-                              <Link 
-                                to="/api-docs"
-                                className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/10 hover:border-amber-500/30 transition"
+                        {writingToolsExpanded ? (
+                          <ChevronUp className="w-4 h-4 text-gray-500" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-gray-500" />
+                        )}
+                      </button>
+                      {writingToolsExpanded && (
+                        <div className="p-4 pt-0 border-t border-white/10">
+                          <div className="grid grid-cols-2 gap-2 mt-4">
+                            {writingTools.map((tool) => (
+                              <Link
+                                key={tool.id}
+                                to={`/writing-tools?tool=${tool.id}`}
+                                className={`p-3 rounded-xl border border-white/10 hover:border-${tool.color}-500/30 hover:bg-${tool.color}-500/10 transition group`}
                               >
                                 <div className="flex items-center gap-2">
-                                  <FileText className="w-4 h-4 text-amber-400" />
-                                  <span className="text-gray-300 text-sm">API Documentation</span>
+                                  <tool.icon className={`w-4 h-4 text-${tool.color}-400`} />
+                                  <span className="text-sm text-gray-300 group-hover:text-white truncate">{tool.name}</span>
                                 </div>
-                                <ExternalLink className="w-4 h-4 text-gray-500" />
                               </Link>
-                              <div className="p-3 bg-black/30 rounded-xl border border-white/10">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-gray-500 text-xs">API Endpoint</span>
-                                </div>
-                                <code className="text-amber-400 text-xs break-all">https://textshift.org/api</code>
-                              </div>
-                            </div>
+                            ))}
                           </div>
-                        )}
+                          <Link 
+                            to="/writing-tools"
+                            className="mt-3 flex items-center justify-center gap-2 p-2 text-purple-400 hover:text-purple-300 text-sm transition"
+                          >
+                            <span>View All Tools</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quick Links: Scan History, Buy Credits, Settings */}
+                    <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl overflow-hidden">
+                      <Link to="/history" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <History className="w-4 h-4" />
+                          <span>Scan History</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </Link>
+                      <button onClick={handleOpenBuyCredits} className="w-full flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <CreditCard className="w-4 h-4" />
+                          <span>Buy Credits</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </button>
+                      <Link to="/settings" className="flex items-center justify-between p-4 text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <div className="flex items-center gap-3">
+                          <Settings className="w-4 h-4" />
+                          <span>Settings</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </Link>
+                    </div>
+
+                    {/* API Settings - Enterprise Only */}
+                    {user?.subscription_tier?.toLowerCase() === 'enterprise' && (
+                      <div className="bg-gradient-to-b from-amber-500/10 to-transparent border border-amber-500/30 rounded-3xl p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="p-2 bg-amber-500/20 rounded-full">
+                            <Key className="w-5 h-5 text-amber-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-medium text-white">API Access</h3>
+                            <p className="text-xs text-amber-400">Enterprise Feature</p>
                           </div>
                         </div>
+                        <p className="text-gray-400 text-sm mb-4">
+                          Integrate TextShift into your applications with our REST API.
+                        </p>
+                        <div className="space-y-3">
+                          <Link 
+                            to="/api-docs"
+                            className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/10 hover:border-amber-500/30 transition"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FileText className="w-4 h-4 text-amber-400" />
+                              <span className="text-gray-300 text-sm">API Documentation</span>
+                            </div>
+                            <ExternalLink className="w-4 h-4 text-gray-500" />
+                          </Link>
+                          <div className="p-3 bg-black/30 rounded-xl border border-white/10">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-gray-500 text-xs">API Endpoint</span>
+                            </div>
+                            <code className="text-amber-400 text-xs break-all">https://textshift.org/api</code>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Promo Code Redemption - At the end */}
+                    <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6">
+                      <h3 className="text-lg font-medium text-white mb-4">Have a Promo Code?</h3>
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          placeholder="Enter promo code"
+                          className="w-full px-4 py-2 bg-black/30 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-emerald-500/50 focus:outline-none"
+                        />
+                        <Button
+                          onClick={handleRedeemPromo}
+                          disabled={!promoCode.trim() || promoLoading}
+                          className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-xl"
+                        >
+                          {promoLoading ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Redeeming...</>
+                          ) : (
+                            'Redeem Code'
+                          )}
+                        </Button>
+                        {promoMessage && (
+                          <div className={`p-3 rounded-xl text-sm ${
+                            promoMessage.type === 'success' 
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
+                              : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                          }`}>
+                            {promoMessage.text}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
       {/* Buy Credits Modal */}
       {showBuyCreditsModal && (
