@@ -463,11 +463,12 @@ export default function ApiDocsPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400 font-mono text-xs px-2 py-1 bg-emerald-500/20 rounded">POST</span>
-                <code className="text-white font-mono">/api/v1/auth/login</code>
+                <code className="text-white font-mono">/api/auth/token</code>
               </div>
+              <p className="text-gray-500 text-sm">Use JSON body with Content-Type: application/json</p>
               <div className="p-4 bg-black/40 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-500 text-sm">Request Body</span>
+                  <span className="text-gray-500 text-sm">Request Body (JSON)</span>
                   <Button 
                     size="sm" 
                     variant="ghost" 
@@ -489,7 +490,13 @@ export default function ApiDocsPage() {
                 <pre className="text-gray-300 font-mono text-sm overflow-x-auto mt-2">
 {`{
   "access_token": "eyJhbGciOiJIUzI1NiIs...",
-  "token_type": "bearer"
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "email": "your@email.com",
+    "subscription_tier": "Enterprise",
+    "credits_balance": 5000
+  }
 }`}
                 </pre>
               </div>
@@ -693,32 +700,65 @@ export default function ApiDocsPage() {
           </div>
         </div>
 
-        {/* Postman Collection */}
+        {/* Postman Setup Guide */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-4">Postman Collection</h2>
-          <div className="p-6 bg-black/30 rounded-2xl border border-white/10">
-            <p className="text-gray-300 mb-4">
-              Import our Postman collection to get started quickly. Set up your environment with:
-            </p>
-            <div className="space-y-3">
-              <div className="p-3 bg-black/40 rounded-lg flex items-center justify-between">
-                <div>
-                  <span className="text-gray-500 text-sm">Variable: </span>
-                  <code className="text-emerald-400 font-mono">base_url</code>
+          <h2 className="text-2xl font-bold text-white mb-4">Postman Setup Guide</h2>
+          <div className="p-6 bg-black/30 rounded-2xl border border-white/10 space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-3">Step 1: Get Your Access Token</h3>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm">Create a new POST request in Postman:</p>
+                <div className="p-3 bg-black/40 rounded-lg">
+                  <code className="text-emerald-400 font-mono text-sm">POST {API_BASE}/api/auth/token</code>
                 </div>
-                <code className="text-white font-mono text-sm">{API_BASE}</code>
-              </div>
-              <div className="p-3 bg-black/40 rounded-lg flex items-center justify-between">
-                <div>
-                  <span className="text-gray-500 text-sm">Variable: </span>
-                  <code className="text-emerald-400 font-mono">access_token</code>
+                <p className="text-gray-400 text-sm">In the Body tab, select "raw" and change dropdown from "Text" to "JSON", then enter:</p>
+                <div className="p-3 bg-black/40 rounded-lg">
+                  <pre className="text-gray-300 font-mono text-xs">{`{
+  "email": "your@email.com",
+  "password": "yourpassword"
+}`}</pre>
                 </div>
-                <code className="text-white font-mono text-sm">Your JWT token from login</code>
+                <p className="text-gray-400 text-sm">Copy the <code className="text-emerald-400">access_token</code> from the response.</p>
               </div>
             </div>
-            <div className="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-              <p className="text-emerald-400 text-sm">
-                <strong>Tip:</strong> In Postman, go to Authorization tab, select "Bearer Token", and paste your access_token.
+
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-3">Step 2: Set Up Authorization</h3>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm">For all other requests, go to the Headers tab and add:</p>
+                <div className="p-3 bg-black/40 rounded-lg flex items-center gap-4">
+                  <div>
+                    <span className="text-gray-500 text-sm">Key: </span>
+                    <code className="text-emerald-400 font-mono">Authorization</code>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-sm">Value: </span>
+                    <code className="text-white font-mono text-sm">Bearer YOUR_ACCESS_TOKEN</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-3">Step 3: Test an Endpoint</h3>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm">Try the AI Detection endpoint:</p>
+                <div className="p-3 bg-black/40 rounded-lg">
+                  <code className="text-emerald-400 font-mono text-sm">POST {API_BASE}/api/scan/detect</code>
+                </div>
+                <p className="text-gray-400 text-sm">Body (raw JSON):</p>
+                <div className="p-3 bg-black/40 rounded-lg">
+                  <pre className="text-gray-300 font-mono text-xs">{`{
+  "text": "Your text to analyze for AI detection.",
+  "scan_type": "ai_detection"
+}`}</pre>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <p className="text-amber-400 text-sm">
+                <strong>Important:</strong> Make sure to select "JSON" (not "Text") in the Body dropdown when sending requests. Using "Text" will cause 422 errors.
               </p>
             </div>
           </div>
