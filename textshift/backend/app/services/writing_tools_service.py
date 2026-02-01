@@ -52,6 +52,8 @@ class WritingToolsService:
     _translator_models: Dict[str, Tuple[Any, Any]] = {}
     _t5_model = None
     _t5_tokenizer = None
+    _general_t5_model = None
+    _general_t5_tokenizer = None
     
     # Tone labels from SamLowe/roberta-base-go_emotions
     TONE_LABELS = [
@@ -194,6 +196,75 @@ class WritingToolsService:
         except Exception as e:
             logger.error(f"Failed to load T5 model: {e}")
     
+    def _load_general_t5_model(self):
+        """Load general-purpose Flan-T5 model for writing tasks (summarization, paraphrasing, etc.)."""
+        if self._general_t5_model is not None:
+            return True
+        
+        try:
+            model_dir = os.path.join(settings.MODELS_DIR, 'flan-t5-base')
+            
+            # Download from iDrive if not present
+            if not os.path.exists(model_dir) or not os.listdir(model_dir):
+                success = self._download_model_from_s3('textshift-models/flan-t5-base/', model_dir)
+                if not success:
+                    # Fallback to HuggingFace
+                    logger.info("Downloading flan-t5-base from HuggingFace...")
+                    self._general_t5_tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-base")
+                    self._general_t5_model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base")
+                    self._general_t5_model.eval()
+                    logger.info("Flan-T5 model loaded from HuggingFace")
+                    return True
+            
+            self._general_t5_tokenizer = T5Tokenizer.from_pretrained(model_dir)
+            self._general_t5_model = T5ForConditionalGeneration.from_pretrained(model_dir)
+            self._general_t5_model.eval()
+            logger.info("Flan-T5 model loaded successfully from local storage")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to load Flan-T5 model: {e}")
+            return False
+    
+    def _generate_with_t5(self, prompt: str, max_length: int = 256, min_length: int = 10) -> Optional[str]:
+        """Generate text using Flan-T5 model with error handling."""
+        try:
+            if not self._load_general_t5_model():
+                return None
+            
+            if self._general_t5_model is None or self._general_t5_tokenizer is None:
+                return None
+            
+            inputs = self._general_t5_tokenizer(
+                prompt,
+                return_tensors="pt",
+                truncation=True,
+                max_length=512
+            )
+            
+            with torch.no_grad():
+                outputs = self._general_t5_model.generate(
+                    **inputs,
+                    max_length=max_length,
+                    min_length=min_length,
+                    num_beams=4,
+                    length_penalty=1.0,
+                    early_stopping=True,
+                    do_sample=False
+                )
+            
+            generated_text = self._general_t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            # Validate output - should not be empty or just the prompt
+            if not generated_text or len(generated_text.strip()) < 5:
+                return None
+            if generated_text.strip().lower() == prompt.strip().lower():
+                return None
+            
+            return generated_text.strip()
+        except Exception as e:
+            logger.error(f"T5 generation failed: {e}")
+            return None
+    
     # ==================== Feature 1: Grammar Checker ====================
     async def check_grammar(self, text: str) -> Dict[str, Any]:
         """Check grammar using LanguageTool API (free, 20 requests/min)."""
@@ -301,9 +372,24 @@ class WritingToolsService:
     
     # ==================== Feature 3: Tone Adjuster ====================
     def adjust_tone(self, text: str, target_tone: str) -> Dict[str, Any]:
-        """Adjust text tone using rule-based transformations."""
+        """Adjust text tone using T5 model with rule-based fallback."""
         try:
-            adjusted_text = text
+            adjusted_text = None
+            used_t5 = False
+            
+            # Try T5 model first
+            t5_prompt = f"Rewrite the following text in a {target_tone} tone: {text}"
+            t5_result = self._generate_with_t5(t5_prompt, max_length=len(text.split()) * 3, min_length=5)
+            
+            if t5_result and len(t5_result) > 10 and t5_result.lower() != text.lower():
+                adjusted_text = t5_result
+                used_t5 = True
+                logger.info(f"Tone adjustment using T5 model successful for tone: {target_tone}")
+            
+            # Fallback to rule-based if T5 failed
+            if not adjusted_text:
+                logger.info(f"Falling back to rule-based tone adjustment for tone: {target_tone}")
+                adjusted_text = text
             
             # Formal tone transformations
             formal_replacements = {
@@ -416,7 +502,8 @@ class WritingToolsService:
                 "adjusted_text": adjusted_text,
                 "target_tone": target_tone,
                 "word_count_original": len(text.split()),
-                "word_count_adjusted": len(adjusted_text.split())
+                "word_count_adjusted": len(adjusted_text.split()),
+                "used_t5": used_t5
             }
         except Exception as e:
             logger.error(f"Tone adjustment failed: {e}")
@@ -512,8 +599,37 @@ class WritingToolsService:
     
     # ==================== Feature 5: Summarizer ====================
     def summarize(self, text: str, max_length: int = 150, min_length: int = 50) -> Dict[str, Any]:
-        """Summarize text using extractive summarization (sentence scoring)."""
+        """Summarize text using T5 model with extractive summarization fallback."""
         try:
+            used_t5 = False
+            summary = None
+            
+            # Try T5 model first
+            t5_prompt = f"Summarize the following text: {text}"
+            t5_result = self._generate_with_t5(t5_prompt, max_length=max_length, min_length=min_length)
+            
+            if t5_result and len(t5_result) > 10 and len(t5_result) < len(text):
+                summary = t5_result
+                used_t5 = True
+                logger.info("Summarization using T5 model successful")
+                
+                original_words = len(text.split())
+                summary_words = len(summary.split())
+                compression_ratio = round((1 - summary_words / original_words) * 100, 1) if original_words > 0 else 0
+                
+                return {
+                    "success": True,
+                    "original_text": text[:500] + "..." if len(text) > 500 else text,
+                    "summary": summary,
+                    "original_word_count": original_words,
+                    "summary_word_count": summary_words,
+                    "compression_ratio": compression_ratio,
+                    "used_t5": used_t5
+                }
+            
+            # Fallback to extractive summarization
+            logger.info("Falling back to extractive summarization")
+            
             # Split into sentences
             sentences = re.split(r'(?<=[.!?])\s+', text.strip())
             sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) > 3]
@@ -529,7 +645,8 @@ class WritingToolsService:
                     "summary": text,
                     "original_word_count": len(text.split()),
                     "summary_word_count": len(text.split()),
-                    "compression_ratio": 0
+                    "compression_ratio": 0,
+                    "used_t5": False
                 }
             
             # Score sentences based on multiple factors
@@ -603,7 +720,8 @@ class WritingToolsService:
                 "summary": summary,
                 "original_word_count": original_words,
                 "summary_word_count": summary_words,
-                "compression_ratio": compression_ratio
+                "compression_ratio": compression_ratio,
+                "used_t5": False
             }
         except Exception as e:
             logger.error(f"Summarization failed: {e}")
@@ -611,9 +729,41 @@ class WritingToolsService:
     
     # ==================== Feature 6: Paraphraser ====================
     def paraphrase(self, text: str, mode: str = "standard") -> Dict[str, Any]:
-        """Paraphrase text using rule-based synonym replacement and sentence restructuring."""
+        """Paraphrase text using T5 model with rule-based fallback."""
         try:
             import random
+            used_t5 = False
+            paraphrased = None
+            
+            # Try T5 model first
+            mode_prompts = {
+                "standard": f"Paraphrase the following text: {text}",
+                "fluency": f"Rewrite the following text to improve fluency and flow: {text}",
+                "creative": f"Creatively rewrite the following text with different wording: {text}",
+                "formal": f"Rewrite the following text in a formal style: {text}",
+                "simple": f"Simplify the following text using simple words: {text}",
+            }
+            
+            t5_prompt = mode_prompts.get(mode.lower(), mode_prompts["standard"])
+            t5_result = self._generate_with_t5(t5_prompt, max_length=len(text.split()) * 3, min_length=5)
+            
+            if t5_result and len(t5_result) > 10 and t5_result.lower() != text.lower():
+                paraphrased = t5_result
+                used_t5 = True
+                logger.info(f"Paraphrasing using T5 model successful for mode: {mode}")
+                
+                return {
+                    "success": True,
+                    "original_text": text,
+                    "paraphrased_text": paraphrased,
+                    "mode": mode,
+                    "original_word_count": len(text.split()),
+                    "paraphrased_word_count": len(paraphrased.split()),
+                    "used_t5": used_t5
+                }
+            
+            # Fallback to rule-based paraphrasing
+            logger.info(f"Falling back to rule-based paraphrasing for mode: {mode}")
             
             # Comprehensive synonym dictionary
             synonyms = {
@@ -789,7 +939,8 @@ class WritingToolsService:
                 "paraphrased_text": paraphrased,
                 "mode": mode,
                 "original_word_count": len(text.split()),
-                "paraphrased_word_count": len(paraphrased.split())
+                "paraphrased_word_count": len(paraphrased.split()),
+                "used_t5": False
             }
         except Exception as e:
             logger.error(f"Paraphrasing failed: {e}")
@@ -1168,11 +1319,53 @@ class WritingToolsService:
     
     # ==================== Feature 14: Content Improver ====================
     def improve_content(self, text: str, focus: str = "clarity") -> Dict[str, Any]:
-        """Improve content using rule-based transformations with different focus areas."""
+        """Improve content using T5 model with rule-based fallback."""
         try:
             import random
-            improved_text = text
+            used_t5 = False
+            improved_text = None
             suggestions = []
+            
+            # Try T5 model first
+            focus_prompts = {
+                "clarity": f"Rewrite the following text to improve clarity and make it easier to understand: {text}",
+                "conciseness": f"Rewrite the following text to be more concise and remove unnecessary words: {text}",
+                "engagement": f"Rewrite the following text to be more engaging and interesting: {text}",
+                "professionalism": f"Rewrite the following text in a professional tone: {text}",
+                "seo": f"Rewrite the following text to be more SEO-friendly with shorter sentences: {text}",
+            }
+            
+            t5_prompt = focus_prompts.get(focus.lower(), focus_prompts["clarity"])
+            t5_result = self._generate_with_t5(t5_prompt, max_length=len(text.split()) * 3, min_length=5)
+            
+            if t5_result and len(t5_result) > 10 and t5_result.lower() != text.lower():
+                improved_text = t5_result
+                used_t5 = True
+                suggestions.append(f"Content improved using AI model for {focus}")
+                logger.info(f"Content improvement using T5 model successful for focus: {focus}")
+                
+                # Calculate improvement metrics
+                original_readability = self.analyze_readability(text)
+                improved_readability = self.analyze_readability(improved_text)
+                
+                return {
+                    "success": True,
+                    "original_text": text,
+                    "improved_text": improved_text,
+                    "focus": focus,
+                    "suggestions": suggestions,
+                    "original_word_count": len(text.split()),
+                    "improved_word_count": len(improved_text.split()),
+                    "readability_change": {
+                        "original_score": original_readability.get("flesch_reading_ease", 0),
+                        "improved_score": improved_readability.get("flesch_reading_ease", 0)
+                    },
+                    "used_t5": used_t5
+                }
+            
+            # Fallback to rule-based content improvement
+            logger.info(f"Falling back to rule-based content improvement for focus: {focus}")
+            improved_text = text
             
             focus_lower = focus.lower()
             
@@ -1287,7 +1480,8 @@ class WritingToolsService:
                 "readability_change": {
                     "original_score": original_readability.get("flesch_reading_ease", 0),
                     "improved_score": improved_readability.get("flesch_reading_ease", 0)
-                }
+                },
+                "used_t5": False
             }
         except Exception as e:
             logger.error(f"Content improvement failed: {e}")
