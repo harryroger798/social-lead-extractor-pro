@@ -84,10 +84,53 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    """Login with email and password."""
+    """Login with email and password (form data)."""
     user = db.query(User).filter(User.email == form_data.username).first()
     
     if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Account is disabled"
+        )
+    
+    # Update last login
+    user.last_login_at = datetime.utcnow()
+    db.commit()
+    
+    # Create access token
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    return TokenResponse(
+        access_token=access_token,
+        user=UserResponse.model_validate(user)
+    )
+
+
+from pydantic import BaseModel
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@router.post("/token", response_model=TokenResponse)
+async def login_json(
+    login_data: LoginRequest,
+    db: Session = Depends(get_db)
+):
+    """Login with email and password (JSON body) - for API access."""
+    user = db.query(User).filter(User.email == login_data.email).first()
+    
+    if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
