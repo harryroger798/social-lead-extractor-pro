@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Copy, CheckCircle2, ArrowLeft, Code, Key, Zap, Shield, BookOpen } from 'lucide-react';
+import { Copy, CheckCircle2, ArrowLeft, Key, Zap, Shield, BookOpen } from 'lucide-react';
 
 const API_BASE = 'https://textshift.org';
 
@@ -14,6 +14,163 @@ interface Endpoint {
   responseExample?: object;
 }
 
+// Core Tools - Main Features
+const coreEndpoints: Endpoint[] = [
+  {
+    method: 'POST',
+    path: '/api/v1/scan',
+    description: 'AI Detection - Detect if text is AI-generated or human-written',
+    tier: 'Free (limited), Paid (unlimited)',
+    requestBody: { 
+      text: 'Your text to analyze for AI detection.',
+      scan_type: 'ai_detection'
+    },
+    responseExample: {
+      success: true,
+      scan_id: 123,
+      scan_type: 'ai_detection',
+      result: {
+        ai_probability: 0.85,
+        human_probability: 0.15,
+        confidence: 0.92,
+        verdict: 'AI Generated',
+        analysis: {
+          perplexity_score: 45.2,
+          burstiness_score: 0.23,
+          sentence_analysis: [
+            { sentence: 'First sentence...', ai_score: 0.82 }
+          ]
+        }
+      },
+      credits_used: 100,
+      word_count: 150
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/scan',
+    description: 'Humanizer - Transform AI-generated text to sound more human',
+    tier: 'Free (limited), Paid (unlimited)',
+    requestBody: { 
+      text: 'Your AI-generated text to humanize.',
+      scan_type: 'humanizer'
+    },
+    responseExample: {
+      success: true,
+      scan_id: 124,
+      scan_type: 'humanizer',
+      result: {
+        original_text: 'Your AI-generated text to humanize.',
+        humanized_text: 'Your naturally rewritten text that sounds human.',
+        ai_score_before: 0.92,
+        ai_score_after: 0.08,
+        improvement_percentage: 91.3
+      },
+      credits_used: 200,
+      word_count: 150
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/scan',
+    description: 'Plagiarism Checker - Check text for plagiarism against web sources',
+    tier: 'Free (limited), Paid (unlimited)',
+    requestBody: { 
+      text: 'Your text to check for plagiarism.',
+      scan_type: 'plagiarism'
+    },
+    responseExample: {
+      success: true,
+      scan_id: 125,
+      scan_type: 'plagiarism',
+      result: {
+        plagiarism_score: 0.15,
+        original_score: 0.85,
+        risk_level: 'LOW',
+        sources: [
+          {
+            url: 'https://example.com/article',
+            title: 'Example Article',
+            similarity: 0.12,
+            matched_text: 'Matching text snippet...'
+          }
+        ],
+        total_sources_checked: 50
+      },
+      credits_used: 150,
+      word_count: 200
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/scans',
+    description: 'Get scan history - Retrieve all past scans for the authenticated user',
+    tier: 'All tiers',
+    requestBody: { 
+      skip: 0,
+      limit: 20,
+      scan_type: 'ai_detection'
+    },
+    responseExample: {
+      success: true,
+      scans: [
+        {
+          id: 123,
+          scan_type: 'ai_detection',
+          text_preview: 'First 100 characters of text...',
+          word_count: 150,
+          credits_used: 100,
+          created_at: '2024-01-15T10:30:00Z',
+          result: { ai_probability: 0.85, verdict: 'AI Generated' }
+        }
+      ],
+      total: 45,
+      page: 1,
+      pages: 3
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/scans/{scan_id}',
+    description: 'Get single scan - Retrieve details of a specific scan by ID',
+    tier: 'All tiers',
+    requestBody: {},
+    responseExample: {
+      success: true,
+      scan: {
+        id: 123,
+        scan_type: 'ai_detection',
+        text: 'Full text that was scanned...',
+        word_count: 150,
+        credits_used: 100,
+        created_at: '2024-01-15T10:30:00Z',
+        result: {
+          ai_probability: 0.85,
+          human_probability: 0.15,
+          confidence: 0.92,
+          verdict: 'AI Generated'
+        }
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/credits',
+    description: 'Get credits balance - Check remaining credits for the authenticated user',
+    tier: 'All tiers',
+    requestBody: {},
+    responseExample: {
+      success: true,
+      credits: 5000,
+      tier: 'Pro',
+      credits_used_today: 1500,
+      daily_limit: -1,
+      unlimited: true
+    }
+  }
+];
+
+// Writing Tools - 14 Additional Features
 const endpoints: Endpoint[] = [
   {
     method: 'POST',
@@ -396,12 +553,65 @@ export default function ApiDocsPage() {
           </div>
         </div>
 
-        {/* Endpoints Section */}
+        {/* Core Tools Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">API Endpoints</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Core Tools API</h2>
+          <p className="text-gray-400 mb-6">AI Detection, Humanizer, Plagiarism Checker, and Scan History</p>
+          <div className="space-y-6">
+            {coreEndpoints.map((endpoint, index) => (
+              <div key={`core-${index}`} className="p-6 bg-black/30 rounded-2xl border border-blue-500/20">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className={`font-mono text-sm px-3 py-1 rounded ${endpoint.method === 'GET' ? 'text-blue-400 bg-blue-500/20' : 'text-emerald-400 bg-emerald-500/20'}`}>
+                      {endpoint.method}
+                    </span>
+                    <code className="text-white font-mono">{endpoint.path}</code>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded ${getTierColor(endpoint.tier)}`}>
+                    {endpoint.tier}
+                  </span>
+                </div>
+                <p className="text-gray-400 mb-4">{endpoint.description}</p>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Request */}
+                  <div className="p-4 bg-black/40 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-gray-500 text-sm">{endpoint.method === 'GET' ? 'Query Parameters' : 'Request Body'}</span>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => copyToClipboard(JSON.stringify(endpoint.requestBody, null, 2), index)}
+                        className="text-gray-400 hover:text-white h-6"
+                      >
+                        {copiedIndex === index ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                    <pre className="text-gray-300 font-mono text-xs overflow-x-auto">
+                      {JSON.stringify(endpoint.requestBody, null, 2)}
+                    </pre>
+                  </div>
+                  
+                  {/* Response */}
+                  <div className="p-4 bg-black/40 rounded-lg">
+                    <span className="text-gray-500 text-sm">Response Example</span>
+                    <pre className="text-gray-300 font-mono text-xs overflow-x-auto mt-2">
+                      {JSON.stringify(endpoint.responseExample, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Writing Tools Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-2">Writing Tools API</h2>
+          <p className="text-gray-400 mb-6">14 additional writing and content tools</p>
           <div className="space-y-6">
             {endpoints.map((endpoint, index) => (
-              <div key={index} className="p-6 bg-black/30 rounded-2xl border border-white/10">
+              <div key={`writing-${index}`} className="p-6 bg-black/30 rounded-2xl border border-white/10">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <span className="text-emerald-400 font-mono text-sm px-3 py-1 bg-emerald-500/20 rounded">
@@ -423,10 +633,10 @@ export default function ApiDocsPage() {
                       <Button 
                         size="sm" 
                         variant="ghost" 
-                        onClick={() => copyToClipboard(JSON.stringify(endpoint.requestBody, null, 2), index)}
+                        onClick={() => copyToClipboard(JSON.stringify(endpoint.requestBody, null, 2), index + 100)}
                         className="text-gray-400 hover:text-white h-6"
                       >
-                        {copiedIndex === index ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        {copiedIndex === index + 100 ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                       </Button>
                     </div>
                     <pre className="text-gray-300 font-mono text-xs overflow-x-auto">
