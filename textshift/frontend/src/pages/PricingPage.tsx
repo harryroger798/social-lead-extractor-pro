@@ -42,17 +42,26 @@ export default function PricingPage() {
             price: 0, 
             credits: '5,000 words/mo', 
             features: [
-              'AI Detection (10 scans/day)',
+              'AI Detection only (10 scans/day)',
               'Basic heat map reports',
-              '6 Writing Tools:',
-              '• Grammar Checker (500 words/day)',
-              '• Readability Score',
-              '• Summarizer (500 words)',
-              '• Paraphraser (standard)',
-              '• Word Counter',
-              '• Translator (500 words/day)',
-              'Export to TXT'
+              'Grammar Checker (500 words/day)',
+              'Readability Score (basic)',
+              'Summarizer (500 words max)',
+              'Paraphraser (standard mode only)',
+              'Word Counter',
+              'Translator (500 words/day)',
+              'Export to TXT only'
             ], 
+            notIncluded: [
+              'Humanizer',
+              'Plagiarism Checker',
+              'Tone Adjuster',
+              'Citation Generator',
+              'Style Analysis',
+              'Content Improver',
+              'Bulk Processing',
+              'API Access'
+            ],
             cta: 'Get Started', 
             popular: false 
           },
@@ -65,18 +74,22 @@ export default function PricingPage() {
               'AI Detection + Humanizer + Plagiarism',
               '100 scans/day',
               'PDF export & Word-level diff',
-              '12 Writing Tools:',
-              '• Grammar Checker (5,000/day)',
-              '• Tone Detector & Adjuster',
-              '• Readability (detailed)',
-              '• Summarizer (5,000 words)',
-              '• All Paraphraser modes',
-              '• Citation Generator',
-              '• Style Analysis',
-              '• Content Improver',
-              '• Translator (5,000/day)',
-              'Export to HTML/Markdown'
+              'Grammar Checker (5,000 words/day)',
+              'Tone Detector (unlimited)',
+              'Tone Adjuster',
+              'Readability Score (detailed)',
+              'Summarizer (5,000 words max)',
+              'Paraphraser (all 5 modes)',
+              'Citation Generator (APA, MLA, Chicago)',
+              'Style Analysis',
+              'Content Improver',
+              'Translator (5,000 words/day)',
+              'Export to TXT, HTML, Markdown'
             ], 
+            notIncluded: [
+              'Bulk Processing',
+              'API Access'
+            ],
             cta: 'Subscribe', 
             popular: false 
           },
@@ -88,12 +101,18 @@ export default function PricingPage() {
             features: [
               'All 3 core tools (500 scans/day)',
               'All 14 Writing Tools - Unlimited',
-              'Bulk Processing (10 files)',
-              'API Access',
+              'Grammar Checker (unlimited)',
+              'Summarizer (unlimited)',
+              'Translator (unlimited)',
+              'Bulk Processing (up to 10 files)',
               'Shareable reports',
               'Priority support',
-              'All Starter features included'
+              'Everything in Starter'
             ], 
+            notIncluded: [
+              'API Access',
+              'White-label API'
+            ],
             cta: 'Subscribe', 
             popular: true 
           },
@@ -105,14 +124,15 @@ export default function PricingPage() {
             features: [
               'Unlimited scans (no daily limit)',
               'All 14 Writing Tools - Unlimited',
-              'Bulk Processing (50 files)',
-              'Full API Access',
+              'Bulk Processing (up to 50 files)',
+              'Full REST API Access',
               'White-label API',
               'Custom integrations',
-              'Dedicated support',
-              'SLA guarantee',
-              'All Pro features included'
+              'Dedicated account manager',
+              'SLA guarantee (99.9% uptime)',
+              'Everything in Pro'
             ], 
+            notIncluded: [],
             cta: 'Contact Sales', 
             popular: false 
           }
@@ -284,13 +304,22 @@ export default function PricingPage() {
                 )}
                 <div className="text-gray-500 text-sm">{plan.credits}</div>
               </div>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-2 mb-6">
                 {plan.features.map((feature, j) => (
-                  <li key={j} className="flex items-center text-gray-300 text-sm">
-                    <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{feature}
+                  <li key={j} className="flex items-start text-gray-300 text-sm">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0 mt-0.5" />{feature}
                   </li>
                 ))}
               </ul>
+              {plan.notIncluded && plan.notIncluded.length > 0 && (
+                <ul className="space-y-2 mb-6 pt-4 border-t border-white/5">
+                  {plan.notIncluded.map((feature, j) => (
+                    <li key={j} className="flex items-start text-gray-500 text-sm">
+                      <X className="w-4 h-4 text-gray-600 mr-2 flex-shrink-0 mt-0.5" />{feature}
+                    </li>
+                  ))}
+                </ul>
+              )}
               <Button 
                 onClick={() => handleSubscribe(plan.id)}
                 disabled={loading === plan.id}
