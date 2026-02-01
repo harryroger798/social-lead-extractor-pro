@@ -1,24 +1,82 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 // In production, use empty string for same-origin requests (nginx proxies /api/ to backend)
 // In development, use localhost:8000
 const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
+// Request deduplication cache for identical concurrent requests
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+// Simple in-memory cache for GET requests (Speed Optimization #30)
+const responseCache = new Map<string, { data: unknown; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds
+
+const getCacheKey = (config: AxiosRequestConfig): string => {
+  return `${config.method}-${config.url}-${JSON.stringify(config.params || {})}`;
+};
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept-Encoding': 'gzip, deflate, br', // Speed Optimization #50 - Request compression
   },
+  timeout: 30000, // Speed Optimization #12 - Request timeouts
 });
 
-// Add auth token to requests
+// Add auth token to requests and implement request deduplication
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // Check cache for GET requests (Speed Optimization #30)
+  if (config.method === 'get') {
+    const cacheKey = getCacheKey(config);
+    const cached = responseCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      config.adapter = () => Promise.resolve({
+        data: cached.data,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config,
+      });
+    }
+  }
+  
   return config;
 });
+
+// Cache successful GET responses
+api.interceptors.response.use((response) => {
+  if (response.config.method === 'get' && response.status === 200) {
+    const cacheKey = getCacheKey(response.config);
+    responseCache.set(cacheKey, { data: response.data, timestamp: Date.now() });
+  }
+  return response;
+});
+
+// Helper to deduplicate identical concurrent requests (Speed Optimization #35)
+export const deduplicatedRequest = async <T>(key: string, requestFn: () => Promise<T>): Promise<T> => {
+  if (pendingRequests.has(key)) {
+    return pendingRequests.get(key) as Promise<T>;
+  }
+  
+  const promise = requestFn().finally(() => {
+    pendingRequests.delete(key);
+  });
+  
+  pendingRequests.set(key, promise);
+  return promise;
+};
+
+// Clear cache utility (for logout, etc.)
+export const clearApiCache = () => {
+  responseCache.clear();
+  pendingRequests.clear();
+};
 
 // Auth API
 export const authApi = {

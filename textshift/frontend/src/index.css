@@ -74,7 +74,7 @@
 }
 
 @layer utilities {
-  /* Fluid typography */
+  /* Fluid typography (Mobile Optimization #2) */
   .text-fluid-xs {
     font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   }
@@ -107,28 +107,44 @@
     font-size: clamp(2.25rem, 6vw, 3rem);
   }
   
-  /* Touch-friendly spacing */
+  .text-fluid-5xl {
+    font-size: clamp(3rem, 8vw, 4rem);
+  }
+  
+  /* Touch-friendly spacing (Mobile Optimization #16-17) */
   .touch-target {
     min-width: 44px;
     min-height: 44px;
   }
   
-  /* Prevent horizontal overflow */
+  .touch-target-lg {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  /* Prevent horizontal overflow (Mobile Optimization #30) */
   .overflow-x-safe {
     overflow-x: hidden;
     max-width: 100vw;
   }
   
-  /* Dynamic viewport height for mobile */
+  /* Dynamic viewport height for mobile (Mobile Optimization #33) */
   .h-dvh {
     height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
   }
   
   .min-h-dvh {
     min-height: 100dvh;
+    min-height: calc(var(--vh, 1vh) * 100);
   }
   
-  /* Reduced motion preference */
+  .max-h-dvh {
+    max-height: 100dvh;
+    max-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Reduced motion preference (Mobile Optimization #55) */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -148,20 +164,26 @@
     display: none;
   }
   
-  /* Smooth scrolling container */
+  /* Smooth scrolling container (Mobile Optimization #22) */
   .scroll-smooth-container {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
   
-  /* Focus visible for accessibility */
+  /* Focus visible for accessibility (SEO Optimization #18) */
   .focus-visible-ring:focus-visible {
     outline: 2px solid hsl(217.2 91.2% 59.8%);
     outline-offset: 2px;
   }
   
-  /* Loading skeleton animation */
+  /* Loading skeleton animation (Speed Optimization #28) */
   .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .skeleton-light {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
@@ -174,6 +196,315 @@
     100% {
       background-position: -200% 0;
     }
+  }
+  
+  /* Responsive container (Mobile Optimization #3) */
+  .container-responsive {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container-responsive {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-responsive {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+  
+  /* Responsive grid (Mobile Optimization #7) */
+  .grid-responsive {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 640px) {
+    .grid-responsive {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .grid-responsive {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .grid-responsive {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  /* Aspect ratio utilities (Mobile Optimization #9) */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+  
+  .aspect-portrait {
+    aspect-ratio: 3 / 4;
+  }
+  
+  /* Responsive hiding (Mobile Optimization #6) */
+  .hide-mobile {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    .hide-mobile {
+      display: block;
+    }
+    .hide-desktop {
+      display: none;
+    }
+  }
+  
+  /* Thumb zone optimization (Mobile Optimization #26) */
+  .thumb-zone-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Bottom sheet (Mobile Optimization #25) */
+  .bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    padding-bottom: env(safe-area-inset-bottom);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+  }
+  
+  .bottom-sheet.open {
+    transform: translateY(0);
+  }
+  
+  .bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    margin: 12px auto;
+  }
+  
+  /* Sticky header (Mobile Optimization #32) */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  /* Pull to refresh indicator (Mobile Optimization #19) */
+  .pull-indicator {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Active state for touch (Mobile Optimization #20) */
+  .touch-active:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+  
+  /* CSS containment for performance (Speed Optimization #27) */
+  .contain-layout {
+    contain: layout;
+  }
+  
+  .contain-paint {
+    contain: paint;
+  }
+  
+  .contain-strict {
+    contain: strict;
+  }
+  
+  .contain-content {
+    contain: content;
+  }
+  
+  /* GPU acceleration (Speed Optimization #33) */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Print styles (Mobile Optimization #15) */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    
+    .print-only {
+      display: block !important;
+    }
+    
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    
+    a {
+      text-decoration: underline;
+    }
+    
+    a[href]::after {
+      content: " (" attr(href) ")";
+    }
+  }
+  
+  /* Responsive tables (Mobile Optimization #10) */
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  @media (max-width: 767px) {
+    .table-stack {
+      display: block;
+    }
+    
+    .table-stack thead {
+      display: none;
+    }
+    
+    .table-stack tbody,
+    .table-stack tr,
+    .table-stack td {
+      display: block;
+      width: 100%;
+    }
+    
+    .table-stack td {
+      text-align: right;
+      padding-left: 50%;
+      position: relative;
+    }
+    
+    .table-stack td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 45%;
+      padding-left: 1rem;
+      font-weight: 600;
+      text-align: left;
+    }
+  }
+  
+  /* Offline indicator (Mobile Optimization #45) */
+  .offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ef4444;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    z-index: 9999;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .offline-indicator.visible {
+    transform: translateY(0);
+  }
+  
+  /* Mobile form optimization (Mobile Optimization #13) */
+  .input-mobile {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  
+  /* Landscape mode adjustments (Mobile Optimization #34) */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    
+    .landscape-hide {
+      display: none;
+    }
+  }
+  
+  /* Foldable device support (Mobile Optimization #35) */
+  @media (horizontal-viewport-segments: 2) {
+    .foldable-span {
+      grid-column: span 2;
+    }
+  }
+  
+  /* Layout shift prevention (Mobile Optimization #36) */
+  .aspect-placeholder {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 */
+  }
+  
+  .aspect-placeholder > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Image optimization (Speed Optimization #18) */
+  .img-lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .img-lazy.loaded {
+    opacity: 1;
+  }
+  
+  /* Content visibility for performance (Speed Optimization #26) */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
   }
 }
 

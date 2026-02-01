@@ -1123,8 +1123,8 @@ export default function LandingPage() {
 
       <footer className="py-12 px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <Link to="/" className="flex items-center gap-2 justify-center md:justify-start">
               <motion.img 
                 src="/images/logo.png" 
                 alt="TextShift" 
@@ -1134,10 +1134,10 @@ export default function LandingPage() {
               />
               <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-gray-500 text-sm">
-              <a href="mailto:support@textshift.org" className="hover:text-white transition">support@textshift.org</a>
+            <div className="flex justify-center">
+              <a href="mailto:support@textshift.org" className="text-gray-500 text-sm hover:text-white transition">support@textshift.org</a>
             </div>
-            <div className="flex items-center gap-6 text-gray-500 text-sm">
+            <div className="flex items-center justify-center md:justify-end gap-6 text-gray-500 text-sm">
               <Link to="/pricing" className="hover:text-white transition">Pricing</Link>
               <a href="#faq" className="hover:text-white transition">FAQ</a>
               <a href="https://twitter.com/textshift" className="hover:text-white transition">Twitter</a>
