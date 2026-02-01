@@ -18,7 +18,7 @@ interface Endpoint {
 const coreEndpoints: Endpoint[] = [
   {
     method: 'POST',
-    path: '/api/v1/scan',
+    path: '/api/scan/detect',
     description: 'AI Detection - Detect if text is AI-generated or human-written',
     tier: 'Free (limited), Paid (unlimited)',
     requestBody: { 
@@ -26,145 +26,125 @@ const coreEndpoints: Endpoint[] = [
       scan_type: 'ai_detection'
     },
     responseExample: {
-      success: true,
-      scan_id: 123,
+      id: 63,
       scan_type: 'ai_detection',
-      result: {
+      status: 'completed',
+      input_text: 'Your text to analyze...',
+      results: {
         ai_probability: 0.85,
-        human_probability: 0.15,
-        confidence: 0.92,
-        verdict: 'AI Generated',
-        analysis: {
-          perplexity_score: 45.2,
-          burstiness_score: 0.23,
-          sentence_analysis: [
-            { sentence: 'First sentence...', ai_score: 0.82 }
-          ]
-        }
+        human_probability: 15.0,
+        confidence_level: 'high',
+        sentence_analysis: [
+          { text: 'First sentence...', ai_probability: 0.82 }
+        ]
       },
-      credits_used: 100,
-      word_count: 150
+      credits_used: 50
     }
   },
   {
     method: 'POST',
-    path: '/api/v1/scan',
+    path: '/api/scan/humanize',
     description: 'Humanizer - Transform AI-generated text to sound more human',
-    tier: 'Free (limited), Paid (unlimited)',
+    tier: 'Starter+ (not available on Free)',
     requestBody: { 
       text: 'Your AI-generated text to humanize.',
-      scan_type: 'humanizer'
+      scan_type: 'humanize'
     },
     responseExample: {
-      success: true,
-      scan_id: 124,
-      scan_type: 'humanizer',
-      result: {
-        original_text: 'Your AI-generated text to humanize.',
+      id: 64,
+      scan_type: 'humanize',
+      status: 'completed',
+      input_text: 'Your AI-generated text to humanize.',
+      output_text: 'Your naturally rewritten text that sounds human.',
+      results: {
         humanized_text: 'Your naturally rewritten text that sounds human.',
-        ai_score_before: 0.92,
-        ai_score_after: 0.08,
-        improvement_percentage: 91.3
+        original_length: 35,
+        humanized_length: 48
       },
-      credits_used: 200,
-      word_count: 150
+      credits_used: 70
     }
   },
   {
     method: 'POST',
-    path: '/api/v1/scan',
+    path: '/api/scan/plagiarism',
     description: 'Plagiarism Checker - Check text for plagiarism against web sources',
-    tier: 'Free (limited), Paid (unlimited)',
+    tier: 'Starter+ (not available on Free)',
     requestBody: { 
       text: 'Your text to check for plagiarism.',
       scan_type: 'plagiarism'
     },
     responseExample: {
-      success: true,
-      scan_id: 125,
+      id: 65,
       scan_type: 'plagiarism',
-      result: {
-        plagiarism_score: 0.15,
-        original_score: 0.85,
-        risk_level: 'LOW',
+      status: 'completed',
+      input_text: 'Your text to check for plagiarism.',
+      results: {
+        plagiarism_score: 15.0,
+        original_score: 85.0,
+        sources_found: 2,
         sources: [
-          {
-            url: 'https://example.com/article',
-            title: 'Example Article',
-            similarity: 0.12,
-            matched_text: 'Matching text snippet...'
-          }
-        ],
-        total_sources_checked: 50
+          { url: 'https://example.com', similarity: 12.0 }
+        ]
       },
-      credits_used: 150,
-      word_count: 200
+      credits_used: 52
     }
   },
   {
     method: 'GET',
-    path: '/api/v1/scans',
+    path: '/api/scan/history',
     description: 'Get scan history - Retrieve all past scans for the authenticated user',
     tier: 'All tiers',
     requestBody: { 
-      skip: 0,
-      limit: 20,
-      scan_type: 'ai_detection'
+      page: 1,
+      per_page: 20,
+      scan_type: 'ai_detection (optional)'
     },
     responseExample: {
-      success: true,
       scans: [
         {
-          id: 123,
+          id: 63,
           scan_type: 'ai_detection',
-          text_preview: 'First 100 characters of text...',
-          word_count: 150,
-          credits_used: 100,
-          created_at: '2024-01-15T10:30:00Z',
-          result: { ai_probability: 0.85, verdict: 'AI Generated' }
+          status: 'completed',
+          input_length: 150,
+          credits_used: 50,
+          created_at: '2026-01-15T10:30:00Z'
         }
       ],
       total: 45,
       page: 1,
-      pages: 3
+      per_page: 20
     }
   },
   {
     method: 'GET',
-    path: '/api/v1/scans/{scan_id}',
+    path: '/api/scan/{scan_id}',
     description: 'Get single scan - Retrieve details of a specific scan by ID',
     tier: 'All tiers',
     requestBody: {},
     responseExample: {
-      success: true,
-      scan: {
-        id: 123,
-        scan_type: 'ai_detection',
-        text: 'Full text that was scanned...',
-        word_count: 150,
-        credits_used: 100,
-        created_at: '2024-01-15T10:30:00Z',
-        result: {
-          ai_probability: 0.85,
-          human_probability: 0.15,
-          confidence: 0.92,
-          verdict: 'AI Generated'
-        }
-      }
+      id: 63,
+      scan_type: 'ai_detection',
+      status: 'completed',
+      input_text: 'Full text that was scanned...',
+      results: {
+        ai_probability: 0.85,
+        human_probability: 15.0,
+        confidence_level: 'high'
+      },
+      credits_used: 50,
+      created_at: '2026-01-15T10:30:00Z'
     }
   },
   {
     method: 'GET',
-    path: '/api/v1/credits',
+    path: '/api/credits/balance',
     description: 'Get credits balance - Check remaining credits for the authenticated user',
     tier: 'All tiers',
     requestBody: {},
     responseExample: {
-      success: true,
-      credits: 5000,
-      tier: 'Pro',
-      credits_used_today: 1500,
-      daily_limit: -1,
+      credits_balance: 5000,
+      credits_used_total: 1500,
+      subscription_tier: 'Pro',
       unlimited: true
     }
   }
