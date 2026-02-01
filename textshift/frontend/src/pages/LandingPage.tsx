@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { TypeAnimation } from 'react-type-animation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -11,17 +12,37 @@ import {
   CheckCircle, 
   ArrowRight,
   ChevronDown,
+  Star,
   Menu,
   X,
+  LayoutDashboard,
+  Brain,
+  RefreshCw,
+  TrendingUp,
   Users,
   Target,
   Cpu,
   Gift,
   Clock,
+  Languages,
+  FileText,
+  PenTool,
+  BookOpen,
+  Quote,
   Wand2,
+  Palette,
+  Lightbulb
 } from 'lucide-react';
 import {
+  ParticlesBackground,
+  AnimatedCounter,
   ScrollReveal,
+  TiltCard,
+  MagneticButton,
+  LiveUserCounter,
+  ActivityToast,
+  GradientBackground,
+  NoiseOverlay,
 } from '@/components/animations';
 import { useAuthStore } from '@/store/authStore';
 
@@ -85,69 +106,74 @@ export default function LandingPage() {
     ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white overflow-x-hidden grain-overlay">
-      {/* Subtle gradient orbs - more human-like than particles */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-orange-500/8 rounded-full blur-[100px]" />
-      </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
+      <ParticlesBackground />
+      <GradientBackground />
+      <NoiseOverlay />
+      <LiveUserCounter />
+      <ActivityToast />
 
-      {/* Navigation - Clean and minimal */}
       <nav className="fixed w-full z-50 px-6 py-4">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="max-w-6xl mx-auto flex items-center justify-between"
+          className="max-w-7xl mx-auto flex items-center justify-between"
         >
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 group">
             <motion.img 
               src="/images/logo.png" 
               alt="TextShift" 
-              className="w-9 h-9 object-contain"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
+              className="w-8 h-8 object-contain"
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
             />
-            <span className="text-white font-display font-semibold text-lg tracking-tight">TextShift</span>
+            <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
           
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-zinc-400 hover:text-white transition-colors">Features</a>
-            <a href="#demo" className="text-sm text-zinc-400 hover:text-white transition-colors">Demo</a>
-            <a href="#pricing" className="text-sm text-zinc-400 hover:text-white transition-colors">Pricing</a>
-            <a href="#faq" className="text-sm text-zinc-400 hover:text-white transition-colors">FAQ</a>
+          <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
+            <a href="#features" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Features</a>
+            <a href="#demo" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Demo</a>
+            <a href="#pricing" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Pricing</a>
+            <a href="#faq" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">FAQ</a>
+            <a href="#contact" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition flex items-center gap-1">
+              Contact <ArrowRight className="w-3 h-3" />
+            </a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard">
-                  <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-white/5 text-sm">
+                  <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5 flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
                     Dashboard
                   </Button>
                 </Link>
-                <Button 
-                  onClick={() => logout()}
-                  className="bg-white text-zinc-900 hover:bg-zinc-100 text-sm font-medium px-5 rounded-lg"
-                >
-                  Log out
-                </Button>
+                <MagneticButton>
+                  <Button 
+                    onClick={() => logout()}
+                    className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/20 rounded-full px-6 transition-all duration-300"
+                  >
+                    Log out
+                  </Button>
+                </MagneticButton>
               </>
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-white/5 text-sm">Sign in</Button>
+                  <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
                 </Link>
-                <Link to="/register">
-                  <Button className="bg-white text-zinc-900 hover:bg-zinc-100 text-sm font-medium px-5 rounded-lg">
-                    Get started free
-                  </Button>
-                </Link>
+                <MagneticButton>
+                  <Link to="/register">
+                    <Button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/20 rounded-full px-6 transition-all duration-300">Get Started</Button>
+                  </Link>
+                </MagneticButton>
               </>
             )}
           </div>
 
-          <button className="md:hidden text-white p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button className="md:hidden text-white p-2 cursor-auto" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </motion.div>
@@ -156,24 +182,27 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-zinc-900/95 backdrop-blur-xl border-b border-zinc-800 p-6"
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-lg border-b border-white/10 p-6"
           >
             <div className="flex flex-col gap-4">
-              <a href="#features" className="text-zinc-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Features</a>
-              <a href="#demo" className="text-zinc-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Demo</a>
-              <a href="#pricing" className="text-zinc-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
-              <a href="#faq" className="text-zinc-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
-              <div className="flex flex-col gap-2 pt-4 border-t border-zinc-800">
+              <a href="#features" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Features</a>
+              <a href="#demo" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Demo</a>
+              <a href="#pricing" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
+              <a href="#faq" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
+              <a href="#contact" className="text-gray-300 hover:text-white transition" onClick={() => setMobileMenuOpen(false)}>Contact</a>
+              <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
                 {isAuthenticated ? (
                   <>
                     <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full text-zinc-300 hover:text-white hover:bg-white/5">
+                      <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-center gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
                         Dashboard
                       </Button>
                     </Link>
                     <Button 
                       onClick={() => { logout(); setMobileMenuOpen(false); }}
-                      className="w-full bg-white text-zinc-900 hover:bg-zinc-100"
+                      className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full"
                     >
                       Log out
                     </Button>
@@ -181,10 +210,10 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full text-zinc-300 hover:text-white hover:bg-white/5">Sign in</Button>
+                      <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/5">Log in</Button>
                     </Link>
                     <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full bg-white text-zinc-900 hover:bg-zinc-100">Get started free</Button>
+                      <Button className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-full">Get Started</Button>
                     </Link>
                   </>
                 )}
@@ -194,487 +223,778 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Hero Section - Clean and Minimal */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-20">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+      <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/hero-bg.png" alt="" className="w-full h-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+        </div>
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <ScrollReveal>
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800/50 border border-zinc-700/50 rounded-full mb-8">
-                <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
-                <span className="text-zinc-400 text-sm">Trusted by 50,000+ writers worldwide</span>
-              </div>
-              
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 leading-[1.1]">
-                Make your AI content
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-teal-300 to-orange-400">
-                  undetectable
+              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light tracking-tight mb-8">
+                Transform your content<br />with{' '}
+                <span className="text-emerald-400">
+                  <TypeAnimation
+                    sequence={[
+                      'AI Detection.',
+                      2000,
+                      'Humanizer.',
+                      2000,
+                      'Plagiarism Check.',
+                      2000,
+                    ]}
+                    wrapper="span"
+                    speed={50}
+                    repeat={Infinity}
+                  />
                 </span>
               </h1>
             </motion.div>
           </ScrollReveal>
           
-          <ScrollReveal delay={0.15}>
-            <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              The all-in-one platform for AI detection, humanization, and plagiarism checking. 
-              Industry-leading 99% accuracy. Credits never expire.
-            </p>
+          <ScrollReveal delay={0.2}>
+                        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                          The most accurate AI detection, humanization, and plagiarism checking platform. Industry-leading 99% accuracy. Credits never expire.
+                        </p>
           </ScrollReveal>
           
-          <ScrollReveal delay={0.3}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-                <Button className="bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-xl px-8 py-6 text-base w-full sm:w-auto shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 transition-all duration-300">
-                  {isAuthenticated ? "Go to Dashboard" : "Start for free"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-              <a href="#demo">
-                <Button variant="outline" className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-600 rounded-xl px-8 py-6 text-base w-full sm:w-auto transition-all duration-300">
-                  See it in action
-                </Button>
-              </a>
+          <ScrollReveal delay={0.4}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <MagneticButton>
+                <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+                  <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
+                    {isAuthenticated ? "Go to Dashboard" : "Start Free"}
+                    <motion.span
+                      className="ml-2"
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.span>
+                  </Button>
+                </Link>
+              </MagneticButton>
+              <MagneticButton>
+                <a href="#demo">
+                  <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 py-6 text-lg w-full sm:w-auto transition-all duration-300">
+                    Try Demo <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </a>
+              </MagneticButton>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.45}>
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
+          <ScrollReveal delay={0.6}>
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm text-gray-500">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-teal-500" />
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-teal-500" />
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
                 <span>5,000 free words</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-teal-500" />
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
                 <span>Cancel anytime</span>
               </div>
             </div>
           </ScrollReveal>
         </div>
         
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <ChevronDown className="w-5 h-5 text-zinc-600" />
-        </motion.div>
-      </section>
-
-      {/* Promo Banner */}
-      {activePromos.length > 0 && (
-        <section className="py-6 px-6">
-          <div className="max-w-4xl mx-auto">
-            {activePromos.map((promo) => (
               <motion.div
-                key={promo.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-teal-500/10 via-zinc-800/50 to-orange-500/10 border border-zinc-700/50 p-6"
+                className="absolute bottom-10 left-1/2 -translate-x-1/2"
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
               >
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex-1 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      <Gift className="w-5 h-5 text-teal-400" />
-                      {promo.landing_badge_text && (
-                        <span className="px-3 py-1 bg-teal-500/20 text-teal-400 text-xs font-medium rounded-full">
-                          {promo.landing_badge_text}
-                        </span>
-                      )}
-                      {promo.days_until_expiry !== null && promo.days_until_expiry >= 0 && promo.days_until_expiry <= 7 && (
-                        <span className="flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-400 text-xs font-medium rounded-full">
-                          <Clock className="w-3 h-3" />
-                          {promo.days_until_expiry} days left
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-display font-semibold text-white mb-1">
-                      {promo.landing_headline || promo.title}
-                    </h3>
-                    <p className="text-zinc-400">
-                      {promo.landing_subtext || promo.description}
-                    </p>
-                  </div>
-            
-                  <div className="flex flex-col items-center gap-3">
-                    <Link to={`/register?promo=${promo.code}`}>
-                      <Button className="bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-xl px-6 py-3">
-                        {promo.landing_button_text || 'Claim Now'}
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </Link>
-                    <code className="text-teal-400 text-sm bg-teal-500/10 px-3 py-1 rounded-lg">
-                      Code: {promo.code}
-                    </code>
-                  </div>
-                </div>
+                <ChevronDown className="w-6 h-6 text-gray-500" />
               </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
+            </section>
 
-      {/* Bento Grid Features Section */}
-      <section id="features" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <span className="text-teal-400 text-sm font-medium uppercase tracking-wider">Features</span>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-white mt-3 mb-4">
-                Everything you need in one place
-              </h2>
-              <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-                Three powerful tools working together to ensure your content is original, human, and unique.
-              </p>
-            </div>
-          </ScrollReveal>
-          
-          {/* Bento Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* AI Detection - Large Card */}
-            <ScrollReveal delay={0.1}>
-              <motion.div 
-                className="lg:col-span-2 group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-teal-500/30 transition-all duration-500 overflow-hidden"
-                whileHover={{ y: -4 }}
-              >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl group-hover:bg-teal-500/10 transition-all" />
-                <div className="relative">
-                  <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center mb-6">
-                    <Shield className="w-6 h-6 text-teal-400" />
-                  </div>
-                  <h3 className="font-display text-2xl font-semibold text-white mb-3">AI Detection</h3>
-                  <p className="text-zinc-400 mb-6 max-w-md">
-                    Powered by advanced neural networks that read text like a human expert, spotting machine-generated content with 99% accuracy.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['Heat map visualization', 'Sentence breakdown', 'PDF export', 'Shareable reports'].map((item, i) => (
-                      <div key={i} className="flex items-center text-zinc-300 text-sm">
-                        <CheckCircle className="w-4 h-4 text-teal-500 mr-2 flex-shrink-0" />{item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-
-            {/* Stats Card */}
-            <ScrollReveal delay={0.2}>
-              <motion.div 
-                className="group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-orange-500/30 transition-all duration-500"
-                whileHover={{ y: -4 }}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-2xl group-hover:bg-orange-500/10 transition-all" />
-                <div className="relative">
-                  <div className="text-5xl font-display font-bold text-white mb-2">99%</div>
-                  <div className="text-zinc-400 text-sm uppercase tracking-wider mb-6">Detection Accuracy</div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-zinc-500">False positives</span>
-                      <span className="text-teal-400 font-medium">0%</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-zinc-500">Texts analyzed</span>
-                      <span className="text-white font-medium">10M+</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-zinc-500">Happy users</span>
-                      <span className="text-white font-medium">50K+</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-
-            {/* Humanizer Card */}
-            <ScrollReveal delay={0.3}>
-              <motion.div 
-                className="group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-purple-500/30 transition-all duration-500"
-                whileHover={{ y: -4 }}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-all" />
-                <div className="relative">
-                  <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6">
-                    <Sparkles className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-white mb-3">Text Humanizer</h3>
-                  <p className="text-zinc-400 text-sm">
-                    Transform robotic AI text into authentic, human-sounding content while preserving meaning.
-                  </p>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-
-            {/* Plagiarism Card */}
-            <ScrollReveal delay={0.4}>
-              <motion.div 
-                className="group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-blue-500/30 transition-all duration-500"
-                whileHover={{ y: -4 }}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all" />
-                <div className="relative">
-                  <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6">
-                    <Search className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-white mb-3">Plagiarism Checker</h3>
-                  <p className="text-zinc-400 text-sm">
-                    Scan against billions of web pages in real-time with pinpoint accuracy.
-                  </p>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-
-            {/* Writing Tools Card */}
-            <ScrollReveal delay={0.5}>
-              <motion.div 
-                className="group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 hover:border-cyan-500/30 transition-all duration-500"
-                whileHover={{ y: -4 }}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all" />
-                <div className="relative">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center">
-                      <Wand2 className="w-6 h-6 text-cyan-400" />
-                    </div>
-                    <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs font-medium rounded-full">14 Tools</span>
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-white mb-3">Writing Suite</h3>
-                  <p className="text-zinc-400 text-sm mb-4">
-                    Grammar, tone, summarization, translation, and more.
-                  </p>
-                  <Link to={isAuthenticated ? "/writing-tools" : "/register"} className="inline-flex items-center text-cyan-400 text-sm hover:text-cyan-300 transition-colors">
-                    Explore tools <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Self-Learning AI Section - Simplified */}
-      <section className="py-24 px-6 border-t border-zinc-800/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <ScrollReveal>
-              <div>
-                <span className="text-purple-400 text-sm font-medium uppercase tracking-wider">Self-Learning AI</span>
-                <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mt-3 mb-6">
-                  Our AI gets smarter every day
-                </h2>
-                <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
-                  Unlike static tools, TextShift continuously learns from user feedback. Every correction helps our models improve, staying ahead of new AI writing patterns.
-                </p>
-                <div className="space-y-4">
-                  {[
-                    { icon: Users, title: 'Community-Powered', desc: 'Your feedback directly improves detection accuracy' },
-                    { icon: Cpu, title: 'Adaptive Networks', desc: 'LoRA fine-tuning for rapid model updates' },
-                    { icon: Target, title: 'Safe A/B Testing', desc: 'Rigorous testing before every deployment' },
-                  ].map((item, i) => (
-                    <motion.div 
-                      key={i}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/50 hover:border-purple-500/20 transition-colors"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
+            {/* Promo Banner Section */}
+            {activePromos.length > 0 && (
+              <section className="py-8 px-6">
+                <div className="max-w-4xl mx-auto">
+                  {activePromos.map((promo) => (
+                    <motion.div
+                      key={promo.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-600/10 to-purple-500/20 border border-emerald-500/30 p-6 md:p-8"
                     >
-                      <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-5 h-5 text-purple-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-medium mb-1">{item.title}</h4>
-                        <p className="text-zinc-500 text-sm">{item.desc}</p>
+                      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-5" />
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                      <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex-1 text-center md:text-left">
+                          <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                            <Gift className="w-5 h-5 text-emerald-400" />
+                                                        {promo.landing_badge_text && (
+                                                          <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/30">
+                                                            {promo.landing_badge_text}
+                                                          </span>
+                                                        )}
+                                                        {promo.days_until_expiry !== null && promo.days_until_expiry >= 0 && promo.days_until_expiry <= 7 && (
+                                                          <span className="flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-full border border-yellow-500/30">
+                                                            <Clock className="w-3 h-3" />
+                                                            {promo.days_until_expiry} days left
+                                                          </span>
+                                                        )}
+                          </div>
+                          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                            {promo.landing_headline || promo.title}
+                          </h3>
+                          <p className="text-gray-300 text-lg">
+                            {promo.landing_subtext || promo.description}
+                          </p>
+                          <div className="mt-3 flex items-center justify-center md:justify-start gap-4 text-sm text-gray-400">
+                            <span className="flex items-center gap-1">
+                              <CheckCircle className="w-4 h-4 text-emerald-400" />
+                              {promo.duration_days} days free
+                            </span>
+                            {promo.plan_tier && (
+                              <span className="flex items-center gap-1">
+                                <Zap className="w-4 h-4 text-emerald-400" />
+                                {promo.plan_tier.charAt(0).toUpperCase() + promo.plan_tier.slice(1)} Plan
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                  
+                        <div className="flex flex-col items-center gap-3">
+                          <Link to={`/register?promo=${promo.code}`}>
+                            <MagneticButton>
+                              <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-full px-8 py-6 text-lg shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
+                                {promo.landing_button_text || 'Claim Now'}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                              </Button>
+                            </MagneticButton>
+                          </Link>
+                          <code className="text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                            Code: {promo.code}
+                          </code>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </section>
+            )}
+
+            <section className="py-20 md:py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light leading-tight">
+              <span className="text-white">We're a </span><span className="text-gray-500">full-service</span><br />
+              <span className="text-gray-500">AI Content</span><br />
+              <motion.span 
+                className="text-emerald-400 inline-block"
+                whileHover={{ scale: 1.05 }}
+              >
+                Platform
+              </motion.span>
+              <span className="text-2xl ml-4">&#128075;</span>
+              <span className="text-white"> We turn</span><br />
+              <span className="text-white">AI-generated text</span><br />
+              <span className="text-gray-500">into </span>
+              <motion.span 
+                className="text-emerald-400 inline-block"
+                whileHover={{ scale: 1.05 }}
+              >
+                human-quality content.
+              </motion.span>
+            </h2>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <section id="features" className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16 md:mb-20">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Our <span className="text-emerald-400">Tools</span></h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
+            </div>
+          </ScrollReveal>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <ScrollReveal delay={0.1}>
+              <TiltCard className="h-full" glowColor="rgba(16, 185, 129, 0.4)">
+                <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                  <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <img src="/images/ai-detection-card.png" alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="relative">
+                    <motion.div 
+                      className="w-12 h-12 md:w-14 md:h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Shield className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
+                    </motion.div>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
+                                        <p className="text-gray-400 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
+                    <ul className="space-y-3">
+                      {['Heat map visualization', 'Sentence-by-sentence breakdown', 'PDF export & shareable reports', 'Confidence meter gauge'].map((item, i) => (
+                        <motion.li 
+                          key={i} 
+                          className="flex items-center text-gray-300 text-sm"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{item}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </TiltCard>
             </ScrollReveal>
 
             <ScrollReveal delay={0.2}>
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-zinc-400 text-sm">Model Performance</span>
-                  <span className="text-teal-400 text-xs font-medium px-2 py-1 bg-teal-500/10 rounded-full">Live</span>
+              <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.4)">
+                <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-purple-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                  <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <img src="/images/humanizer-card.png" alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="relative">
+                    <motion.div 
+                      className="w-12 h-12 md:w-14 md:h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
+                    </motion.div>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
+                                        <p className="text-gray-400 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
+                    <ul className="space-y-3">
+                      {['Word-level diff comparison', 'Side-by-side before/after', 'Preserves original meaning', 'Re-analyze with one click'].map((item, i) => (
+                        <motion.li 
+                          key={i} 
+                          className="flex items-center text-gray-300 text-sm"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          <CheckCircle className="w-4 h-4 text-purple-400 mr-3 flex-shrink-0" />{item}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div className="space-y-6">
-                  {[
-                    { label: 'AI Detector', accuracy: 99.18, color: 'teal' },
-                    { label: 'Humanizer', accuracy: 95.0, color: 'purple' },
-                    { label: 'Plagiarism', accuracy: 99.95, color: 'blue' }
-                  ].map((model, i) => (
-                    <div key={i}>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-white">{model.label}</span>
-                        <span className="text-zinc-400">{model.accuracy}%</span>
-                      </div>
-                      <div className="w-full bg-zinc-800 rounded-full h-2">
-                        <motion.div 
-                          className={`bg-${model.color}-500 h-2 rounded-full`}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${model.accuracy}%` }}
-                          transition={{ duration: 1, delay: i * 0.2 }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+              </TiltCard>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3}>
+              <TiltCard className="h-full" glowColor="rgba(59, 130, 246, 0.4)">
+                <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-blue-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                  <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <img src="/images/plagiarism-card.png" alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="relative">
+                    <motion.div 
+                      className="w-12 h-12 md:w-14 md:h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Search className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
+                    </motion.div>
+                                        <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
+                                        <p className="text-gray-400 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
+                    <ul className="space-y-3">
+                      {['Source URLs with matches', 'Percentage breakdown per source', 'PDF export reports', 'Comparison mode'].map((item, i) => (
+                        <motion.li 
+                          key={i} 
+                          className="flex items-center text-gray-300 text-sm"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          <CheckCircle className="w-4 h-4 text-blue-400 mr-3 flex-shrink-0" />{item}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div className="mt-6 pt-4 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-500">
-                  <span>Last training: 2 days ago</span>
-                  <span>Next: Sunday 3 AM UTC</span>
-                </div>
-              </div>
+              </TiltCard>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Demo Section - Simplified */}
-      <section id="demo" className="py-24 px-6 border-t border-zinc-800/50">
-        <div className="max-w-3xl mx-auto">
+      {/* Self-Learning AI Section - Competitive Moat */}
+      <section className="py-20 md:py-32 px-6 bg-gradient-to-b from-purple-900/10 to-transparent">
+        <div className="max-w-7xl mx-auto">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <span className="text-teal-400 text-sm font-medium uppercase tracking-wider">Try it now</span>
-              <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mt-3 mb-4">
-                See it in action
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-full mb-6">
+                <Brain className="w-4 h-4 text-purple-400" />
+                <span className="text-purple-400 text-sm font-medium">Self-Learning AI Technology</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">
+                Our AI <span className="text-purple-400">Gets Smarter</span> Every Day
               </h2>
-              <p className="text-zinc-400 text-lg">Paste any text to check if it's AI-generated. No sign-up required.</p>
+              <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+                Unlike static AI tools, TextShift continuously learns from user feedback. Every correction you make helps our models improve, creating an ever-evolving detection system that stays ahead of new AI writing patterns.
+              </p>
             </div>
           </ScrollReveal>
-          
-          <ScrollReveal delay={0.2}>
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
-              <Textarea
-                placeholder="Paste your text here..."
-                className="min-h-[180px] bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 rounded-xl resize-none focus:border-teal-500/50 focus:ring-teal-500/20 mb-6"
-                value={demoText}
-                onChange={(e) => setDemoText(e.target.value)}
-              />
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <span className="text-zinc-500 text-sm">{demoText.length} characters</span>
-                <Button 
-                  onClick={handleDemoCheck} 
-                  disabled={demoText.length < 20} 
-                  className="bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-xl px-6 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Zap className="w-4 h-4 mr-2" />Analyze Text
-                </Button>
-              </div>
-              
-              {demoResult && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 p-6 bg-zinc-800/50 rounded-xl border border-zinc-700"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                      <div className="text-zinc-500 text-sm uppercase tracking-wider mb-1">Result</div>
-                      <div className="text-2xl font-display font-semibold text-white">{demoResult.type}</div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            <ScrollReveal delay={0.1}>
+              <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
+                <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
+                  <motion.div 
+                    className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Users className="w-6 h-6 text-purple-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-medium text-white mb-3">Community-Powered Learning</h3>
+                  <p className="text-gray-400 mb-4">
+                    Your feedback directly improves our AI. When you mark a result as incorrect, our system learns from it and gets better at detecting similar patterns.
+                  </p>
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Continuous improvement cycle</span>
+                  </div>
+                </div>
+              </TiltCard>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.2}>
+              <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
+                <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
+                  <motion.div 
+                    className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Cpu className="w-6 h-6 text-purple-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-medium text-white mb-3">Adaptive Neural Networks</h3>
+                  <p className="text-gray-400 mb-4">
+                    Our LoRA fine-tuning technology allows rapid model updates without full retraining. New AI writing styles are detected within days, not months.
+                  </p>
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Weekly model improvements</span>
+                  </div>
+                </div>
+              </TiltCard>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3}>
+              <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
+                <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
+                  <motion.div 
+                    className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Target className="w-6 h-6 text-purple-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-medium text-white mb-3">Safe A/B Testing</h3>
+                  <p className="text-gray-400 mb-4">
+                    Every model update is rigorously tested before deployment. Our A/B testing system ensures new versions perform better before going live.
+                  </p>
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Auto-rollback protection</span>
+                  </div>
+                </div>
+              </TiltCard>
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal delay={0.4}>
+            <div className="bg-gradient-to-r from-purple-500/10 via-purple-500/5 to-purple-500/10 border border-purple-500/20 rounded-3xl p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-light text-white mb-4">
+                    Why Self-Learning Matters
+                  </h3>
+                  <p className="text-gray-400 mb-6">
+                    AI writing tools evolve constantly. GPT-5, Claude 4, and new models emerge regularly. Static detectors become obsolete within months. Our self-learning system adapts in real-time, ensuring you always have the most accurate detection available.
+                  </p>
+                  <ul className="space-y-3">
+                    {[
+                      'Detects new AI models within 7 days of release',
+                      'Learns from 20+ edge case scenarios',
+                      'Zero false positives on human-written content',
+                      'Improves accuracy by 0.5% weekly on average'
+                    ].map((item, i) => (
+                      <motion.li 
+                        key={i}
+                        className="flex items-center text-gray-300 text-sm"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <CheckCircle className="w-4 h-4 text-purple-400 mr-3 flex-shrink-0" />
+                        {item}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="relative">
+                  <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-gray-400 text-sm">Model Accuracy Over Time</span>
+                      <span className="text-purple-400 text-sm font-medium">Live Data</span>
                     </div>
-                    <div className="sm:text-right">
-                      <div className="text-zinc-500 text-sm uppercase tracking-wider mb-1">Confidence</div>
-                      <div className={`text-2xl font-display font-semibold ${demoResult.score > 50 ? 'text-orange-400' : 'text-teal-400'}`}>{demoResult.score}%</div>
+                    <div className="space-y-4">
+                      {[
+                        { label: 'AI Detector', accuracy: 99.18, trend: '+0.12%' },
+                        { label: 'Humanizer', accuracy: 95.0, trend: '+2.1%' },
+                        { label: 'Plagiarism', accuracy: 99.95, trend: '+0.02%' }
+                      ].map((model, i) => (
+                        <div key={i}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-white">{model.label}</span>
+                            <span className="text-gray-400">
+                              {model.accuracy}% 
+                              <span className="text-green-400 ml-2">{model.trend}</span>
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2">
+                            <motion.div 
+                              className="bg-gradient-to-r from-purple-500 to-purple-400 h-2 rounded-full"
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${model.accuracy}%` }}
+                              transition={{ duration: 1, delay: i * 0.2 }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                      <span className="text-gray-500 text-xs">Last training: 2 days ago</span>
+                      <span className="text-gray-500 text-xs">Next: Sunday 3 AM UTC</span>
                     </div>
                   </div>
-                  <p className="text-zinc-500 text-sm mt-6 pt-4 border-t border-zinc-700">This is a demo. Sign up for full analysis with sentence-level breakdown.</p>
-                </motion.div>
-              )}
+                </div>
+              </div>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Pricing Section - Simplified */}
-      <section id="pricing" className="py-24 px-6 border-t border-zinc-800/50">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <span className="text-teal-400 text-sm font-medium uppercase tracking-wider">Pricing</span>
-              <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mt-3 mb-4">
-                Simple, transparent pricing
-              </h2>
-              <p className="text-zinc-400 text-lg">Credits never expire. No hidden fees. Cancel anytime.</p>
-            </div>
-          </ScrollReveal>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Heat map visualization', 'Basic reports'], cta: 'Get Started', highlight: false },
-              { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff'], cta: 'Subscribe', highlight: false },
-              { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'API access', 'Priority support'], cta: 'Subscribe', highlight: true },
-              { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['Unlimited scans', 'White-label API', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
-            ].map((plan, i) => (
-              <ScrollReveal key={i} delay={i * 0.1}>
-                <motion.div 
-                  className={`relative bg-zinc-900/50 border rounded-2xl p-6 h-full ${plan.highlight ? 'border-teal-500/50' : 'border-zinc-800'}`}
-                  whileHover={{ y: -4 }}
-                >
-                  {plan.highlight && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-teal-500 text-zinc-900 text-xs font-semibold px-3 py-1 rounded-full">Popular</span>
+            {/* Writing Tools Section - 14 New Features */}
+            <section className="py-20 md:py-32 px-6 bg-gradient-to-b from-cyan-900/10 to-transparent">
+              <div className="max-w-7xl mx-auto">
+                <ScrollReveal>
+                  <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-6">
+                      <Wand2 className="w-4 h-4 text-cyan-400" />
+                      <span className="text-cyan-400 text-sm font-medium">14 Powerful Writing Tools</span>
                     </div>
-                  )}
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-medium text-white mb-3">{plan.name}</h3>
-                    <div className="mb-1">
-                      <span className="text-3xl font-display font-bold text-white">{plan.price}</span>
-                      {plan.price !== '$0' && <span className="text-zinc-500">/mo</span>}
-                    </div>
-                    <div className="text-zinc-500 text-sm">{plan.credits}</div>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">
+                      Complete <span className="text-cyan-400">Writing Suite</span>
+                    </h2>
+                    <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+                      Beyond detection and humanization - TextShift offers a complete suite of writing tools to enhance your content. Grammar checking, translation, summarization, and more.
+                    </p>
                   </div>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, j) => (
-                      <li key={j} className="flex items-center text-zinc-300 text-sm">
-                        <CheckCircle className="w-4 h-4 text-teal-500 mr-2 flex-shrink-0" />{feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link to="/register" className="block">
-                    <Button className={`w-full rounded-xl ${plan.highlight ? 'bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold' : 'bg-zinc-800 hover:bg-zinc-700 text-white'}`}>
-                      {plan.cta}
-                    </Button>
-                  </Link>
-                </motion.div>
+                </ScrollReveal>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                  {[
+                    { icon: CheckCircle, name: 'Grammar Checker', desc: 'Fix grammar, spelling & punctuation', color: 'emerald', tier: 'Free' },
+                    { icon: Palette, name: 'Tone Detector', desc: 'Analyze emotional tone of text', color: 'blue', tier: 'Free' },
+                    { icon: Sparkles, name: 'Tone Adjuster', desc: 'Adjust text to different tones', color: 'purple', tier: 'Starter' },
+                    { icon: BookOpen, name: 'Readability Score', desc: 'Flesch scores & reading level', color: 'amber', tier: 'Free' },
+                    { icon: FileText, name: 'Summarizer', desc: 'Create concise summaries', color: 'cyan', tier: 'Free' },
+                    { icon: PenTool, name: 'Paraphraser', desc: 'Rewrite in different styles', color: 'pink', tier: 'Free' },
+                    { icon: Quote, name: 'Citation Generator', desc: 'APA, MLA, Chicago citations', color: 'indigo', tier: 'Starter' },
+                    { icon: Languages, name: 'Translator', desc: '6 language pairs supported', color: 'teal', tier: 'Free' },
+                    { icon: Lightbulb, name: 'Content Improver', desc: 'Enhance clarity & engagement', color: 'yellow', tier: 'Starter' },
+                    { icon: Target, name: 'Style Analysis', desc: 'Vocabulary & structure insights', color: 'violet', tier: 'Starter' },
+                    { icon: FileText, name: 'Word Counter', desc: 'Detailed text statistics', color: 'gray', tier: 'Free' },
+                    { icon: Zap, name: 'Export Options', desc: 'TXT, HTML, Markdown export', color: 'orange', tier: 'Free' },
+                  ].map((tool, i) => (
+                    <ScrollReveal key={i} delay={i * 0.05}>
+                      <motion.div 
+                        className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all duration-300"
+                        whileHover={{ y: -5 }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`p-2 rounded-lg bg-${tool.color}-500/10`}>
+                            <tool.icon className={`w-5 h-5 text-${tool.color}-400`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-white font-medium text-sm">{tool.name}</h4>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                tool.tier === 'Free' 
+                                  ? 'bg-emerald-500/20 text-emerald-400' 
+                                  : 'bg-purple-500/20 text-purple-400'
+                              }`}>
+                                {tool.tier}
+                              </span>
+                            </div>
+                            <p className="text-gray-500 text-xs mt-1">{tool.desc}</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </ScrollReveal>
+                  ))}
+                </div>
+
+                <ScrollReveal delay={0.3}>
+                  <div className="bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 border border-cyan-500/20 rounded-3xl p-8 md:p-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="text-center md:text-left">
+                        <h3 className="text-2xl md:text-3xl font-light text-white mb-2">
+                          All-in-One Writing Platform
+                        </h3>
+                        <p className="text-gray-400 max-w-xl">
+                          No need for multiple subscriptions. TextShift combines AI detection, humanization, plagiarism checking, and 14 writing tools in one affordable platform.
+                        </p>
+                      </div>
+                      <MagneticButton>
+                        <Link to={isAuthenticated ? "/writing-tools" : "/register"}>
+                          <Button className="bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-full px-8 py-6 text-lg shadow-lg shadow-cyan-500/25 whitespace-nowrap">
+                            {isAuthenticated ? "Try Writing Tools" : "Get Started Free"}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                          </Button>
+                        </Link>
+                      </MagneticButton>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              </div>
+            </section>
+
+            <section className="py-16 md:py-20 px-6 border-y border-white/10">
+              <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                              {[
+                                { value: 99, suffix: '%', label: 'Detection Accuracy' },
+                                { value: 0, suffix: '%', label: 'False Positives' },
+                                { value: 50, suffix: 'K+', label: 'Users Trust Us' },
+                                { value: 10, suffix: 'M+', label: 'Texts Analyzed' },
+                              ].map((stat, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-2">
+                    <AnimatedCounter end={stat.value} suffix={stat.suffix} decimals={0} />
+                  </div>
+                  <div className="text-gray-500 text-xs md:text-sm uppercase tracking-wider">{stat.label}</div>
+                </div>
               </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ Section - Simplified */}
-      <section id="faq" className="py-24 px-6 border-t border-zinc-800/50">
-        <div className="max-w-2xl mx-auto">
+      <section id="demo" className="py-20 md:py-32 px-6">
+        <div className="max-w-4xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <span className="text-teal-400 text-sm font-medium uppercase tracking-wider">FAQ</span>
-              <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mt-3">
-                Common questions
-              </h2>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Try it <span className="text-emerald-400">now</span></h2>
+              <p className="text-gray-400 text-lg">Paste any text to see our AI detection in action. No sign-up required.</p>
             </div>
           </ScrollReveal>
           
-          <div className="space-y-3">
+          <ScrollReveal delay={0.2}>
+            <motion.div 
+              className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm"
+              whileHover={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}
+            >
+              <Textarea
+                placeholder="Paste your text here to check if it's AI-generated..."
+                className="min-h-[200px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-6 cursor-auto"
+                value={demoText}
+                onChange={(e) => setDemoText(e.target.value)}
+              />
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <span className="text-gray-500 text-sm">{demoText.length} characters</span>
+                <MagneticButton>
+                  <Button 
+                    onClick={handleDemoCheck} 
+                    disabled={demoText.length < 20} 
+                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 w-full sm:w-auto shadow-lg shadow-emerald-500/25 disabled:shadow-none transition-all duration-300"
+                  >
+                    <Zap className="w-4 h-4 mr-2" />Analyze Text
+                  </Button>
+                </MagneticButton>
+              </div>
+              
+              {demoResult && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-8 p-6 bg-black/30 rounded-2xl border border-white/10"
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Detection Result</div>
+                      <div className="text-2xl md:text-3xl font-light text-white">{demoResult.type}</div>
+                    </div>
+                    <div className="sm:text-right">
+                      <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Confidence</div>
+                      <div className={`text-2xl md:text-3xl font-light ${demoResult.score > 50 ? 'text-rose-400' : 'text-emerald-400'}`}>{demoResult.score}%</div>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm mt-6 pt-6 border-t border-white/10">This is a demo result. Sign up for full analysis with sentence-level breakdown.</p>
+                </motion.div>
+              )}
+            </motion.div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <section id="pricing" className="relative py-20 md:py-32 px-6 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/pricing-bg.png" alt="" className="w-full h-full object-cover opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Plans to suit <span className="text-emerald-400">your needs</span></h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Credits never expire. No hidden fees. Cancel anytime.</p>
+            </div>
+          </ScrollReveal>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+                            { name: 'Free', price: '$0', credits: '5,000 words/mo', features: ['AI Detection only', '10 scans/day', 'Heat map visualization', 'Basic reports'], cta: 'Get Started', highlight: false },
+                            { name: 'Starter', price: '$9', credits: '25,000 words/mo', features: ['All 3 tools', '100 scans/day', 'PDF export', 'Word-level diff', 'Comparison mode'], cta: 'Subscribe', highlight: false },
+                            { name: 'Pro', price: '$19', credits: 'Unlimited', features: ['All 3 tools', '500 scans/day', 'PDF export', 'Shareable reports', 'API access', 'Priority support'], cta: 'Subscribe', highlight: true },
+                            { name: 'Enterprise', price: '$49', credits: 'True Unlimited', features: ['All 3 tools', 'Unlimited scans', 'All Pro features', 'White-label API', 'Dedicated support', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+            ].map((plan, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
+                  <div className={`relative bg-gradient-to-b from-white/5 to-transparent border rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm ${plan.highlight ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-white/10'}`}>
+                    {plan.highlight && (
+                      <motion.div 
+                        className="absolute -top-3 left-1/2 -translate-x-1/2"
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <span className="bg-emerald-500 text-black text-xs font-medium px-3 py-1 rounded-full">Most Popular</span>
+                      </motion.div>
+                    )}
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
+                      <div className="mb-2">
+                        <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
+                        {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
+                      </div>
+                      <div className="text-gray-500 text-sm">{plan.credits}</div>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      {plan.features.map((feature, j) => (
+                        <motion.li 
+                          key={j} 
+                          className="flex items-center text-gray-300 text-sm"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: j * 0.05 }}
+                        >
+                          <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                    <MagneticButton className="w-full">
+                      <Link to="/register" className="block">
+                        <Button className={`w-full rounded-full transition-all duration-300 ${plan.highlight ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/25' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}>{plan.cta}</Button>
+                      </Link>
+                    </MagneticButton>
+                  </div>
+                </TiltCard>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative py-20 md:py-32 px-6 border-t border-white/10 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/testimonials-bg.png" alt="" className="w-full h-full object-cover opacity-15" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">What our <span className="text-emerald-400">clients say</span></h2>
+            </div>
+          </ScrollReveal>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { quote: "TextShift's AI detection is incredibly accurate. It's become an essential tool for our content team.", author: "Sarah M.", role: "Content Manager", company: "TechCorp", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" },
+              { quote: "The humanizer feature is a game-changer. Our AI-assisted content now passes all detection tools.", author: "James K.", role: "Marketing Director", company: "GrowthLabs", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" },
+              { quote: "Finally, a plagiarism checker that actually finds paraphrased content. Worth every penny.", author: "Dr. Emily R.", role: "University Professor", company: "Stanford", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" }
+            ].map((testimonial, i) => (
+              <ScrollReveal key={i} delay={i * 0.15}>
+                <TiltCard className="h-full">
+                  <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm h-full">
+                    <div className="flex mb-4">
+                      {[...Array(5)].map((_, j) => (
+                        <motion.div
+                          key={j}
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: j * 0.1 }}
+                        >
+                          <Star className="w-4 h-4 text-emerald-400 fill-emerald-400" />
+                        </motion.div>
+                      ))}
+                    </div>
+                    <h3 className="text-lg md:text-xl font-medium text-white mb-4">"{testimonial.quote}"</h3>
+                    <div className="flex items-center gap-3">
+                      <img src={testimonial.avatar} alt={testimonial.author} className="w-10 h-10 rounded-full object-cover" />
+                      <div>
+                        <div className="font-medium text-white">{testimonial.author}</div>
+                        <div className="text-gray-500 text-sm">{testimonial.role} - {testimonial.company}</div>
+                      </div>
+                    </div>
+                  </div>
+                </TiltCard>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-20 md:py-32 px-6">
+        <div className="max-w-3xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4"><span className="text-emerald-400">FAQ</span></h2>
+            </div>
+          </ScrollReveal>
+          
+          <div className="space-y-4">
             {faqs.map((faq, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
+                <motion.div 
+                  className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
+                  whileHover={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}
+                >
                   <button 
                     onClick={() => setOpenFaq(openFaq === i ? null : i)} 
-                    className="w-full flex items-center justify-between p-5 text-left hover:bg-zinc-800/30 transition-colors"
+                    className="w-full flex items-center justify-between p-5 md:p-6 text-left cursor-auto"
                   >
                     <span className="text-white font-medium pr-4">{faq.q}</span>
                     <motion.div
                       animate={{ rotate: openFaq === i ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <ChevronDown className="w-5 h-5 text-zinc-500 flex-shrink-0" />
+                      <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     </motion.div>
                   </button>
                   <motion.div
@@ -683,58 +1003,70 @@ export default function LandingPage() {
                       height: openFaq === i ? 'auto' : 0,
                       opacity: openFaq === i ? 1 : 0
                     }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-5 pb-5 text-zinc-400">{faq.a}</div>
+                    <div className="px-5 md:px-6 pb-5 md:pb-6 text-gray-400">{faq.a}</div>
                   </motion.div>
-                </div>
+                </motion.div>
               </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-6 border-t border-zinc-800/50">
-        <div className="max-w-3xl mx-auto text-center">
+      <section id="contact" className="py-20 md:py-32 px-6 border-t border-white/10">
+        <div className="max-w-4xl mx-auto text-center">
           <ScrollReveal>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-6">
-              Ready to get started?
-            </h2>
-            <p className="text-zinc-400 text-lg mb-10">Start with 5,000 free words today. No credit card required.</p>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-light text-white mb-8">Let's <span className="text-emerald-400">talk.</span></h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto">Ready to transform your content workflow? Start with 5,000 free words today.</p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/register">
-                <Button className="bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-xl px-8 py-6 text-base">
-                  Get Started Free
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-              <a href="mailto:support@textshift.org">
-                <Button variant="outline" className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800 rounded-xl px-8 py-6 text-base">
-                  Contact Us
-                </Button>
-              </a>
+              <MagneticButton>
+                <Link to="/register">
+                  <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
+                    Get Started Free
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+              </MagneticButton>
+              <MagneticButton>
+                <a href="mailto:support@textshift.org">
+                  <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 md:px-12 py-6 text-lg w-full sm:w-auto transition-all duration-300">Contact Us</Button>
+                </a>
+              </MagneticButton>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Footer - Simplified */}
-      <footer className="py-12 px-6 border-t border-zinc-800">
-        <div className="max-w-6xl mx-auto">
+      <footer className="py-12 px-6 border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/images/logo.png" alt="TextShift" className="w-8 h-8 object-contain" />
-              <span className="text-white font-display font-semibold">TextShift</span>
+              <motion.img 
+                src="/images/logo.png" 
+                alt="TextShift" 
+                className="w-8 h-8 object-contain"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              />
+              <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
-            <div className="flex items-center gap-6 text-zinc-500 text-sm">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-gray-500 text-sm">
+              <a href="mailto:support@textshift.org" className="hover:text-white transition">support@textshift.org</a>
+            </div>
+            <div className="flex items-center gap-6 text-gray-500 text-sm">
               <Link to="/pricing" className="hover:text-white transition">Pricing</Link>
               <a href="#faq" className="hover:text-white transition">FAQ</a>
-              <a href="mailto:support@textshift.org" className="hover:text-white transition">Contact</a>
+              <a href="https://twitter.com/textshift" className="hover:text-white transition">Twitter</a>
+              <a href="https://linkedin.com/company/textshift" className="hover:text-white transition">LinkedIn</a>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-zinc-600 text-sm">
+          <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-600 text-sm">
             &copy; {new Date().getFullYear()} TextShift. All rights reserved.
           </div>
         </div>
