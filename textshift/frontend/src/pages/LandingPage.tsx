@@ -76,7 +76,7 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePromos, setActivePromos] = useState<LandingPromo[]>([]);
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, user } = useAuthStore();
   
   // Contact modal state
   const [contactModalOpen, setContactModalOpen] = useState(false);
@@ -972,11 +972,21 @@ export default function LandingPage() {
                         </motion.li>
                       ))}
                     </ul>
-                    <MagneticButton className="w-full">
-                      <Link to={isAuthenticated ? "/pricing" : "/register"} className="block">
-                        <Button className={`w-full rounded-full transition-all duration-300 ${plan.highlight ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/25' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}>{plan.cta}</Button>
-                      </Link>
-                    </MagneticButton>
+                    {isAuthenticated && user?.subscription_tier?.toLowerCase() === plan.name.toLowerCase() ? (
+                      <Button 
+                        disabled 
+                        className="w-full rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Current Plan
+                      </Button>
+                    ) : (
+                      <MagneticButton className="w-full">
+                        <Link to={isAuthenticated ? "/pricing" : "/register"} className="block">
+                          <Button className={`w-full rounded-full transition-all duration-300 ${plan.highlight ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/25' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'}`}>{plan.cta}</Button>
+                        </Link>
+                      </MagneticButton>
+                    )}
                   </div>
                 </TiltCard>
               </ScrollReveal>
