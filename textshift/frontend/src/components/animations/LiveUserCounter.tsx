@@ -44,7 +44,7 @@ export default function LiveUserCounter() {
             </span>
             <button
               onClick={() => setIsVisible(false)}
-              className="text-gray-500 hover:text-white transition ml-2"
+              className="text-gray-300 hover:text-white transition ml-2" aria-label="Close notification"
             >
               &times;
             </button>

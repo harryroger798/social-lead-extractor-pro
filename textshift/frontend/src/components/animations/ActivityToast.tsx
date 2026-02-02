@@ -56,9 +56,9 @@ export default function ActivityToast() {
               <p className="text-sm text-white">
                 <span className="font-semibold">{currentActivity.name}</span> from {currentActivity.location}
               </p>
-              <p className="text-xs text-gray-400">
-                just {currentActivity.action}
-              </p>
+                            <p className="text-xs text-gray-300">
+                              just {currentActivity.action}
+                            </p>
             </div>
           </div>
         </motion.div>

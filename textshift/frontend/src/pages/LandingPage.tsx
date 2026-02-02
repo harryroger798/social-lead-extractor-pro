@@ -228,9 +228,14 @@ export default function LandingPage() {
             )}
           </div>
 
-          <button className="md:hidden text-white p-2 cursor-auto" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+                    <button 
+                      className="md:hidden text-white p-2 cursor-auto" 
+                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                      aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                      aria-expanded={mobileMenuOpen}
+                    >
+                      {mobileMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
+                    </button>
         </motion.div>
 
         {mobileMenuOpen && (
@@ -312,7 +317,7 @@ export default function LandingPage() {
           </ScrollReveal>
           
           <ScrollReveal delay={0.2}>
-                        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12">
                           The most accurate AI detection, humanization, and plagiarism checking platform. Industry-leading 99% accuracy. Credits never expire.
                         </p>
           </ScrollReveal>
@@ -344,7 +349,7 @@ export default function LandingPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.6}>
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm text-gray-500">
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm text-gray-300">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
                 <span>No credit card required</span>
@@ -366,7 +371,7 @@ export default function LandingPage() {
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <ChevronDown className="w-6 h-6 text-gray-500" />
+                <ChevronDown className="w-6 h-6 text-gray-300" aria-hidden="true" />
               </motion.div>
             </section>
 
@@ -406,7 +411,7 @@ export default function LandingPage() {
                           <p className="text-gray-300 text-lg">
                             {promo.landing_subtext || promo.description}
                           </p>
-                          <div className="mt-3 flex items-center justify-center md:justify-start gap-4 text-sm text-gray-400">
+                          <div className="mt-3 flex items-center justify-center md:justify-start gap-4 text-sm text-gray-300">
                             <span className="flex items-center gap-1">
                               <CheckCircle className="w-4 h-4 text-emerald-400" />
                               {promo.duration_days} days free
@@ -444,8 +449,8 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light leading-tight">
-              <span className="text-white">We're a </span><span className="text-gray-500">full-service</span><br />
-              <span className="text-gray-500">AI Content</span><br />
+              <span className="text-white">We're a </span><span className="text-gray-300">full-service</span><br />
+              <span className="text-gray-300">AI Content</span><br />
               <motion.span 
                 className="text-emerald-400 inline-block"
                 whileHover={{ scale: 1.05 }}
@@ -455,7 +460,7 @@ export default function LandingPage() {
               <span className="text-2xl ml-4">&#128075;</span>
               <span className="text-white"> We turn</span><br />
               <span className="text-white">AI-generated text</span><br />
-              <span className="text-gray-500">into </span>
+              <span className="text-gray-300">into </span>
               <motion.span 
                 className="text-emerald-400 inline-block"
                 whileHover={{ scale: 1.05 }}
@@ -472,7 +477,7 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-16 md:mb-20">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Our <span className="text-emerald-400">Tools</span></h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
+              <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-6">Three powerful tools, one platform. Everything you need to ensure your content is original, authentically human, and completely unique.</p>
               <Link to="/features" className="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
                 View all features <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
@@ -496,7 +501,7 @@ export default function LandingPage() {
                       <Shield className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
                     </motion.div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
-                                        <p className="text-gray-400 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
+                                        <p className="text-gray-300 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
                     <ul className="space-y-3">
                       {['Heat map visualization', 'Sentence-by-sentence breakdown', 'PDF export & shareable reports', 'Confidence meter gauge'].map((item, i) => (
                         <motion.li 
@@ -531,7 +536,7 @@ export default function LandingPage() {
                       <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
                     </motion.div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
-                                        <p className="text-gray-400 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
+                                        <p className="text-gray-300 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
                     <ul className="space-y-3">
                       {['Word-level diff comparison', 'Side-by-side before/after', 'Preserves original meaning', 'Re-analyze with one click'].map((item, i) => (
                         <motion.li 
@@ -566,7 +571,7 @@ export default function LandingPage() {
                       <Search className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
                     </motion.div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
-                                        <p className="text-gray-400 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
+                                        <p className="text-gray-300 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
                     <ul className="space-y-3">
                       {['Source URLs with matches', 'Percentage breakdown per source', 'PDF export reports', 'Comparison mode'].map((item, i) => (
                         <motion.li 
@@ -600,7 +605,7 @@ export default function LandingPage() {
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">
                 Our AI <span className="text-purple-400">Gets Smarter</span> Every Day
               </h2>
-              <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+              <p className="text-gray-300 text-lg max-w-3xl mx-auto">
                 Unlike static AI tools, TextShift continuously learns from user feedback. Every correction you make helps our models improve, creating an ever-evolving detection system that stays ahead of new AI writing patterns.
               </p>
             </div>
@@ -618,7 +623,7 @@ export default function LandingPage() {
                     <Users className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <h3 className="text-xl font-medium text-white mb-3">Community-Powered Learning</h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-gray-300 mb-4">
                     Your feedback directly improves our AI. When you mark a result as incorrect, our system learns from it and gets better at detecting similar patterns.
                   </p>
                   <div className="flex items-center gap-2 text-purple-400 text-sm">
@@ -640,7 +645,7 @@ export default function LandingPage() {
                     <Cpu className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <h3 className="text-xl font-medium text-white mb-3">Adaptive Neural Networks</h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-gray-300 mb-4">
                     Our LoRA fine-tuning technology allows rapid model updates without full retraining. New AI writing styles are detected within days, not months.
                   </p>
                   <div className="flex items-center gap-2 text-purple-400 text-sm">
@@ -662,7 +667,7 @@ export default function LandingPage() {
                     <Target className="w-6 h-6 text-purple-400" />
                   </motion.div>
                   <h3 className="text-xl font-medium text-white mb-3">Safe A/B Testing</h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-gray-300 mb-4">
                     Every model update is rigorously tested before deployment. Our A/B testing system ensures new versions perform better before going live.
                   </p>
                   <div className="flex items-center gap-2 text-purple-400 text-sm">
@@ -681,7 +686,7 @@ export default function LandingPage() {
                   <h3 className="text-2xl md:text-3xl font-light text-white mb-4">
                     Why Self-Learning Matters
                   </h3>
-                  <p className="text-gray-400 mb-6">
+                  <p className="text-gray-300 mb-6">
                     AI writing tools evolve constantly. GPT-5, Claude 4, and new models emerge regularly. Static detectors become obsolete within months. Our self-learning system adapts in real-time, ensuring you always have the most accurate detection available.
                   </p>
                   <ul className="space-y-3">
@@ -707,7 +712,7 @@ export default function LandingPage() {
                 <div className="relative">
                   <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-gray-400 text-sm">Model Accuracy Over Time</span>
+                      <span className="text-gray-300 text-sm">Model Accuracy Over Time</span>
                       <span className="text-purple-400 text-sm font-medium">Live Data</span>
                     </div>
                     <div className="space-y-4">
@@ -719,7 +724,7 @@ export default function LandingPage() {
                         <div key={i}>
                           <div className="flex justify-between text-sm mb-1">
                             <span className="text-white">{model.label}</span>
-                            <span className="text-gray-400">
+                            <span className="text-gray-300">
                               {model.accuracy}% 
                               <span className="text-green-400 ml-2">{model.trend}</span>
                             </span>
@@ -736,8 +741,8 @@ export default function LandingPage() {
                       ))}
                     </div>
                     <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-                      <span className="text-gray-500 text-xs">Last training: 2 days ago</span>
-                      <span className="text-gray-500 text-xs">Next: Sunday 3 AM UTC</span>
+                                            <span className="text-gray-300 text-xs">Last training: 2 days ago</span>
+                                            <span className="text-gray-300 text-xs">Next: Sunday 3 AM UTC</span>
                     </div>
                   </div>
                 </div>
@@ -759,7 +764,7 @@ export default function LandingPage() {
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">
                       Complete <span className="text-cyan-400">Writing Suite</span>
                     </h2>
-                    <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+                    <p className="text-gray-300 text-lg max-w-3xl mx-auto">
                       Beyond detection and humanization - TextShift offers a complete suite of writing tools to enhance your content. Grammar checking, translation, summarization, and more.
                     </p>
                   </div>
@@ -791,7 +796,7 @@ export default function LandingPage() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <h4 className="text-white font-medium text-sm">{tool.name}</h4>
+                              <span className="text-white font-medium text-sm">{tool.name}</span>
                               <span className={`text-xs px-2 py-0.5 rounded-full ${
                                 tool.tier === 'Free' 
                                   ? 'bg-emerald-500/20 text-emerald-400' 
@@ -800,7 +805,7 @@ export default function LandingPage() {
                                 {tool.tier}
                               </span>
                             </div>
-                            <p className="text-gray-500 text-xs mt-1">{tool.desc}</p>
+                            <p className="text-gray-300 text-xs mt-1">{tool.desc}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -815,9 +820,9 @@ export default function LandingPage() {
                         <h3 className="text-2xl md:text-3xl font-light text-white mb-2">
                           All-in-One Writing Platform
                         </h3>
-                        <p className="text-gray-400 max-w-xl">
-                          No need for multiple subscriptions. TextShift combines AI detection, humanization, plagiarism checking, and 14 writing tools in one affordable platform.
-                        </p>
+                                                <p className="text-gray-300 max-w-xl">
+                                                  No need for multiple subscriptions. TextShift combines AI detection, humanization, plagiarism checking, and 14 writing tools in one affordable platform.
+                                                </p>
                       </div>
                       <MagneticButton>
                         <Link to={isAuthenticated ? "/writing-tools" : "/register"}>
@@ -847,7 +852,7 @@ export default function LandingPage() {
                   <div className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-2">
                     <AnimatedCounter end={stat.value} suffix={stat.suffix} decimals={0} />
                   </div>
-                  <div className="text-gray-500 text-xs md:text-sm uppercase tracking-wider">{stat.label}</div>
+                  <div className="text-gray-300 text-xs md:text-sm uppercase tracking-wider">{stat.label}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -860,7 +865,7 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Try it <span className="text-emerald-400">now</span></h2>
-              <p className="text-gray-400 text-lg">Paste any text to see our AI detection in action. No sign-up required.</p>
+              <p className="text-gray-300 text-lg">Paste any text to see our AI detection in action. No sign-up required.</p>
             </div>
           </ScrollReveal>
           
@@ -871,12 +876,12 @@ export default function LandingPage() {
             >
               <Textarea
                 placeholder="Paste your text here to check if it's AI-generated..."
-                className="min-h-[200px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-6 cursor-auto"
+                className="min-h-[200px] bg-black/30 border-white/10 text-white placeholder:text-gray-400 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-6 cursor-auto"
                 value={demoText}
                 onChange={(e) => setDemoText(e.target.value)}
               />
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <span className="text-gray-500 text-sm">{demoText.length} characters</span>
+                <span className="text-gray-300 text-sm">{demoText.length} characters</span>
                 <MagneticButton>
                   <Button 
                     onClick={handleDemoCheck} 
@@ -896,15 +901,15 @@ export default function LandingPage() {
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                      <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Detection Result</div>
+                      <div className="text-gray-300 text-sm uppercase tracking-wider mb-1">Detection Result</div>
                       <div className="text-2xl md:text-3xl font-light text-white">{demoResult.type}</div>
                     </div>
                     <div className="sm:text-right">
-                      <div className="text-gray-500 text-sm uppercase tracking-wider mb-1">Confidence</div>
+                      <div className="text-gray-300 text-sm uppercase tracking-wider mb-1">Confidence</div>
                       <div className={`text-2xl md:text-3xl font-light ${demoResult.score > 50 ? 'text-rose-400' : 'text-emerald-400'}`}>{demoResult.score}%</div>
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm mt-6 pt-6 border-t border-white/10">This is a demo result. Sign up for full analysis with sentence-level breakdown.</p>
+                  <p className="text-gray-300 text-sm mt-6 pt-6 border-t border-white/10">This is a demo result. Sign up for full analysis with sentence-level breakdown.</p>
                 </motion.div>
               )}
             </motion.div>
@@ -921,7 +926,7 @@ export default function LandingPage() {
           <ScrollReveal>
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-4">Plans to suit <span className="text-emerald-400">your needs</span></h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">Credits never expire. No hidden fees. Cancel anytime.</p>
+              <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-6">Credits never expire. No hidden fees. Cancel anytime.</p>
               <Link to="/pricing" className="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
                 View full pricing details <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
@@ -952,12 +957,12 @@ export default function LandingPage() {
                       <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
                       <div className="mb-2">
                         <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
-                        {plan.price !== '$0' && <span className="text-gray-500">/month</span>}
+                        {plan.price !== '$0' && <span className="text-gray-300">/month</span>}
                       </div>
                       <div className="text-emerald-400 text-xs mb-1 h-4">
                         {plan.yearlyPrice !== '$0' ? `or ${plan.yearlyPrice}/year (save 2 months)` : ''}
                       </div>
-                      <div className="text-gray-500 text-sm">{plan.credits}</div>
+                      <div className="text-gray-300 text-sm">{plan.credits}</div>
                     </div>
                     <ul className="space-y-3 mb-8 flex-grow">
                       {plan.features.map((feature, j) => (
@@ -1033,7 +1038,7 @@ export default function LandingPage() {
                       <img src={testimonial.avatar} alt={testimonial.author} className="w-10 h-10 rounded-full object-cover" />
                       <div>
                         <div className="font-medium text-white">{testimonial.author}</div>
-                        <div className="text-gray-500 text-sm">{testimonial.role} - {testimonial.company}</div>
+                        <div className="text-gray-300 text-sm">{testimonial.role} - {testimonial.company}</div>
                       </div>
                     </div>
                   </div>
@@ -1068,7 +1073,7 @@ export default function LandingPage() {
                       animate={{ rotate: openFaq === i ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      <ChevronDown className="w-5 h-5 text-gray-300 flex-shrink-0" aria-hidden="true" />
                     </motion.div>
                   </button>
                   <motion.div
@@ -1080,7 +1085,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-5 md:px-6 pb-5 md:pb-6 text-gray-400">{faq.a}</div>
+                    <div className="px-5 md:px-6 pb-5 md:pb-6 text-gray-300">{faq.a}</div>
                   </motion.div>
                 </motion.div>
               </ScrollReveal>
@@ -1095,7 +1100,7 @@ export default function LandingPage() {
             <h2 className="text-4xl sm:text-5xl md:text-7xl font-light text-white mb-8">Let's <span className="text-emerald-400">talk.</span></h2>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto">Ready to transform your content workflow? Start with 5,000 free words today.</p>
+            <p className="text-gray-300 text-lg mb-12 max-w-2xl mx-auto">Ready to transform your content workflow? Start with 5,000 free words today.</p>
           </ScrollReveal>
           <ScrollReveal delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1135,16 +1140,16 @@ export default function LandingPage() {
               <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
             <div className="flex justify-center">
-              <a href="mailto:support@textshift.org" className="text-gray-500 text-sm hover:text-white transition">support@textshift.org</a>
+              <a href="mailto:support@textshift.org" className="text-gray-300 text-sm hover:text-white transition">support@textshift.org</a>
             </div>
-            <div className="flex items-center justify-center md:justify-end gap-6 text-gray-500 text-sm">
+            <div className="flex items-center justify-center md:justify-end gap-6 text-gray-300 text-sm">
               <Link to="/pricing" className="hover:text-white transition">Pricing</Link>
               <a href="#faq" className="hover:text-white transition">FAQ</a>
               <a href="https://twitter.com/textshift" className="hover:text-white transition">Twitter</a>
               <a href="https://linkedin.com/company/textshift" className="hover:text-white transition">LinkedIn</a>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-600 text-sm">
+          <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-300 text-sm">
             &copy; {new Date().getFullYear()} TextShift. All rights reserved.
           </div>
         </div>
@@ -1173,7 +1178,7 @@ export default function LandingPage() {
                 setContactSuccess(false);
                 setContactError('');
               }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+              className="absolute top-4 right-4 text-gray-300 hover:text-white transition" aria-label="Close contact form"
             >
               <X className="w-6 h-6" />
             </button>
@@ -1184,7 +1189,7 @@ export default function LandingPage() {
                   <CheckCircle className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h3 className="text-2xl font-semibold text-white mb-2">Message Sent!</h3>
-                <p className="text-gray-400 mb-6">Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+                <p className="text-gray-300 mb-6">Thank you for reaching out. Our team will get back to you within 24 hours.</p>
                 <Button
                   onClick={() => {
                     setContactModalOpen(false);
@@ -1202,35 +1207,35 @@ export default function LandingPage() {
                     <Mail className="w-6 h-6 text-emerald-400" />
                   </div>
                   <h3 className="text-2xl font-semibold text-white mb-2">Contact Us</h3>
-                  <p className="text-gray-400">Have a question or need help? We'd love to hear from you.</p>
+                  <p className="text-gray-300">Have a question or need help? We'd love to hear from you.</p>
                 </div>
 
                 <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-1">Name *</label>
+                      <label className="block text-sm text-gray-300 mb-1">Name *</label>
                       <div className="relative">
-                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <Input
                           type="text"
                           required
                           value={contactForm.name}
                           onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-300"
                           placeholder="Your name"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-1">Email *</label>
+                      <label className="block text-sm text-gray-300 mb-1">Email *</label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <Input
                           type="email"
                           required
                           value={contactForm.email}
                           onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-300"
                           placeholder="you@example.com"
                         />
                       </div>
@@ -1239,27 +1244,27 @@ export default function LandingPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-1">Company</label>
+                      <label className="block text-sm text-gray-300 mb-1">Company</label>
                       <div className="relative">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <Input
                           type="text"
                           value={contactForm.company}
                           onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
-                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-300"
                           placeholder="Your company"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-1">Phone</label>
+                      <label className="block text-sm text-gray-300 mb-1">Phone</label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <Input
                           type="tel"
                           value={contactForm.phone}
                           onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-300"
                           placeholder="+1 (555) 000-0000"
                         />
                       </div>
@@ -1267,7 +1272,7 @@ export default function LandingPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-1">Topic</label>
+                    <label className="block text-sm text-gray-300 mb-1">Topic</label>
                     <select
                       value={contactForm.plan_interest}
                       onChange={(e) => setContactForm({ ...contactForm, plan_interest: e.target.value })}
@@ -1282,14 +1287,14 @@ export default function LandingPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-1">Message *</label>
+                    <label className="block text-sm text-gray-300 mb-1">Message *</label>
                     <div className="relative">
-                      <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                      <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-gray-300" />
                       <Textarea
                         required
                         value={contactForm.message}
                         onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 min-h-[120px]"
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-300 min-h-[120px]"
                         placeholder="How can we help you?"
                       />
                     </div>
