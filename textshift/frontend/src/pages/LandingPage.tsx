@@ -191,8 +191,8 @@ export default function LandingPage() {
             <a href="#demo" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Demo</a>
             <a href="#pricing" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Pricing</a>
             <a href="#faq" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">FAQ</a>
-            <a href="#contact" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition flex items-center gap-1">
-              Contact <ArrowRight className="w-3 h-3" />
+            <a href="#contact" className="px-4 py-2 text-sm text-gray-300 hover:text-white transition">
+              Contact
             </a>
           </div>
 
