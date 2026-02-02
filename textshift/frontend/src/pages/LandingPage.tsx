@@ -405,9 +405,9 @@ export default function LandingPage() {
                                                           </span>
                                                         )}
                           </div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                             {promo.landing_headline || promo.title}
-                          </h3>
+                          </h2>
                           <p className="text-gray-300 text-lg">
                             {promo.landing_subtext || promo.description}
                           </p>
