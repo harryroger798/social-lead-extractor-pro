@@ -12,6 +12,10 @@ export default defineConfig({
   build: {
     // Enable minification with esbuild (built-in, faster than terser)
     minify: 'esbuild',
+    // Target modern browsers for smaller bundles
+    target: 'es2020',
+    // CSS code splitting
+    cssCodeSplit: true,
     // Code splitting configuration
     rollupOptions: {
       output: {
@@ -34,11 +38,20 @@ export default defineConfig({
           'vendor-animation': ['framer-motion'],
         },
       },
+      // Tree-shaking optimization
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+      },
     },
     // Chunk size warnings
     chunkSizeWarningLimit: 500,
     // Source maps for production debugging
     sourcemap: false,
+  },
+  // CSS optimization
+  css: {
+    devSourcemap: false,
   },
   // Optimize dependencies
   optimizeDeps: {

@@ -177,7 +177,7 @@ export default function LandingPage() {
         >
           <Link to="/" className="flex items-center gap-2 group">
             <motion.img 
-              src="/images/logo.png" 
+              src="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" 
               alt="TextShift" 
               className="w-8 h-8 object-contain"
               whileHover={{ rotate: 360 }}
@@ -280,7 +280,7 @@ export default function LandingPage() {
 
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
-          <img src="/images/hero-bg.png" alt="" className="w-full h-full object-cover opacity-20" />
+          <img src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-20" loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-5xl mx-auto text-center relative z-10">
@@ -485,7 +485,7 @@ export default function LandingPage() {
                 <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
                   <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                   <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <img src="/images/ai-detection-card.png" alt="" className="w-full h-full object-cover" />
+                    <img src="https://ik.imagekit.io/tijkyyzycl/ai-detection-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
                     <motion.div 
@@ -520,7 +520,7 @@ export default function LandingPage() {
                 <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-purple-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
                   <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                   <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <img src="/images/humanizer-card.png" alt="" className="w-full h-full object-cover" />
+                    <img src="https://ik.imagekit.io/tijkyyzycl/humanizer-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
                     <motion.div 
@@ -555,7 +555,7 @@ export default function LandingPage() {
                 <div className="group relative bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 hover:border-blue-500/30 transition-all duration-500 overflow-hidden h-full backdrop-blur-sm">
                   <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                   <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <img src="/images/plagiarism-card.png" alt="" className="w-full h-full object-cover" />
+                    <img src="https://ik.imagekit.io/tijkyyzycl/plagiarism-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
                     <motion.div 
@@ -914,7 +914,7 @@ export default function LandingPage() {
 
       <section id="pricing" className="relative py-20 md:py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src="/images/pricing-bg.png" alt="" className="w-full h-full object-cover opacity-10" />
+          <img src="https://ik.imagekit.io/tijkyyzycl/pricing-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-10" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
@@ -997,7 +997,7 @@ export default function LandingPage() {
 
       <section className="relative py-20 md:py-32 px-6 border-t border-white/10 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src="/images/testimonials-bg.png" alt="" className="w-full h-full object-cover opacity-15" />
+          <img src="https://ik.imagekit.io/tijkyyzycl/testimonials-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-15" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
@@ -1126,7 +1126,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             <Link to="/" className="flex items-center gap-2 justify-center md:justify-start">
               <motion.img 
-                src="/images/logo.png" 
+                src="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" 
                 alt="TextShift" 
                 className="w-8 h-8 object-contain"
                 whileHover={{ rotate: 360 }}
