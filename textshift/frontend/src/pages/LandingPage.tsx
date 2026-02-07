@@ -304,8 +304,8 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70,w-1920"
-            srcSet="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-60,w-640 640w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-65,w-1024 1024w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70,w-1920 1920w"
+            src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-40,w-1280"
+            srcSet="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-30,w-640 640w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-35,w-1024 1024w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-40,w-1280 1280w"
             sizes="100vw"
             alt=""
             className="w-full h-full object-cover opacity-20"
@@ -948,7 +948,7 @@ export default function LandingPage() {
 
       <section id="pricing" className="relative py-20 md:py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src="https://ik.imagekit.io/tijkyyzycl/pricing-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-10" loading="lazy" />
+          <img src="https://ik.imagekit.io/tijkyyzycl/pricing-bg.png?tr=f-webp,q-30,w-1280" alt="" className="w-full h-full object-cover opacity-10" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
@@ -1031,7 +1031,7 @@ export default function LandingPage() {
 
       <section className="relative py-20 md:py-32 px-6 border-t border-white/10 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src="https://ik.imagekit.io/tijkyyzycl/testimonials-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-15" loading="lazy" />
+          <img src="https://ik.imagekit.io/tijkyyzycl/testimonials-bg.png?tr=f-webp,q-30,w-1280" alt="" className="w-full h-full object-cover opacity-15" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
