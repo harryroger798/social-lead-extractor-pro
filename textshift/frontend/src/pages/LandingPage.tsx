@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { usePageSEO } from '@/hooks/usePageSEO';
+import { generateFAQSchema } from '@/lib/seo';
 import { 
   Shield, 
   Sparkles, 
@@ -77,6 +79,22 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePromos, setActivePromos] = useState<LandingPromo[]>([]);
   const { isAuthenticated, logout, user } = useAuthStore();
+
+  usePageSEO({
+    title: 'AI Content Detection & Humanization Tool | 99% Accuracy',
+    description: 'Detect AI-generated content with 99.18% accuracy. Humanize AI text to bypass detection. Free plagiarism checker. 14 writing tools. Trusted by 10,000+ users.',
+    keywords: 'AI detector, AI content detection, humanize AI text, plagiarism checker, ChatGPT detector, AI writing tools, grammar checker, text humanizer',
+    ogType: 'website',
+    structuredData: [
+      generateFAQSchema([
+        { question: 'What makes TextShift different?', answer: 'TextShift combines AI detection, humanization, and plagiarism checking in one platform with industry-leading 99% accuracy.' },
+        { question: 'How accurate is the AI detection?', answer: 'Our Advanced Neural Intelligence system achieves 99% accuracy with zero false positives.' },
+        { question: "What's included in the free plan?", answer: 'The free plan includes 5,000 words/month for AI Detection with 10 scans/day.' },
+        { question: 'How does the humanizer work?', answer: 'Our Natural Language Transformation Engine rewrites AI-generated text to sound authentically human while preserving your original meaning.' },
+        { question: 'Is my content secure?', answer: "We don't store your content after processing. All data is encrypted and protected." },
+      ]),
+    ],
+  });
   
   // Contact modal state
   const [contactModalOpen, setContactModalOpen] = useState(false);
@@ -285,7 +303,18 @@ export default function LandingPage() {
 
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
-          <img src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70" alt="" className="w-full h-full object-cover opacity-20" loading="eager" fetchPriority="high" />
+          <img
+            src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70,w-1920"
+            srcSet="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-60,w-640 640w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-65,w-1024 1024w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70,w-1920 1920w"
+            sizes="100vw"
+            alt=""
+            className="w-full h-full object-cover opacity-20"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            width={1920}
+            height={1080}
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-5xl mx-auto text-center relative z-10">

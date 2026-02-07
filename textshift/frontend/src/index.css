@@ -506,5 +506,78 @@
     content-visibility: auto;
     contain-intrinsic-size: 0 500px;
   }
+
+  .content-visibility-700 {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 700px;
+  }
+
+  .content-visibility-300 {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 300px;
+  }
+}
+
+/* Data saver / slow connection mode */
+.reduce-data img:not([fetchpriority="high"]) {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.reduce-data video,
+.reduce-data .particles-bg,
+.reduce-data .gradient-bg {
+  display: none !important;
+}
+
+.reduce-data *,
+.reduce-data *::before,
+.reduce-data *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .border-white\/10,
+  .border-white\/20 {
+    border-color: CanvasText;
+  }
+
+  .bg-emerald-500 {
+    background-color: Highlight;
+  }
+
+  .text-emerald-400,
+  .text-emerald-500 {
+    color: LinkText;
+  }
+}
+
+/* Hover-capable device optimizations */
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+}
+
+/* Coarse pointer (touch) optimizations */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .gap-1 {
+    gap: 0.5rem;
+  }
 }
 

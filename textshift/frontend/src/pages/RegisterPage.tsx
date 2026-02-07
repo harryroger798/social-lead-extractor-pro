@@ -8,6 +8,7 @@ import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { triggerConfetti } from '@/components/animations/ConfettiEffect';
 import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -17,6 +18,12 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  usePageSEO({
+    title: 'Create Your Free Account',
+    description: 'Sign up for TextShift and get 5,000 free words for AI detection. Access text humanization, plagiarism checking, and 14 writing tools.',
+    keywords: 'TextShift signup, free AI detector, create account, AI writing tools free',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

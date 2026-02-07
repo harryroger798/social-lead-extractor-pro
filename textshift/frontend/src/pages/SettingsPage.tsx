@@ -17,11 +17,18 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function SettingsPage() {
   const { user, updateUser, logout } = useAuthStore();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  usePageSEO({
+    title: 'Account Settings',
+    description: 'Manage your TextShift account settings, subscription, security, and preferences.',
+    noIndex: true,
+  });
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [clearingHistory, setClearingHistory] = useState(false);

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, ArrowLeft, Lock, CheckCircle, XCircle } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -16,6 +17,12 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  usePageSEO({
+    title: 'Reset Password',
+    description: 'Set a new password for your TextShift account.',
+    noIndex: true,
+  });
 
   useEffect(() => {
     if (!token) {

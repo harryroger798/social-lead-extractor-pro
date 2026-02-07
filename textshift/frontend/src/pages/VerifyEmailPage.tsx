@@ -6,12 +6,19 @@ import { Label } from '@/components/ui/label';
 import { Loader2, CheckCircle, XCircle, Mail, ArrowRight } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
   const updateUser = useAuthStore((state) => state.updateUser);
+
+  usePageSEO({
+    title: 'Verify Email',
+    description: 'Verify your TextShift email address to activate your account.',
+    noIndex: true,
+  });
   
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);

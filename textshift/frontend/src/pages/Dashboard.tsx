@@ -45,6 +45,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
 import { detectFormat, FormatDetectionResult } from '@/lib/formatDetector';
 import { FormatBadge } from '@/components/ui/FormatBadge';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 // Animated Loading Component for AI Detection
 const AIDetectionLoader = () => {
@@ -269,6 +270,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
+
+  usePageSEO({
+    title: 'Dashboard - AI Detection, Humanizer & Writing Tools',
+    description: 'TextShift Dashboard. Detect AI content, humanize text, check plagiarism, and access 14 writing tools.',
+    noIndex: true,
+  });
   // Separate text state for each tool to prevent cross-contamination
   const [detectText, setDetectText] = useState('');
   const [humanizeText, setHumanizeText] = useState('');

@@ -31,6 +31,7 @@ import {
   Wand2
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000');
 
@@ -126,6 +127,12 @@ interface PromoRedemption {
 export default function AdminPanel() {
   const { token, user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+
+  usePageSEO({
+    title: 'Admin Panel',
+    description: 'TextShift admin panel for managing users, scans, feedback, ML models, promos, and system settings.',
+    noIndex: true,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   

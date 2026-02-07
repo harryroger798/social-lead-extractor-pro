@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, lazy, Suspense } from 'react';
 import { useAuthStore } from '@/store/authStore';
+import OptimizationProvider from '@/components/OptimizationProvider';
 
 // Eager load critical pages for fast initial render
 import LandingPage from '@/pages/LandingPage';
@@ -23,12 +24,11 @@ const WritingTools = lazy(() => import('@/pages/WritingTools'));
 const ApiDocsPage = lazy(() => import('@/pages/ApiDocsPage'));
 const FeaturesPage = lazy(() => import('@/pages/FeaturesPage'));
 
-// Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-gray-500">Loading...</p>
+      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      <p className="text-sm text-gray-400">Loading...</p>
     </div>
   </div>
 );
@@ -89,6 +89,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <ScrollToTop />
+        <OptimizationProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public pages - no auth required */}
@@ -121,6 +122,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        </OptimizationProvider>
       </Router>
     </QueryClientProvider>
   );

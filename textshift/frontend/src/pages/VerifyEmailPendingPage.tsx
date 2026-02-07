@@ -4,11 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
 import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
 import { useAuthStore } from '@/store/authStore';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function VerifyEmailPendingPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+
+  usePageSEO({
+    title: 'Check Your Email',
+    description: 'A verification email has been sent. Please check your inbox to verify your TextShift account.',
+    noIndex: true,
+  });
   // Get email from location state (after registration) or from auth store (if user is logged in)
   const email = location.state?.email || user?.email || '';
   const [resending, setResending] = useState(false);

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  usePageSEO({
+    title: 'Sign In to Your Account',
+    description: 'Sign in to TextShift to access AI content detection, text humanization, plagiarism checking, and 14 writing tools.',
+    noIndex: true,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

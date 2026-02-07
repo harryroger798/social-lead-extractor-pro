@@ -27,11 +27,18 @@ import { useQuery } from '@tanstack/react-query';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as Diff from 'diff';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function HistoryPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+
+  usePageSEO({
+    title: 'Scan History - View Past AI Detection & Analysis Results',
+    description: 'View your TextShift scan history. Review past AI detection, humanization, and plagiarism check results.',
+    noIndex: true,
+  });
   const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const [selectedScan, setSelectedScan] = useState<any>(null);
   const [compareScan, setCompareScan] = useState<any>(null);

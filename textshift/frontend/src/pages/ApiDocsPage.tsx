@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Copy, CheckCircle2, ArrowLeft, Key, Zap, Shield, BookOpen } from 'lucide-react';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 const API_BASE = 'https://textshift.org';
 
@@ -348,6 +349,12 @@ const endpoints: Endpoint[] = [
 export default function ApiDocsPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+
+  usePageSEO({
+    title: 'API Documentation - REST API for AI Detection & Writing Tools',
+    description: 'TextShift REST API documentation. Access AI detection, text humanization, plagiarism checking, and 14 writing tools programmatically. Bearer token authentication.',
+    keywords: 'TextShift API, AI detection API, text humanizer API, plagiarism API, writing tools API, REST API documentation',
+  });
 
   const copyToClipboard = (text: string, index?: number, section?: string) => {
     navigator.clipboard.writeText(text);

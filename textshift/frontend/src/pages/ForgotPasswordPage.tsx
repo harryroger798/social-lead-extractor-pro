@@ -5,12 +5,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  usePageSEO({
+    title: 'Forgot Password',
+    description: 'Reset your TextShift password. Enter your email to receive a password reset link.',
+    noIndex: true,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

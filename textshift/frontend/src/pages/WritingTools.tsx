@@ -34,6 +34,7 @@ import { creditsApi, authApi } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { detectFormat, FormatDetectionResult } from '@/lib/formatDetector';
 import { FormatBadge } from '@/components/ui/FormatBadge';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 const API_BASE = '/api/tools';
 
@@ -268,6 +269,12 @@ export default function WritingTools() {
   const { user, logout, updateUser } = useAuthStore();
   const navigate = useNavigate();
   const [activeTool, setActiveTool] = useState<string>('grammar');
+
+  usePageSEO({
+    title: 'Writing Tools - Grammar, Tone, Summarizer & More',
+    description: 'Access 14 AI-powered writing tools: grammar checker, tone adjuster, summarizer, paraphraser, translator, citation generator, and more.',
+    noIndex: true,
+  });
   const [text, setText] = useState('');
   const [option, setOption] = useState('');
   const [result, setResult] = useState<any>(null);

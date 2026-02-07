@@ -16,6 +16,7 @@ import {
   ArrowDownRight
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 // In production, use empty string for same-origin requests (nginx proxies /api/ to backend)
 // In development, use localhost:8000
@@ -75,6 +76,12 @@ interface MetricsOverview {
 export default function AdminDashboard() {
   const { token, user } = useAuthStore();
   const [metrics, setMetrics] = useState<MetricsOverview | null>(null);
+
+  usePageSEO({
+    title: 'ML Admin Dashboard',
+    description: 'Monitor and manage TextShift self-learning AI models, A/B tests, and training runs.',
+    noIndex: true,
+  });
   const [trainingHistory, setTrainingHistory] = useState<TrainingRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

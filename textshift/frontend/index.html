@@ -1,40 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="color-scheme" content="dark" />
     
     <!-- Primary Meta Tags -->
     <title>TextShift - AI Content Detection & Humanization Tool | 99% Accuracy</title>
     <meta name="title" content="TextShift - AI Content Detection & Humanization Tool | 99% Accuracy" />
     <meta name="description" content="Detect AI-generated content with 99.18% accuracy. Humanize AI text to bypass detection. Free plagiarism checker. 14 writing tools. Trusted by 10,000+ users. Start free today!" />
-    <meta name="keywords" content="AI detector, AI content detection, humanize AI text, plagiarism checker, ChatGPT detector, AI writing tools, grammar checker, text humanizer" />
+    <meta name="keywords" content="AI detector, AI content detection, humanize AI text, plagiarism checker, ChatGPT detector, AI writing tools, grammar checker, text humanizer, AI text detector, content authenticity, academic integrity, paraphraser, tone adjuster, readability checker" />
     <meta name="author" content="TextShift" />
-    <meta name="robots" content="index, follow" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <meta name="rating" content="general" />
+    <meta name="revisit-after" content="3 days" />
+    <meta name="geo.region" content="US" />
+    <meta name="language" content="English" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://textshift.org/" />
     
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png" />
-    <meta name="theme-color" content="#10b981" />
+    <meta name="theme-color" content="#10b981" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#10b981" media="(prefers-color-scheme: light)" />
     <meta name="msapplication-TileColor" content="#10b981" />
+    <meta name="msapplication-TileImage" content="/images/logo.png" />
     
-    <!-- PWA Manifest (Mobile Optimization #46) -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="TextShift" />
+    <meta name="application-name" content="TextShift" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://textshift.org/" />
-    <meta property="og:title" content="TextShift - AI Content Detection & Humanization Tool" />
-    <meta property="og:description" content="Detect AI-generated content with 99.18% accuracy. Humanize AI text instantly. Free plagiarism checker. Start with 5,000 free credits today!" />
+    <meta property="og:title" content="TextShift - AI Content Detection & Humanization Tool | 99% Accuracy" />
+    <meta property="og:description" content="Detect AI-generated content with 99.18% accuracy. Humanize AI text instantly. Free plagiarism checker. 14 writing tools. Start with 5,000 free credits today!" />
     <meta property="og:image" content="https://textshift.org/images/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="TextShift - AI Content Detection Platform" />
     <meta property="og:site_name" content="TextShift" />
     <meta property="og:locale" content="en_US" />
     
@@ -44,18 +61,19 @@
     <meta name="twitter:title" content="TextShift - AI Content Detection & Humanization Tool" />
     <meta name="twitter:description" content="Detect AI-generated content with 99.18% accuracy. Humanize AI text instantly. Free plagiarism checker." />
     <meta name="twitter:image" content="https://textshift.org/images/twitter-card.png" />
+    <meta name="twitter:image:alt" content="TextShift - AI Content Detection Platform" />
     
-        <!-- Preconnect to external domains -->
-        <link rel="preconnect" href="https://api-m.paypal.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link rel="preconnect" href="https://ik.imagekit.io" />
-        <link rel="dns-prefetch" href="https://api-m.paypal.com" />
-        <link rel="dns-prefetch" href="https://ik.imagekit.io" />
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://ik.imagekit.io" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api-m.paypal.com" />
+    <link rel="dns-prefetch" href="https://ik.imagekit.io" />
+    <link rel="dns-prefetch" href="https://widget.intercom.io" />
     
-        <!-- Preload critical assets (LCP optimization) -->
-        <link rel="preload" as="image" href="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70" type="image/webp" />
-        <link rel="preload" as="image" href="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" type="image/webp" />
+    <!-- Preload critical assets (LCP optimization) -->
+    <link rel="preload" as="image" href="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-70,w-1920" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" type="image/webp" />
     
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">
@@ -110,5 +128,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/l05shlaq';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+    </script>
+    <noscript>
+      <div style="padding:20px;text-align:center;background:#0a0a0a;color:#fff;font-family:sans-serif">
+        <h1>TextShift</h1>
+        <p>TextShift requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+        <p>Visit our <a href="https://textshift.org" style="color:#10b981">homepage</a> for more information.</p>
+      </div>
+    </noscript>
   </body>
 </html>
