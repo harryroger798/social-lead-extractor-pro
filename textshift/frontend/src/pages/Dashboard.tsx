@@ -37,7 +37,11 @@ import {
   FileDown,
   Quote,
   Layers,
-  PenTool
+  PenTool,
+  Lock,
+  Unlock,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { scanApi, creditsApi, authApi, promoApi } from '@/lib/api';
@@ -279,6 +283,9 @@ export default function Dashboard() {
   // Separate text state for each tool to prevent cross-contamination
   const [detectText, setDetectText] = useState('');
   const [humanizeText, setHumanizeText] = useState('');
+  const [sentenceMode, setSentenceMode] = useState(false);
+  const [preservedIndices, setPreservedIndices] = useState<Set<number>>(new Set());
+  const [sentences, setSentences] = useState<string[]>([]);
     const [plagiarismText, setPlagiarismText] = useState('');
       const [result, setResult] = useState<any>(null);
       const [copied, setCopied] = useState(false);
@@ -404,7 +411,8 @@ export default function Dashboard() {
   });
 
   const humanizeMutation = useMutation({
-    mutationFn: scanApi.humanize,
+    mutationFn: ({ text, preservedIndices: pi }: { text: string; preservedIndices?: number[] }) =>
+      scanApi.humanize(text, pi),
     onSuccess: (data) => {
       setResult(data);
       refetchCredits();
@@ -519,13 +527,40 @@ export default function Dashboard() {
       }
     };
 
+  const splitIntoSentences = (text: string): string[] => {
+    const parts = text.trim().split(/(?<=[.!?])\s+/);
+    return parts.filter(s => s.trim().length > 0);
+  };
+
+  const handleToggleSentenceMode = () => {
+    if (!sentenceMode) {
+      const split = splitIntoSentences(humanizeText);
+      setSentences(split);
+      setPreservedIndices(new Set());
+    }
+    setSentenceMode(!sentenceMode);
+  };
+
+  const toggleSentencePreserve = (index: number) => {
+    setPreservedIndices(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  };
+
   const handleAnalyze = () => {
     setResult(null);
     const text = getCurrentText();
     if (activeTab === 'detect') {
       detectMutation.mutate(text);
     } else if (activeTab === 'humanize') {
-      humanizeMutation.mutate(text);
+      const pi = sentenceMode && preservedIndices.size > 0 ? Array.from(preservedIndices) : undefined;
+      humanizeMutation.mutate({ text, preservedIndices: pi });
     } else if (activeTab === 'plagiarism') {
       plagiarismMutation.mutate(text);
     }
@@ -689,16 +724,92 @@ export default function Dashboard() {
                             )}
                           </div>
               
+                          {!(activeTab === 'humanize' && sentenceMode) && (
                           <Textarea
                             placeholder="Paste your text here..."
                             className="min-h-[250px] bg-black/30 border-white/10 text-white placeholder:text-gray-600 rounded-2xl resize-none focus:border-emerald-500/50 focus:ring-emerald-500/20 mb-4"
                             value={getCurrentText()}
                             onChange={(e) => setCurrentText(e.target.value)}
                           />
+                          )}
+
+                          {activeTab === 'humanize' && sentenceMode && sentences.length > 0 && (
+                            <div className="mb-4 space-y-2">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-gray-400">{sentences.length} sentences found</span>
+                                  <span className="text-xs text-purple-400">({preservedIndices.size} preserved, {sentences.length - preservedIndices.size} to humanize)</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => setPreservedIndices(new Set(sentences.map((_, i) => i)))}
+                                    className="text-xs text-gray-400 hover:text-emerald-400 transition-colors px-2 py-1 rounded border border-white/10 hover:border-emerald-500/30"
+                                  >
+                                    Preserve All
+                                  </button>
+                                  <button
+                                    onClick={() => setPreservedIndices(new Set())}
+                                    className="text-xs text-gray-400 hover:text-purple-400 transition-colors px-2 py-1 rounded border border-white/10 hover:border-purple-500/30"
+                                  >
+                                    Humanize All
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
+                                {sentences.map((sentence, idx) => {
+                                  const isPreserved = preservedIndices.has(idx);
+                                  return (
+                                    <div
+                                      key={idx}
+                                      onClick={() => toggleSentencePreserve(idx)}
+                                      className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                                        isPreserved
+                                          ? 'bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/15'
+                                          : 'bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/15'
+                                      }`}
+                                    >
+                                      <div className="flex items-start gap-3">
+                                        <div className={`flex-shrink-0 mt-0.5 p-1 rounded-lg ${isPreserved ? 'bg-emerald-500/20' : 'bg-purple-500/20'}`}>
+                                          {isPreserved ? <Lock className="w-3.5 h-3.5 text-emerald-400" /> : <Unlock className="w-3.5 h-3.5 text-purple-400" />}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className={`text-sm leading-relaxed ${isPreserved ? 'text-emerald-300' : 'text-purple-300'}`}>
+                                            {sentence}
+                                          </p>
+                                        </div>
+                                        <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full ${
+                                          isPreserved ? 'bg-emerald-500/20 text-emerald-400' : 'bg-purple-500/20 text-purple-400'
+                                        }`}>
+                                          {isPreserved ? 'Preserve' : 'Humanize'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
 
                           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <div className="text-gray-500 text-sm">
-                              {getWordCount()} words | Cost: <span className="text-white">{getCreditCost()}</span> words
+                            <div className="flex items-center gap-3">
+                              <div className="text-gray-500 text-sm">
+                                {getWordCount()} words | Cost: <span className="text-white">{getCreditCost()}</span> words
+                              </div>
+                              {activeTab === 'humanize' && humanizeText.length >= 50 && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleToggleSentenceMode}
+                                  className={`rounded-full text-xs px-3 py-1 h-7 ${
+                                    sentenceMode
+                                      ? 'border-purple-500/50 text-purple-400 hover:bg-purple-500/20'
+                                      : 'border-white/20 text-gray-400 hover:text-white hover:bg-white/5'
+                                  }`}
+                                >
+                                  {sentenceMode ? <ToggleRight className="w-3 h-3 mr-1" /> : <ToggleLeft className="w-3 h-3 mr-1" />}
+                                  {sentenceMode ? 'Exit Sentence Mode' : 'Select Sentences'}
+                                </Button>
+                              )}
                             </div>
                 <Button
                   onClick={handleAnalyze}
@@ -976,6 +1087,44 @@ export default function Dashboard() {
                                     <div className="text-lg font-light text-emerald-400">{result.results?.changes_made || 0} words</div>
                                   </div>
                                 </div>
+
+                                {result.results?.sentence_details && (
+                                  <div className="p-4 bg-black/30 rounded-2xl border border-white/10">
+                                    <div className="flex items-center justify-between mb-3">
+                                      <h4 className="text-gray-500 text-sm uppercase tracking-wider">Sentence-Level Breakdown</h4>
+                                      <div className="flex items-center gap-3 text-xs">
+                                        <span className="flex items-center gap-1"><Lock className="w-3 h-3 text-emerald-400" /> {result.results.preserved_count} preserved</span>
+                                        <span className="flex items-center gap-1"><Wand2 className="w-3 h-3 text-purple-400" /> {result.results.humanized_count} humanized</span>
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                      {result.results.sentence_details.map((sd: any, idx: number) => (
+                                        <div key={idx} className={`p-3 rounded-xl border ${
+                                          sd.action === 'preserved' 
+                                            ? 'bg-emerald-500/5 border-emerald-500/20' 
+                                            : 'bg-purple-500/5 border-purple-500/20'
+                                        }`}>
+                                          <div className="flex items-center gap-2 mb-1">
+                                            {sd.action === 'preserved' 
+                                              ? <Lock className="w-3 h-3 text-emerald-400" /> 
+                                              : <Wand2 className="w-3 h-3 text-purple-400" />}
+                                            <span className={`text-xs font-medium ${sd.action === 'preserved' ? 'text-emerald-400' : 'text-purple-400'}`}>
+                                              {sd.action === 'preserved' ? 'Preserved' : 'Humanized'}
+                                            </span>
+                                          </div>
+                                          {sd.action === 'preserved' ? (
+                                            <p className="text-sm text-emerald-300/80 leading-relaxed">{sd.output}</p>
+                                          ) : (
+                                            <div className="space-y-1">
+                                              <p className="text-xs text-gray-500 line-through">{sd.original}</p>
+                                              <p className="text-sm text-purple-300/80 leading-relaxed">{sd.output}</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
 
                                 {/* Side-by-Side Comparison */}
                                 <div className="grid md:grid-cols-2 gap-4">

@@ -1477,6 +1477,37 @@ class MLModelService:
         sentences = re.split(r'[.!?]+', text)
         return [s.strip() for s in sentences if s.strip()]
     
+    def _split_sentences_preserve(self, text: str) -> List[str]:
+        """Split text into sentences while preserving punctuation."""
+        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+        return [s.strip() for s in sentences if s.strip()]
+    
+    def _humanize_single(self, sentence: str, use_post_processor: bool = True, passes: int = 2) -> str:
+        """Humanize a single sentence using the T5 model."""
+        try:
+            self._load_humanizer()
+            input_text = f"humanize: {sentence}"
+            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
+            with torch.no_grad():
+                outputs = self._humanizer_model.generate(
+                    **inputs,
+                    max_length=1024,
+                    num_beams=1,
+                    do_sample=True,
+                    temperature=1.0,
+                    top_p=0.95,
+                    repetition_penalty=2.5,
+                    no_repeat_ngram_size=3
+                )
+            model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+        except Exception as e:
+            logger.warning(f"Single sentence humanize failed: {e}, using HF API fallback")
+            model_output = self._humanize_with_hf_api(sentence)
+        
+        if use_post_processor:
+            model_output = self._apply_stealthwriter_postprocessor(model_output, passes)
+        return model_output
+    
     def _calculate_confidence_score(self, ai_prob: float) -> int:
         if ai_prob >= 0.95:
             return 10
@@ -1887,8 +1918,15 @@ class MLModelService:
             logger.warning(f"HuggingFace API fallback failed: {e}")
             return text
     
-    def humanize(self, text: str, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
-        """Humanize AI text using Stealthwriter T5 Chaos model (temp 1.5 for 0% AI detection)."""
+    def humanize(self, text: str, preserved_indices: Optional[List[int]] = None, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+        """Humanize AI text using Stealthwriter T5 Chaos model.
+        
+        If preserved_indices is provided, only humanize sentences NOT in the list.
+        Preserved sentences are kept exactly as-is in the output.
+        """
+        if preserved_indices is not None:
+            return self._humanize_selective(text, preserved_indices, use_post_processor, passes)
+        
         model_output = None
         use_fallback = False
         
@@ -1900,9 +1938,9 @@ class MLModelService:
                 outputs = self._humanizer_model.generate(
                     **inputs,
                     max_length=1024,
-                    num_beams=1,  # Disable beam search for more creative output
+                    num_beams=1,
                     do_sample=True,
-                    temperature=1.0,  # Reduced from 1.2 for better concept retention
+                    temperature=1.0,
                     top_p=0.95,
                     repetition_penalty=2.5,
                     no_repeat_ngram_size=3
@@ -1927,6 +1965,56 @@ class MLModelService:
             "post_processor_used": use_post_processor,
             "passes": passes,
             "used_fallback": use_fallback
+        }
+    
+    def _humanize_selective(self, text: str, preserved_indices: List[int], use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+        """Humanize text selectively - only humanize sentences not in preserved_indices."""
+        sentences = self._split_sentences_preserve(text)
+        result_sentences = []
+        sentence_details = []
+        total_preserved = 0
+        total_humanized = 0
+        
+        for i, sentence in enumerate(sentences):
+            if i in preserved_indices:
+                result_sentences.append(sentence)
+                sentence_details.append({
+                    "index": i,
+                    "original": sentence,
+                    "output": sentence,
+                    "action": "preserved"
+                })
+                total_preserved += 1
+            else:
+                humanized = self._humanize_single(sentence, use_post_processor, passes)
+                result_sentences.append(humanized)
+                sentence_details.append({
+                    "index": i,
+                    "original": sentence,
+                    "output": humanized,
+                    "action": "humanized"
+                })
+                total_humanized += 1
+        
+        final_output = ' '.join(result_sentences)
+        original_words = text.lower().split()
+        final_words = final_output.lower().split()
+        changes = len(set(original_words).symmetric_difference(set(final_words)))
+        
+        return {
+            "original_text": text,
+            "humanized_text": final_output,
+            "changes_made": changes,
+            "original_length": len(text),
+            "humanized_length": len(final_output),
+            "post_processor_used": use_post_processor,
+            "passes": passes,
+            "used_fallback": False,
+            "selective_mode": True,
+            "sentence_count": len(sentences),
+            "preserved_count": total_preserved,
+            "humanized_count": total_humanized,
+            "sentence_details": sentence_details
         }
     
     def _sync_web_search(self, text: str) -> List[Dict[str, Any]]:

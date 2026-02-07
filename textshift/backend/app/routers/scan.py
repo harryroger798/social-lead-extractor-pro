@@ -9,6 +9,7 @@ from app.models.scan import Scan, ScanType, ScanStatus
 from app.schemas.scan import ScanCreate, ScanResponse, ScanListResponse
 from app.services.credit_service import calculate_credits_needed, deduct_credits, get_daily_scan_limit, count_words
 from app.services.ml_service import ml_service, ABTestingIntegration
+from app.services.humanized_hash_service import humanized_hash_service
 import logging
 
 logger = logging.getLogger(__name__)
@@ -260,8 +261,20 @@ async def humanize_text(
             db_session=db
         )
         
-        result = ml_service.humanize(scan.input_text)
+        result = ml_service.humanize(scan.input_text, preserved_indices=scan_data.preserved_indices)
         scan.output_text = result["humanized_text"]
+        
+        # Store hash of humanized output for future AI detection bypass
+        try:
+            humanized_hash_service.store_hash(
+                db=db,
+                humanized_text=result["humanized_text"],
+                user_id=current_user.id,
+                scan_id=scan.id
+            )
+            logger.info(f"Stored humanized text hash for scan {scan.id}")
+        except Exception as hash_error:
+            logger.warning(f"Failed to store humanized text hash: {hash_error}")
         
         # Add model version info to results
         result["model_version"] = model_version.get("version_name", "humanizer_v1.0")
