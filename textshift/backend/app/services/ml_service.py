@@ -1505,7 +1505,7 @@ class MLModelService:
             model_output = self._humanize_with_hf_api(sentence)
         
         if use_post_processor:
-            model_output = self._apply_stealthwriter_postprocessor(model_output, passes)
+            model_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=sentence)
         return model_output
     
     def _calculate_confidence_score(self, ai_prob: float) -> int:
@@ -1771,13 +1771,68 @@ class MLModelService:
         
         return result
     
-    def _remove_meta_commentary(self, text: str) -> str:
+    _STOPWORDS = frozenset({
+        'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+        'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+        'should', 'may', 'might', 'shall', 'can', 'need', 'dare', 'ought',
+        'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from',
+        'as', 'into', 'through', 'during', 'before', 'after', 'above',
+        'below', 'between', 'out', 'off', 'over', 'under', 'again',
+        'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why',
+        'how', 'all', 'each', 'every', 'both', 'few', 'more', 'most',
+        'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same',
+        'so', 'than', 'too', 'very', 'just', 'because', 'but', 'and', 'or',
+        'if', 'while', 'about', 'up', 'its', 'it', 'i', 'me', 'my', 'we',
+        'our', 'you', 'your', 'he', 'him', 'his', 'she', 'her', 'they',
+        'them', 'their', 'what', 'which', 'who', 'whom', 'this', 'that',
+        'these', 'those', 'am', 'like', 'also', 'much', 'many', 'well',
+        'back', 'even', 'still', 'already', 'since', 'right', 'thing',
+        'things', 'way', 'really', 'know', 'think', 'make', 'got', 'get',
+        'go', 'see', 'come', 'take', 'say', 'said', 'one', 'two',
+    })
+
+    def _extract_content_words(self, text: str) -> set:
+        words = re.findall(r'[a-zA-Z]{3,}', text.lower())
+        return {w for w in words if w not in self._STOPWORDS}
+
+    def _strip_preamble_by_overlap(self, original_text: str, model_output: str) -> str:
+        """Strip preamble from model output by checking keyword overlap with original input.
+        
+        Leading output sentences that share zero content words with the input
+        are preamble and get removed. This catches ANY preamble format.
+        """
+        input_keywords = self._extract_content_words(original_text)
+        if not input_keywords:
+            return model_output
+
+        output_text = re.sub(r'^\s*#\s*\d+[^.!?\n]*[.!?]?\s*', '', model_output.strip())
+
+        sentences = re.split(r'(?<=[.!?])\s+', output_text)
+        if not sentences:
+            return output_text
+
+        first_relevant_idx = 0
+        for idx, sentence in enumerate(sentences):
+            sentence_keywords = self._extract_content_words(sentence)
+            overlap = sentence_keywords & input_keywords
+            if len(overlap) >= 2:
+                first_relevant_idx = idx
+                break
+        else:
+            return output_text
+
+        result = ' '.join(sentences[first_relevant_idx:])
+        if result and result[0].islower():
+            result = result[0].upper() + result[1:]
+        return result.strip()
+
+    def _remove_meta_commentary(self, text: str, original_text: Optional[str] = None) -> str:
         """Remove meta-commentary from model output like 'okay, here is a rewrite...'"""
         result = text.strip()
-        # Apply meta-commentary removal patterns
+        if original_text:
+            result = self._strip_preamble_by_overlap(original_text, result)
         for pattern in META_COMMENTARY_PATTERNS:
             result = re.sub(pattern, '', result, flags=re.IGNORECASE)
-        # Also remove common conversational fillers at the start
         start_fillers = [
             "okay, ", "ok, ", "alright, ", "sure, ", "well, ", "so, ",
             "as a matter of fact, ", "in point of fact, ",
@@ -1787,17 +1842,16 @@ class MLModelService:
             if lower_result.startswith(filler):
                 result = result[len(filler):]
                 lower_result = result.lower()
-        # Capitalize first letter if needed
         if result and result[0].islower():
             result = result[0].upper() + result[1:]
         return result.strip()
     
-    def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2) -> str:
+    def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2, original_text: Optional[str] = None) -> str:
         """
         Apply Stealthwriter-style transformations to make text sound more human.
         
         Process order (important for best results):
-        1. Remove meta-commentary
+        1. Remove meta-commentary (with keyword-overlap preamble stripping)
         2. Apply phrase replacements (longer patterns first)
         3. Expand contractions
         4. Remove filler words
@@ -1805,8 +1859,7 @@ class MLModelService:
         6. Add occasional formal starters
         """
         result = text
-        # First remove meta-commentary
-        result = self._remove_meta_commentary(result)
+        result = self._remove_meta_commentary(result, original_text=original_text)
         
         for _ in range(passes):
             # Step 1: Apply phrase replacements FIRST (longer patterns before shorter)
@@ -1951,7 +2004,7 @@ class MLModelService:
             use_fallback = True
             model_output = self._humanize_with_hf_api(text)
         
-        final_output = self._apply_stealthwriter_postprocessor(model_output, passes) if use_post_processor else model_output
+        final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text) if use_post_processor else model_output
         original_words = text.lower().split()
         final_words = final_output.lower().split()
         changes = len(set(original_words).symmetric_difference(set(final_words)))
