@@ -32,12 +32,14 @@ const coreEndpoints: Endpoint[] = [
       status: 'completed',
       input_text: 'Your text to analyze...',
       results: {
-        ai_probability: 0.85,
-        human_probability: 15.0,
+        ai_probability: 82.99,
+        human_probability: 17.01,
+        confidence_score: 8,
         confidence_level: 'high',
-        sentence_analysis: [
-          { text: 'First sentence...', ai_probability: 0.82 }
-        ]
+        analysis: { text_length: 150, word_count: 28, avg_sentence_length: 14 },
+        model_breakdown: { roberta: 82.99 },
+        model_used: 'roberta-base',
+        model_version: 'detector_v1.0'
       },
       credits_used: 50
     }
@@ -49,7 +51,8 @@ const coreEndpoints: Endpoint[] = [
     tier: 'Starter+ (not available on Free)',
     requestBody: { 
       text: 'Your AI-generated text to humanize.',
-      scan_type: 'humanize'
+      scan_type: 'humanize',
+      preserve_indices: [0, 3, 5]
     },
     responseExample: {
       id: 64,
@@ -58,11 +61,16 @@ const coreEndpoints: Endpoint[] = [
       input_text: 'Your AI-generated text to humanize.',
       output_text: 'Your naturally rewritten text that sounds human.',
       results: {
+        original_text: 'Your AI-generated text to humanize.',
         humanized_text: 'Your naturally rewritten text that sounds human.',
+        changes_made: 12,
         original_length: 35,
-        humanized_length: 48
+        humanized_length: 48,
+        post_processor_used: true,
+        passes: 2,
+        model_version: 'humanizer_v1.0'
       },
-      credits_used: 70
+      credits_used: 50
     }
   },
   {
@@ -81,13 +89,17 @@ const coreEndpoints: Endpoint[] = [
       input_text: 'Your text to check for plagiarism.',
       results: {
         plagiarism_score: 15.0,
-        original_score: 85.0,
+        risk_level: 'low',
+        original_content_percentage: 85.0,
         sources_found: 2,
         sources: [
-          { url: 'https://example.com', similarity: 12.0 }
-        ]
+          { url: 'https://example.com', title: 'Example Page', similarity_score: 12.0, jaccard_score: 8.5, semantic_score: 15.2, matched_text: 'Matching excerpt...', source_api: 'serper' }
+        ],
+        web_search_performed: true,
+        total_sources_checked: 10,
+        search_apis_used: ['duckduckgo', 'serper']
       },
-      credits_used: 52
+      credits_used: 50
     }
   },
   {
@@ -128,8 +140,9 @@ const coreEndpoints: Endpoint[] = [
       status: 'completed',
       input_text: 'Full text that was scanned...',
       results: {
-        ai_probability: 0.85,
-        human_probability: 15.0,
+        ai_probability: 82.99,
+        human_probability: 17.01,
+        confidence_score: 8,
         confidence_level: 'high'
       },
       credits_used: 50,
@@ -143,10 +156,10 @@ const coreEndpoints: Endpoint[] = [
     tier: 'All tiers',
     requestBody: {},
     responseExample: {
-      credits_balance: 5000,
-      credits_used_total: 1500,
+      balance: 5000,
+      used_total: 1500,
       subscription_tier: 'Pro',
-      unlimited: true
+      credits_per_month: -1
     }
   }
 ];
@@ -501,8 +514,10 @@ export default function ApiDocsPage() {
   "user": {
     "id": 1,
     "email": "your@email.com",
+    "full_name": "Your Name",
     "subscription_tier": "Enterprise",
-    "credits_balance": 5000
+    "credits_balance": 5000,
+    "is_verified": true
   }
 }`}
                 </pre>
@@ -530,10 +545,7 @@ export default function ApiDocsPage() {
                 { code: 'es', name: 'Spanish' },
                 { code: 'fr', name: 'French' },
                 { code: 'de', name: 'German' },
-                { code: 'hi', name: 'Hindi' },
-                { code: 'zh', name: 'Chinese' },
-                { code: 'ja', name: 'Japanese' },
-                { code: 'ko', name: 'Korean' }
+                { code: 'hi', name: 'Hindi (en→hi only)' }
               ].map(lang => (
                 <div key={lang.code} className="p-3 bg-black/20 rounded-lg flex items-center gap-2">
                   <code className="text-emerald-400 font-mono">{lang.code}</code>
