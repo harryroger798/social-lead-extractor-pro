@@ -61,7 +61,7 @@ export function PWAInstallPrompt({ className, delay = 30000 }: PWAInstallPromptP
       {isVisible && (
         <div
           className={cn(
-            'fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden safe-area-bottom animate-fade-in-up',
+            'fixed top-20 left-4 right-4 md:right-auto md:left-4 md:w-96 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden animate-fade-in-up',
             className
           )}
         >

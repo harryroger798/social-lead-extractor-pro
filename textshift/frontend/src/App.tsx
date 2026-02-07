@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, lazy, Suspense } from 'react';
 import { useAuthStore } from '@/store/authStore';
+import { useIntercom } from '@/hooks/useIntercom';
 import OptimizationProvider from '@/components/OptimizationProvider';
 
 // Eager load critical pages for fast initial render
@@ -84,11 +85,17 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function IntercomLoader() {
+  useIntercom();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
         <ScrollToTop />
+        <IntercomLoader />
         <OptimizationProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
