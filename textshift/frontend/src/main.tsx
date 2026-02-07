@@ -28,16 +28,8 @@ if (import.meta.env.DEV) {
 }
 
 const root = document.getElementById('root')!;
-const ssrShell = document.getElementById('ssr-shell');
-const app = (
+createRoot(root).render(
   <StrictMode>
     <App />
   </StrictMode>
 );
-
-if (ssrShell) {
-  ssrShell.remove();
-  createRoot(root).render(app);
-} else {
-  createRoot(root).render(app);
-}

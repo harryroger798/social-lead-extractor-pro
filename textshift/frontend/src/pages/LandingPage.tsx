@@ -341,62 +341,51 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         </div>
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <ScrollReveal>
-            <div
-            >
+          <div>
               <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light tracking-tight mb-8">
                 Transform your content<br />with{' '}
                 <TypingEffect />
               </h1>
-            </div>
-          </ScrollReveal>
+          </div>
           
-          <ScrollReveal delay={0.2}>
-                        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12">
-                          The most accurate AI detection, humanization, and plagiarism checking platform. Industry-leading 99% accuracy. Credits never expire.
-                        </p>
-          </ScrollReveal>
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12">
+            The most accurate AI detection, humanization, and plagiarism checking platform. Industry-leading 99% accuracy. Credits never expire.
+          </p>
           
-          <ScrollReveal delay={0.4}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <MagneticButton>
-                <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-                  <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
-                    {isAuthenticated ? "Go to Dashboard" : "Start Free"}
-                    <span
-                      className="ml-2"
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </span>
-                  </Button>
-                </Link>
-              </MagneticButton>
-              <MagneticButton>
-                <a href="#demo">
-                  <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 py-6 text-lg w-full sm:w-auto transition-all duration-300">
-                    Try Demo <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </a>
-              </MagneticButton>
-            </div>
-          </ScrollReveal>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <MagneticButton>
+              <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+                <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
+                  {isAuthenticated ? "Go to Dashboard" : "Start Free"}
+                  <span className="ml-2">
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                </Button>
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <a href="#demo">
+                <Button variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/40 rounded-full px-8 py-6 text-lg w-full sm:w-auto transition-all duration-300">
+                  Try Demo <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </a>
+            </MagneticButton>
+          </div>
 
-          <ScrollReveal delay={0.6}>
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm text-gray-300">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>5,000 free words</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>Cancel anytime</span>
-              </div>
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm text-gray-300">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>No credit card required</span>
             </div>
-          </ScrollReveal>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>5,000 free words</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>Cancel anytime</span>
+            </div>
+          </div>
         </div>
         
               <div
