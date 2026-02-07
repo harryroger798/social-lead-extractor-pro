@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -16,7 +16,7 @@ import {
   addNotificationReceivedListener,
 } from './src/services/notifications';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function AppContent() {
   const { isLoading, loadToken } = useAuthStore();
@@ -27,7 +27,7 @@ function AppContent() {
   useEffect(() => {
     loadToken();
     loadTheme();
-    registerForPushNotifications();
+    registerForPushNotifications().catch(() => {});
     notificationListener.current = addNotificationReceivedListener(() => {});
     responseListener.current = addNotificationResponseListener(() => {});
     return () => {
@@ -53,22 +53,29 @@ function AppContent() {
 }
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     ...Ionicons.font,
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {});
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
   return (
-    <GestureHandlerRootView style={styles.flex} onLayout={onLayoutRootView}>
+    <GestureHandlerRootView style={styles.flex}>
       <SafeAreaProvider>
         <NavigationContainer>
           <AppContent />
