@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useFonts } from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
+import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useAuthStore } from './src/store/authStore';
@@ -53,24 +52,32 @@ function AppContent() {
 }
 
 export default function App() {
-  const [fontsLoaded, fontError] = useFonts({
-    ...Ionicons.font,
-  });
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync().catch(() => {});
+    async function prepare() {
+      try {
+        await Font.loadAsync({
+          'ionicons': require('./assets/fonts/Ionicons.ttf'),
+          'Ionicons': require('./assets/fonts/Ionicons.ttf'),
+        });
+      } catch (e) {
+        console.warn('Font loading error:', e);
+      } finally {
+        setReady(true);
+        SplashScreen.hideAsync().catch(() => {});
+      }
     }
-  }, [fontsLoaded, fontError]);
+    prepare();
 
-  useEffect(() => {
     const timeout = setTimeout(() => {
+      setReady(true);
       SplashScreen.hideAsync().catch(() => {});
     }, 5000);
     return () => clearTimeout(timeout);
   }, []);
 
-  if (!fontsLoaded && !fontError) {
+  if (!ready) {
     return null;
   }
 
