@@ -64,7 +64,8 @@ export default function App() {
       }
       try {
         await Font.loadAsync({
-          'ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+          'ionicons': require('./assets/fonts/ionicons.ttf'),
+          'Ionicons': require('./assets/fonts/Ionicons.ttf'),
         });
       } catch (_e) {}
       setReady(true);

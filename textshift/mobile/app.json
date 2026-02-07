@@ -27,7 +27,7 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-font",
+      ["expo-font", { "fonts": ["./assets/fonts/Ionicons.ttf", "./assets/fonts/ionicons.ttf"] }],
       "expo-asset",
       [
         "expo-build-properties",
@@ -36,7 +36,8 @@
             "kotlinVersion": "1.9.25"
           }
         }
-      ]
+      ],
+      "./plugins/withAndroidFonts"
     ],
     "extra": {
       "eas": {
