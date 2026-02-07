@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A0A0A"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.textshift.app"
@@ -29,8 +31,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "f3984ec6-f3e3-4058-ad07-cee726b6aca2"
       }
-    }
+    },
+    "owner": "fried_mom274"
   }
 }
