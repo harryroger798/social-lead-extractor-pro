@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { TypeAnimation } from 'react-type-animation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { usePageSEO } from '@/hooks/usePageSEO';
@@ -70,6 +68,40 @@ interface LandingPromo {
   landing_button_text: string | null;
   landing_badge_text: string | null;
   days_until_expiry: number | null;
+}
+
+
+const TYPING_WORDS = ['AI Detection.', 'Humanizer.', 'Plagiarism Check.'];
+
+function TypingEffect() {
+  const [wordIndex, setWordIndex] = useState(0);
+  const [text, setText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = TYPING_WORDS[wordIndex];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting && text === currentWord) {
+      timeout = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && text === '') {
+      setIsDeleting(false);
+      setWordIndex((prev) => (prev + 1) % TYPING_WORDS.length);
+    } else {
+      timeout = setTimeout(() => {
+        setText(currentWord.substring(0, isDeleting ? text.length - 1 : text.length + 1));
+      }, isDeleting ? 30 : 80);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, wordIndex]);
+
+  return (
+    <span className="text-emerald-400">
+      {text}
+      <span className="animate-blink">|</span>
+    </span>
+  );
 }
 
 export default function LandingPage() {
@@ -187,19 +219,14 @@ export default function LandingPage() {
       <ActivityToast />
 
       <nav className="fixed w-full z-50 px-6 py-4">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-7xl mx-auto flex items-center justify-between"
+        <div
+          className="max-w-7xl mx-auto flex items-center justify-between animate-fade-in-up"
         >
           <Link to="/" className="flex items-center gap-2 group">
-            <motion.img 
+            <img 
               src="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" 
               alt="TextShift" 
               className="w-8 h-8 object-contain"
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
             />
             <span className="text-white font-medium tracking-wide">TextShift</span>
           </Link>
@@ -254,13 +281,10 @@ export default function LandingPage() {
                     >
                       {mobileMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
                     </button>
-        </motion.div>
+        </div>
 
         {mobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+          <div
             className="md:hidden absolute top-full left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-lg border-b border-white/10 p-6"
           >
             <div className="flex flex-col gap-4">
@@ -297,7 +321,7 @@ export default function LandingPage() {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
       </nav>
 
@@ -319,30 +343,13 @@ export default function LandingPage() {
         </div>
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <ScrollReveal>
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            <div
             >
               <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light tracking-tight mb-8">
                 Transform your content<br />with{' '}
-                <span className="text-emerald-400">
-                  <TypeAnimation
-                    sequence={[
-                      'AI Detection.',
-                      2000,
-                      'Humanizer.',
-                      2000,
-                      'Plagiarism Check.',
-                      2000,
-                    ]}
-                    wrapper="span"
-                    speed={50}
-                    repeat={Infinity}
-                  />
-                </span>
+                <TypingEffect />
               </h1>
-            </motion.div>
+            </div>
           </ScrollReveal>
           
           <ScrollReveal delay={0.2}>
@@ -357,13 +364,11 @@ export default function LandingPage() {
                 <Link to={isAuthenticated ? "/dashboard" : "/register"}>
                   <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-medium rounded-full px-8 py-6 text-lg w-full sm:w-auto shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300">
                     {isAuthenticated ? "Go to Dashboard" : "Start Free"}
-                    <motion.span
+                    <span
                       className="ml-2"
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
                     >
                       <ArrowRight className="w-5 h-5" />
-                    </motion.span>
+                    </span>
                   </Button>
                 </Link>
               </MagneticButton>
@@ -395,13 +400,11 @@ export default function LandingPage() {
           </ScrollReveal>
         </div>
         
-              <motion.div
+              <div
                 className="absolute bottom-10 left-1/2 -translate-x-1/2"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
               >
                 <ChevronDown className="w-6 h-6 text-gray-300" aria-hidden="true" />
-              </motion.div>
+              </div>
             </section>
 
             {/* Promo Banner Section */}
@@ -409,13 +412,11 @@ export default function LandingPage() {
               <section className="py-8 px-6">
                 <div className="max-w-4xl mx-auto">
                   {activePromos.map((promo) => (
-                    <motion.div
+                    <div
                       key={promo.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
                       className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-600/10 to-purple-500/20 border border-emerald-500/30 p-6 md:p-8"
                     >
-                      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-5" />
+                      <div className="absolute inset-0 opacity-5 bg-[length:100px_100px]" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.65%27 numOctaves=%273%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")'}} />
                       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 
                       <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
@@ -468,7 +469,7 @@ export default function LandingPage() {
                           </code>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </section>
@@ -480,22 +481,20 @@ export default function LandingPage() {
             <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light leading-tight">
               <span className="text-white">We're a </span><span className="text-gray-300">full-service</span><br />
               <span className="text-gray-300">AI Content</span><br />
-              <motion.span 
+              <span 
                 className="text-emerald-400 inline-block"
-                whileHover={{ scale: 1.05 }}
               >
                 Platform
-              </motion.span>
+              </span>
               <span className="text-2xl ml-4">&#128075;</span>
               <span className="text-white"> We turn</span><br />
               <span className="text-white">AI-generated text</span><br />
               <span className="text-gray-300">into </span>
-              <motion.span 
+              <span 
                 className="text-emerald-400 inline-block"
-                whileHover={{ scale: 1.05 }}
               >
                 human-quality content.
-              </motion.span>
+              </span>
             </h2>
           </ScrollReveal>
         </div>
@@ -522,26 +521,21 @@ export default function LandingPage() {
                     <img src="https://ik.imagekit.io/tijkyyzycl/ai-detection-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
-                    <motion.div 
+                    <div 
                       className="w-12 h-12 md:w-14 md:h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
                     >
                       <Shield className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
-                    </motion.div>
+                    </div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">AI Detection</h3>
                                         <p className="text-gray-300 mb-6">Powered by Advanced Neural Intelligence that reads text like a human expert - spotting machine-generated content with 99% accuracy.</p>
                     <ul className="space-y-3">
                       {['Heat map visualization', 'Sentence-by-sentence breakdown', 'PDF export & shareable reports', 'Confidence meter gauge'].map((item, i) => (
-                        <motion.li 
+                        <li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.1 }}
                         >
                           <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{item}
-                        </motion.li>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -557,26 +551,21 @@ export default function LandingPage() {
                     <img src="https://ik.imagekit.io/tijkyyzycl/humanizer-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
-                    <motion.div 
+                    <div 
                       className="w-12 h-12 md:w-14 md:h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
                     >
                       <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-purple-400" />
-                    </motion.div>
+                    </div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Text Humanizer</h3>
                                         <p className="text-gray-300 mb-6">Our Natural Language Engine transforms robotic text into authentic, human-sounding content while preserving your original meaning.</p>
                     <ul className="space-y-3">
                       {['Word-level diff comparison', 'Side-by-side before/after', 'Preserves original meaning', 'Re-analyze with one click'].map((item, i) => (
-                        <motion.li 
+                        <li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.1 }}
                         >
                           <CheckCircle className="w-4 h-4 text-purple-400 mr-3 flex-shrink-0" />{item}
-                        </motion.li>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -592,26 +581,21 @@ export default function LandingPage() {
                     <img src="https://ik.imagekit.io/tijkyyzycl/plagiarism-card.png?tr=f-webp,q-75" alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="relative">
-                    <motion.div 
+                    <div 
                       className="w-12 h-12 md:w-14 md:h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
                     >
                       <Search className="w-6 h-6 md:w-7 md:h-7 text-blue-400" />
-                    </motion.div>
+                    </div>
                                         <h3 className="text-xl md:text-2xl font-medium text-white mb-3">Plagiarism Checker</h3>
                                         <p className="text-gray-300 mb-6">Scans your content against billions of web pages and documents in real-time. Get instant results with pinpoint accuracy.</p>
                     <ul className="space-y-3">
                       {['Source URLs with matches', 'Percentage breakdown per source', 'PDF export reports', 'Comparison mode'].map((item, i) => (
-                        <motion.li 
+                        <li 
                           key={i} 
                           className="flex items-center text-gray-300 text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.1 }}
                         >
                           <CheckCircle className="w-4 h-4 text-blue-400 mr-3 flex-shrink-0" />{item}
-                        </motion.li>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -644,13 +628,11 @@ export default function LandingPage() {
             <ScrollReveal delay={0.1}>
               <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
                 <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
-                  <motion.div 
+                  <div 
                     className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
                   >
                     <Users className="w-6 h-6 text-purple-400" />
-                  </motion.div>
+                  </div>
                   <h3 className="text-xl font-medium text-white mb-3">Community-Powered Learning</h3>
                   <p className="text-gray-300 mb-4">
                     Your feedback directly improves our AI. When you mark a result as incorrect, our system learns from it and gets better at detecting similar patterns.
@@ -666,13 +648,11 @@ export default function LandingPage() {
             <ScrollReveal delay={0.2}>
               <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
                 <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
-                  <motion.div 
+                  <div 
                     className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
                   >
                     <Cpu className="w-6 h-6 text-purple-400" />
-                  </motion.div>
+                  </div>
                   <h3 className="text-xl font-medium text-white mb-3">Adaptive Neural Networks</h3>
                   <p className="text-gray-300 mb-4">
                     Our LoRA fine-tuning technology allows rapid model updates without full retraining. New AI writing styles are detected within days, not months.
@@ -688,13 +668,11 @@ export default function LandingPage() {
             <ScrollReveal delay={0.3}>
               <TiltCard className="h-full" glowColor="rgba(168, 85, 247, 0.3)">
                 <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm">
-                  <motion.div 
+                  <div 
                     className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6"
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
                   >
                     <Target className="w-6 h-6 text-purple-400" />
-                  </motion.div>
+                  </div>
                   <h3 className="text-xl font-medium text-white mb-3">Safe A/B Testing</h3>
                   <p className="text-gray-300 mb-4">
                     Every model update is rigorously tested before deployment. Our A/B testing system ensures new versions perform better before going live.
@@ -725,16 +703,13 @@ export default function LandingPage() {
                       'Zero false positives on human-written content',
                       'Improves accuracy by 0.5% weekly on average'
                     ].map((item, i) => (
-                      <motion.li 
+                      <li 
                         key={i}
                         className="flex items-center text-gray-300 text-sm"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
                       >
                         <CheckCircle className="w-4 h-4 text-purple-400 mr-3 flex-shrink-0" />
                         {item}
-                      </motion.li>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -759,11 +734,8 @@ export default function LandingPage() {
                             </span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-2">
-                            <motion.div 
+                            <div 
                               className="bg-gradient-to-r from-purple-500 to-purple-400 h-2 rounded-full"
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${model.accuracy}%` }}
-                              transition={{ duration: 1, delay: i * 0.2 }}
                             />
                           </div>
                         </div>
@@ -815,9 +787,8 @@ export default function LandingPage() {
                     { icon: Zap, name: 'Export Options', desc: 'TXT, HTML, Markdown export', color: 'orange', tier: 'Free' },
                   ].map((tool, i) => (
                     <ScrollReveal key={i} delay={i * 0.05}>
-                      <motion.div 
+                      <div 
                         className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all duration-300"
-                        whileHover={{ y: -5 }}
                       >
                         <div className="flex items-start gap-3">
                           <div className={`p-2 rounded-lg bg-${tool.color}-500/10`}>
@@ -837,7 +808,7 @@ export default function LandingPage() {
                             <p className="text-gray-300 text-xs mt-1">{tool.desc}</p>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     </ScrollReveal>
                   ))}
                 </div>
@@ -899,9 +870,8 @@ export default function LandingPage() {
           </ScrollReveal>
           
           <ScrollReveal delay={0.2}>
-            <motion.div 
+            <div 
               className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm"
-              whileHover={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}
             >
               <Textarea
                 placeholder="Paste your text here to check if it's AI-generated..."
@@ -923,9 +893,7 @@ export default function LandingPage() {
               </div>
               
               {demoResult && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                <div
                   className="mt-8 p-6 bg-black/30 rounded-2xl border border-white/10"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -939,9 +907,9 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <p className="text-gray-300 text-sm mt-6 pt-6 border-t border-white/10">This is a demo result. Sign up for full analysis with sentence-level breakdown.</p>
-                </motion.div>
+                </div>
               )}
-            </motion.div>
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -973,14 +941,11 @@ export default function LandingPage() {
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
                   <div className={`relative bg-gradient-to-b from-white/5 to-transparent border rounded-3xl p-6 md:p-8 h-full backdrop-blur-sm flex flex-col ${plan.highlight ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-white/10'}`}>
                     {plan.highlight && (
-                      <motion.div 
+                      <div 
                         className="absolute -top-3 left-1/2 -translate-x-1/2"
-                        initial={{ y: -10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
                       >
                         <span className="bg-emerald-500 text-black text-xs font-medium px-3 py-1 rounded-full">Most Popular</span>
-                      </motion.div>
+                      </div>
                     )}
                     <div className="text-center mb-6">
                       <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
@@ -995,15 +960,12 @@ export default function LandingPage() {
                     </div>
                     <ul className="space-y-3 mb-8 flex-grow">
                       {plan.features.map((feature, j) => (
-                        <motion.li 
+                        <li 
                           key={j} 
                           className="flex items-center text-gray-300 text-sm"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: j * 0.05 }}
                         >
                           <CheckCircle className="w-4 h-4 text-emerald-400 mr-3 flex-shrink-0" />{feature}
-                        </motion.li>
+                        </li>
                       ))}
                     </ul>
                     {isAuthenticated && user?.subscription_tier?.toLowerCase() === plan.name.toLowerCase() ? (
@@ -1052,14 +1014,11 @@ export default function LandingPage() {
                   <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm h-full">
                     <div className="flex mb-4">
                       {[...Array(5)].map((_, j) => (
-                        <motion.div
+                        <div
                           key={j}
-                          initial={{ opacity: 0, scale: 0 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: j * 0.1 }}
                         >
                           <Star className="w-4 h-4 text-emerald-400 fill-emerald-400" />
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                     <h3 className="text-lg md:text-xl font-medium text-white mb-4">"{testimonial.quote}"</h3>
@@ -1089,34 +1048,25 @@ export default function LandingPage() {
           <div className="space-y-4">
             {faqs.map((faq, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <motion.div 
+                <div 
                   className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
-                  whileHover={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}
                 >
                   <button 
                     onClick={() => setOpenFaq(openFaq === i ? null : i)} 
                     className="w-full flex items-center justify-between p-5 md:p-6 text-left cursor-auto"
                   >
                     <span className="text-white font-medium pr-4">{faq.q}</span>
-                    <motion.div
-                      animate={{ rotate: openFaq === i ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
+                    <div
                     >
                       <ChevronDown className="w-5 h-5 text-gray-300 flex-shrink-0" aria-hidden="true" />
-                    </motion.div>
+                    </div>
                   </button>
-                  <motion.div
-                    initial={false}
-                    animate={{ 
-                      height: openFaq === i ? 'auto' : 0,
-                      opacity: openFaq === i ? 1 : 0
-                    }}
-                    transition={{ duration: 0.3 }}
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="px-5 md:px-6 pb-5 md:pb-6 text-gray-300">{faq.a}</div>
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               </ScrollReveal>
             ))}
           </div>
@@ -1159,12 +1109,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             <Link to="/" className="flex items-center gap-2 justify-center md:justify-start">
-              <motion.img 
+              <img 
                 src="https://ik.imagekit.io/tijkyyzycl/logo.png?tr=w-32,h-32,f-webp,q-80" 
                 alt="TextShift" 
                 className="w-8 h-8 object-contain"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
               />
               <span className="text-white font-medium tracking-wide">TextShift</span>
             </Link>
@@ -1195,10 +1143,7 @@ export default function LandingPage() {
               setContactError('');
             }}
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+          <div
             className="relative bg-[#111] border border-white/10 rounded-2xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
             <button
@@ -1355,7 +1300,7 @@ export default function LandingPage() {
                 </form>
               </>
             )}
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

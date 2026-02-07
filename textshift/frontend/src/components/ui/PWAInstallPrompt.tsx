@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { usePWAInstallPrompt } from '@/lib/mobile';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
@@ -58,14 +57,11 @@ export function PWAInstallPrompt({ className, delay = 30000 }: PWAInstallPromptP
   }
 
   return (
-    <AnimatePresence>
+    <>
       {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
+        <div
           className={cn(
-            'fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden safe-area-bottom',
+            'fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden safe-area-bottom animate-fade-in-up',
             className
           )}
         >
@@ -105,9 +101,9 @@ export function PWAInstallPrompt({ className, delay = 30000 }: PWAInstallPromptP
               </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }
 

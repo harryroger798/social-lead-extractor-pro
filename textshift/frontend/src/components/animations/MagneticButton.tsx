@@ -1,5 +1,4 @@
-import { useState, useRef, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -10,46 +9,10 @@ interface MagneticButtonProps {
 export default function MagneticButton({ 
   children, 
   className = '',
-  strength = 0.3
 }: MagneticButtonProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const buttonRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!buttonRef.current) return;
-
-    const rect = buttonRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const deltaX = (e.clientX - centerX) * strength;
-    const deltaY = (e.clientY - centerY) * strength;
-
-    setPosition({ x: deltaX, y: deltaY });
-  };
-
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
-  };
-
   return (
-    <motion.div
-      ref={buttonRef}
-      className={className}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={{
-        x: position.x,
-        y: position.y,
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 150,
-        damping: 15,
-        mass: 0.1,
-      }}
-    >
+    <div className={`transition-transform duration-200 hover:-translate-y-0.5 ${className}`}>
       {children}
-    </motion.div>
+    </div>
   );
 }

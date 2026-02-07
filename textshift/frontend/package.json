@@ -47,7 +47,6 @@
     "date-fns": "^4.1.0",
     "diff": "^8.0.3",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.29.2",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jspdf": "^4.0.0",
@@ -60,7 +59,6 @@
     "react-intersection-observer": "^10.0.2",
     "react-resizable-panels": "^4.5.5",
     "react-router-dom": "^7.13.0",
-    "react-type-animation": "^3.2.0",
     "recharts": "^2.12.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
@@ -69,6 +67,11 @@
     "zod": "^4.3.6",
     "zustand": "^5.0.10"
   },
+  "browserslist": [
+    "defaults and supports es6-module",
+    "not dead",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@types/canvas-confetti": "^1.9.0",

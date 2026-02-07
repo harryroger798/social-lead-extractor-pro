@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useScrollLock } from '@/lib/mobile';
 
@@ -64,26 +63,18 @@ export function MobileNav({ items, logo, actions, className }: MobileNavProps) {
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
-              onClick={() => setIsOpen(false)}
-            />
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 animate-fade-in"
+            onClick={() => setIsOpen(false)}
+          />
 
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-[#111] border-l border-white/10 z-50 overflow-y-auto safe-area-right"
-            >
+          {/* Menu Panel */}
+          <div
+            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-[#111] border-l border-white/10 z-50 overflow-y-auto safe-area-right animate-slide-in-right"
+          >
               {/* Close button */}
               <div className="flex justify-end p-4">
                 <button
@@ -121,14 +112,10 @@ export function MobileNav({ items, logo, actions, className }: MobileNavProps) {
                               )}
                             />
                           </button>
-                          <AnimatePresence>
-                            {expandedItem === item.href && (
-                              <motion.ul
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="overflow-hidden pl-8"
-                              >
+                          {expandedItem === item.href && (
+                            <ul
+                              className="overflow-hidden pl-8 animate-fade-in"
+                            >
                                 {item.children.map((child) => (
                                   <li key={child.href}>
                                     <Link
@@ -144,9 +131,8 @@ export function MobileNav({ items, logo, actions, className }: MobileNavProps) {
                                     </Link>
                                   </li>
                                 ))}
-                              </motion.ul>
-                            )}
-                          </AnimatePresence>
+                            </ul>
+                          )}
                         </div>
                       ) : (
                         <Link
@@ -173,10 +159,9 @@ export function MobileNav({ items, logo, actions, className }: MobileNavProps) {
                   </div>
                 )}
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          </div>
+        </>
+      )}
     </nav>
   );
 }

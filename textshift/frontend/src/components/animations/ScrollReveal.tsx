@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { ReactNode } from 'react';
 
@@ -14,7 +13,6 @@ export default function ScrollReveal({
   children,
   direction = 'up',
   delay = 0,
-  duration = 0.6,
   className = '',
 }: ScrollRevealProps) {
   const { ref, inView } = useInView({
@@ -22,34 +20,23 @@ export default function ScrollReveal({
     threshold: 0.1,
   });
 
-  const directions = {
-    up: { y: 40, x: 0 },
-    down: { y: -40, x: 0 },
-    left: { y: 0, x: 40 },
-    right: { y: 0, x: -40 },
-    none: { y: 0, x: 0 },
+  const directionStyles: Record<string, string> = {
+    up: 'translate-y-10',
+    down: '-translate-y-10',
+    left: 'translate-x-10',
+    right: '-translate-x-10',
+    none: '',
   };
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{
-        opacity: 0,
-        ...directions[direction],
-      }}
-      animate={{
-        opacity: inView ? 1 : 0,
-        y: inView ? 0 : directions[direction].y,
-        x: inView ? 0 : directions[direction].x,
-      }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.1, 0.25, 1],
-      }}
-      className={className}
+      className={`transition-all duration-700 ease-out ${
+        inView ? 'opacity-100 translate-x-0 translate-y-0' : `opacity-0 ${directionStyles[direction]}`
+      } ${className}`}
+      style={{ transitionDelay: `${delay}s` }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

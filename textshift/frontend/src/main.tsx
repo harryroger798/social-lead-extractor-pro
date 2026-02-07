@@ -4,7 +4,6 @@ import './index.css'
 import App from './App.tsx'
 import { reportWebVitals } from './lib/performance'
 
-// Register service worker for PWA support (Mobile Optimization #46)
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -17,7 +16,6 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   });
 }
 
-// Set viewport height CSS variable for mobile (Mobile Optimization #33)
 const setVH = () => {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -25,13 +23,21 @@ const setVH = () => {
 setVH();
 window.addEventListener('resize', setVH, { passive: true });
 
-// Report Web Vitals in development (Speed Optimization #46-50)
 if (import.meta.env.DEV) {
   reportWebVitals();
 }
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!;
+const ssrShell = document.getElementById('ssr-shell');
+const app = (
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);
+
+if (ssrShell) {
+  ssrShell.remove();
+  createRoot(root).render(app);
+} else {
+  createRoot(root).render(app);
+}

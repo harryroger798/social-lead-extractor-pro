@@ -35,7 +35,6 @@ export default defineConfig({
           'vendor-query': ['@tanstack/react-query'],
           'vendor-utils': ['axios', 'zustand', 'date-fns', 'clsx', 'tailwind-merge'],
           'vendor-charts': ['recharts'],
-          'vendor-animation': ['framer-motion'],
         },
       },
       // Tree-shaking optimization
