@@ -12,6 +12,7 @@ class TransactionType(str, enum.Enum):
     REFUND = "refund"
     SUBSCRIPTION = "subscription"
     ROLLOVER = "rollover"
+    PROMO = "promo"
 
 
 class CreditTransaction(Base):
