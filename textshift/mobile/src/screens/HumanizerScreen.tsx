@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -127,7 +127,8 @@ export default function HumanizerScreen() {
                 title="Copy"
                 onPress={() => {
                   Clipboard.setStringAsync(result.output_text || '');
-                  Alert.alert('Copied!');
+                  if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+                  else Alert.alert('Copied!');
                 }}
                 variant="outline"
                 size="sm"

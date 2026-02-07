@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, ScrollView, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -96,7 +96,8 @@ export default function DetectorScreen() {
               title="Copy Result"
               onPress={() => {
                 Clipboard.setStringAsync(`AI Probability: ${Math.round(result.ai_probability! * 100)}% - ${getScoreLabel(result.ai_probability!)}`);
-                Alert.alert('Copied!');
+                if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+                else Alert.alert('Copied!');
               }}
               variant="outline"
               size="sm"

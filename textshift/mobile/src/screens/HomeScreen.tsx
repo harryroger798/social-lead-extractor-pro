@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
@@ -17,6 +17,12 @@ const toolCards: { id: 'Detector' | 'Humanizer' | 'Plagiarism' | 'Tools'; icon: 
   { id: 'Humanizer', icon: 'sparkles', color: '#8B5CF6', title: 'Humanizer', desc: 'Make AI text human-like' },
   { id: 'Plagiarism', icon: 'search', color: '#3B82F6', title: 'Plagiarism', desc: 'Check for plagiarism' },
   { id: 'Tools', icon: 'construct', color: '#F59E0B', title: 'Writing Tools', desc: '12+ writing tools' },
+];
+
+const quickLinks: { id: 'History' | 'Subscription' | 'PromoCode'; icon: keyof typeof Ionicons.glyphMap; title: string; color: string }[] = [
+  { id: 'History', icon: 'time', title: 'Scan History', color: '#06B6D4' },
+  { id: 'Subscription', icon: 'diamond', title: 'Upgrade Plan', color: '#F59E0B' },
+  { id: 'PromoCode', icon: 'gift', title: 'Redeem Promo Code', color: '#EC4899' },
 ];
 
 export default function HomeScreen({ navigation }: Props) {
@@ -49,12 +55,15 @@ export default function HomeScreen({ navigation }: Props) {
     setRefreshing(false);
   };
 
+  const tier = user?.subscription_tier || 'Free';
   const tierColor = {
     Free: theme.textMuted,
     Starter: theme.primary,
     Pro: theme.purple,
     Enterprise: '#F59E0B',
-  }[user?.subscription_tier || 'Free'] || theme.textMuted;
+  }[tier] || theme.textMuted;
+
+  const creditsDisplay = credits?.balance === -1 ? 'Unlimited' : (credits?.balance?.toLocaleString() || '0');
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
@@ -65,29 +74,43 @@ export default function HomeScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <View>
+          <View style={styles.headerLeft}>
             <Text style={[styles.greeting, { color: theme.textSecondary }]}>Welcome back,</Text>
-            <Text style={[styles.name, { color: theme.text }]}>{user?.full_name || user?.email?.split('@')[0] || 'User'}</Text>
+            <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>
+              {user?.full_name || user?.email?.split('@')[0] || 'User'}
+            </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.avatarBtn}>
-            <Ionicons name="person-circle" size={40} color={theme.primary} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Settings')}
+            style={[styles.avatarBtn, { backgroundColor: theme.primary + '15' }]}
+          >
+            <Ionicons name="person" size={22} color={theme.primary} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.statsRow}>
-          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: tierColor }]}>
-            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Plan</Text>
-            <Text style={[styles.statValue, { color: tierColor }]}>{user?.subscription_tier || 'Free'}</Text>
-          </View>
-          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Credits</Text>
-            <Text style={[styles.statValue, { color: theme.text }]}>
-              {credits?.balance === -1 ? 'Unlimited' : (credits?.balance?.toLocaleString() || '0')}
-            </Text>
-          </View>
-          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Scans Today</Text>
-            <Text style={[styles.statValue, { color: theme.text }]}>{stats?.scans_today || 0}</Text>
+        <View style={[styles.statsCard, { backgroundColor: theme.surface }]}>
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <View style={[styles.statDot, { backgroundColor: tierColor }]} />
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>PLAN</Text>
+              <Text style={[styles.statValue, { color: tierColor }]} numberOfLines={1} adjustsFontSizeToFit>
+                {tier}
+              </Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.statItem}>
+              <View style={[styles.statDot, { backgroundColor: theme.primary }]} />
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>CREDITS</Text>
+              <Text style={[styles.statValue, { color: theme.text }]} numberOfLines={1} adjustsFontSizeToFit>
+                {creditsDisplay}
+              </Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.statItem}>
+              <View style={[styles.statDot, { backgroundColor: theme.info }]} />
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>TODAY</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats?.scans_today || 0}</Text>
+            </View>
           </View>
         </View>
 
@@ -97,15 +120,18 @@ export default function HomeScreen({ navigation }: Props) {
             {toolCards.map((tool) => (
               <TouchableOpacity
                 key={tool.id}
-                style={[styles.toolCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                style={[styles.toolCard, { backgroundColor: theme.surface }]}
                 onPress={() => navigation.navigate(tool.id)}
                 activeOpacity={0.7}
               >
-                <View style={[styles.toolIcon, { backgroundColor: tool.color + '20' }]}>
-                  <Ionicons name={tool.icon as keyof typeof Ionicons.glyphMap} size={28} color={tool.color} />
+                <View style={[styles.toolIconWrap, { backgroundColor: tool.color + '15' }]}>
+                  <Ionicons name={tool.icon as keyof typeof Ionicons.glyphMap} size={26} color={tool.color} />
                 </View>
-                <Text style={[styles.toolTitle, { color: theme.text }]}>{tool.title}</Text>
-                <Text style={[styles.toolDesc, { color: theme.textMuted }]}>{tool.desc}</Text>
+                <View style={styles.toolTextWrap}>
+                  <Text style={[styles.toolTitle, { color: theme.text }]}>{tool.title}</Text>
+                  <Text style={[styles.toolDesc, { color: theme.textMuted }]}>{tool.desc}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={theme.textMuted} />
               </TouchableOpacity>
             ))}
           </View>
@@ -113,21 +139,20 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Quick Links</Text>
-          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('History')}>
-            <Ionicons name="time" size={22} color={theme.primary} />
-            <Text style={[styles.linkText, { color: theme.text }]}>Scan History</Text>
-            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('Subscription')}>
-            <Ionicons name="card" size={22} color={theme.primary} />
-            <Text style={[styles.linkText, { color: theme.text }]}>Upgrade Plan</Text>
-            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('PromoCode')}>
-            <Ionicons name="gift" size={22} color={theme.primary} />
-            <Text style={[styles.linkText, { color: theme.text }]}>Redeem Promo Code</Text>
-            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
-          </TouchableOpacity>
+          {quickLinks.map((link) => (
+            <TouchableOpacity
+              key={link.id}
+              style={[styles.linkCard, { backgroundColor: theme.surface }]}
+              onPress={() => navigation.navigate(link.id)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.linkIconWrap, { backgroundColor: link.color + '15' }]}>
+                <Ionicons name={link.icon} size={20} color={link.color} />
+              </View>
+              <Text style={[styles.linkText, { color: theme.text }]}>{link.title}</Text>
+              <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -138,30 +163,47 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 20 },
+  header: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingTop: 16, paddingBottom: 20,
+  },
+  headerLeft: { flex: 1, marginRight: 12 },
   greeting: { fontSize: 14 },
-  name: { fontSize: 24, fontWeight: '700', marginTop: 2 },
-  avatarBtn: { padding: 4 },
-  statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  statCard: {
-    flex: 1, borderRadius: 16, padding: 16,
-    borderWidth: 1, alignItems: 'center',
+  name: { fontSize: 26, fontWeight: '700', marginTop: 2 },
+  avatarBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    alignItems: 'center', justifyContent: 'center',
   },
-  statLabel: { fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 },
-  statValue: { fontSize: 18, fontWeight: '700', marginTop: 4 },
+  statsCard: {
+    borderRadius: 16, padding: 18, marginBottom: 24,
+  },
+  statsRow: { flexDirection: 'row', alignItems: 'center' },
+  statItem: { flex: 1, alignItems: 'center' },
+  statDot: { width: 6, height: 6, borderRadius: 3, marginBottom: 6 },
+  statLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 1, marginBottom: 4 },
+  statValue: { fontSize: 18, fontWeight: '700' },
+  statDivider: { width: 1, height: 36, marginHorizontal: 4 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
-  toolGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 14 },
+  toolGrid: { gap: 10 },
   toolCard: {
-    width: '48%', borderRadius: 16, padding: 16,
-    borderWidth: 1,
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 14, padding: 14,
   },
-  toolIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  toolTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  toolIconWrap: {
+    width: 48, height: 48, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  toolTextWrap: { flex: 1, marginLeft: 14 },
+  toolTitle: { fontSize: 15, fontWeight: '600', marginBottom: 2 },
   toolDesc: { fontSize: 12 },
   linkCard: {
     flexDirection: 'row', alignItems: 'center',
-    borderRadius: 14, padding: 16, marginBottom: 8, borderWidth: 1,
+    borderRadius: 14, padding: 14, marginBottom: 8,
+  },
+  linkIconWrap: {
+    width: 38, height: 38, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
   },
   linkText: { flex: 1, fontSize: 15, marginLeft: 12, fontWeight: '500' },
 });

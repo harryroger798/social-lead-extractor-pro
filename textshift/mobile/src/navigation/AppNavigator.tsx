@@ -1,7 +1,9 @@
 import React from 'react';
+import { Platform, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
 import type { RootStackParamList } from '../types';
@@ -25,6 +27,8 @@ const Tab = createBottomTabNavigator();
 
 function MainTabs() {
   const { theme } = useThemeStore();
+  const insets = useSafeAreaInsets();
+  const bottomPad = Math.max(insets.bottom, Platform.OS === 'android' ? 8 : 0);
   return (
     <Tab.Navigator
       screenOptions={{
@@ -32,16 +36,25 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: theme.surface,
           borderTopColor: theme.border,
-          borderTopWidth: 1,
-          paddingBottom: 8,
+          borderTopWidth: 0.5,
+          paddingBottom: bottomPad,
           paddingTop: 8,
-          height: 64,
+          height: 60 + bottomPad,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
         },
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textMuted,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
+          marginTop: -2,
+        },
+        tabBarIconStyle: {
+          marginBottom: -2,
         },
       }}
     >

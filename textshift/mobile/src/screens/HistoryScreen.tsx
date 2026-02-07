@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,7 +122,8 @@ export default function HistoryScreen() {
                 style={styles.actionBtn}
                 onPress={() => {
                   Clipboard.setStringAsync(item.output_text || item.input_text);
-                  Alert.alert('Copied!');
+                  if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+                  else Alert.alert('Copied!');
                 }}
               >
                 <Ionicons name="copy" size={16} color={theme.primary} />
