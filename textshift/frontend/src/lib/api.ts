@@ -334,13 +334,17 @@ export const paymentApi = {
     return response.data;
   },
 
-  createOrder: async (planId: string, billingPeriod: 'monthly' | 'yearly' = 'monthly') => {
-    const response = await api.post(`/api/payment/create-order?plan_id=${planId}&billing_period=${billingPeriod}`);
+  createOrder: async (planId: string, billingPeriod: 'monthly' | 'yearly' = 'monthly', country: string = '') => {
+    const params = new URLSearchParams({ plan_id: planId, billing_period: billingPeriod });
+    if (country) params.append('country', country);
+    const response = await api.post(`/api/payment/create-order?${params}`);
     return response.data;
   },
 
-  captureOrder: async (orderId: string, planId: string) => {
-    const response = await api.post(`/api/payment/capture-order?order_id=${orderId}&plan_id=${planId}`);
+  captureOrder: async (orderId: string, planId: string, country: string = '') => {
+    const params = new URLSearchParams({ order_id: orderId, plan_id: planId });
+    if (country) params.append('country', country);
+    const response = await api.post(`/api/payment/capture-order?${params}`);
     return response.data;
   },
 

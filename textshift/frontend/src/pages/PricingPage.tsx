@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { usePageSEO } from '@/hooks/usePageSEO';
@@ -36,6 +36,32 @@ export default function PricingPage() {
   });
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
+  const [countryCode, setCountryCode] = useState('');
+  const [currencySymbol, setCurrencySymbol] = useState('$');
+
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const cached = sessionStorage.getItem('ts_country');
+        if (cached) {
+          setCountryCode(cached);
+          if (cached === 'IN') setCurrencySymbol('\u20b9');
+          return;
+        }
+        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          const data = await res.json();
+          const code = data.country_code || '';
+          setCountryCode(code);
+          sessionStorage.setItem('ts_country', code);
+          if (code === 'IN') setCurrencySymbol('\u20b9');
+        }
+      } catch {}
+    };
+    detectCountry();
+  }, []);
+
+  const isIndia = countryCode === 'IN';
 
         const monthlyPlans = [
           { 
@@ -70,8 +96,8 @@ export default function PricingPage() {
           { 
             id: 'starter', 
             name: 'Starter', 
-            price: 9.99, 
-            credits: '25,000 words/mo', 
+            price: isIndia ? 300 : 9.99, 
+            credits: '25,000 words/mo',
             features: [
               'AI Detection + Humanizer + Plagiarism',
               '100 scans/day',
@@ -98,8 +124,8 @@ export default function PricingPage() {
           { 
             id: 'pro', 
             name: 'Pro', 
-            price: 24.99, 
-            credits: 'Unlimited', 
+            price: isIndia ? 1000 : 24.99, 
+            credits: 'Unlimited',
             features: [
               'All 3 core tools (500 scans/day)',
               'All 14 Writing Tools - Unlimited',
@@ -121,8 +147,8 @@ export default function PricingPage() {
           { 
             id: 'enterprise', 
             name: 'Enterprise', 
-            price: 49.99, 
-            credits: 'True Unlimited', 
+            price: isIndia ? 2000 : 49.99, 
+            credits: 'True Unlimited',
             features: [
               'Unlimited scans (no daily limit)',
               'All 14 Writing Tools - Unlimited',
@@ -140,20 +166,24 @@ export default function PricingPage() {
           }
         ];
 
-  const getYearlyPrice = (monthlyPrice: number) => {
+  const yearlyPricesINR: Record<string, number> = { starter: 3000, pro: 10000, enterprise: 20000 };
+
+  const getYearlyPrice = (monthlyPrice: number, planId?: string) => {
     if (monthlyPrice === 0) return 0;
+    if (isIndia && planId && yearlyPricesINR[planId]) return yearlyPricesINR[planId];
     return Math.round(monthlyPrice * 10 * 100) / 100;
   };
 
-  const getYearlySavings = (monthlyPrice: number) => {
+  const getYearlySavings = (monthlyPrice: number, planId?: string) => {
     if (monthlyPrice === 0) return 0;
+    if (isIndia && planId && yearlyPricesINR[planId]) return monthlyPrice * 12 - yearlyPricesINR[planId];
     return Math.round(monthlyPrice * 2 * 100) / 100;
   };
 
   const plans = monthlyPlans.map(plan => ({
     ...plan,
-    displayPrice: billingPeriod === 'monthly' ? plan.price : getYearlyPrice(plan.price),
-    savings: billingPeriod === 'yearly' ? getYearlySavings(plan.price) : 0,
+    displayPrice: billingPeriod === 'monthly' ? plan.price : getYearlyPrice(plan.price, plan.id),
+    savings: billingPeriod === 'yearly' ? getYearlySavings(plan.price, plan.id) : 0,
   }));
 
   const faqs = [
@@ -209,7 +239,7 @@ export default function PricingPage() {
     }
     setLoading(planId);
     try {
-      const order = await paymentApi.createOrder(planId, billingPeriod);
+      const order = await paymentApi.createOrder(planId, billingPeriod, countryCode);
       if (order.approval_url) {
         window.location.href = order.approval_url;
       }
@@ -306,14 +336,14 @@ export default function PricingPage() {
                 <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
                 <div className="mb-2">
                   <span className="text-3xl md:text-4xl font-light text-white">
-                    ${plan.displayPrice === 0 ? '0' : plan.displayPrice.toFixed(2)}
+                    {plan.displayPrice === 0 ? `${currencySymbol}0` : `${currencySymbol}${isIndia ? Math.round(plan.displayPrice).toLocaleString('en-IN') : plan.displayPrice.toFixed(2)}`}
                   </span>
                   {plan.displayPrice !== 0 && (
                     <span className="text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'year'}</span>
                   )}
                 </div>
                 {billingPeriod === 'yearly' && plan.savings > 0 && (
-                  <div className="text-emerald-400 text-xs mb-1">Save ${plan.savings.toFixed(2)}/year</div>
+                  <div className="text-emerald-400 text-xs mb-1">Save {currencySymbol}{isIndia ? Math.round(plan.savings).toLocaleString('en-IN') : plan.savings.toFixed(2)}/year</div>
                 )}
                 <div className="text-gray-500 text-sm">{plan.credits}</div>
               </div>

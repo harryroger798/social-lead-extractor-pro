@@ -69,6 +69,59 @@ YEARLY_PRICING_PLANS = {
     }
 }
 
+# Region parity pricing - India (INR)
+PRICING_PLANS_INR = {
+    "Starter": {
+        "name": "Starter",
+        "price": 300.00,
+        "credits": 100000,
+        "description": "100,000 credits/month + rollover"
+    },
+    "Pro": {
+        "name": "Pro",
+        "price": 1000.00,
+        "credits": 500000,
+        "description": "500,000 credits/month + rollover"
+    },
+    "Enterprise": {
+        "name": "Enterprise",
+        "price": 2000.00,
+        "credits": -1,
+        "description": "Unlimited credits"
+    }
+}
+
+YEARLY_PRICING_PLANS_INR = {
+    "Starter": {
+        "name": "Starter",
+        "price": 3000.00,
+        "monthly_equivalent": 250.00,
+        "credits": 1200000,
+        "description": "1,200,000 credits/year + rollover",
+        "savings": 600.00
+    },
+    "Pro": {
+        "name": "Pro",
+        "price": 10000.00,
+        "monthly_equivalent": 833.33,
+        "credits": 6000000,
+        "description": "6,000,000 credits/year + rollover",
+        "savings": 2000.00
+    },
+    "Enterprise": {
+        "name": "Enterprise",
+        "price": 20000.00,
+        "monthly_equivalent": 1666.67,
+        "credits": -1,
+        "description": "Unlimited credits for 1 year",
+        "savings": 4000.00
+    }
+}
+
+REGION_CURRENCY_MAP = {
+    "IN": {"currency": "INR", "symbol": "₹", "monthly": PRICING_PLANS_INR, "yearly": YEARLY_PRICING_PLANS_INR},
+}
+
 
 async def get_paypal_access_token() -> str:
     """Get PayPal access token."""
@@ -97,15 +150,23 @@ async def get_paypal_access_token() -> str:
 
 
 @router.get("/plans")
-async def get_pricing_plans(billing_cycle: str = "monthly"):
+async def get_pricing_plans(billing_cycle: str = "monthly", country: str = ""):
     """Get available pricing plans.
     
     Args:
         billing_cycle: 'monthly' or 'yearly'
+        country: ISO country code for region parity pricing (e.g., 'IN' for India)
     """
+    region = REGION_CURRENCY_MAP.get(country.upper()) if country else None
+    currency = region["currency"] if region else "USD"
+    symbol = region["symbol"] if region else "$"
+
     if billing_cycle == "yearly":
+        plans_src = region["yearly"] if region else YEARLY_PRICING_PLANS
         return {
             "billing_cycle": "yearly",
+            "currency": currency,
+            "symbol": symbol,
             "plans": [
                 {
                     "id": plan_id,
@@ -118,12 +179,15 @@ async def get_pricing_plans(billing_cycle: str = "monthly"):
                     "savings": plan["savings"],
                     "billing_period": "year"
                 }
-                for plan_id, plan in YEARLY_PRICING_PLANS.items()
+                for plan_id, plan in plans_src.items()
             ]
         }
     
+    plans_src = region["monthly"] if region else PRICING_PLANS
     return {
         "billing_cycle": "monthly",
+        "currency": currency,
+        "symbol": symbol,
         "plans": [
             {
                 "id": plan_id,
@@ -134,7 +198,7 @@ async def get_pricing_plans(billing_cycle: str = "monthly"):
                 "features": get_plan_features(plan_id),
                 "billing_period": "month"
             }
-            for plan_id, plan in PRICING_PLANS.items()
+            for plan_id, plan in plans_src.items()
         ]
     }
 
@@ -162,6 +226,7 @@ def get_plan_features(plan_id: str) -> list:
 async def create_paypal_order(
     plan_id: str,
     billing_cycle: str = "monthly",
+    country: str = "",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
@@ -170,23 +235,28 @@ async def create_paypal_order(
     Args:
         plan_id: 'starter', 'pro', or 'enterprise'
         billing_cycle: 'monthly' or 'yearly'
+        country: ISO country code for region parity pricing (e.g., 'IN' for India)
     """
-    # Select the appropriate pricing plan based on billing cycle
+    region = REGION_CURRENCY_MAP.get(country.upper()) if country else None
+    currency_code = region["currency"] if region else "USD"
+
     if billing_cycle == "yearly":
-        if plan_id not in YEARLY_PRICING_PLANS:
+        plans_src = region["yearly"] if region else YEARLY_PRICING_PLANS
+        if plan_id not in plans_src:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan ID"
             )
-        plan = YEARLY_PRICING_PLANS[plan_id]
+        plan = plans_src[plan_id]
         billing_description = "Yearly Subscription (2 months free)"
     else:
-        if plan_id not in PRICING_PLANS:
+        plans_src = region["monthly"] if region else PRICING_PLANS
+        if plan_id not in plans_src:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan ID"
             )
-        plan = PRICING_PLANS[plan_id]
+        plan = plans_src[plan_id]
         billing_description = "Monthly Subscription"
     
     access_token = await get_paypal_access_token()
@@ -202,7 +272,7 @@ async def create_paypal_order(
                 "intent": "CAPTURE",
                 "purchase_units": [{
                     "amount": {
-                        "currency_code": "USD",
+                        "currency_code": currency_code,
                         "value": str(plan["price"])
                     },
                     "description": f"TextShift {plan['name']} Plan - {billing_description}"
@@ -254,6 +324,7 @@ async def capture_paypal_order(
     order_id: str,
     plan_id: str,
     billing_cycle: str = "monthly",
+    country: str = "",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
@@ -263,22 +334,26 @@ async def capture_paypal_order(
         order_id: PayPal order ID
         plan_id: 'starter', 'pro', or 'enterprise'
         billing_cycle: 'monthly' or 'yearly'
+        country: ISO country code for region parity pricing
     """
-    # Select the appropriate pricing plan based on billing cycle
+    region = REGION_CURRENCY_MAP.get(country.upper()) if country else None
+
     if billing_cycle == "yearly":
-        if plan_id not in YEARLY_PRICING_PLANS:
+        plans_src = region["yearly"] if region else YEARLY_PRICING_PLANS
+        if plan_id not in plans_src:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan ID"
             )
-        plan = YEARLY_PRICING_PLANS[plan_id]
+        plan = plans_src[plan_id]
     else:
-        if plan_id not in PRICING_PLANS:
+        plans_src = region["monthly"] if region else PRICING_PLANS
+        if plan_id not in plans_src:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan ID"
             )
-        plan = PRICING_PLANS[plan_id]
+        plan = plans_src[plan_id]
     access_token = await get_paypal_access_token()
     
     async with httpx.AsyncClient() as client:
