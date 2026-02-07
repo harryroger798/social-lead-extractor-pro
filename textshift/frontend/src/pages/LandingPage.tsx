@@ -328,13 +328,12 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-40,w-1280"
-            srcSet="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-30,w-640 640w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-35,w-1024 1024w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-40,w-1280 1280w"
+            src="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-20,w-800"
+            srcSet="https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-15,w-400 640w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-20,w-800 1024w, https://ik.imagekit.io/tijkyyzycl/hero-bg.png?tr=f-webp,q-30,w-1280 1280w"
             sizes="100vw"
             alt=""
             className="w-full h-full object-cover opacity-20"
-            loading="eager"
-            fetchPriority="high"
+            loading="lazy"
             decoding="async"
             width={1920}
             height={1080}
