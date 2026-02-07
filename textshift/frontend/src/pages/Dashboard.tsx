@@ -912,6 +912,7 @@ export default function Dashboard() {
                                         setHumanizeText(detectText);
                                         setActiveTab('humanize');
                                         setResult(null);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
                                       }}
                                       className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-6"
                                     >
@@ -928,6 +929,7 @@ export default function Dashboard() {
                                           setHumanizeText(aiParts);
                                           setActiveTab('humanize');
                                           setResult(null);
+                                          window.scrollTo({ top: 0, behavior: 'smooth' });
                                         }}
                                         variant="outline"
                                         className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 rounded-full px-6"
@@ -1046,6 +1048,7 @@ export default function Dashboard() {
                                         setDetectText(result.output_text);
                                         setActiveTab('detect');
                                         setResult(null);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
                                       }}
                                       className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-6"
                                     >
