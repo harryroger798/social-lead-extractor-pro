@@ -1895,11 +1895,11 @@ class MLModelService:
         try:
             self._load_humanizer()
             input_text = f"humanize: {text}"
-            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=512, padding=True)
+            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
             with torch.no_grad():
                 outputs = self._humanizer_model.generate(
                     **inputs,
-                    max_length=512,
+                    max_length=1024,
                     num_beams=1,  # Disable beam search for more creative output
                     do_sample=True,
                     temperature=1.2,  # Optimized for 0% AI detection on Stealthwriter
