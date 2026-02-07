@@ -1902,7 +1902,7 @@ class MLModelService:
                     max_length=1024,
                     num_beams=1,  # Disable beam search for more creative output
                     do_sample=True,
-                    temperature=1.2,  # Optimized for 0% AI detection on Stealthwriter
+                    temperature=1.0,  # Reduced from 1.2 for better concept retention
                     top_p=0.95,
                     repetition_penalty=2.5,
                     no_repeat_ngram_size=3
