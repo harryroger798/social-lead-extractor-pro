@@ -10,6 +10,8 @@ import random
 import httpx
 import asyncio
 import boto3
+import pickle
+from botocore.config import Config
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, T5Tokenizer, T5ForConditionalGeneration
@@ -17,6 +19,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from collections import Counter
 from app.core.config import settings
+from app.services.feature_extractor import FeatureExtractor565
 
 logger = logging.getLogger(__name__)
 
@@ -363,7 +366,8 @@ class WebSearchService:
     
     @staticmethod
     async def search_for_plagiarism(text: str) -> List[Dict[str, Any]]:
-        """Search the web for potential plagiarism sources using DuckDuckGo + Serper fallback."""
+        """Search the web for potential plagiarism sources using DuckDuckGo + Serper fallback.
+        Fetches actual page content for top results to improve accuracy."""
         sentences = WebSearchService._extract_key_sentences(text)
         all_results = []
         seen_urls = set()
@@ -386,7 +390,29 @@ class WebSearchService:
                     all_results.append(result)
         
         all_results.sort(key=lambda x: x.get("jaccard_similarity", 0), reverse=True)
-        return all_results[:10]
+        top_results = all_results[:10]
+        
+        fetch_tasks = []
+        for result in top_results[:5]:
+            url = result.get("url", "")
+            if url:
+                fetch_tasks.append(WebSearchService.fetch_page_content(url, timeout=8.0))
+        
+        if fetch_tasks:
+            page_contents = await asyncio.gather(*fetch_tasks, return_exceptions=True)
+            for i, page_content in enumerate(page_contents):
+                if i < len(top_results) and isinstance(page_content, str) and len(page_content) > 50:
+                    top_results[i]["page_content"] = page_content[:5000]
+                    page_jaccard = WebSearchService._calculate_jaccard_similarity(
+                        text, page_content
+                    )
+                    snippet_jaccard = top_results[i].get("jaccard_similarity", 0)
+                    best_jaccard = max(snippet_jaccard, round(page_jaccard * 100, 2))
+                    top_results[i]["jaccard_similarity"] = best_jaccard
+                    top_results[i]["page_content_fetched"] = True
+        
+        top_results.sort(key=lambda x: x.get("jaccard_similarity", 0), reverse=True)
+        return top_results
 
 
 web_search_service = WebSearchService()
@@ -416,21 +442,731 @@ FORMAL_STARTERS = [
     "From a practical standpoint, ", "Upon closer examination, ",
 ]
 
+# =============================================================================
+# COMPREHENSIVE FORMAL-TO-NATURAL WORD REPLACEMENTS (400+ patterns)
+# =============================================================================
+# Combined from Stealthwriter analysis + Manus AI formal writing transformation
+# Transforms formal/academic vocabulary into everyday natural language
+# =============================================================================
+
 SYNONYM_REPLACEMENTS = {
-    "help": "assist", "use": "utilize", "get": "obtain", "think": "believe",
-    "very": "quite", "big": "substantial", "small": "modest", "good": "favorable",
-    "bad": "unfavorable", "important": "significant", "show": "demonstrate",
-    "make": "create", "need": "require", "want": "desire", "start": "commence",
-    "end": "conclude", "give": "provide", "take": "acquire", "find": "discover",
-    "tell": "inform", "ask": "inquire", "try": "attempt", "keep": "maintain",
-    "let": "permit", "seem": "appear", "feel": "sense", "become": "evolve into",
-    "leave": "depart", "put": "place", "mean": "signify", "old": "aged",
-    "new": "recent", "last": "final", "long": "extended", "great": "remarkable",
-    "little": "minimal", "own": "possess", "other": "alternative", "right": "correct",
-    "high": "elevated", "different": "distinct", "whole": "entire",
-    "large": "considerable", "next": "subsequent", "early": "initial",
-    "young": "youthful", "hard": "difficult", "major": "principal",
-    "better": "superior", "best": "optimal",
+    # -------------------------------------------------------------------------
+    # FORMAL VERBS - Action words that sound stiff or bureaucratic
+    # -------------------------------------------------------------------------
+    
+    # Common formal verbs -> simple alternatives
+    "utilize": "use", "utilise": "use", "leverage": "use", "employ": "use",
+    "implement": "put in place", "execute": "carry out", "facilitate": "help",
+    "expedite": "speed up", "optimize": "improve", "optimise": "improve",
+    "maximize": "increase", "maximise": "increase", "minimize": "reduce",
+    "minimise": "reduce", "prioritize": "focus on", "prioritise": "focus on",
+    "incentivize": "encourage", "incentivise": "encourage",
+    "conceptualize": "imagine", "conceptualise": "imagine",
+    "operationalize": "put into action", "operationalise": "put into action",
+    "institutionalize": "make standard", "institutionalise": "make standard",
+    "contextualize": "put in context", "contextualise": "put in context",
+    
+    # Communication verbs
+    "communicate": "share", "articulate": "express", "elucidate": "explain",
+    "explicate": "explain", "delineate": "describe", "enumerate": "list",
+    "stipulate": "state", "postulate": "suggest", "promulgate": "announce",
+    "disseminate": "spread", "propagate": "spread", "convey": "share",
+    "impart": "give", "transmit": "send", "relay": "pass on",
+    
+    # Analysis and thinking verbs
+    "ascertain": "find out", "determine": "figure out", "discern": "see",
+    "perceive": "notice", "cognize": "understand", "comprehend": "understand",
+    "apprehend": "grasp", "hypothesize": "guess", "hypothesise": "guess",
+    "theorize": "suggest", "theorise": "suggest", "speculate": "wonder",
+    "contemplate": "think about", "deliberate": "discuss", "ruminate": "think over",
+    "cogitate": "think", "ponder": "consider", "scrutinize": "examine",
+    "scrutinise": "examine", "analyze": "look at", "analyse": "look at",
+    "evaluate": "assess", "appraise": "judge", "adjudicate": "decide",
+    
+    # Action and change verbs
+    "commence": "start", "initiate": "begin", "inaugurate": "launch",
+    "terminate": "end", "conclude": "finish", "finalize": "wrap up",
+    "finalise": "wrap up", "discontinue": "stop", "cease": "stop",
+    "desist": "stop", "proceed": "go ahead", "advance": "move forward",
+    "progress": "move along", "accelerate": "speed up", "decelerate": "slow down",
+    "ameliorate": "improve", "enhance": "boost", "augment": "add to",
+    "supplement": "add", "modify": "change", "alter": "change",
+    "transform": "change", "revise": "update", "amend": "fix",
+    "rectify": "correct", "remediate": "fix",
+    
+    # Inclusion and scope verbs
+    "encompass": "include", "comprise": "make up", "constitute": "form",
+    "incorporate": "include", "integrate": "combine", "consolidate": "bring together",
+    "aggregate": "gather", "accumulate": "build up", "assimilate": "absorb",
+    "synthesize": "combine", "synthesise": "combine", "amalgamate": "merge",
+    "unify": "bring together", "coalesce": "come together",
+    
+    # Cause and effect verbs
+    "precipitate": "cause", "engender": "create", "generate": "create",
+    "produce": "make", "manufacture": "make", "fabricate": "build",
+    "construct": "build", "formulate": "create", "devise": "come up with",
+    "conceive": "think up", "originate": "start", "instigate": "start",
+    "provoke": "trigger", "elicit": "bring out", "evoke": "bring up",
+    "induce": "cause", "stimulate": "spark", "catalyze": "trigger",
+    "catalyse": "trigger",
+    
+    # Support and enable verbs
+    "enable": "let", "empower": "give power to", "authorize": "allow",
+    "authorise": "allow", "sanction": "approve", "endorse": "support",
+    "advocate": "push for", "champion": "support", "bolster": "strengthen",
+    "reinforce": "back up", "substantiate": "back up", "corroborate": "confirm",
+    "validate": "prove", "authenticate": "verify", "certify": "confirm",
+    
+    # Reduction and limitation verbs
+    "mitigate": "lessen", "alleviate": "ease", "attenuate": "weaken",
+    "diminish": "shrink", "curtail": "cut back", "abridge": "shorten",
+    "truncate": "cut short", "abbreviate": "shorten", "condense": "shrink",
+    "compress": "squeeze", "constrain": "limit", "restrict": "limit",
+    "confine": "keep to", "circumscribe": "limit",
+    
+    # Additional verbs from Stealthwriter analysis
+    "demonstrates": "shows", "indicates": "shows", "necessitate": "require",
+    "cultivate": "develop", "foster": "build", "harness": "use",
+    "streamlines": "simplifies", "revolutionized": "changed",
+    "alters": "changes", "enables": "allows", "empowers": "helps",
+    "anticipate": "expect", "mitigating": "reducing",
+    "capitalizing": "taking advantage of", "underscore": "highlight",
+    "illuminate": "explain", "exemplify": "show", "manifest": "show",
+    "proliferate": "spread", "exacerbate": "worsen", "obviate": "prevent",
+    "preclude": "prevent", "buttress": "support", "fortify": "strengthen",
+    "hasten": "hurry", "impede": "block", "hinder": "slow down",
+    "obstruct": "block", "transcend": "go beyond", "surpass": "beat",
+    "exceed": "go beyond", "permeate": "spread through", "pervade": "fill",
+    "saturate": "fill", "epitomize": "represent", "embody": "represent",
+    "personify": "represent", "juxtapose": "compare", "contrast": "compare",
+    "differentiate": "tell apart", "bifurcate": "split", "diverge": "separate",
+    "deviate": "differ", "converge": "come together", "recalibrate": "adjust",
+    "reconfigure": "change", "restructure": "reorganize",
+    
+    # -------------------------------------------------------------------------
+    # ACADEMIC NOUNS - Abstract or technical terms
+    # -------------------------------------------------------------------------
+    
+    # Methodology and approach nouns
+    "paradigm": "approach", "methodology": "method", "framework": "structure",
+    "mechanism": "way", "modality": "method", "apparatus": "system",
+    "infrastructure": "setup", "architecture": "design", "configuration": "setup",
+    "schema": "plan", "protocol": "process", "procedure": "steps",
+    "algorithm": "process", "heuristic": "rule of thumb", "rubric": "guide",
+    "template": "model", "blueprint": "plan",
+    
+    # Concept and idea nouns
+    "phenomenon": "event", "manifestation": "sign", "instantiation": "example",
+    "embodiment": "form", "exemplification": "example", "illustration": "example",
+    "representation": "picture", "conceptualization": "idea", "abstraction": "concept",
+    "construct": "idea", "notion": "idea", "proposition": "suggestion",
+    "hypothesis": "guess", "conjecture": "guess", "supposition": "assumption",
+    "premise": "starting point", "postulation": "claim", "assertion": "statement",
+    "contention": "argument", "thesis": "main point",
+    
+    # Scope and extent nouns
+    "magnitude": "size", "amplitude": "range", "breadth": "width",
+    "scope": "range", "purview": "area", "domain": "field",
+    "sphere": "area", "realm": "world", "arena": "field",
+    "milieu": "setting", "context": "background", "backdrop": "setting",
+    "landscape": "scene", "terrain": "ground", "spectrum": "range",
+    "continuum": "range", "gamut": "range", "array": "variety",
+    "plethora": "lots", "multitude": "many", "myriad": "countless",
+    "abundance": "plenty", "profusion": "wealth", "preponderance": "majority",
+    
+    # Process and outcome nouns
+    "implementation": "rollout", "execution": "carrying out", "deployment": "launch",
+    "utilization": "use", "application": "use", "administration": "running",
+    "facilitation": "help", "optimization": "improvement", "enhancement": "boost",
+    "augmentation": "addition", "modification": "change", "alteration": "change",
+    "transformation": "shift", "transition": "change", "progression": "progress",
+    "advancement": "step forward", "development": "growth", "evolution": "change",
+    "culmination": "peak", "fruition": "success", "realization": "achievement",
+    "attainment": "reaching", "acquisition": "getting", "procurement": "buying",
+    "obtainment": "getting",
+    
+    # Relationship nouns
+    "correlation": "link", "causation": "cause", "causality": "cause and effect",
+    "interrelation": "connection", "interdependence": "reliance on each other",
+    "reciprocity": "give and take", "synergy": "teamwork", "symbiosis": "partnership",
+    "confluence": "meeting", "convergence": "coming together", "divergence": "split",
+    "discrepancy": "gap", "disparity": "difference", "dichotomy": "split",
+    "juxtaposition": "contrast", "antithesis": "opposite", "paradox": "contradiction",
+    "anomaly": "oddity", "aberration": "exception", "deviation": "shift",
+    
+    # Additional nouns from Stealthwriter analysis
+    "trajectory": "path", "ramification": "effect", "implication": "meaning",
+    "connotation": "meaning", "duality": "two sides", "proliferation": "spread",
+    "dissemination": "sharing", "propagation": "spread", "mitigation": "reduction",
+    "alleviation": "relief", "amelioration": "improvement", "exacerbation": "worsening",
+    "deterioration": "decline", "degradation": "damage", "apex": "peak",
+    "zenith": "peak", "nadir": "low point", "inception": "start",
+    "commencement": "beginning", "cessation": "end", "termination": "end",
+    "stakeholders": "people involved", "constituents": "members", "participants": "people",
+    "efficacy": "effectiveness", "potency": "strength", "viability": "workability",
+    "feasibility": "possibility", "sustainability": "long-term success",
+    "scalability": "growth potential", "resilience": "toughness", "robustness": "strength",
+    "durability": "lasting power", "volatility": "instability", "fluctuation": "change",
+    "variability": "variation", "homogeneity": "sameness", "heterogeneity": "variety",
+    "diversity": "variety", "ubiquity": "presence everywhere", "prevalence": "commonness",
+    "pervasiveness": "spread", "scarcity": "shortage", "paucity": "lack",
+    "dearth": "lack", "deficit": "shortage", "surplus": "extra",
+    
+    # -------------------------------------------------------------------------
+    # CORPORATE JARGON - Business buzzwords
+    # -------------------------------------------------------------------------
+    
+    "synergies": "benefits", "bandwidth": "time", "deliverables": "results",
+    "actionables": "next steps", "takeaways": "lessons", "learnings": "lessons",
+    "demographics": "groups", "cohorts": "groups", "verticals": "industries",
+    "horizontals": "functions", "ecosystems": "networks", "touchpoints": "interactions",
+    "bottlenecks": "slowdowns", "roadblocks": "obstacles", "headwinds": "challenges",
+    "tailwinds": "advantages", "benchmarks": "standards", "metrics": "measures",
+    "scalability": "growth potential", "visibility": "awareness",
+    "transparency": "openness", "accountability": "responsibility",
+    "alignment": "agreement", "mindshare": "attention",
+    "ideation": "brainstorming", "iteration": "version", "pivot": "shift",
+    "disruption": "shake-up", "innovation": "new ideas", "digitalization": "going digital",
+    "automation": "automatic processing", "streamlining": "simplifying",
+    "rightsizing": "adjusting", "restructuring": "reorganizing",
+    "rebranding": "new image", "repositioning": "new direction",
+    "synergize": "work together", "monetize": "make money from",
+    "strategize": "plan", "streamline": "simplify", "benchmark": "compare",
+    "actionable": "useful", "scalable": "growable", "stakeholder": "person involved",
+    
+    # -------------------------------------------------------------------------
+    # ABSTRACT ADJECTIVES - Overly formal descriptors
+    # -------------------------------------------------------------------------
+    
+    # Importance and significance
+    "paramount": "key", "pivotal": "crucial", "quintessential": "classic",
+    "seminal": "groundbreaking", "instrumental": "key", "indispensable": "essential",
+    "imperative": "vital", "requisite": "needed", "prerequisite": "required",
+    "obligatory": "required", "mandatory": "required", "compulsory": "required",
+    "discretionary": "optional", "ancillary": "extra", "supplementary": "additional",
+    "complementary": "matching", "auxiliary": "backup", "peripheral": "side",
+    "tangential": "related", "incidental": "minor", "negligible": "tiny",
+    "marginal": "small", "nominal": "token", "trivial": "minor",
+    "inconsequential": "unimportant",
+    
+    # Quality and nature
+    "substantive": "meaningful", "comprehensive": "complete", "exhaustive": "thorough",
+    "meticulous": "careful", "rigorous": "strict", "stringent": "tight",
+    "exacting": "demanding", "scrupulous": "careful", "fastidious": "picky",
+    "judicious": "wise", "prudent": "careful", "sagacious": "wise",
+    "astute": "sharp", "perspicacious": "insightful", "discerning": "sharp-eyed",
+    "perceptive": "observant", "cognizant": "aware", "conversant": "familiar",
+    "proficient": "skilled", "adept": "good at", "competent": "capable",
+    "efficacious": "effective", "expedient": "practical", "pragmatic": "realistic",
+    "utilitarian": "practical", "functional": "working", "operational": "running",
+    "viable": "workable", "feasible": "doable", "tenable": "defensible",
+    "sustainable": "lasting", "durable": "long-lasting", "resilient": "tough",
+    "robust": "strong",
+    
+    # Scope and extent adjectives
+    "ubiquitous": "everywhere", "pervasive": "widespread", "prevalent": "common",
+    "predominant": "main", "preponderant": "dominant", "salient": "notable",
+    "conspicuous": "obvious", "pronounced": "clear", "palpable": "obvious",
+    "tangible": "real", "discernible": "noticeable", "perceptible": "detectable",
+    "appreciable": "noticeable", "considerable": "significant", "substantial": "large",
+    "voluminous": "huge", "copious": "plenty of", "ample": "enough",
+    "sufficient": "enough", "adequate": "enough", "commensurate": "matching",
+    "proportionate": "balanced", "equitable": "fair", "impartial": "unbiased",
+    "objective": "neutral", "dispassionate": "calm", "detached": "removed",
+    "aloof": "distant",
+    
+    # Time and sequence adjectives
+    "antecedent": "earlier", "precedent": "previous", "prior": "earlier",
+    "preliminary": "early", "initial": "first", "nascent": "new",
+    "incipient": "beginning", "embryonic": "early-stage", "rudimentary": "basic",
+    "foundational": "basic", "fundamental": "core", "elemental": "basic",
+    "intrinsic": "built-in", "inherent": "natural", "innate": "inborn",
+    "congenital": "from birth", "subsequent": "later", "ensuing": "following",
+    "resultant": "resulting", "consequent": "following", "ultimate": "final",
+    "terminal": "end", "conclusive": "final", "definitive": "final",
+    "categorical": "absolute", "unequivocal": "clear", "unambiguous": "clear",
+    "explicit": "clear", "implicit": "implied", "tacit": "unspoken",
+    "latent": "hidden", "dormant": "inactive", "quiescent": "quiet",
+    
+    # Additional adjectives from Stealthwriter analysis
+    "unprecedented": "never seen before", "remarkable": "amazing", "profound": "deep",
+    "extensive": "wide", "volatile": "unstable", "dynamic": "changing",
+    "static": "fixed", "holistic": "complete", "multifaceted": "complex",
+    "nuanced": "subtle", "intricate": "complex", "convoluted": "complicated",
+    "labyrinthine": "maze-like", "straightforward": "simple", "elementary": "basic",
+    "sophisticated": "advanced", "cutting-edge": "latest", "state-of-the-art": "newest",
+    "innovative": "new", "novel": "new", "groundbreaking": "revolutionary",
+    "crucial": "important", "superfluous": "unnecessary", "redundant": "extra",
+    "extraneous": "unrelated", "pertinent": "relevant", "germane": "related",
+    "apposite": "fitting", "extrinsic": "external", "exogenous": "outside",
+    "omnipresent": "always there", "sporadic": "occasional", "intermittent": "on and off",
+    "episodic": "happening sometimes", "perpetual": "constant", "incessant": "nonstop",
+    "relentless": "never stopping", "transient": "temporary", "ephemeral": "short-lived",
+    "fleeting": "brief", "enduring": "lasting", "persistent": "continuing",
+    "sustained": "ongoing",
+    
+    # -------------------------------------------------------------------------
+    # STIFF TRANSITIONS AND CONNECTORS
+    # -------------------------------------------------------------------------
+    
+    "furthermore": "also", "moreover": "what's more", "additionally": "also",
+    "consequently": "so", "subsequently": "then", "henceforth": "from now on",
+    "heretofore": "until now", "hitherto": "until now", "thereby": "by doing this",
+    "whereby": "by which", "wherein": "where", "whereupon": "after which",
+    "notwithstanding": "despite", "nonetheless": "still", "nevertheless": "even so",
+    "conversely": "on the other hand", "alternatively": "or",
+    "correspondingly": "similarly", "accordingly": "so", "hence": "so",
+    "thus": "so", "therefore": "so", "ergo": "so", "viz": "namely",
+    "apropos": "about", "regarding": "about", "concerning": "about",
+    "pertaining": "relating", "respecting": "about", "insofar": "as far as",
+    "inasmuch": "since", "whereas": "while", "whilst": "while",
+    "albeit": "although", "lest": "in case", "provided": "if",
+    "assuming": "if", "given": "considering", "granted": "admittedly",
+    "admittedly": "true", "undoubtedly": "certainly", "indubitably": "without doubt",
+    "unquestionably": "clearly", "ostensibly": "seemingly", "presumably": "probably",
+    "purportedly": "supposedly", "allegedly": "supposedly",
+    "reportedly": "according to reports", "apparently": "it seems",
+    "evidently": "clearly", "manifestly": "obviously", "patently": "clearly",
+    "demonstrably": "provably", "verifiably": "checkably",
+    "empirically": "through testing", "theoretically": "in theory",
+    "hypothetically": "in theory", "conceptually": "in concept",
+    "fundamentally": "basically", "essentially": "basically",
+    "intrinsically": "by nature", "inherently": "naturally",
+    "predominantly": "mainly", "primarily": "mainly", "principally": "mainly",
+    "chiefly": "mainly", "largely": "mostly", "substantially": "mostly",
+    "considerably": "a lot", "significantly": "a lot", "markedly": "noticeably",
+    "notably": "especially", "particularly": "especially",
+    "specifically": "in particular", "explicitly": "clearly",
+    "expressly": "specifically", "precisely": "exactly", "accurately": "correctly",
+    "appropriately": "properly", "suitably": "fittingly", "adequately": "enough",
+    "sufficiently": "enough", "exceedingly": "very", "exceptionally": "unusually",
+    "extraordinarily": "extremely", "remarkably": "surprisingly",
+    "strikingly": "noticeably", "conspicuously": "obviously",
+    "prominently": "noticeably", "eminently": "highly", "supremely": "extremely",
+    "profoundly": "deeply", "intensely": "strongly", "acutely": "sharply",
+    "severely": "seriously", "drastically": "sharply", "radically": "completely",
+    "thoroughly": "completely", "entirely": "completely", "wholly": "fully",
+    "utterly": "completely", "absolutely": "totally", "categorically": "completely",
+    "unconditionally": "without limits", "unambiguously": "clearly",
+    "unmistakably": "clearly", "undeniably": "without question",
+    "irrefutably": "beyond argument", "incontrovertibly": "undeniably",
+    "indisputably": "without question",
+}
+
+# =============================================================================
+# COMPREHENSIVE FORMAL-TO-NATURAL PHRASE REPLACEMENTS (100+ patterns)
+# =============================================================================
+# Combined from Stealthwriter analysis + Manus AI formal writing transformation
+# Applied BEFORE word replacements (sorted by length, longest first)
+# =============================================================================
+
+STEALTHWRITER_PHRASE_REPLACEMENTS = {
+    # -------------------------------------------------------------------------
+    # HEDGING AND QUALIFICATION PHRASES
+    # -------------------------------------------------------------------------
+    
+    "it is worth noting that": "notably",
+    "it should be noted that": "note that",
+    "it is important to note that": "importantly",
+    "it is interesting to note that": "interestingly",
+    "it bears mentioning that": "worth mentioning",
+    "it is imperative that": "we must",
+    "it is essential that": "we need to",
+    "it is necessary to": "we need to",
+    "it is advisable to": "you should",
+    "it is recommended that": "we recommend",
+    "it is suggested that": "we suggest",
+    "it would appear that": "it seems",
+    "it would seem that": "it looks like",
+    "it can be argued that": "you could say",
+    "it could be said that": "you might say",
+    "it may be the case that": "maybe",
+    "it is possible that": "possibly",
+    "it is conceivable that": "it's possible",
+    "it is plausible that": "it's likely",
+    "it is reasonable to assume that": "we can assume",
+    "it stands to reason that": "it makes sense that",
+    "it goes without saying that": "obviously",
+    "needless to say": "of course",
+    "suffice it to say": "simply put",
+    "for all intents and purposes": "basically",
+    "to all intents and purposes": "essentially",
+    "in all likelihood": "probably",
+    "in all probability": "most likely",
+    "in the event that": "if",
+    "in the unlikely event that": "if by chance",
+    "on the off chance that": "just in case",
+    "under the circumstances": "given the situation",
+    "under no circumstances": "never",
+    "under certain conditions": "sometimes",
+    "provided that": "as long as",
+    "on the condition that": "if",
+    "with the proviso that": "as long as",
+    "subject to": "depending on",
+    "contingent upon": "depending on",
+    "predicated on": "based on",
+    "premised on": "based on",
+    
+    # -------------------------------------------------------------------------
+    # PERSPECTIVE AND STANDPOINT PHRASES
+    # -------------------------------------------------------------------------
+    
+    "from a practical standpoint": "practically speaking",
+    "from a theoretical perspective": "in theory",
+    "from an empirical standpoint": "based on evidence",
+    "from a historical perspective": "historically",
+    "from a strategic standpoint": "strategically",
+    "from an operational perspective": "operationally",
+    "from a financial standpoint": "financially",
+    "from a technical perspective": "technically",
+    "from the perspective of": "from the view of",
+    "from the standpoint of": "looking at it from",
+    "from the vantage point of": "from the position of",
+    "in terms of": "regarding",
+    "with respect to": "about",
+    "with regard to": "about",
+    "with reference to": "about",
+    "in reference to": "about",
+    "in relation to": "related to",
+    "in connection with": "connected to",
+    "in conjunction with": "along with",
+    "in association with": "with",
+    "in collaboration with": "working with",
+    "in partnership with": "partnering with",
+    "in coordination with": "coordinating with",
+    "in accordance with": "following",
+    "in compliance with": "following",
+    "in conformity with": "matching",
+    "in alignment with": "aligned with",
+    "in keeping with": "consistent with",
+    "in line with": "matching",
+    "consistent with": "matching",
+    "commensurate with": "matching",
+    "proportional to": "in proportion to",
+    "relative to": "compared to",
+    "as compared to": "compared to",
+    "as opposed to": "unlike",
+    "in contrast to": "unlike",
+    "in contradistinction to": "as opposed to",
+    "as distinct from": "different from",
+    "differentiated from": "different from",
+    
+    # -------------------------------------------------------------------------
+    # SCOPE AND DOMAIN PHRASES
+    # -------------------------------------------------------------------------
+    
+    "in the realm of": "in",
+    "in the domain of": "in",
+    "in the sphere of": "in",
+    "in the arena of": "in",
+    "in the field of": "in",
+    "in the area of": "in",
+    "within the context of": "in",
+    "within the framework of": "within",
+    "within the scope of": "within",
+    "within the confines of": "within",
+    "within the parameters of": "within",
+    "within the purview of": "under",
+    "within the ambit of": "within",
+    "falls within the scope of": "is part of",
+    "falls under the category of": "is a type of",
+    "pertains to the domain of": "relates to",
+    "encompasses the entirety of": "covers all of",
+    "spans the breadth of": "covers",
+    "extends across the spectrum of": "ranges across",
+    "traverses the landscape of": "crosses",
+    
+    # -------------------------------------------------------------------------
+    # CAUSATION AND RESULT PHRASES
+    # -------------------------------------------------------------------------
+    
+    "as a consequence of": "because of",
+    "as a result of": "because of",
+    "in consequence of": "due to",
+    "by virtue of": "because of",
+    "by reason of": "because of",
+    "on account of": "because of",
+    "owing to the fact that": "because",
+    "due to the fact that": "because",
+    "given the fact that": "since",
+    "in light of the fact that": "since",
+    "in view of the fact that": "considering",
+    "taking into account that": "considering",
+    "taking into consideration": "considering",
+    "bearing in mind that": "remembering that",
+    "with a view to": "to",
+    "with the aim of": "to",
+    "with the intention of": "intending to",
+    "with the purpose of": "to",
+    "with the objective of": "to",
+    "with the goal of": "to",
+    "for the purpose of": "to",
+    "for the sake of": "for",
+    "in order to": "to",
+    "so as to": "to",
+    "in an effort to": "trying to",
+    "in an attempt to": "trying to",
+    "in a bid to": "trying to",
+    "with a view toward": "aiming to",
+    "toward the end of": "to",
+    "to the end that": "so that",
+    "to the effect that": "saying that",
+    "such that": "so that",
+    "insofar as": "as far as",
+    "inasmuch as": "since",
+    "to the extent that": "as much as",
+    "to the degree that": "as much as",
+    "to such an extent that": "so much that",
+    "to such a degree that": "so much that",
+    
+    # -------------------------------------------------------------------------
+    # TIME AND SEQUENCE PHRASES
+    # -------------------------------------------------------------------------
+    
+    "at the present time": "now",
+    "at this point in time": "now",
+    "at this juncture": "now",
+    "at the current juncture": "currently",
+    "at the present moment": "right now",
+    "in the present day": "today",
+    "in this day and age": "nowadays",
+    "in the current climate": "these days",
+    "in the contemporary era": "today",
+    "in the modern era": "today",
+    "in recent times": "recently",
+    "in recent years": "lately",
+    "in the recent past": "recently",
+    "in the not-too-distant future": "soon",
+    "in the foreseeable future": "soon",
+    "in the near future": "soon",
+    "in the immediate future": "very soon",
+    "in due course": "eventually",
+    "in the fullness of time": "eventually",
+    "over the course of": "during",
+    "throughout the duration of": "during",
+    "for the duration of": "during",
+    "during the course of": "during",
+    "in the course of": "while",
+    "over the span of": "over",
+    "across the span of": "across",
+    "prior to the commencement of": "before starting",
+    "subsequent to the completion of": "after finishing",
+    "following the conclusion of": "after",
+    "upon completion of": "after finishing",
+    "upon the occurrence of": "when",
+    "in the aftermath of": "after",
+    "in the wake of": "after",
+    "as a precursor to": "before",
+    "as a prelude to": "before",
+    "as a preliminary to": "before",
+    "antecedent to": "before",
+    "precedent to": "before",
+    "concurrent with": "at the same time as",
+    "contemporaneous with": "at the same time as",
+    "simultaneous with": "at the same time as",
+    "in parallel with": "alongside",
+    "in tandem with": "together with",
+    
+    # -------------------------------------------------------------------------
+    # EMPHASIS AND DEGREE PHRASES
+    # -------------------------------------------------------------------------
+    
+    "to a significant degree": "significantly",
+    "to a considerable extent": "considerably",
+    "to a large extent": "largely",
+    "to a great extent": "greatly",
+    "to a substantial degree": "substantially",
+    "to a marked degree": "markedly",
+    "to a notable extent": "notably",
+    "to an appreciable degree": "appreciably",
+    "to a certain extent": "somewhat",
+    "to some extent": "partly",
+    "to a limited extent": "slightly",
+    "to a lesser extent": "less so",
+    "to a greater extent": "more so",
+    "to the fullest extent": "fully",
+    "to the maximum extent": "as much as possible",
+    "to the greatest possible extent": "as much as possible",
+    "in no small measure": "significantly",
+    "in large measure": "largely",
+    "in great measure": "greatly",
+    "in equal measure": "equally",
+    "by and large": "mostly",
+    "on the whole": "overall",
+    "all things considered": "overall",
+    "taking everything into account": "all in all",
+    "when all is said and done": "in the end",
+    "at the end of the day": "ultimately",
+    "in the final analysis": "ultimately",
+    "in the last analysis": "in the end",
+    "when push comes to shove": "when it matters",
+    "first and foremost": "first",
+    "above all else": "most importantly",
+    "of paramount importance": "most important",
+    "of utmost importance": "extremely important",
+    "of critical importance": "crucial",
+    "of vital importance": "vital",
+    "of fundamental importance": "fundamentally important",
+    "of considerable significance": "quite significant",
+    "of particular significance": "especially significant",
+    "of special significance": "particularly meaningful",
+    
+    # -------------------------------------------------------------------------
+    # ACCURACY AND PRECISION PHRASES
+    # -------------------------------------------------------------------------
+    
+    "with unprecedented accuracy": "more accurately than ever",
+    "with remarkable precision": "very precisely",
+    "with a high degree of accuracy": "very accurately",
+    "with considerable precision": "quite precisely",
+    "with pinpoint accuracy": "exactly",
+    "with surgical precision": "very precisely",
+    "with meticulous attention to detail": "carefully",
+    "with painstaking attention": "with great care",
+    "in a precise manner": "precisely",
+    "in an accurate fashion": "accurately",
+    "in a rigorous manner": "rigorously",
+    "in a systematic fashion": "systematically",
+    "in a methodical manner": "methodically",
+    "in a comprehensive manner": "comprehensively",
+    "in a thorough fashion": "thoroughly",
+    "in an exhaustive manner": "exhaustively",
+    "in a detailed fashion": "in detail",
+    "in an elaborate manner": "elaborately",
+    "in a nuanced fashion": "with nuance",
+    "in a sophisticated manner": "sophisticatedly",
+    
+    # -------------------------------------------------------------------------
+    # COMPARISON AND CONTRAST PHRASES
+    # -------------------------------------------------------------------------
+    
+    "in comparison to": "compared to",
+    "in comparison with": "compared with",
+    "by comparison": "comparatively",
+    "when compared to": "compared to",
+    "when compared with": "compared with",
+    "when juxtaposed with": "next to",
+    "when contrasted with": "unlike",
+    "when set against": "against",
+    "when measured against": "against",
+    "when weighed against": "against",
+    "as against": "versus",
+    "in juxtaposition to": "next to",
+    "by way of contrast": "in contrast",
+    "on the contrary": "however",
+    "quite the contrary": "actually the opposite",
+    "to the contrary": "otherwise",
+    "notwithstanding the foregoing": "despite this",
+    "irrespective of": "regardless of",
+    "regardless of the fact that": "even though",
+    "despite the fact that": "even though",
+    "in spite of the fact that": "even though",
+    "notwithstanding the fact that": "even though",
+    
+    # -------------------------------------------------------------------------
+    # CONCLUSION AND SUMMARY PHRASES
+    # -------------------------------------------------------------------------
+    
+    "in conclusion": "to conclude",
+    "in summary": "to sum up",
+    "to summarize": "in short",
+    "to recapitulate": "to recap",
+    "in summation": "summing up",
+    "by way of conclusion": "finally",
+    "by way of summary": "in brief",
+    "as a final point": "lastly",
+    "as a concluding remark": "finally",
+    "as a closing observation": "to close",
+    "it can be concluded that": "we can conclude",
+    "it may be concluded that": "we can say",
+    "the conclusion can be drawn that": "we can conclude",
+    "the inference can be made that": "we can infer",
+    "based on the foregoing": "based on this",
+    "based on the above": "from this",
+    "in light of the above": "given this",
+    "in view of the above": "considering this",
+    "taking the above into consideration": "with this in mind",
+    "with the above in mind": "keeping this in mind",
+    "having considered the above": "after considering this",
+    "having examined the evidence": "after looking at the evidence",
+    "having reviewed the data": "after reviewing the data",
+    "having analyzed the findings": "after analyzing the findings",
+    "the evidence suggests that": "the evidence shows",
+    "the data indicates that": "the data shows",
+    "the findings demonstrate that": "the findings show",
+    "the results reveal that": "the results show",
+    "the analysis confirms that": "the analysis shows",
+    
+    # -------------------------------------------------------------------------
+    # INTRODUCTION AND FRAMING PHRASES
+    # -------------------------------------------------------------------------
+    
+    "the purpose of this": "this aims to",
+    "the objective of this": "this is meant to",
+    "the aim of this": "this tries to",
+    "the intention of this": "this intends to",
+    "the goal of this": "this seeks to",
+    "this paper aims to": "this paper tries to",
+    "this study seeks to": "this study looks at",
+    "this research endeavors to": "this research tries to",
+    "this analysis attempts to": "this analysis looks at",
+    "this investigation explores": "this investigation looks into",
+    "it is the purpose of this": "this aims to",
+    "it is the objective of this": "this is meant to",
+    "the present study": "this study",
+    "the current investigation": "this investigation",
+    "the aforementioned": "the above",
+    "the above-mentioned": "the above",
+    "the previously stated": "what was said",
+    "the previously discussed": "what we discussed",
+    "as previously mentioned": "as mentioned",
+    "as stated earlier": "as said before",
+    "as noted above": "as noted",
+    "as indicated previously": "as shown",
+    "as discussed previously": "as discussed",
+    "as outlined above": "as outlined",
+    "as described earlier": "as described",
+    "as explained previously": "as explained",
+    "as demonstrated above": "as shown",
+    "as illustrated earlier": "as shown",
+    "as evidenced by": "as shown by",
+    "as exemplified by": "as shown by",
+    "as manifested in": "as seen in",
+    "as reflected in": "as seen in",
+    "as embodied in": "as found in",
+    "as encapsulated in": "as captured in",
+    "as articulated in": "as stated in",
+    "as delineated in": "as described in",
+    "as elucidated in": "as explained in",
+    "as expounded in": "as detailed in",
+    
+    # -------------------------------------------------------------------------
+    # ADDITIONAL STEALTHWRITER-SPECIFIC PATTERNS
+    # -------------------------------------------------------------------------
+    
+    "navigate the complexities of": "deal with the challenges of",
+    "navigate complex": "work through difficult",
+    "demonstrates remarkable": "shows amazing",
+    "exhibits remarkable": "shows amazing",
+    "yields dividends": "pays off",
+    "fosters innovation": "encourages new ideas",
+    "drives sustainable": "supports lasting",
+    "enables seamless": "allows smooth",
+    "facilitates effective": "helps with good",
+    "ensures optimal": "makes sure of the best",
+    "achieves significant": "gets major",
+    "presents unprecedented opportunities": "offers huge new chances",
+    "poses existential challenges": "creates serious problems",
+    "necessitates comprehensive": "requires complete",
+    "encompasses a wide range": "includes many",
+    "spans multiple": "covers several",
+    "transcends traditional": "goes beyond usual",
+    "revolutionizes the way": "changes how",
+    "transforms the landscape": "changes the field",
+    "reshapes the future": "changes what comes next",
+    "with unprecedented efficiency": "more efficiently than ever before",
+    "in light of": "considering",
+    "in the context of": "within",
 }
 
 FILLERS_TO_REMOVE = [
@@ -449,10 +1185,25 @@ META_COMMENTARY_PATTERNS = [
     r"^(here\s+is|here's)\s+(a\s+)?(more\s+)?(conversational|human|natural|casual).*?(version|rewrite|text).*?[.!:]\s*",
     r"^trying\s+to\s+(make|create)\s+it\s+sound.*?[.!:]\s*",
     r"^(this\s+is\s+)?(a\s+)?(more\s+)?(conversational|human-like|natural).*?(rewrite|version).*?[.!:]\s*",
+    # Catch broad preamble like "Here's a more conversational and human-like rewrite of that text about X:"
+    r"^here'?s\s+a\s+.*?(rewrite|version|take|rendition|rephrasing)\s+(of|on)\s+.*?[.!:\n]\s*",
+    # Catch "I rewrote/rephrased/reworded this..." preambles
+    r"^i\s+(rewrote|rephrased|reworded|reworked|revised)\s+.*?[.!:\n]\s*",
+    # Catch "This is a rewrite..." or "This is my take..."
+    r"^this\s+is\s+(a|my)\s+.*?(rewrite|version|take|attempt).*?[.!:\n]\s*",
+    # Catch "So basically..." or "So what I did was..."
+    r"^so\s+(basically|what\s+i\s+did|i\s+took|i\s+tried)\s+.*?[.!:\n]\s*",
+    # Catch any opening sentence that references rewriting/paraphrasing before actual content
+    r"^.*?(here is|here's|i've|i have)\s+(a|the|my)?\s*(more\s+)?(human|conversational|natural|casual|informal).*?(rewrite|version|take|text).*?[.!:\n]\s*",
+    # Trailing meta-commentary
     r"(makes?\s+sense,?\s*(though|right)?,?\s*(does\s+)?(not\s+)?(it|n't\s+it)[.?!]?\s*$)",
     r"(you\s+know[.?!]?\s*$)",
     r"(right[.?!]?\s*$)",
     r"(does\s+not\s+it[.?!]?\s*$)",
+    # Catch trailing "Hope this helps" or "Let me know" type endings
+    r"(hope\s+this\s+helps.*$)",
+    r"(let\s+me\s+know\s+if.*$)",
+    r"(feel\s+free\s+to.*$)",
 ]
 
 
@@ -476,7 +1227,7 @@ class PlagiarismClassifier(nn.Module):
 
 
 class MLModelService:
-    """Singleton service for ML models with lazy loading. Uses trained models from iDrive e2."""
+    """Singleton service for ML models with lazy loading. Uses Super-Ensemble (RoBERTa + all TriBoost versions)."""
     
     _instance = None
     _current_model: Optional[str] = None
@@ -487,10 +1238,91 @@ class MLModelService:
     _plagiarism_encoder = None
     _plagiarism_classifier = None
     
+    # Super-Ensemble: RoBERTa + TriBoost Original + V3 + V4
+    _triboost_models: Optional[Dict[str, Dict[str, Any]]] = None  # {version: {model_name: model}}
+    _feature_extractor: Optional[FeatureExtractor565] = None
+    _triboost_loaded: bool = False
+    _roberta_loaded: bool = False
+    
+    # iDrive e2 configuration for models
+    IDRIVE_ENDPOINT = "https://s3.us-west-1.idrivee2.com"
+    IDRIVE_BUCKET = "crop-spray-uploads"
+    TRIBOOST_VERSIONS = ["original", "v3", "v4"]  # All TriBoost versions for super-ensemble
+    LOCAL_TRIBOOST_CACHE = "/tmp/triboost_super_ensemble"
+    
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+    
+    def _get_s3_client_for_triboost(self):
+        """Get S3 client for downloading TriBoost models from iDrive e2."""
+        return boto3.client(
+            's3',
+            endpoint_url=self.IDRIVE_ENDPOINT,
+            aws_access_key_id=getattr(settings, 'S3_ACCESS_KEY', ''),
+            aws_secret_access_key=getattr(settings, 'S3_SECRET_KEY', ''),
+            config=Config(signature_version='s3v4')
+        )
+    
+    def _download_triboost_model(self, version: str, model_name: str) -> str:
+        """Download a TriBoost model from iDrive e2 to local cache.
+        
+        Args:
+            version: 'original', 'v3', or 'v4'
+            model_name: 'xgboost', 'lightgbm', or 'catboost'
+        """
+        version_dir = os.path.join(self.LOCAL_TRIBOOST_CACHE, version)
+        os.makedirs(version_dir, exist_ok=True)
+        local_path = os.path.join(version_dir, f"{model_name}_model.pkl")
+        
+        if not os.path.exists(local_path):
+            # Map version to iDrive path
+            if version == "original":
+                s3_key = f"triboost-models/ai_detector/{model_name}_model.pkl"
+            else:
+                s3_key = f"triboost-models/ai_detector_{version}/{model_name}_model.pkl"
+            
+            logger.info(f"Downloading TriBoost {version} {model_name} model from iDrive e2...")
+            try:
+                s3_client = self._get_s3_client_for_triboost()
+                s3_client.download_file(self.IDRIVE_BUCKET, s3_key, local_path)
+                logger.info(f"Downloaded {version}/{model_name} model to {local_path}")
+            except Exception as e:
+                logger.error(f"Failed to download {version}/{model_name} model: {e}")
+                raise
+        
+        return local_path
+    
+    def _load_triboost_models(self):
+        """Load all TriBoost versions for super-ensemble (Original + V3 + V4)."""
+        if self._triboost_loaded and self._triboost_models:
+            return
+        
+        logger.info("Loading Super-Ensemble TriBoost models (Original + V3 + V4)...")
+        self._triboost_models = {}
+        model_names = ["xgboost", "lightgbm", "catboost"]
+        
+        try:
+            for version in self.TRIBOOST_VERSIONS:
+                self._triboost_models[version] = {}
+                for model_name in model_names:
+                    model_path = self._download_triboost_model(version, model_name)
+                    with open(model_path, 'rb') as f:
+                        self._triboost_models[version][model_name] = pickle.load(f)
+                    logger.info(f"Loaded TriBoost {version}/{model_name} model")
+            
+            # Initialize feature extractor
+            if self._feature_extractor is None:
+                self._feature_extractor = FeatureExtractor565()
+                logger.info("Initialized 565-feature extractor")
+            
+            self._triboost_loaded = True
+            logger.info("Super-Ensemble TriBoost loaded: 9 models (3 versions x 3 algorithms)")
+        except Exception as e:
+            logger.error(f"Failed to load TriBoost models: {e}")
+            self._triboost_loaded = False
+            raise
     
     def _unload_all_models(self):
         logger.info("Unloading all models...")
@@ -500,38 +1332,124 @@ class MLModelService:
         self._humanizer_tokenizer = None
         self._plagiarism_encoder = None
         self._plagiarism_classifier = None
+        # Note: Keep TriBoost models loaded as they're lightweight
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
         self._current_model = None
         logger.info("All models unloaded")
     
+    def _download_detector_from_idrive(self):
+        """Download fine-tuned RoBERTa detector from iDrive e2 if not available locally."""
+        local_path = settings.DETECTOR_MODEL_PATH
+        s3_path = f"s3://{self.IDRIVE_BUCKET}/ai-detector-platform/models/detector/"
+        
+        # Check if model already exists locally
+        if os.path.exists(os.path.join(local_path, "model.safetensors")):
+            logger.info(f"Detector model already exists at {local_path}")
+            return True
+        
+        logger.info(f"Downloading fine-tuned RoBERTa detector from iDrive e2...")
+        os.makedirs(local_path, exist_ok=True)
+        
+        try:
+            s3_client = self._get_s3_client_for_triboost()
+            
+            # List and download all model files
+            response = s3_client.list_objects_v2(
+                Bucket=self.IDRIVE_BUCKET,
+                Prefix="ai-detector-platform/models/detector/"
+            )
+            
+            for obj in response.get('Contents', []):
+                key = obj['Key']
+                filename = key.split('/')[-1]
+                if filename:
+                    local_file = os.path.join(local_path, filename)
+                    logger.info(f"  Downloading {filename}...")
+                    s3_client.download_file(self.IDRIVE_BUCKET, key, local_file)
+            
+            logger.info(f"Successfully downloaded detector model to {local_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to download detector from iDrive: {e}")
+            return False
+    
     def _load_detector(self):
+        """Load fine-tuned RoBERTa detector from iDrive e2 (primary AI detector)."""
         if self._current_model != "detector":
             self._unload_all_models()
-            logger.info("Loading AI detector model (RoBERTa)...")
+            
+            # Try to download model from iDrive if not available locally
             model_path = settings.DETECTOR_MODEL_PATH
+            if not os.path.exists(os.path.join(model_path, "model.safetensors")):
+                self._download_detector_from_idrive()
+            
+            # Load the fine-tuned RoBERTa model
+            logger.info("Loading fine-tuned RoBERTa AI detector...")
             if os.path.exists(os.path.join(model_path, "model.safetensors")):
                 self._detector_tokenizer = AutoTokenizer.from_pretrained(model_path)
                 self._detector_model = AutoModelForSequenceClassification.from_pretrained(model_path, torch_dtype=torch.float32)
                 self._detector_model.eval()
-                logger.info(f"Loaded trained RoBERTa model from {model_path}")
+                logger.info(f"Loaded fine-tuned RoBERTa model from {model_path}")
             else:
-                logger.warning(f"Local model not found at {model_path}, using fallback")
+                logger.warning(f"Local model not found at {model_path}, using base RoBERTa (not recommended)")
                 self._detector_tokenizer = AutoTokenizer.from_pretrained("roberta-base")
                 self._detector_model = AutoModelForSequenceClassification.from_pretrained("roberta-base", num_labels=2)
             self._current_model = "detector"
     
+    def _download_humanizer_from_idrive(self):
+        """Download Stealthwriter T5 Chaos humanizer from iDrive e2 if not available locally."""
+        local_path = settings.HUMANIZER_MODEL_PATH
+        s3_prefix = "stealthwriter_t5_final_9350"
+        
+        # Check if model already exists locally
+        if os.path.exists(os.path.join(local_path, "model.safetensors")):
+            logger.info(f"Humanizer model already exists at {local_path}")
+            return True
+        
+        logger.info(f"Downloading Stealthwriter T5 Chaos humanizer from iDrive e2...")
+        os.makedirs(local_path, exist_ok=True)
+        
+        try:
+            s3_client = self._get_s3_client_for_triboost()
+            
+            # List and download all model files
+            response = s3_client.list_objects_v2(
+                Bucket=self.IDRIVE_BUCKET,
+                Prefix=f"{s3_prefix}/"
+            )
+            
+            for obj in response.get('Contents', []):
+                key = obj['Key']
+                filename = key.split('/')[-1]
+                if filename:
+                    local_file = os.path.join(local_path, filename)
+                    logger.info(f"  Downloading {filename}...")
+                    s3_client.download_file(self.IDRIVE_BUCKET, key, local_file)
+            
+            logger.info(f"Successfully downloaded humanizer model to {local_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to download humanizer from iDrive: {e}")
+            return False
+    
     def _load_humanizer(self):
+        """Load Stealthwriter T5 Chaos humanizer (trained for 0% AI detection)."""
         if self._current_model != "humanizer":
             self._unload_all_models()
-            logger.info("Loading humanizer model (T5 V3)...")
+            
+            # Try to download model from iDrive if not available locally
             model_path = settings.HUMANIZER_MODEL_PATH
+            if not os.path.exists(os.path.join(model_path, "model.safetensors")):
+                self._download_humanizer_from_idrive()
+            
+            logger.info("Loading Stealthwriter T5 Chaos humanizer...")
             if os.path.exists(os.path.join(model_path, "model.safetensors")):
                 self._humanizer_tokenizer = T5Tokenizer.from_pretrained(model_path)
                 self._humanizer_model = T5ForConditionalGeneration.from_pretrained(model_path, torch_dtype=torch.float32)
                 self._humanizer_model.eval()
-                logger.info(f"Loaded trained T5 V3 model from {model_path}")
+                logger.info(f"Loaded Stealthwriter T5 Chaos model from {model_path}")
             else:
                 logger.warning(f"Local model not found at {model_path}, using base T5")
                 self._humanizer_tokenizer = T5Tokenizer.from_pretrained("t5-base")
@@ -687,18 +1605,115 @@ class MLModelService:
             "weights": weights
         }
     
-    def detect_ai(self, text: str) -> Dict[str, Any]:
+    def _get_triboost_predictions(self, text: str) -> Dict[str, Dict[str, float]]:
+        """Get AI probability from all TriBoost versions.
+        
+        Returns:
+            Dict mapping version name to {'ai_prob': float, 'human_prob': float}
+        """
+        self._load_triboost_models()
+        
+        # Extract 565 features
+        features = self._feature_extractor.extract_all(text)
+        X = features.reshape(1, -1)
+        
+        results = {}
+        for version in self.TRIBOOST_VERSIONS:
+            version_probs = []
+            for model_name in ["xgboost", "lightgbm", "catboost"]:
+                model = self._triboost_models[version][model_name]
+                prob = model.predict_proba(X)[0]
+                version_probs.append(prob[1])  # AI probability
+            
+            # Average across 3 models in this version
+            avg_ai_prob = float(np.mean(version_probs))
+            results[version] = {
+                'ai_prob': avg_ai_prob,
+                'human_prob': 1.0 - avg_ai_prob
+            }
+        
+        return results
+    
+    def _get_roberta_prediction(self, text: str) -> Dict[str, float]:
+        """Get AI probability from RoBERTa model.
+        
+        Returns:
+            Dict with 'ai_prob' and 'human_prob'
+        """
         self._load_detector()
+        
         inputs = self._detector_tokenizer(text, return_tensors="pt", truncation=True, max_length=512, padding=True)
         with torch.no_grad():
             outputs = self._detector_model(**inputs)
             probabilities = torch.softmax(outputs.logits, dim=-1)
+        
         human_prob = probabilities[0][0].item()
         ai_prob = probabilities[0][1].item()
-        confidence_score = self._calculate_confidence_score(ai_prob)
+        
         return {
-            "ai_probability": round(ai_prob * 100, 2),
-            "human_probability": round(human_prob * 100, 2),
+            'ai_prob': ai_prob,
+            'human_prob': human_prob
+        }
+    
+    def detect_ai(self, text: str) -> Dict[str, Any]:
+        """
+        Detect AI-generated text using Super-Ensemble (RoBERTa + TriBoost Original + V3 + V4).
+        
+        The super-ensemble combines:
+        - RoBERTa: Fine-tuned transformer (355M params)
+        - TriBoost Original: XGBoost + LightGBM + CatBoost (99.85% accuracy)
+        - TriBoost V3: Enhanced with humanized samples (99.86% accuracy)
+        - TriBoost V4: Weighted humanized training (99.82% accuracy)
+        
+        Strategy: Hybrid with TriBoost priority
+        - If ANY TriBoost version detects AI (>50%), use TriBoost average
+        - Otherwise, use RoBERTa's judgment
+        - This gives highest confidence while maintaining accuracy
+        """
+        # Get predictions from all models
+        triboost_results = self._get_triboost_predictions(text)
+        roberta_result = self._get_roberta_prediction(text)
+        
+        # Log individual model results
+        logger.info(f"RoBERTa: {roberta_result['ai_prob']*100:.1f}% AI")
+        for version, result in triboost_results.items():
+            logger.info(f"TriBoost {version}: {result['ai_prob']*100:.1f}% AI")
+        
+        # Calculate TriBoost average
+        triboost_ai_probs = [r['ai_prob'] for r in triboost_results.values()]
+        triboost_avg = float(np.mean(triboost_ai_probs))
+        
+        # Hybrid strategy: TriBoost priority
+        any_triboost_detects_ai = any(p > 0.5 for p in triboost_ai_probs)
+        
+        if any_triboost_detects_ai:
+            # Use TriBoost average when any version detects AI
+            final_ai_prob = triboost_avg
+            strategy_used = "triboost_priority"
+            logger.info(f"Super-Ensemble using TriBoost (detected AI): {final_ai_prob*100:.1f}% AI")
+        else:
+            # Use simple average of all 4 model groups when no AI detected
+            all_probs = triboost_ai_probs + [roberta_result['ai_prob']]
+            final_ai_prob = float(np.mean(all_probs))
+            strategy_used = "full_average"
+            logger.info(f"Super-Ensemble using full average: {final_ai_prob*100:.1f}% AI")
+        
+        final_human_prob = 1.0 - final_ai_prob
+        
+        # Calculate confidence score
+        confidence_score = self._calculate_confidence_score(final_ai_prob)
+        
+        # Count votes (how many model groups say AI)
+        votes_ai = sum([
+            1 if roberta_result['ai_prob'] > 0.5 else 0,
+            1 if triboost_results['original']['ai_prob'] > 0.5 else 0,
+            1 if triboost_results['v3']['ai_prob'] > 0.5 else 0,
+            1 if triboost_results['v4']['ai_prob'] > 0.5 else 0
+        ])
+        
+        result = {
+            "ai_probability": round(final_ai_prob * 100, 2),
+            "human_probability": round(final_human_prob * 100, 2),
             "confidence_score": confidence_score,
             "confidence_level": self._get_confidence_level(confidence_score),
             "analysis": {
@@ -706,9 +1721,24 @@ class MLModelService:
                 "word_count": len(text.split()),
                 "avg_sentence_length": self._avg_sentence_length(text)
             },
-            "sentence_analysis": self._analyze_sentences(text),
-            "level_analysis": self._perform_10_level_analysis(text, ai_prob)
+            "model_breakdown": {
+                "roberta": round(roberta_result['ai_prob'] * 100, 2),
+                "triboost_original": round(triboost_results['original']['ai_prob'] * 100, 2),
+                "triboost_v3": round(triboost_results['v3']['ai_prob'] * 100, 2),
+                "triboost_v4": round(triboost_results['v4']['ai_prob'] * 100, 2),
+                "triboost_average": round(triboost_avg * 100, 2)
+            },
+            "ensemble_info": {
+                "votes_ai": votes_ai,
+                "votes_human": 4 - votes_ai,
+                "strategy_used": strategy_used,
+                "total_models": 10  # 1 RoBERTa + 9 TriBoost (3 versions x 3 algorithms)
+            },
+            "level_analysis": self._perform_10_level_analysis(text, final_ai_prob),
+            "model_used": "super_ensemble"
         }
+        
+        return result
     
     def _remove_meta_commentary(self, text: str) -> str:
         """Remove meta-commentary from model output like 'okay, here is a rewrite...'"""
@@ -732,26 +1762,68 @@ class MLModelService:
         return result.strip()
     
     def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2) -> str:
+        """
+        Apply Stealthwriter-style transformations to make text sound more human.
+        
+        Process order (important for best results):
+        1. Remove meta-commentary
+        2. Apply phrase replacements (longer patterns first)
+        3. Expand contractions
+        4. Remove filler words
+        5. Apply word replacements
+        6. Add occasional formal starters
+        """
         result = text
         # First remove meta-commentary
         result = self._remove_meta_commentary(result)
+        
         for _ in range(passes):
+            # Step 1: Apply phrase replacements FIRST (longer patterns before shorter)
+            # Sort by length descending to avoid partial matches
+            sorted_phrases = sorted(STEALTHWRITER_PHRASE_REPLACEMENTS.items(), 
+                                   key=lambda x: len(x[0]), reverse=True)
+            for phrase, replacement in sorted_phrases:
+                # Case-insensitive replacement while preserving sentence case
+                pattern = re.compile(re.escape(phrase), re.IGNORECASE)
+                matches = pattern.findall(result)
+                for match in matches:
+                    # Preserve capitalization of first letter
+                    if match[0].isupper():
+                        new_replacement = replacement[0].upper() + replacement[1:]
+                    else:
+                        new_replacement = replacement
+                    result = result.replace(match, new_replacement, 1)
+            
+            # Step 2: Expand contractions
             for contraction, expansion in CONTRACTION_EXPANSIONS.items():
                 result = re.sub(re.escape(contraction), expansion, result, flags=re.IGNORECASE)
+            
+            # Step 3: Remove filler words
             for filler in FILLERS_TO_REMOVE:
                 result = result.replace(filler, "").replace(filler.capitalize(), "")
+            
+            # Step 4: Apply word replacements
             words = result.split()
             new_words = []
             for word in words:
-                lower_word = word.lower()
+                # Strip punctuation for matching
+                clean_word = word.strip('.,!?;:()[]{}"\'-')
+                lower_word = clean_word.lower()
+                
                 if lower_word in SYNONYM_REPLACEMENTS:
                     replacement = SYNONYM_REPLACEMENTS[lower_word]
-                    if word[0].isupper():
+                    # Preserve capitalization
+                    if clean_word and clean_word[0].isupper():
                         replacement = replacement.capitalize()
-                    new_words.append(replacement)
+                    # Preserve punctuation
+                    prefix = word[:len(word) - len(word.lstrip('.,!?;:()[]{}"\'-'))]
+                    suffix = word[len(word.rstrip('.,!?;:()[]{}"\'-')):]
+                    new_words.append(prefix + replacement + suffix)
                 else:
                     new_words.append(word)
             result = " ".join(new_words)
+            
+            # Step 5: Restructure sentences (occasional formal starters)
             sentences = self._split_sentences(result)
             new_sentences = []
             for i, sentence in enumerate(sentences):
@@ -762,6 +1834,8 @@ class MLModelService:
             result = ". ".join(new_sentences)
             if not result.endswith("."):
                 result += "."
+        
+        # Clean up extra whitespace
         return re.sub(r'\s+', ' ', result).strip()
     
     def _humanize_with_hf_api(self, text: str) -> str:
@@ -814,6 +1888,7 @@ class MLModelService:
             return text
     
     def humanize(self, text: str, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+        """Humanize AI text using Stealthwriter T5 Chaos model (temp 1.5 for 0% AI detection)."""
         model_output = None
         use_fallback = False
         
@@ -825,10 +1900,10 @@ class MLModelService:
                 outputs = self._humanizer_model.generate(
                     **inputs,
                     max_length=512,
-                    num_beams=4,
+                    num_beams=1,  # Disable beam search for more creative output
                     do_sample=True,
-                    temperature=0.8,
-                    top_p=0.9,
+                    temperature=1.0,  # Reduced from 1.2 for better coherence while maintaining evasion
+                    top_p=0.95,
                     repetition_penalty=2.5,
                     no_repeat_ngram_size=3
                 )
