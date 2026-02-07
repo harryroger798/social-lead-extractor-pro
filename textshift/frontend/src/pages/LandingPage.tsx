@@ -141,6 +141,34 @@ export default function LandingPage() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
+  const [countryCode, setCountryCode] = useState('');
+  const [currencySymbol, setCurrencySymbol] = useState('$');
+
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const cached = sessionStorage.getItem('ts_country');
+        if (cached && cached.length === 2) {
+          setCountryCode(cached);
+          if (cached === 'IN') setCurrencySymbol('\u20b9');
+          return;
+        }
+        const res = await fetch('/api/payment/detect-region', { signal: AbortSignal.timeout(8000) });
+        if (res.ok) {
+          const data = await res.json();
+          const code = data.country_code || '';
+          if (code.length === 2) {
+            setCountryCode(code);
+            sessionStorage.setItem('ts_country', code);
+            if (code === 'IN') setCurrencySymbol(data.symbol || '\u20b9');
+          }
+        }
+      } catch {}
+    };
+    detectCountry();
+  }, []);
+
+  const isIndia = countryCode === 'IN';
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -920,10 +948,10 @@ export default function LandingPage() {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-                            { name: 'Free', price: '$0', yearlyPrice: '$0', credits: '5,000 words/mo', features: ['AI Detection only (10 scans/day)', 'Basic heat map reports', '6 Writing Tools (limited)', 'Export to TXT'], cta: 'Get Started', highlight: false },
-                            { name: 'Starter', price: '$9.99', yearlyPrice: '$99.90', credits: '25,000 words/mo', features: ['AI Detection + Humanizer + Plagiarism', '100 scans/day', '12 Writing Tools', 'PDF export & Word-level diff', 'Export to HTML/Markdown'], cta: 'Subscribe', highlight: false },
-                            { name: 'Pro', price: '$24.99', yearlyPrice: '$249.90', credits: 'Unlimited', features: ['All 3 core tools (500 scans/day)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (10 files)', 'Shareable reports', 'Priority support'], cta: 'Subscribe', highlight: true },
-                            { name: 'Enterprise', price: '$49.99', yearlyPrice: '$499.90', credits: 'True Unlimited', features: ['Unlimited scans (no daily limit)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (50 files)', 'Full REST API Access', 'White-label API', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
+                            { name: 'Free', price: `${currencySymbol}0`, yearlyPrice: `${currencySymbol}0`, credits: '5,000 words/mo', features: ['AI Detection only (10 scans/day)', 'Basic heat map reports', '6 Writing Tools (limited)', 'Export to TXT'], cta: 'Get Started', highlight: false },
+                            { name: 'Starter', price: isIndia ? `${currencySymbol}300` : '$9.99', yearlyPrice: isIndia ? `${currencySymbol}3,000` : '$99.90', credits: '25,000 words/mo', features: ['AI Detection + Humanizer + Plagiarism', '100 scans/day', '12 Writing Tools', 'PDF export & Word-level diff', 'Export to HTML/Markdown'], cta: 'Subscribe', highlight: false },
+                            { name: 'Pro', price: isIndia ? `${currencySymbol}1,000` : '$24.99', yearlyPrice: isIndia ? `${currencySymbol}10,000` : '$249.90', credits: 'Unlimited', features: ['All 3 core tools (500 scans/day)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (10 files)', 'Shareable reports', 'Priority support'], cta: 'Subscribe', highlight: true },
+                            { name: 'Enterprise', price: isIndia ? `${currencySymbol}2,000` : '$49.99', yearlyPrice: isIndia ? `${currencySymbol}20,000` : '$499.90', credits: 'True Unlimited', features: ['Unlimited scans (no daily limit)', 'All 14 Writing Tools - Unlimited', 'Bulk Processing (50 files)', 'Full REST API Access', 'White-label API', 'SLA guarantee'], cta: 'Contact Sales', highlight: false }
             ].map((plan, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
                 <TiltCard className="h-full" glowColor={plan.highlight ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}>
@@ -939,10 +967,10 @@ export default function LandingPage() {
                       <h3 className="text-lg font-medium text-white mb-4">{plan.name}</h3>
                       <div className="mb-2">
                         <span className="text-3xl md:text-4xl font-light text-white">{plan.price}</span>
-                        {plan.price !== '$0' && <span className="text-gray-300">/month</span>}
+                        {plan.price !== `${currencySymbol}0` && <span className="text-gray-300">/month</span>}
                       </div>
                       <div className="text-emerald-400 text-xs mb-1 h-4">
-                        {plan.yearlyPrice !== '$0' ? `or ${plan.yearlyPrice}/year (save 2 months)` : ''}
+                        {plan.yearlyPrice !== `${currencySymbol}0` ? `or ${plan.yearlyPrice}/year (save 2 months)` : ''}
                       </div>
                       <div className="text-gray-300 text-sm">{plan.credits}</div>
                     </div>

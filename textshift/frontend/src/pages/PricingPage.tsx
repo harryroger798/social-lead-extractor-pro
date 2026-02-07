@@ -43,18 +43,20 @@ export default function PricingPage() {
     const detectCountry = async () => {
       try {
         const cached = sessionStorage.getItem('ts_country');
-        if (cached) {
+        if (cached && cached.length === 2) {
           setCountryCode(cached);
           if (cached === 'IN') setCurrencySymbol('\u20b9');
           return;
         }
-        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+        const res = await fetch('/api/payment/detect-region', { signal: AbortSignal.timeout(8000) });
         if (res.ok) {
           const data = await res.json();
           const code = data.country_code || '';
-          setCountryCode(code);
-          sessionStorage.setItem('ts_country', code);
-          if (code === 'IN') setCurrencySymbol('\u20b9');
+          if (code.length === 2) {
+            setCountryCode(code);
+            sessionStorage.setItem('ts_country', code);
+            if (code === 'IN') setCurrencySymbol(data.symbol || '\u20b9');
+          }
         }
       } catch {}
     };

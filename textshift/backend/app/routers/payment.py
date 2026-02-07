@@ -122,6 +122,44 @@ REGION_CURRENCY_MAP = {
     "IN": {"currency": "INR", "symbol": "₹", "monthly": PRICING_PLANS_INR, "yearly": YEARLY_PRICING_PLANS_INR},
 }
 
+_region_cache: dict[str, tuple[str, float]] = {}
+
+@router.get("/detect-region")
+async def detect_region(request: Request):
+    """Detect user's country from IP address for region parity pricing."""
+    import time
+    client_ip = request.headers.get("x-real-ip") or request.headers.get("x-forwarded-for", "").split(",")[0].strip() or request.client.host if request.client else ""
+
+    if client_ip in _region_cache:
+        code, ts = _region_cache[client_ip]
+        if time.time() - ts < 86400:
+            region = REGION_CURRENCY_MAP.get(code)
+            return {"country_code": code, "currency": region["currency"] if region else "USD", "symbol": region["symbol"] if region else "$"}
+
+    country_code = ""
+    apis = [
+        f"https://ipapi.co/{client_ip}/json/",
+        f"http://ip-api.com/json/{client_ip}?fields=countryCode",
+        f"https://ipwho.is/{client_ip}",
+    ]
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        for api_url in apis:
+            try:
+                resp = await client.get(api_url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    country_code = data.get("country_code") or data.get("countryCode") or data.get("country") or ""
+                    if len(country_code) == 2:
+                        country_code = country_code.upper()
+                        break
+                    country_code = ""
+            except Exception:
+                continue
+
+    _region_cache[client_ip] = (country_code, time.time())
+    region = REGION_CURRENCY_MAP.get(country_code)
+    return {"country_code": country_code, "currency": region["currency"] if region else "USD", "symbol": region["symbol"] if region else "$"}
+
 
 async def get_paypal_access_token() -> str:
     """Get PayPal access token."""
