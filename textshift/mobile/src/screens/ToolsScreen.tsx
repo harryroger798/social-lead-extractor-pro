@@ -5,7 +5,8 @@ import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
 import { toolsApi } from '../api/client';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
+import type { ThemeColors } from '../theme/colors';
 
 type ToolId = 'grammar' | 'summarize' | 'paraphrase' | 'translate' | 'readability' | 'tone' | 'word_count' | 'style' | 'improve' | 'citation' | 'export';
 
@@ -34,6 +35,8 @@ const languages = [
 const paraphraseModes = ['standard', 'fluency', 'creative', 'formal', 'simple'];
 
 export default function ToolsScreen() {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const [activeTool, setActiveTool] = useState<ToolId | null>(null);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -142,7 +145,7 @@ export default function ToolsScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <TouchableOpacity onPress={() => setActiveTool(null)} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={colors.dark.primary} />
+          <Ionicons name="arrow-back" size={20} color={theme.primary} />
           <Text style={styles.backText}>All Tools</Text>
         </TouchableOpacity>
 
@@ -204,7 +207,7 @@ export default function ToolsScreen() {
           <TextInput
             style={styles.textInput}
             placeholder={`Enter text for ${currentTool?.name?.toLowerCase()}...`}
-            placeholderTextColor={colors.dark.textMuted}
+            placeholderTextColor={theme.textMuted}
             value={text}
             onChangeText={setText}
             multiline
@@ -244,53 +247,53 @@ export default function ToolsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: theme.background },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100, paddingTop: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.dark.text, marginBottom: 4 },
-  subtitle: { fontSize: 14, color: colors.dark.textSecondary, marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: '700', color: theme.text, marginBottom: 4 },
+  subtitle: { fontSize: 14, color: theme.textSecondary, marginBottom: 20 },
   backBtn: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 6 },
-  backText: { color: colors.dark.primary, fontSize: 15, fontWeight: '500' },
+  backText: { color: theme.primary, fontSize: 15, fontWeight: '500' },
   toolGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   toolCard: {
-    width: '47%', backgroundColor: colors.dark.surface, borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: colors.dark.border,
+    width: '47%', backgroundColor: theme.surface, borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: theme.border,
   },
   toolIcon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  toolName: { fontSize: 15, fontWeight: '600', color: colors.dark.text, marginBottom: 2 },
-  toolDesc: { fontSize: 12, color: colors.dark.textMuted },
+  toolName: { fontSize: 15, fontWeight: '600', color: theme.text, marginBottom: 2 },
+  toolDesc: { fontSize: 12, color: theme.textMuted },
   inputCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, borderWidth: 1,
-    borderColor: colors.dark.border, overflow: 'hidden', marginBottom: 16,
+    backgroundColor: theme.surface, borderRadius: 16, borderWidth: 1,
+    borderColor: theme.border, overflow: 'hidden', marginBottom: 16,
   },
-  textInput: { color: colors.dark.text, fontSize: 15, padding: 16, minHeight: 160, lineHeight: 22 },
+  textInput: { color: theme.text, fontSize: 15, padding: 16, minHeight: 160, lineHeight: 22 },
   inputFooter: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  wordCount: { fontSize: 12, color: colors.dark.textMuted },
+  wordCount: { fontSize: 12, color: theme.textMuted },
   langRow: { marginBottom: 16, gap: 12 },
   langPicker: { gap: 6 },
-  langLabel: { fontSize: 13, color: colors.dark.textSecondary, fontWeight: '500', marginBottom: 4 },
+  langLabel: { fontSize: 13, color: theme.textSecondary, fontWeight: '500', marginBottom: 4 },
   langChip: {
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, marginRight: 8,
-    backgroundColor: colors.dark.surface, borderWidth: 1, borderColor: colors.dark.border,
+    backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.border,
   },
-  langChipActive: { backgroundColor: colors.dark.primary + '20', borderColor: colors.dark.primary },
-  langChipText: { fontSize: 13, color: colors.dark.textSecondary },
-  langChipTextActive: { color: colors.dark.primary, fontWeight: '600' },
+  langChipActive: { backgroundColor: theme.primary + '20', borderColor: theme.primary },
+  langChipText: { fontSize: 13, color: theme.textSecondary },
+  langChipTextActive: { color: theme.primary, fontWeight: '600' },
   modeRow: { marginBottom: 16 },
   statsCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, padding: 16, marginBottom: 16,
-    borderWidth: 1, borderColor: colors.dark.border,
+    backgroundColor: theme.surface, borderRadius: 16, padding: 16, marginBottom: 16,
+    borderWidth: 1, borderColor: theme.border,
   },
-  statRow: { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.dark.border },
-  statText: { fontSize: 14, color: colors.dark.text },
+  statRow: { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: theme.border },
+  statText: { fontSize: 14, color: theme.text },
   resultCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, padding: 20,
-    borderWidth: 1, borderColor: colors.dark.border,
+    backgroundColor: theme.surface, borderRadius: 16, padding: 20,
+    borderWidth: 1, borderColor: theme.border,
   },
-  resultTitle: { fontSize: 18, fontWeight: '600', color: colors.dark.text, marginBottom: 12 },
-  resultText: { fontSize: 15, color: colors.dark.text, lineHeight: 24 },
+  resultTitle: { fontSize: 18, fontWeight: '600', color: theme.text, marginBottom: 12 },
+  resultText: { fontSize: 15, color: theme.text, lineHeight: 24 },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -6,24 +6,45 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useAuthStore } from './src/store/authStore';
-import { colors } from './src/theme/colors';
+import { useThemeStore } from './src/store/themeStore';
+import {
+  registerForPushNotifications,
+  addNotificationResponseListener,
+  addNotificationReceivedListener,
+} from './src/services/notifications';
 
 function AppContent() {
   const { isLoading, loadToken } = useAuthStore();
+  const { theme, mode, loadTheme } = useThemeStore();
+  const notificationListener = useRef<ReturnType<typeof addNotificationReceivedListener>>();
+  const responseListener = useRef<ReturnType<typeof addNotificationResponseListener>>();
 
   useEffect(() => {
     loadToken();
+    loadTheme();
+    registerForPushNotifications();
+    notificationListener.current = addNotificationReceivedListener(() => {});
+    responseListener.current = addNotificationResponseListener(() => {});
+    return () => {
+      if (notificationListener.current) notificationListener.current.remove();
+      if (responseListener.current) responseListener.current.remove();
+    };
   }, []);
 
   if (isLoading) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color={colors.dark.primary} />
+      <View style={[styles.loading, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
-  return <AppNavigator />;
+  return (
+    <>
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+      <AppNavigator />
+    </>
+  );
 }
 
 export default function App() {
@@ -31,7 +52,6 @@ export default function App() {
     <GestureHandlerRootView style={styles.flex}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <StatusBar style="light" />
           <AppContent />
         </NavigationContainer>
       </SafeAreaProvider>
@@ -47,6 +67,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.dark.background,
   },
 });

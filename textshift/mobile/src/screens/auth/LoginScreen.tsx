@@ -4,7 +4,8 @@ import { ScreenWrapper } from '../../components/ScreenWrapper';
 import { TextInput } from '../../components/TextInput';
 import { Button } from '../../components/Button';
 import { useAuthStore } from '../../store/authStore';
-import { colors } from '../../theme/colors';
+import { useThemeStore } from '../../store/themeStore';
+import type { ThemeColors } from '../../theme/colors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types';
 
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function LoginScreen({ navigation }: Props) {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,7 +94,7 @@ export default function LoginScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -104,30 +107,30 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 36,
     fontWeight: '800',
-    color: colors.dark.primary,
+    color: theme.primary,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 14,
-    color: colors.dark.textMuted,
+    color: theme.textMuted,
     marginTop: 4,
   },
   form: {
-    backgroundColor: colors.dark.surface,
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.dark.border,
+    borderColor: theme.border,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.dark.text,
+    color: theme.text,
     marginBottom: 4,
   },
   description: {
     fontSize: 14,
-    color: colors.dark.textSecondary,
+    color: theme.textSecondary,
     marginBottom: 24,
   },
   forgotLink: {
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   forgotText: {
-    color: colors.dark.primary,
+    color: theme.primary,
     fontSize: 14,
   },
   footer: {
@@ -145,11 +148,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: colors.dark.textSecondary,
+    color: theme.textSecondary,
     fontSize: 14,
   },
   linkText: {
-    color: colors.dark.primary,
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '600',
   },

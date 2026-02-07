@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { getCached, setCache, CacheKeys, CacheTTL } from '../services/cache';
 
 const API_URL = 'https://textshift.org';
 
@@ -48,7 +49,10 @@ export const authApi = {
     return response.data;
   },
   getMe: async () => {
+    const cached = await getCached(CacheKeys.USER_PROFILE);
+    if (cached) return cached;
     const response = await api.get('/api/auth/me');
+    await setCache(CacheKeys.USER_PROFILE, response.data, CacheTTL.SHORT);
     return response.data;
   },
   changePassword: async (currentPassword: string, newPassword: string) => {
@@ -103,12 +107,19 @@ export const scanApi = {
     return response.data;
   },
   getHistory: async (page = 1, perPage = 20, scanType?: string) => {
+    if (page === 1 && !scanType) {
+      const cached = await getCached(CacheKeys.HISTORY_PAGE_1);
+      if (cached) return cached;
+    }
     const params = new URLSearchParams({
       page: page.toString(),
       per_page: perPage.toString(),
     });
     if (scanType) params.append('scan_type', scanType);
     const response = await api.get(`/api/scan/history?${params}`);
+    if (page === 1 && !scanType) {
+      await setCache(CacheKeys.HISTORY_PAGE_1, response.data, CacheTTL.SHORT);
+    }
     return response.data;
   },
   getScan: async (scanId: number) => {
@@ -119,7 +130,10 @@ export const scanApi = {
 
 export const creditsApi = {
   getBalance: async () => {
+    const cached = await getCached(CacheKeys.CREDIT_BALANCE);
+    if (cached) return cached;
     const response = await api.get('/api/credits/balance');
+    await setCache(CacheKeys.CREDIT_BALANCE, response.data, CacheTTL.SHORT);
     return response.data;
   },
   getTransactions: async (page = 1, perPage = 20) => {
@@ -127,7 +141,10 @@ export const creditsApi = {
     return response.data;
   },
   getUsageStats: async () => {
+    const cached = await getCached(CacheKeys.USAGE_STATS);
+    if (cached) return cached;
     const response = await api.get('/api/credits/usage-stats');
+    await setCache(CacheKeys.USAGE_STATS, response.data, CacheTTL.SHORT);
     return response.data;
   },
 };
@@ -140,7 +157,10 @@ export const paymentApi = {
     return response.data;
   },
   detectRegion: async () => {
+    const cached = await getCached(CacheKeys.REGION);
+    if (cached) return cached;
     const response = await api.get('/api/payment/detect-region');
+    await setCache(CacheKeys.REGION, response.data, CacheTTL.VERY_LONG);
     return response.data;
   },
   createOrder: async (planId: string, billingPeriod = 'monthly', country = '') => {

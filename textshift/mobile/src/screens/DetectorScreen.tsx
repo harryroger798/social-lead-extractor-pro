@@ -5,10 +5,11 @@ import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
 import { scanApi } from '../api/client';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
 import type { Scan } from '../types';
 
 export default function DetectorScreen() {
+  const { theme } = useThemeStore();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
@@ -32,9 +33,9 @@ export default function DetectorScreen() {
   };
 
   const getScoreColor = (prob: number) => {
-    if (prob >= 0.7) return colors.dark.danger;
-    if (prob >= 0.4) return colors.dark.warning;
-    return colors.dark.primary;
+    if (prob >= 0.7) return theme.danger;
+    if (prob >= 0.4) return theme.warning;
+    return theme.primary;
   };
 
   const getScoreLabel = (prob: number) => {
@@ -46,42 +47,42 @@ export default function DetectorScreen() {
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>AI Detector</Text>
-        <Text style={styles.subtitle}>Detect if text was written by AI</Text>
+        <Text style={[styles.title, { color: theme.text }]}>AI Detector</Text>
+        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Detect if text was written by AI</Text>
 
-        <View style={styles.inputCard}>
+        <View style={[styles.inputCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { color: theme.text }]}
             placeholder="Paste or type your text here..."
-            placeholderTextColor={colors.dark.textMuted}
+            placeholderTextColor={theme.textMuted}
             value={text}
             onChangeText={setText}
             multiline
             textAlignVertical="top"
           />
           <View style={styles.inputFooter}>
-            <Text style={styles.wordCount}>{wordCount} words</Text>
+            <Text style={[styles.wordCount, { color: theme.textMuted }]}>{wordCount} words</Text>
             <Button title="Detect" onPress={handleDetect} loading={loading} size="sm" disabled={wordCount < 10} />
           </View>
         </View>
 
         {loading && (
-          <View style={styles.loadingCard}>
-            <Ionicons name="shield-checkmark" size={40} color={colors.dark.primary} />
-            <Text style={styles.loadingText}>Analyzing text patterns...</Text>
+          <View style={[styles.loadingCard, { backgroundColor: theme.surface, borderColor: theme.primary + '30' }]}>
+            <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
+            <Text style={[styles.loadingText, { color: theme.primary }]}>Analyzing text patterns...</Text>
           </View>
         )}
 
         {result && result.ai_probability !== null && result.ai_probability !== undefined && (
-          <View style={styles.resultCard}>
-            <Text style={styles.resultTitle}>Detection Result</Text>
+          <View style={[styles.resultCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.resultTitle, { color: theme.text }]}>Detection Result</Text>
             <View style={styles.scoreCircle}>
               <Text style={[styles.scoreValue, { color: getScoreColor(result.ai_probability) }]}>
                 {Math.round(result.ai_probability * 100)}%
               </Text>
-              <Text style={styles.scoreSubtext}>AI Probability</Text>
+              <Text style={[styles.scoreSubtext, { color: theme.textMuted }]}>AI Probability</Text>
             </View>
             <View style={[styles.labelBadge, { backgroundColor: getScoreColor(result.ai_probability) + '20' }]}>
               <Text style={[styles.labelText, { color: getScoreColor(result.ai_probability) }]}>
@@ -89,7 +90,7 @@ export default function DetectorScreen() {
               </Text>
             </View>
             {result.confidence_level && (
-              <Text style={styles.confidence}>Confidence: {result.confidence_level}</Text>
+              <Text style={[styles.confidence, { color: theme.textMuted }]}>Confidence: {result.confidence_level}</Text>
             )}
             <Button
               title="Copy Result"
@@ -109,38 +110,32 @@ export default function DetectorScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+  safe: { flex: 1 },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100, paddingTop: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.dark.text },
-  subtitle: { fontSize: 14, color: colors.dark.textSecondary, marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: '700' },
+  subtitle: { fontSize: 14, marginBottom: 20 },
   inputCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, borderWidth: 1,
-    borderColor: colors.dark.border, overflow: 'hidden', marginBottom: 16,
+    borderRadius: 16, borderWidth: 1, overflow: 'hidden', marginBottom: 16,
   },
-  textInput: {
-    color: colors.dark.text, fontSize: 15, padding: 16, minHeight: 200,
-    lineHeight: 22,
-  },
+  textInput: { fontSize: 15, padding: 16, minHeight: 200, lineHeight: 22 },
   inputFooter: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  wordCount: { fontSize: 12, color: colors.dark.textMuted },
+  wordCount: { fontSize: 12 },
   loadingCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, padding: 32,
-    alignItems: 'center', borderWidth: 1, borderColor: colors.dark.primary + '30',
+    borderRadius: 16, padding: 32, alignItems: 'center', borderWidth: 1,
   },
-  loadingText: { color: colors.dark.primary, marginTop: 12, fontSize: 15 },
+  loadingText: { marginTop: 12, fontSize: 15 },
   resultCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 16, padding: 24,
-    alignItems: 'center', borderWidth: 1, borderColor: colors.dark.border,
+    borderRadius: 16, padding: 24, alignItems: 'center', borderWidth: 1,
   },
-  resultTitle: { fontSize: 18, fontWeight: '600', color: colors.dark.text, marginBottom: 16 },
+  resultTitle: { fontSize: 18, fontWeight: '600', marginBottom: 16 },
   scoreCircle: { alignItems: 'center', marginBottom: 16 },
   scoreValue: { fontSize: 48, fontWeight: '800' },
-  scoreSubtext: { fontSize: 13, color: colors.dark.textMuted, marginTop: 4 },
+  scoreSubtext: { fontSize: 13, marginTop: 4 },
   labelBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
   labelText: { fontSize: 14, fontWeight: '600' },
-  confidence: { fontSize: 13, color: colors.dark.textMuted, marginTop: 12 },
+  confidence: { fontSize: 13, marginTop: 12 },
 });

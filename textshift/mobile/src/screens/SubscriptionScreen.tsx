@@ -5,10 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
 import { paymentApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
+import type { ThemeColors } from '../theme/colors';
 import type { PricingPlan, RegionInfo } from '../types';
 
 export default function SubscriptionScreen() {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const { user, refreshUser } = useAuthStore();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,8 +70,8 @@ export default function SubscriptionScreen() {
   const isIndia = region?.country_code === 'IN';
 
   const tierColors: Record<string, string> = {
-    starter: colors.dark.primary,
-    pro: colors.dark.purple,
+    starter: theme.primary,
+    pro: theme.purple,
     enterprise: '#F59E0B',
   };
 
@@ -104,7 +107,7 @@ export default function SubscriptionScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Upgrade Your Plan</Text>
         <Text style={styles.subtitle}>
-          Current: <Text style={{ color: colors.dark.primary, fontWeight: '600' }}>{user?.subscription_tier || 'Free'}</Text>
+          Current: <Text style={{ color: theme.primary, fontWeight: '600' }}>{user?.subscription_tier || 'Free'}</Text>
           {isIndia && <Text style={styles.regionBadge}> (India pricing)</Text>}
         </Text>
 
@@ -128,7 +131,7 @@ export default function SubscriptionScreen() {
 
         {plans.map((plan) => {
           const planKey = plan.id.toLowerCase().replace(/_.*/, '');
-          const tierColor = tierColors[planKey] || colors.dark.primary;
+          const tierColor = tierColors[planKey] || theme.primary;
           const features = tierFeatures[planKey] || [];
           const isCurrentTier = user?.subscription_tier?.toLowerCase() === planKey;
 
@@ -176,36 +179,36 @@ export default function SubscriptionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: theme.background },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100, paddingTop: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.dark.text },
-  subtitle: { fontSize: 14, color: colors.dark.textSecondary, marginBottom: 20 },
-  regionBadge: { color: colors.dark.warning, fontSize: 12 },
+  title: { fontSize: 28, fontWeight: '700', color: theme.text },
+  subtitle: { fontSize: 14, color: theme.textSecondary, marginBottom: 20 },
+  regionBadge: { color: theme.warning, fontSize: 12 },
   cycleToggle: {
-    flexDirection: 'row', backgroundColor: colors.dark.surface, borderRadius: 14,
-    padding: 4, marginBottom: 20, borderWidth: 1, borderColor: colors.dark.border,
+    flexDirection: 'row', backgroundColor: theme.surface, borderRadius: 14,
+    padding: 4, marginBottom: 20, borderWidth: 1, borderColor: theme.border,
   },
   cycleBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 },
-  cycleBtnActive: { backgroundColor: colors.dark.primary },
-  cycleText: { fontSize: 14, color: colors.dark.textSecondary, fontWeight: '500' },
+  cycleBtnActive: { backgroundColor: theme.primary },
+  cycleText: { fontSize: 14, color: theme.textSecondary, fontWeight: '500' },
   cycleTextActive: { color: '#FFF', fontWeight: '600' },
   saveBadge: { backgroundColor: '#F59E0B', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   saveText: { fontSize: 10, color: '#FFF', fontWeight: '700' },
   planCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 20, marginBottom: 16,
+    backgroundColor: theme.surface, borderRadius: 20, marginBottom: 16,
     borderWidth: 1, overflow: 'hidden',
   },
   planHeader: { padding: 20, alignItems: 'center' },
   planName: { fontSize: 20, fontWeight: '700', marginBottom: 8, textTransform: 'capitalize' },
   priceRow: { flexDirection: 'row', alignItems: 'flex-start' },
-  priceSymbol: { fontSize: 18, fontWeight: '600', color: colors.dark.text, marginTop: 4 },
-  priceValue: { fontSize: 42, fontWeight: '800', color: colors.dark.text },
-  pricePeriod: { fontSize: 14, color: colors.dark.textMuted, marginTop: 24 },
-  monthlyEquiv: { fontSize: 12, color: colors.dark.textMuted, marginTop: 4 },
+  priceSymbol: { fontSize: 18, fontWeight: '600', color: theme.text, marginTop: 4 },
+  priceValue: { fontSize: 42, fontWeight: '800', color: theme.text },
+  pricePeriod: { fontSize: 14, color: theme.textMuted, marginTop: 24 },
+  monthlyEquiv: { fontSize: 12, color: theme.textMuted, marginTop: 4 },
   planBody: { padding: 20, gap: 12 },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  featureText: { fontSize: 14, color: colors.dark.text, flex: 1 },
+  featureText: { fontSize: 14, color: theme.text, flex: 1 },
   planFooter: { paddingHorizontal: 20, paddingBottom: 20 },
 });

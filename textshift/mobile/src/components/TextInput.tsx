@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput as RNTextInput, Text, StyleSheet, TouchableOpacity, TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -11,14 +11,15 @@ interface Props extends TextInputProps {
 
 export function TextInput({ label, error, isPassword, style, ...props }: Props) {
   const [showPassword, setShowPassword] = useState(false);
+  const { theme } = useThemeStore();
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.inputContainer, error && styles.inputError]}>
+      {label && <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>}
+      <View style={[styles.inputContainer, { backgroundColor: theme.surface, borderColor: theme.border }, error && { borderColor: theme.danger }]}>
         <RNTextInput
-          style={[styles.input, style]}
-          placeholderTextColor={colors.dark.textMuted}
+          style={[styles.input, { color: theme.text }, style]}
+          placeholderTextColor={theme.textMuted}
           secureTextEntry={isPassword && !showPassword}
           {...props}
         />
@@ -27,12 +28,12 @@ export function TextInput({ label, error, isPassword, style, ...props }: Props) 
             <Ionicons
               name={showPassword ? 'eye-off' : 'eye'}
               size={20}
-              color={colors.dark.textMuted}
+              color={theme.textMuted}
             />
           </TouchableOpacity>
         )}
       </View>
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <Text style={[styles.error, { color: theme.danger }]}>{error}</Text>}
     </View>
   );
 }
@@ -42,7 +43,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    color: colors.dark.textSecondary,
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 6,
@@ -50,17 +50,11 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.dark.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.dark.border,
-  },
-  inputError: {
-    borderColor: colors.dark.danger,
   },
   input: {
     flex: 1,
-    color: colors.dark.text,
     fontSize: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -70,7 +64,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   error: {
-    color: colors.dark.danger,
     fontSize: 12,
     marginTop: 4,
   },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle } from 'react-native';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
 
 interface Props {
   title: string;
@@ -13,13 +13,28 @@ interface Props {
 }
 
 export function Button({ title, onPress, loading, disabled, variant = 'primary', size = 'md', style }: Props) {
+  const { theme } = useThemeStore();
   const isDisabled = disabled || loading;
+
+  const variantStyles: Record<string, ViewStyle> = {
+    primary: { backgroundColor: theme.primary },
+    secondary: { backgroundColor: theme.surfaceLight },
+    outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.primary },
+    danger: { backgroundColor: theme.danger },
+  };
+
+  const textColors: Record<string, string> = {
+    primary: '#FFFFFF',
+    secondary: theme.text,
+    outline: theme.primary,
+    danger: '#FFFFFF',
+  };
 
   return (
     <TouchableOpacity
       style={[
         styles.base,
-        styles[variant],
+        variantStyles[variant],
         styles[`size_${size}`],
         isDisabled && styles.disabled,
         style,
@@ -29,9 +44,9 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? colors.dark.primary : '#FFF'} size="small" />
+        <ActivityIndicator color={variant === 'outline' ? theme.primary : '#FFF'} size="small" />
       ) : (
-        <Text style={[styles.text, styles[`text_${variant}`], styles[`textSize_${size}`]]}>{title}</Text>
+        <Text style={[styles.text, { color: textColors[variant] }, styles[`textSize_${size}`]]}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -43,19 +58,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primary: {
-    backgroundColor: colors.dark.primary,
-  },
-  secondary: {
-    backgroundColor: colors.dark.surfaceLight,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.dark.primary,
-  },
-  danger: {
-    backgroundColor: colors.dark.danger,
+  disabled: {
+    opacity: 0.5,
   },
   size_sm: {
     paddingVertical: 8,
@@ -69,23 +73,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 32,
   },
-  disabled: {
-    opacity: 0.5,
-  },
   text: {
     fontWeight: '600',
-  },
-  text_primary: {
-    color: '#FFFFFF',
-  },
-  text_secondary: {
-    color: colors.dark.text,
-  },
-  text_outline: {
-    color: colors.dark.primary,
-  },
-  text_danger: {
-    color: '#FFFFFF',
   },
   textSize_sm: {
     fontSize: 14,

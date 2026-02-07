@@ -6,9 +6,12 @@ import { TextInput } from '../components/TextInput';
 import { Button } from '../components/Button';
 import { promoApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
+import type { ThemeColors } from '../theme/colors';
 
 export default function PromoCodeScreen() {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -64,7 +67,7 @@ export default function PromoCodeScreen() {
         {redeemed ? (
           <View style={styles.successCard}>
             <View style={styles.successIcon}>
-              <Ionicons name="checkmark-circle" size={64} color={colors.dark.primary} />
+              <Ionicons name="checkmark-circle" size={64} color={theme.primary} />
             </View>
             <Text style={styles.successTitle}>Code Redeemed!</Text>
             <Text style={styles.successDesc}>
@@ -93,7 +96,7 @@ export default function PromoCodeScreen() {
 
             {promoInfo && promoInfo.valid && (
               <View style={styles.promoCard}>
-                <Ionicons name="gift" size={32} color={colors.dark.primary} />
+                <Ionicons name="gift" size={32} color={theme.primary} />
                 <Text style={styles.promoTitle}>{code.toUpperCase()}</Text>
                 <Text style={styles.promoDesc}>{promoInfo.description}</Text>
                 {promoInfo.credits && (
@@ -114,27 +117,27 @@ export default function PromoCodeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: theme.background },
   content: { paddingHorizontal: 20, paddingTop: 16, flex: 1 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.dark.text },
-  subtitle: { fontSize: 14, color: colors.dark.textSecondary, marginBottom: 24 },
+  title: { fontSize: 28, fontWeight: '700', color: theme.text },
+  subtitle: { fontSize: 14, color: theme.textSecondary, marginBottom: 24 },
   inputSection: {
-    backgroundColor: colors.dark.surface, borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: colors.dark.border,
+    backgroundColor: theme.surface, borderRadius: 20, padding: 20,
+    borderWidth: 1, borderColor: theme.border,
   },
   promoCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 20, padding: 24,
-    borderWidth: 1, borderColor: colors.dark.primary + '40', marginTop: 16, alignItems: 'center',
+    backgroundColor: theme.surface, borderRadius: 20, padding: 24,
+    borderWidth: 1, borderColor: theme.primary + '40', marginTop: 16, alignItems: 'center',
   },
-  promoTitle: { fontSize: 22, fontWeight: '800', color: colors.dark.primary, marginTop: 8, letterSpacing: 2 },
-  promoDesc: { fontSize: 14, color: colors.dark.textSecondary, marginTop: 8, textAlign: 'center' },
-  promoCredits: { fontSize: 24, fontWeight: '700', color: colors.dark.primary, marginTop: 8 },
+  promoTitle: { fontSize: 22, fontWeight: '800', color: theme.primary, marginTop: 8, letterSpacing: 2 },
+  promoDesc: { fontSize: 14, color: theme.textSecondary, marginTop: 8, textAlign: 'center' },
+  promoCredits: { fontSize: 24, fontWeight: '700', color: theme.primary, marginTop: 8 },
   successCard: {
-    backgroundColor: colors.dark.surface, borderRadius: 20, padding: 32, alignItems: 'center',
-    borderWidth: 1, borderColor: colors.dark.primary + '40',
+    backgroundColor: theme.surface, borderRadius: 20, padding: 32, alignItems: 'center',
+    borderWidth: 1, borderColor: theme.primary + '40',
   },
   successIcon: { marginBottom: 16 },
-  successTitle: { fontSize: 24, fontWeight: '700', color: colors.dark.text },
-  successDesc: { fontSize: 14, color: colors.dark.textSecondary, marginTop: 8, textAlign: 'center' },
+  successTitle: { fontSize: 24, fontWeight: '700', color: theme.text },
+  successDesc: { fontSize: 14, color: theme.textSecondary, marginTop: 8, textAlign: 'center' },
 });

@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
+import { useThemeStore } from '../store/themeStore';
 import { creditsApi } from '../api/client';
-import { colors } from '../theme/colors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types';
 
@@ -21,6 +21,7 @@ const toolCards: { id: 'Detector' | 'Humanizer' | 'Plagiarism' | 'Tools'; icon: 
 
 export default function HomeScreen({ navigation }: Props) {
   const { user, refreshUser } = useAuthStore();
+  const { theme } = useThemeStore();
   const [credits, setCredits] = useState<{ balance: number; tier: string } | null>(null);
   const [stats, setStats] = useState<{ total_scans: number; scans_today: number } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,83 +50,83 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const tierColor = {
-    Free: colors.dark.textMuted,
-    Starter: colors.dark.primary,
-    Pro: colors.dark.purple,
+    Free: theme.textMuted,
+    Starter: theme.primary,
+    Pro: theme.purple,
     Enterprise: '#F59E0B',
-  }[user?.subscription_tier || 'Free'] || colors.dark.textMuted;
+  }[user?.subscription_tier || 'Free'] || theme.textMuted;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.dark.primary} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Welcome back,</Text>
-            <Text style={styles.name}>{user?.full_name || user?.email?.split('@')[0] || 'User'}</Text>
+            <Text style={[styles.greeting, { color: theme.textSecondary }]}>Welcome back,</Text>
+            <Text style={[styles.name, { color: theme.text }]}>{user?.full_name || user?.email?.split('@')[0] || 'User'}</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.avatarBtn}>
-            <Ionicons name="person-circle" size={40} color={colors.dark.primary} />
+            <Ionicons name="person-circle" size={40} color={theme.primary} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.statsRow}>
-          <View style={[styles.statCard, { borderColor: tierColor }]}>
-            <Text style={styles.statLabel}>Plan</Text>
+          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: tierColor }]}>
+            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Plan</Text>
             <Text style={[styles.statValue, { color: tierColor }]}>{user?.subscription_tier || 'Free'}</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Credits</Text>
-            <Text style={styles.statValue}>
+          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Credits</Text>
+            <Text style={[styles.statValue, { color: theme.text }]}>
               {credits?.balance === -1 ? 'Unlimited' : (credits?.balance?.toLocaleString() || '0')}
             </Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Scans Today</Text>
-            <Text style={styles.statValue}>{stats?.scans_today || 0}</Text>
+          <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Scans Today</Text>
+            <Text style={[styles.statValue, { color: theme.text }]}>{stats?.scans_today || 0}</Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Quick Actions</Text>
           <View style={styles.toolGrid}>
             {toolCards.map((tool) => (
               <TouchableOpacity
                 key={tool.id}
-                style={styles.toolCard}
+                style={[styles.toolCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
                 onPress={() => navigation.navigate(tool.id)}
                 activeOpacity={0.7}
               >
                 <View style={[styles.toolIcon, { backgroundColor: tool.color + '20' }]}>
                   <Ionicons name={tool.icon as keyof typeof Ionicons.glyphMap} size={28} color={tool.color} />
                 </View>
-                <Text style={styles.toolTitle}>{tool.title}</Text>
-                <Text style={styles.toolDesc}>{tool.desc}</Text>
+                <Text style={[styles.toolTitle, { color: theme.text }]}>{tool.title}</Text>
+                <Text style={[styles.toolDesc, { color: theme.textMuted }]}>{tool.desc}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Links</Text>
-          <TouchableOpacity style={styles.linkCard} onPress={() => navigation.navigate('History')}>
-            <Ionicons name="time" size={22} color={colors.dark.primary} />
-            <Text style={styles.linkText}>Scan History</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.dark.textMuted} />
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Quick Links</Text>
+          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('History')}>
+            <Ionicons name="time" size={22} color={theme.primary} />
+            <Text style={[styles.linkText, { color: theme.text }]}>Scan History</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.linkCard} onPress={() => navigation.navigate('Subscription')}>
-            <Ionicons name="card" size={22} color={colors.dark.primary} />
-            <Text style={styles.linkText}>Upgrade Plan</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.dark.textMuted} />
+          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('Subscription')}>
+            <Ionicons name="card" size={22} color={theme.primary} />
+            <Text style={[styles.linkText, { color: theme.text }]}>Upgrade Plan</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.linkCard} onPress={() => navigation.navigate('PromoCode')}>
-            <Ionicons name="gift" size={22} color={colors.dark.primary} />
-            <Text style={styles.linkText}>Redeem Promo Code</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.dark.textMuted} />
+          <TouchableOpacity style={[styles.linkCard, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('PromoCode')}>
+            <Ionicons name="gift" size={22} color={theme.primary} />
+            <Text style={[styles.linkText, { color: theme.text }]}>Redeem Promo Code</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -134,33 +135,33 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+  safe: { flex: 1 },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 20 },
-  greeting: { fontSize: 14, color: colors.dark.textSecondary },
-  name: { fontSize: 24, fontWeight: '700', color: colors.dark.text, marginTop: 2 },
+  greeting: { fontSize: 14 },
+  name: { fontSize: 24, fontWeight: '700', marginTop: 2 },
   avatarBtn: { padding: 4 },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
   statCard: {
-    flex: 1, backgroundColor: colors.dark.surface, borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: colors.dark.border, alignItems: 'center',
+    flex: 1, borderRadius: 16, padding: 16,
+    borderWidth: 1, alignItems: 'center',
   },
-  statLabel: { fontSize: 11, color: colors.dark.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
-  statValue: { fontSize: 18, fontWeight: '700', color: colors.dark.text, marginTop: 4 },
+  statLabel: { fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 },
+  statValue: { fontSize: 18, fontWeight: '700', marginTop: 4 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: colors.dark.text, marginBottom: 12 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
   toolGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   toolCard: {
-    width: '48%', backgroundColor: colors.dark.surface, borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: colors.dark.border,
+    width: '48%', borderRadius: 16, padding: 16,
+    borderWidth: 1,
   },
   toolIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  toolTitle: { fontSize: 16, fontWeight: '600', color: colors.dark.text, marginBottom: 4 },
-  toolDesc: { fontSize: 12, color: colors.dark.textMuted },
+  toolTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  toolDesc: { fontSize: 12 },
   linkCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.dark.surface,
-    borderRadius: 14, padding: 16, marginBottom: 8, borderWidth: 1, borderColor: colors.dark.border,
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 14, padding: 16, marginBottom: 8, borderWidth: 1,
   },
-  linkText: { flex: 1, fontSize: 15, color: colors.dark.text, marginLeft: 12, fontWeight: '500' },
+  linkText: { flex: 1, fontSize: 15, marginLeft: 12, fontWeight: '500' },
 });

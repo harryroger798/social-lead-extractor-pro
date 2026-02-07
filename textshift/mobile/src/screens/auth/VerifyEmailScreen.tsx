@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Alert } from 'react-native';
 import { ScreenWrapper } from '../../components/ScreenWrapper';
 import { Button } from '../../components/Button';
 import { authApi } from '../../api/client';
-import { colors } from '../../theme/colors';
+import { useThemeStore } from '../../store/themeStore';
+import type { ThemeColors } from '../../theme/colors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../../types';
@@ -14,6 +15,8 @@ interface Props {
 }
 
 export default function VerifyEmailScreen({ navigation, route }: Props) {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const { email } = route.params;
   const [loading, setLoading] = useState(false);
 
@@ -62,18 +65,18 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: 40,
   },
   card: {
-    backgroundColor: colors.dark.surface,
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.dark.border,
+    borderColor: theme.border,
     alignItems: 'center',
   },
   icon: {
@@ -83,23 +86,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.dark.text,
+    color: theme.text,
     marginBottom: 12,
   },
   description: {
     fontSize: 14,
-    color: colors.dark.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 8,
   },
   email: {
-    color: colors.dark.primary,
+    color: theme.primary,
     fontWeight: '600',
   },
   note: {
     fontSize: 13,
-    color: colors.dark.textMuted,
+    color: theme.textMuted,
     textAlign: 'center',
     lineHeight: 18,
     marginBottom: 24,

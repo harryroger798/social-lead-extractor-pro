@@ -6,7 +6,8 @@ import { TextInput } from '../components/TextInput';
 import { Button } from '../components/Button';
 import { useAuthStore } from '../store/authStore';
 import { authApi, userSettingsApi } from '../api/client';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
+import type { ThemeColors } from '../theme/colors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types';
 
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export default function SettingsScreen({ navigation }: Props) {
+  const { theme, mode, toggleTheme } = useThemeStore();
+  const styles = getStyles(theme);
   const { user, logout, refreshUser } = useAuthStore();
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -132,12 +135,12 @@ export default function SettingsScreen({ navigation }: Props) {
 
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            <Ionicons name="person" size={32} color={colors.dark.primary} />
+            <Ionicons name="person" size={32} color={theme.primary} />
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{user?.full_name || 'User'}</Text>
             <Text style={styles.profileEmail}>{user?.email}</Text>
-            <View style={[styles.tierBadge, { backgroundColor: colors.dark.primary + '20' }]}>
+            <View style={[styles.tierBadge, { backgroundColor: theme.primary + '20' }]}>
               <Text style={styles.tierText}>{user?.subscription_tier || 'Free'}</Text>
             </View>
           </View>
@@ -147,15 +150,15 @@ export default function SettingsScreen({ navigation }: Props) {
           <Text style={styles.sectionTitle}>Account</Text>
 
           <TouchableOpacity style={styles.settingRow} onPress={() => navigation.navigate('Subscription')}>
-            <Ionicons name="card" size={22} color={colors.dark.primary} />
+            <Ionicons name="card" size={22} color={theme.primary} />
             <Text style={styles.settingText}>Manage Subscription</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.dark.textMuted} />
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingRow} onPress={() => setShowPasswordChange(!showPasswordChange)}>
-            <Ionicons name="lock-closed" size={22} color={colors.dark.primary} />
+            <Ionicons name="lock-closed" size={22} color={theme.primary} />
             <Text style={styles.settingText}>Change Password</Text>
-            <Ionicons name={showPasswordChange ? 'chevron-up' : 'chevron-down'} size={18} color={colors.dark.textMuted} />
+            <Ionicons name={showPasswordChange ? 'chevron-up' : 'chevron-down'} size={18} color={theme.textMuted} />
           </TouchableOpacity>
 
           {showPasswordChange && (
@@ -186,9 +189,9 @@ export default function SettingsScreen({ navigation }: Props) {
           )}
 
           <TouchableOpacity style={styles.settingRow} onPress={() => navigation.navigate('PromoCode')}>
-            <Ionicons name="gift" size={22} color={colors.dark.primary} />
+            <Ionicons name="gift" size={22} color={theme.primary} />
             <Text style={styles.settingText}>Redeem Promo Code</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.dark.textMuted} />
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </TouchableOpacity>
         </View>
 
@@ -196,13 +199,24 @@ export default function SettingsScreen({ navigation }: Props) {
           <Text style={styles.sectionTitle}>Preferences</Text>
 
           <View style={styles.settingRow}>
-            <Ionicons name="notifications" size={22} color={colors.dark.primary} />
+            <Ionicons name="notifications" size={22} color={theme.primary} />
             <Text style={styles.settingText}>Email Notifications</Text>
             <Switch
               value={emailNotifications}
               onValueChange={handleToggleNotifications}
-              trackColor={{ false: colors.dark.border, true: colors.dark.primary + '40' }}
-              thumbColor={emailNotifications ? colors.dark.primary : colors.dark.textMuted}
+              trackColor={{ false: theme.border, true: theme.primary + '40' }}
+              thumbColor={emailNotifications ? theme.primary : theme.textMuted}
+            />
+          </View>
+
+          <View style={styles.settingRow}>
+            <Ionicons name={mode === 'dark' ? 'moon' : 'sunny'} size={22} color={theme.primary} />
+            <Text style={styles.settingText}>{mode === 'dark' ? 'Dark' : 'Light'} Theme</Text>
+            <Switch
+              value={mode === 'light'}
+              onValueChange={toggleTheme}
+              trackColor={{ false: theme.border, true: theme.primary + '40' }}
+              thumbColor={mode === 'light' ? theme.primary : theme.textMuted}
             />
           </View>
         </View>
@@ -211,13 +225,13 @@ export default function SettingsScreen({ navigation }: Props) {
           <Text style={styles.sectionTitle}>Data</Text>
 
           <TouchableOpacity style={styles.settingRow} onPress={handleClearHistory}>
-            <Ionicons name="trash" size={22} color={colors.dark.warning} />
-            <Text style={[styles.settingText, { color: colors.dark.warning }]}>Clear Scan History</Text>
+            <Ionicons name="trash" size={22} color={theme.warning} />
+            <Text style={[styles.settingText, { color: theme.warning }]}>Clear Scan History</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingRow} onPress={handleDeleteAccount}>
-            <Ionicons name="close-circle" size={22} color={colors.dark.danger} />
-            <Text style={[styles.settingText, { color: colors.dark.danger }]}>Delete Account</Text>
+            <Ionicons name="close-circle" size={22} color={theme.danger} />
+            <Text style={[styles.settingText, { color: theme.danger }]}>Delete Account</Text>
           </TouchableOpacity>
         </View>
 
@@ -225,7 +239,7 @@ export default function SettingsScreen({ navigation }: Props) {
           title="Sign Out"
           onPress={handleLogout}
           variant="outline"
-          style={{ marginTop: 16, borderColor: colors.dark.danger }}
+          style={{ marginTop: 16, borderColor: theme.danger }}
         />
 
         <Text style={styles.version}>TextShift v1.0.0</Text>
@@ -234,35 +248,35 @@ export default function SettingsScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.dark.background },
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: theme.background },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 20, paddingBottom: 100, paddingTop: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.dark.text, marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: '700', color: theme.text, marginBottom: 20 },
   profileCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.dark.surface,
-    borderRadius: 20, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: colors.dark.border,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface,
+    borderRadius: 20, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: theme.border,
   },
   avatar: {
-    width: 64, height: 64, borderRadius: 32, backgroundColor: colors.dark.primary + '20',
+    width: 64, height: 64, borderRadius: 32, backgroundColor: theme.primary + '20',
     alignItems: 'center', justifyContent: 'center', marginRight: 16,
   },
   profileInfo: { flex: 1 },
-  profileName: { fontSize: 18, fontWeight: '700', color: colors.dark.text },
-  profileEmail: { fontSize: 13, color: colors.dark.textSecondary, marginTop: 2 },
+  profileName: { fontSize: 18, fontWeight: '700', color: theme.text },
+  profileEmail: { fontSize: 13, color: theme.textSecondary, marginTop: 2 },
   tierBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 8, alignSelf: 'flex-start', marginTop: 6 },
-  tierText: { fontSize: 12, color: colors.dark.primary, fontWeight: '600' },
+  tierText: { fontSize: 12, color: theme.primary, fontWeight: '600' },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 13, fontWeight: '600', color: colors.dark.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+  sectionTitle: { fontSize: 13, fontWeight: '600', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   settingRow: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.dark.surface,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface,
     padding: 16, borderRadius: 14, marginBottom: 4, gap: 12,
-    borderWidth: 1, borderColor: colors.dark.border,
+    borderWidth: 1, borderColor: theme.border,
   },
-  settingText: { flex: 1, fontSize: 15, color: colors.dark.text, fontWeight: '500' },
+  settingText: { flex: 1, fontSize: 15, color: theme.text, fontWeight: '500' },
   passwordForm: {
-    backgroundColor: colors.dark.surface, borderRadius: 14, padding: 16, marginBottom: 4,
-    borderWidth: 1, borderColor: colors.dark.border,
+    backgroundColor: theme.surface, borderRadius: 14, padding: 16, marginBottom: 4,
+    borderWidth: 1, borderColor: theme.border,
   },
-  version: { textAlign: 'center', color: colors.dark.textMuted, fontSize: 12, marginTop: 24 },
+  version: { textAlign: 'center', color: theme.textMuted, fontSize: 12, marginTop: 24 },
 });

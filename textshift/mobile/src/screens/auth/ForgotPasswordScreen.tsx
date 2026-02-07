@@ -4,7 +4,8 @@ import { ScreenWrapper } from '../../components/ScreenWrapper';
 import { TextInput } from '../../components/TextInput';
 import { Button } from '../../components/Button';
 import { authApi } from '../../api/client';
-import { colors } from '../../theme/colors';
+import { useThemeStore } from '../../store/themeStore';
+import type { ThemeColors } from '../../theme/colors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types';
 
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function ForgotPasswordScreen({ navigation }: Props) {
+  const { theme } = useThemeStore();
+  const styles = getStyles(theme);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -82,18 +85,18 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: 40,
   },
   form: {
-    backgroundColor: colors.dark.surface,
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.dark.border,
+    borderColor: theme.border,
   },
   icon: {
     fontSize: 48,
@@ -103,13 +106,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.dark.text,
+    color: theme.text,
     marginBottom: 8,
     textAlign: 'center',
   },
   description: {
     fontSize: 14,
-    color: colors.dark.textSecondary,
+    color: theme.textSecondary,
     marginBottom: 24,
     textAlign: 'center',
     lineHeight: 20,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
 
 interface Props {
   children: React.ReactNode;
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export function ScreenWrapper({ children, scroll = true, padded = true }: Props) {
+  const { theme } = useThemeStore();
+
   const content = (
     <View style={[styles.inner, padded && styles.padded]}>
       {children}
@@ -17,7 +19,7 @@ export function ScreenWrapper({ children, scroll = true, padded = true }: Props)
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -42,7 +44,6 @@ export function ScreenWrapper({ children, scroll = true, padded = true }: Props)
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.dark.background,
   },
   flex: {
     flex: 1,

@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
-import { colors } from '../theme/colors';
+import { useThemeStore } from '../store/themeStore';
 import type { RootStackParamList } from '../types';
 
 import LoginScreen from '../screens/auth/LoginScreen';
@@ -24,20 +24,21 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 function MainTabs() {
+  const { theme } = useThemeStore();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.dark.surface,
-          borderTopColor: colors.dark.border,
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
           height: 64,
         },
-        tabBarActiveTintColor: colors.dark.primary,
-        tabBarInactiveTintColor: colors.dark.textMuted,
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textMuted,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
@@ -90,12 +91,13 @@ function MainTabs() {
 
 export default function AppNavigator() {
   const { isAuthenticated } = useAuthStore();
+  const { theme } = useThemeStore();
 
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: colors.dark.background },
+        contentStyle: { backgroundColor: theme.background },
         animation: 'slide_from_right',
       }}
     >
