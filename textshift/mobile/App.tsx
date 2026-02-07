@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useAuthStore } from './src/store/authStore';
 import { useThemeStore } from './src/store/themeStore';
@@ -57,23 +58,24 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        await Font.loadAsync({
-          'ionicons': require('./assets/fonts/Ionicons.ttf'),
-          'Ionicons': require('./assets/fonts/Ionicons.ttf'),
-        });
+        await Font.loadAsync(Ionicons.font);
       } catch (e) {
         console.warn('Font loading error:', e);
-      } finally {
-        setReady(true);
-        SplashScreen.hideAsync().catch(() => {});
       }
+      try {
+        await Font.loadAsync({
+          'ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+        });
+      } catch (_e) {}
+      setReady(true);
+      SplashScreen.hideAsync().catch(() => {});
     }
     prepare();
 
     const timeout = setTimeout(() => {
       setReady(true);
       SplashScreen.hideAsync().catch(() => {});
-    }, 5000);
+    }, 8000);
     return () => clearTimeout(timeout);
   }, []);
 
