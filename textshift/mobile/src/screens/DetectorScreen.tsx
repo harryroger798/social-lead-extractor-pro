@@ -17,8 +17,9 @@ export default function DetectorScreen() {
   const [result, setResult] = useState<Scan | null>(null);
 
   const handleDetect = async () => {
-    if (!text.trim() || text.trim().length < 50) {
-      Alert.alert('Error', 'Please enter at least 50 characters');
+    const wc = text.trim().split(/\s+/).filter(Boolean).length;
+    if (!text.trim() || wc < 50) {
+      Alert.alert('Error', 'Please enter at least 50 words for reliable detection');
       return;
     }
     setLoading(true);
@@ -66,7 +67,7 @@ export default function DetectorScreen() {
           />
           <View style={styles.inputFooter}>
             <Text style={[styles.wordCount, { color: theme.textMuted }]}>{wordCount} words</Text>
-            <Button title="Detect" onPress={handleDetect} loading={loading} size="sm" disabled={wordCount < 10} />
+            <Button title="Detect" onPress={handleDetect} loading={loading} size="sm" disabled={wordCount < 50} />
           </View>
         </View>
 
