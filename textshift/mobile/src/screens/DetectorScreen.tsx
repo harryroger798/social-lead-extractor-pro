@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, ScrollView, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -17,7 +17,17 @@ export default function DetectorScreen() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
 
-  const isLowContent = (t: string) => {
+  const detectorText = useNavStore((s) => s.detectorText);
+
+  useEffect(() => {
+    if (detectorText) {
+      setText(detectorText);
+      setResult(null);
+      useNavStore.getState().setDetectorText(null);
+    }
+  }, [detectorText]);
+
+  const isLowContent= (t: string) => {
     const tokens = (t.toLowerCase().match(/[a-z]+/g) || []);
     if (!tokens.length) return true;
     const real = tokens.filter((w) => w.length >= 3);

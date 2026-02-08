@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from '../components/Button';
@@ -11,6 +12,7 @@ import type { Scan } from '../types';
 
 export default function HumanizerScreen() {
   const { theme } = useThemeStore();
+  const navigation = useNavigation<any>();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
@@ -158,8 +160,8 @@ export default function HumanizerScreen() {
               <Button
                 title="Re-detect"
                 onPress={() => {
-                  setText(result.output_text || '');
-                  setResult(null);
+                  useNavStore.getState().setDetectorText(result.output_text || '');
+                  navigation.navigate('DetectorTab');
                 }}
                 variant="secondary"
                 size="sm"
