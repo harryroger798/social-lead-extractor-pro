@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
+from collections import defaultdict
+import time
+import logging
 from app.core.database import get_db
 from app.core.security import (
     verify_password, 
@@ -24,7 +27,32 @@ from app.schemas.user import (
 )
 from app.services.email_service import email_service, generate_token
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+MAX_FAILED_ATTEMPTS = 10
+LOCKOUT_DURATION_MINUTES = 30
+_failed_attempts: dict[str, list[float]] = defaultdict(list)
+
+
+def _check_account_lockout(email: str):
+    now = time.time()
+    cutoff = now - (LOCKOUT_DURATION_MINUTES * 60)
+    _failed_attempts[email] = [t for t in _failed_attempts[email] if t > cutoff]
+    if len(_failed_attempts[email]) >= MAX_FAILED_ATTEMPTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Account temporarily locked due to too many failed login attempts. Try again in {LOCKOUT_DURATION_MINUTES} minutes."
+        )
+
+
+def _record_failed_attempt(email: str):
+    _failed_attempts[email].append(time.time())
+
+
+def _clear_failed_attempts(email: str):
+    _failed_attempts.pop(email, None)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -34,12 +62,11 @@ async def register(
     db: Session = Depends(get_db)
 ):
     """Register a new user."""
-    # Check if email already exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            detail="Registration failed. Please try a different email address."
         )
     
     # Generate verification token
@@ -85,9 +112,12 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Login with email and password (form data)."""
+    _check_account_lockout(form_data.username)
+    
     user = db.query(User).filter(User.email == form_data.username).first()
     
     if not user or not verify_password(form_data.password, user.hashed_password):
+        _record_failed_attempt(form_data.username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -100,11 +130,11 @@ async def login(
             detail="Account is disabled"
         )
     
-    # Update last login
+    _clear_failed_attempts(form_data.username)
+    
     user.last_login_at = datetime.utcnow()
     db.commit()
     
-    # Create access token
     access_token = create_access_token(
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -128,9 +158,12 @@ async def login_json(
     db: Session = Depends(get_db)
 ):
     """Login with email and password (JSON body) - for API access."""
+    _check_account_lockout(login_data.email)
+    
     user = db.query(User).filter(User.email == login_data.email).first()
     
     if not user or not verify_password(login_data.password, user.hashed_password):
+        _record_failed_attempt(login_data.email)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -143,11 +176,11 @@ async def login_json(
             detail="Account is disabled"
         )
     
-    # Update last login
+    _clear_failed_attempts(login_data.email)
+    
     user.last_login_at = datetime.utcnow()
     db.commit()
     
-    # Create access token
     access_token = create_access_token(
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)

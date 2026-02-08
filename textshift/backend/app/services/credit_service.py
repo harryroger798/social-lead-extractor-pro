@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.models.user import User
 from app.models.credit import CreditTransaction, TransactionType
 from app.core.config import settings
@@ -40,14 +41,42 @@ def calculate_credits_needed(text: str, scan_type: str) -> int:
 
 
 def deduct_credits(db: Session, user: User, amount: int, description: str, reference_id: str = None) -> bool:
-    """Deduct credits from user account and log transaction."""
-    if not user.has_enough_credits(amount):
+    """Deduct credits from user account and log transaction.
+    
+    Uses atomic SQL UPDATE with WHERE clause to prevent race conditions
+    on concurrent deductions.
+    """
+    if user.credits_balance == -1:
+        user.credits_used_total += amount
+        transaction = CreditTransaction(
+            user_id=user.id,
+            transaction_type=TransactionType.USAGE,
+            amount=-amount,
+            balance_after=-1,
+            description=description,
+            reference_id=reference_id
+        )
+        db.add(transaction)
+        db.commit()
+        db.refresh(user)
+        logger.info(f"Deducted {amount} credits from unlimited user {user.id}.")
+        return True
+
+    result = db.execute(
+        text(
+            "UPDATE users SET credits_balance = credits_balance - :amount, "
+            "credits_used_total = credits_used_total + :amount "
+            "WHERE id = :user_id AND credits_balance >= :amount"
+        ),
+        {"amount": amount, "user_id": user.id}
+    )
+    
+    if result.rowcount == 0:
+        db.rollback()
         return False
     
-    # Deduct credits
-    user.deduct_credits(amount)
+    db.refresh(user)
     
-    # Log transaction
     transaction = CreditTransaction(
         user_id=user.id,
         transaction_type=TransactionType.USAGE,
