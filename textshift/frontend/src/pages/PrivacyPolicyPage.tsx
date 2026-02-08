@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
               <li><strong className="text-white">Opt-out:</strong> Unsubscribe from marketing communications</li>
             </ul>
             <p className="leading-relaxed mt-4">
-              To exercise these rights, please contact us at privacy@textshift.org.
+              To exercise these rights, please contact us at privacy@mail.textshift.org.
             </p>
           </section>
 
@@ -207,7 +207,7 @@ export default function PrivacyPolicyPage() {
               <p><strong className="text-white">Company:</strong> TextShift</p>
               <p><strong className="text-white">Founder:</strong> Sayan Roy Chowdhury</p>
               <p><strong className="text-white">Address:</strong> 18/1 Banerjee Para Road, West Bengal - 700122, India</p>
-              <p><strong className="text-white">Email:</strong> privacy@textshift.org</p>
+              <p><strong className="text-white">Email:</strong> privacy@mail.textshift.org</p>
             </div>
           </section>
         </div>

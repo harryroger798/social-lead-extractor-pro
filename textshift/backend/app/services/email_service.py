@@ -116,7 +116,7 @@ def get_base_email_template(content: str, preview_text: str = "") -> str:
                                             <span style="color: #4b5563;">|</span>
                                             <a href="https://textshift.org/pricing" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Pricing</a>
                                             <span style="color: #4b5563;">|</span>
-                                            <a href="mailto:support@textshift.org" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Support</a>
+                                            <a href="mailto:support@mail.textshift.org" style="color: #10b981; text-decoration: none; font-size: 13px; margin: 0 8px;">Support</a>
                                         </td>
                                     </tr>
                                     <tr>

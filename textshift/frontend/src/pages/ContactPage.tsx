@@ -40,7 +40,7 @@ export default function ContactPage() {
         setError(data.detail || 'Failed to send message. Please try again.');
       }
     } catch {
-      setError('Failed to send message. Please email us directly at support@textshift.org');
+      setError('Failed to send message. Please email us directly at support@mail.textshift.org');
     } finally {
       setLoading(false);
     }
@@ -110,9 +110,9 @@ export default function ContactPage() {
                 <h2 className="text-xl font-medium text-white">Email</h2>
               </div>
               <div className="space-y-2 text-gray-300">
-                <p><strong className="text-white">General Inquiries:</strong> support@textshift.org</p>
-                <p><strong className="text-white">Sales:</strong> sales@textshift.org</p>
-                <p><strong className="text-white">Technical Support:</strong> help@textshift.org</p>
+                                <p><strong className="text-white">General Inquiries:</strong> support@mail.textshift.org</p>
+                                <p><strong className="text-white">Sales:</strong> sales@mail.textshift.org</p>
+                                <p><strong className="text-white">Technical Support:</strong> help@mail.textshift.org</p>
               </div>
             </div>
 

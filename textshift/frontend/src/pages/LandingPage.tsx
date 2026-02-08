@@ -224,7 +224,7 @@ export default function LandingPage() {
         setContactError(data.detail || 'Failed to send message. Please try again.');
       }
     } catch {
-      setContactError('Failed to send message. Please try again or email us directly at support@textshift.org');
+      setContactError('Failed to send message. Please try again or email us directly at support@mail.textshift.org');
     } finally {
       setContactLoading(false);
     }
@@ -1133,7 +1133,7 @@ export default function LandingPage() {
                 />
                 <span className="text-white font-medium tracking-wide">TextShift</span>
               </Link>
-              <a href="mailto:support@textshift.org" className="text-gray-400 text-sm hover:text-white transition">support@textshift.org</a>
+              <a href="mailto:support@mail.textshift.org" className="text-gray-400 text-sm hover:text-white transition">support@mail.textshift.org</a>
               <p className="text-gray-500 text-xs mt-2">18/1 Banerjee Para Road<br />West Bengal - 700122, India</p>
             </div>
             <div className="text-center md:text-left">

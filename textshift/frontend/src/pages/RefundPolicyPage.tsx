@@ -103,7 +103,7 @@ export default function RefundPolicyPage() {
               To request a refund, please follow these steps:
             </p>
             <ol className="list-decimal list-inside space-y-3 text-gray-400">
-              <li>Email us at <strong className="text-emerald-400">support@textshift.org</strong> with the subject line "Refund Request"</li>
+              <li>Email us at <strong className="text-emerald-400">support@mail.textshift.org</strong> with the subject line "Refund Request"</li>
               <li>Include your registered email address and order/transaction ID</li>
               <li>Provide a brief explanation for your refund request</li>
               <li>Our team will review your request within 2-3 business days</li>
@@ -168,8 +168,8 @@ export default function RefundPolicyPage() {
               <p><strong className="text-white">Company:</strong> TextShift</p>
               <p><strong className="text-white">Founder:</strong> Sayan Roy Chowdhury</p>
               <p><strong className="text-white">Address:</strong> 18/1 Banerjee Para Road, West Bengal - 700122, India</p>
-              <p><strong className="text-white">Email:</strong> support@textshift.org</p>
-              <p><strong className="text-white">Response Time:</strong> Within 24-48 hours</p>
+                            <p><strong className="text-white">Email:</strong> support@mail.textshift.org</p>
+                            <p><strong className="text-white">Response Time:</strong> Within 24-48 hours</p>
             </div>
           </section>
         </div>

@@ -99,7 +99,7 @@ export default function ShippingPolicyPage() {
               <p><strong className="text-white">Company:</strong> TextShift</p>
               <p><strong className="text-white">Founder:</strong> Sayan Roy Chowdhury</p>
               <p><strong className="text-white">Address:</strong> 18/1 Banerjee Para Road, West Bengal - 700122, India</p>
-              <p><strong className="text-white">Email:</strong> support@textshift.org</p>
+              <p><strong className="text-white">Email:</strong> support@mail.textshift.org</p>
             </div>
           </section>
         </div>

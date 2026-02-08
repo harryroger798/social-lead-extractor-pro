@@ -1326,7 +1326,7 @@ class WritingToolsService:
                 async with httpx.AsyncClient(timeout=30.0) as client:
                     response = await client.get(
                         f"https://api.crossref.org/works/{doi}",
-                        headers={"User-Agent": "TextShift/1.0 (mailto:support@textshift.org)"}
+                        headers={"User-Agent": "TextShift/1.0 (mailto:support@mail.textshift.org)"}
                     )
                     if response.status_code == 200:
                         data = response.json()
@@ -1338,7 +1338,7 @@ class WritingToolsService:
                     response = await client.get(
                         "https://api.crossref.org/works",
                         params={"query": query, "rows": 5},
-                        headers={"User-Agent": "TextShift/1.0 (mailto:support@textshift.org)"}
+                        headers={"User-Agent": "TextShift/1.0 (mailto:support@mail.textshift.org)"}
                     )
                     if response.status_code == 200:
                         data = response.json()
