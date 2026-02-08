@@ -25,6 +25,12 @@ const WritingTools = lazy(() => import('@/pages/WritingTools'));
 const ApiDocsPage = lazy(() => import('@/pages/ApiDocsPage'));
 const FeaturesPage = lazy(() => import('@/pages/FeaturesPage'));
 
+const ShippingPolicyPage = lazy(() => import('@/pages/ShippingPolicyPage'));
+const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const PricingDetailsPage = lazy(() => import('@/pages/PricingDetailsPage'));
+const TermsPage = lazy(() => import('@/pages/TermsPage'));
+const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage'));
+const RefundPolicyPage = lazy(() => import('@/pages/RefundPolicyPage'));
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
     <div className="flex flex-col items-center gap-4">
@@ -99,11 +105,19 @@ function App() {
         <OptimizationProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            {/* Public pages - no auth required */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/api-docs" element={<ApiDocsPage />} />
-            <Route path="/features" element={<FeaturesPage />} />
+                        {/* Public pages - no auth required */}
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/pricing" element={<PricingPage />} />
+                        <Route path="/api-docs" element={<ApiDocsPage />} />
+                        <Route path="/features" element={<FeaturesPage />} />
+            
+                        {/* Policy pages for Razorpay compliance */}
+                        <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/pricing-details" element={<PricingDetailsPage />} />
+                        <Route path="/terms" element={<TermsPage />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                        <Route path="/refund-policy" element={<RefundPolicyPage />} />
             
             {/* Auth pages - redirect if logged in */}
             <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
