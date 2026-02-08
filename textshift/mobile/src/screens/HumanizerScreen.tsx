@@ -1,30 +1,31 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRoute } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from '../components/Button';
 import { scanApi } from '../api/client';
 import { useThemeStore } from '../store/themeStore';
+import { useNavStore } from '../store/navStore';
 import type { Scan } from '../types';
 
 export default function HumanizerScreen() {
   const { theme } = useThemeStore();
-  const route = useRoute<any>();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
   const [sentenceMode, setSentenceMode] = useState(false);
   const [preservedIndices, setPreservedIndices] = useState<Set<number>>(new Set());
 
+  const humanizerText = useNavStore((s) => s.humanizerText);
+
   useEffect(() => {
-    const incoming = (route.params as any)?.initialText as string | undefined;
-    if (incoming) {
-      setText(incoming);
+    if (humanizerText) {
+      setText(humanizerText);
       setResult(null);
+      useNavStore.getState().setHumanizerText(null);
     }
-  }, [(route.params as any)?.initialText, (route.params as any)?._t]);
+  }, [humanizerText]);
 
   const sentences = useMemo(() => {
     if (!text.trim()) return [];

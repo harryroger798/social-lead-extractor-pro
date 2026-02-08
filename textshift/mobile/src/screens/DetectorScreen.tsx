@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from '../components/Button';
 import { scanApi } from '../api/client';
 import { useThemeStore } from '../store/themeStore';
+import { useNavStore } from '../store/navStore';
 import type { Scan } from '../types';
 
 export default function DetectorScreen() {
@@ -120,7 +121,8 @@ export default function DetectorScreen() {
               <Button
                 title="Humanize Text"
                 onPress={() => {
-                  navigation.navigate('HumanizerTab', { initialText: text, _t: Date.now() });
+                  useNavStore.getState().setHumanizerText(text);
+                  navigation.navigate('HumanizerTab');
                 }}
                 size="sm"
               />
