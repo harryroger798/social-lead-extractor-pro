@@ -86,8 +86,16 @@ async def get_usage_stats(
         Scan.user_id == current_user.id
     ).scalar() or 0
     
+    # Get scans today
+    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    scans_today = db.query(func.count(Scan.id)).filter(
+        Scan.user_id == current_user.id,
+        Scan.created_at >= today_start
+    ).scalar() or 0
+    
     return {
         "total_scans": total_scans,
+        "scans_today": scans_today,
         "total_credits_used": current_user.credits_used_total,
         "credits_used_last_30_days": recent_usage,
         "current_balance": current_user.credits_balance,
