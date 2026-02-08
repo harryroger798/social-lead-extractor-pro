@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRoute } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from '../components/Button';
@@ -10,11 +11,17 @@ import type { Scan } from '../types';
 
 export default function HumanizerScreen() {
   const { theme } = useThemeStore();
+  const route = useRoute<any>();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
   const [sentenceMode, setSentenceMode] = useState(false);
   const [preservedIndices, setPreservedIndices] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const incoming = (route.params as any)?.initialText as string | undefined;
+    if (incoming && incoming !== text) setText(incoming);
+  }, [route.params]);
 
   const sentences = useMemo(() => {
     if (!text.trim()) return [];

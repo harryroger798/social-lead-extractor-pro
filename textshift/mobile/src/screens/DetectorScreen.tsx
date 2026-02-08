@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Alert, ScrollView, Platform, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from '../components/Button';
@@ -10,6 +11,7 @@ import type { Scan } from '../types';
 
 export default function DetectorScreen() {
   const { theme } = useThemeStore();
+  const navigation = useNavigation<any>();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
@@ -80,7 +82,7 @@ export default function DetectorScreen() {
             <Text style={[styles.resultTitle, { color: theme.text }]}>Detection Result</Text>
             <View style={styles.scoreCircle}>
               <Text style={[styles.scoreValue, { color: getScoreColor(result.ai_probability) }]}>
-                {Math.round(result.ai_probability * 100)}%
+                {(result.ai_probability * 100).toFixed(2)}%
               </Text>
               <Text style={[styles.scoreSubtext, { color: theme.textMuted }]}>AI Probability</Text>
             </View>
@@ -92,17 +94,25 @@ export default function DetectorScreen() {
             {result.confidence_level && (
               <Text style={[styles.confidence, { color: theme.textMuted }]}>Confidence: {result.confidence_level}</Text>
             )}
-            <Button
-              title="Copy Result"
-              onPress={() => {
-                Clipboard.setStringAsync(`AI Probability: ${Math.round(result.ai_probability! * 100)}% - ${getScoreLabel(result.ai_probability!)}`);
-                if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
-                else Alert.alert('Copied!');
-              }}
-              variant="outline"
-              size="sm"
-              style={{ marginTop: 12 }}
-            />
+            <View style={styles.resultActions}>
+              <Button
+                title="Copy Result"
+                onPress={() => {
+                  Clipboard.setStringAsync(`AI Probability: ${(result.ai_probability! * 100).toFixed(2)}% - ${getScoreLabel(result.ai_probability!)}`);
+                  if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+                  else Alert.alert('Copied!');
+                }}
+                variant="outline"
+                size="sm"
+              />
+              <Button
+                title="Humanize Text"
+                onPress={() => {
+                  navigation.navigate('HumanizerTab', { initialText: text });
+                }}
+                size="sm"
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -139,4 +149,5 @@ const styles = StyleSheet.create({
   labelBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
   labelText: { fontSize: 14, fontWeight: '600' },
   confidence: { fontSize: 13, marginTop: 12 },
+  resultActions: { flexDirection: 'row', gap: 12, marginTop: 12 },
 });
