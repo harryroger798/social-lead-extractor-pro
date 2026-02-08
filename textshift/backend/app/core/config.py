@@ -82,6 +82,15 @@ class Settings(BaseSettings):
     MAILGUN_FROM_EMAIL: str = "noreply@mail.textshift.org"
     MAILGUN_FROM_NAME: str = "TextShift"
     
+    # Intercom
+    INTERCOM_APP_ID: str = ""
+    INTERCOM_ACCESS_TOKEN: str = ""
+    INTERCOM_IDENTITY_SECRET: str = ""
+
+    # iDrive e2 (alternate env var names)
+    IDRIVE_ACCESS_KEY: str = ""
+    IDRIVE_SECRET_KEY: str = ""
+
     # Frontend URL for email links
     FRONTEND_URL: str = "https://textshift.org"
     
