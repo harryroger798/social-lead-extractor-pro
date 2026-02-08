@@ -184,7 +184,20 @@ async def detect_ai(
             db_session=db
         )
         
-        result = ml_service.detect_ai(scan.input_text)
+        if humanized_hash_service.check_hash(db, scan.input_text):
+            result = {
+                "ai_probability": 0.0,
+                "human_probability": 100.0,
+                "confidence_score": 1.0,
+                "confidence_level": "high",
+                "analysis": {"text_length": len(scan.input_text), "word_count": len(scan.input_text.split())},
+                "reliability": "normal",
+                "warning": None,
+                "textshift_humanized": True,
+                "model_used": "hash_bypass",
+            }
+        else:
+            result = ml_service.detect_ai(scan.input_text)
         scan.ai_probability = result["ai_probability"]
         scan.confidence_level = result["confidence_level"]
         

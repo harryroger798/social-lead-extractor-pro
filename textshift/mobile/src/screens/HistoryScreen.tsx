@@ -91,8 +91,8 @@ export default function HistoryScreen() {
           </View>
           <View style={styles.scanMeta}>
             {item.scan_type === 'ai_detection' && item.ai_probability !== null && (
-              <Text style={[styles.scanScore, { color: item.ai_probability >= 0.7 ? theme.danger : theme.primary }]}>
-                {Math.round(item.ai_probability * 100)}% AI
+              <Text style={[styles.scanScore, { color: item.ai_probability >= 70 ? theme.danger : theme.primary }]}>
+                {Math.round(item.ai_probability)}% AI
               </Text>
             )}
             {item.scan_type === 'plagiarism' && item.plagiarism_score !== null && (

@@ -47,14 +47,14 @@ export default function DetectorScreen() {
   };
 
   const getScoreColor = (prob: number) => {
-    if (prob >= 0.7) return theme.danger;
-    if (prob >= 0.4) return theme.warning;
+    if (prob >= 70) return theme.danger;
+    if (prob >= 40) return theme.warning;
     return theme.primary;
   };
 
   const getScoreLabel = (prob: number) => {
-    if (prob >= 0.7) return 'Likely AI-Generated';
-    if (prob >= 0.4) return 'Mixed / Uncertain';
+    if (prob >= 70) return 'Likely AI-Generated';
+    if (prob >= 40) return 'Mixed / Uncertain';
     return 'Likely Human-Written';
   };
 
@@ -94,7 +94,7 @@ export default function DetectorScreen() {
             <Text style={[styles.resultTitle, { color: theme.text }]}>Detection Result</Text>
             <View style={styles.scoreCircle}>
               <Text style={[styles.scoreValue, { color: getScoreColor(result.ai_probability) }]}>
-                {(result.ai_probability * 100).toFixed(2)}%
+                {Number(result.ai_probability).toFixed(2)}%
               </Text>
               <Text style={[styles.scoreSubtext, { color: theme.textMuted }]}>AI Probability</Text>
             </View>
@@ -110,7 +110,7 @@ export default function DetectorScreen() {
               <Button
                 title="Copy Result"
                 onPress={() => {
-                  Clipboard.setStringAsync(`AI Probability: ${(result.ai_probability! * 100).toFixed(2)}% - ${getScoreLabel(result.ai_probability!)}`);
+                  Clipboard.setStringAsync(`AI Probability: ${Number(result.ai_probability!).toFixed(2)}% - ${getScoreLabel(result.ai_probability!)}`);
                   if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
                   else Alert.alert('Copied!');
                 }}
