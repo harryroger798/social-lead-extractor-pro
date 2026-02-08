@@ -108,11 +108,11 @@ export default function DetectorScreen() {
             )}
             <View style={styles.resultActions}>
               <Button
-                title="Copy Result"
+                title="Copy Text"
                 onPress={() => {
-                  Clipboard.setStringAsync(`AI Probability: ${Number(result.ai_probability!).toFixed(2)}% - ${getScoreLabel(result.ai_probability!)}`);
-                  if (Platform.OS === 'android') ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
-                  else Alert.alert('Copied!');
+                  Clipboard.setStringAsync(text);
+                  if (Platform.OS === 'android') ToastAndroid.show('Text copied to clipboard', ToastAndroid.SHORT);
+                  else Alert.alert('Copied!', 'Input text copied to clipboard');
                 }}
                 variant="outline"
                 size="sm"
@@ -120,7 +120,7 @@ export default function DetectorScreen() {
               <Button
                 title="Humanize Text"
                 onPress={() => {
-                  navigation.navigate('HumanizerTab', { initialText: text });
+                  navigation.navigate('HumanizerTab', { initialText: text, _t: Date.now() });
                 }}
                 size="sm"
               />

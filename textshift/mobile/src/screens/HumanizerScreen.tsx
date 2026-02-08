@@ -20,8 +20,11 @@ export default function HumanizerScreen() {
 
   useEffect(() => {
     const incoming = (route.params as any)?.initialText as string | undefined;
-    if (incoming && incoming !== text) setText(incoming);
-  }, [route.params]);
+    if (incoming) {
+      setText(incoming);
+      setResult(null);
+    }
+  }, [(route.params as any)?.initialText, (route.params as any)?._t]);
 
   const sentences = useMemo(() => {
     if (!text.trim()) return [];
