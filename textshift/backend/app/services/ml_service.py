@@ -1742,6 +1742,9 @@ class MLModelService:
             1 if triboost_results['v4']['ai_prob'] > 0.5 else 0
         ])
         
+        wc = len(text.split())
+        min_words = 50
+        reliability = "low" if wc < min_words else "normal"
         result = {
             "ai_probability": round(final_ai_prob * 100, 2),
             "human_probability": round(final_human_prob * 100, 2),
@@ -1749,9 +1752,11 @@ class MLModelService:
             "confidence_level": self._get_confidence_level(confidence_score),
             "analysis": {
                 "text_length": len(text),
-                "word_count": len(text.split()),
+                "word_count": wc,
                 "avg_sentence_length": self._avg_sentence_length(text)
             },
+            "reliability": reliability,
+            "warning": "Short text (<50 words) — result may be less reliable" if reliability == "low" else None,
             "model_breakdown": {
                 "roberta": round(roberta_result['ai_prob'] * 100, 2),
                 "triboost_original": round(triboost_results['original']['ai_prob'] * 100, 2),
