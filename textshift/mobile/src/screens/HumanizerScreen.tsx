@@ -37,9 +37,20 @@ export default function HumanizerScreen() {
     });
   };
 
+  const isLowContent = (t: string) => {
+    const tokens = (t.toLowerCase().match(/[a-z]+/g) || []);
+    if (!tokens.length) return true;
+    const real = tokens.filter((w) => w.length >= 3);
+    return real.length / tokens.length < 0.7;
+  };
+
   const handleHumanize = async () => {
     if (!text.trim() || text.trim().length < 50) {
       Alert.alert('Error', 'Please enter at least 50 characters');
+      return;
+    }
+    if (isLowContent(text)) {
+      Alert.alert('Low-content input', 'Your text looks like gibberish/low-content. Please provide meaningful sentences (≥70% real words).');
       return;
     }
     setLoading(true);

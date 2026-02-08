@@ -16,10 +16,21 @@ export default function DetectorScreen() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Scan | null>(null);
 
+  const isLowContent = (t: string) => {
+    const tokens = (t.toLowerCase().match(/[a-z]+/g) || []);
+    if (!tokens.length) return true;
+    const real = tokens.filter((w) => w.length >= 3);
+    return real.length / tokens.length < 0.7;
+  };
+
   const handleDetect = async () => {
     const wc = text.trim().split(/\s+/).filter(Boolean).length;
     if (!text.trim() || wc < 50) {
       Alert.alert('Error', 'Please enter at least 50 words for reliable detection');
+      return;
+    }
+    if (isLowContent(text)) {
+      Alert.alert('Low-content input', 'Your text looks like gibberish/low-content. Please provide meaningful text (\u226570% real words).');
       return;
     }
     setLoading(true);
