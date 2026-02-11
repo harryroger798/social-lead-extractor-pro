@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -274,6 +274,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
+  const pendingScrollRef = useRef(false);
 
   usePageSEO({
     title: 'Dashboard - AI Detection, Humanizer & Writing Tools',
@@ -388,6 +389,15 @@ export default function Dashboard() {
     queryKey: ['credits'],
     queryFn: creditsApi.getBalance,
   });
+
+  useEffect(() => {
+    if (pendingScrollRef.current) {
+      pendingScrollRef.current = false;
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
+    }
+  }, [activeTab]);
 
   // Refresh user data on dashboard load to get latest subscription tier
   useEffect(() => {
@@ -1021,9 +1031,9 @@ export default function Dashboard() {
                                     <Button
                                       onClick={() => {
                                         setHumanizeText(detectText);
-                                        setActiveTab('humanize');
                                         setResult(null);
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        pendingScrollRef.current = true;
+                                        setActiveTab('humanize');
                                       }}
                                       className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-6"
                                     >
@@ -1038,9 +1048,9 @@ export default function Dashboard() {
                                             .map((s: any) => s.text)
                                             .join(' ');
                                           setHumanizeText(aiParts);
-                                          setActiveTab('humanize');
                                           setResult(null);
-                                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                                          pendingScrollRef.current = true;
+                                          setActiveTab('humanize');
                                         }}
                                         variant="outline"
                                         className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 rounded-full px-6"
@@ -1195,9 +1205,9 @@ export default function Dashboard() {
                                     <Button
                                       onClick={() => {
                                         setDetectText(result.output_text);
-                                        setActiveTab('detect');
                                         setResult(null);
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        pendingScrollRef.current = true;
+                                        setActiveTab('detect');
                                       }}
                                       className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-6"
                                     >
