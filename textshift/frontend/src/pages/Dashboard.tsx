@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -274,7 +275,11 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('detect');
-  const pendingScrollRef = useRef(false);
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
 
   usePageSEO({
     title: 'Dashboard - AI Detection, Humanizer & Writing Tools',
@@ -390,14 +395,6 @@ export default function Dashboard() {
     queryFn: creditsApi.getBalance,
   });
 
-  useEffect(() => {
-    if (pendingScrollRef.current) {
-      pendingScrollRef.current = false;
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-      });
-    }
-  }, [activeTab]);
 
   // Refresh user data on dashboard load to get latest subscription tier
   useEffect(() => {
@@ -1030,10 +1027,14 @@ export default function Dashboard() {
                                   <div className="flex flex-wrap gap-3">
                                     <Button
                                       onClick={() => {
-                                        setHumanizeText(detectText);
-                                        setResult(null);
-                                        pendingScrollRef.current = true;
-                                        setActiveTab('humanize');
+                                        flushSync(() => {
+                                          setHumanizeText(detectText);
+                                          setResult(null);
+                                          setActiveTab('humanize');
+                                        });
+                                        scrollToTop();
+                                        setTimeout(scrollToTop, 50);
+                                        setTimeout(scrollToTop, 150);
                                       }}
                                       className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-6"
                                     >
@@ -1047,10 +1048,14 @@ export default function Dashboard() {
                                             .filter((s: any) => s.ai_probability >= 50)
                                             .map((s: any) => s.text)
                                             .join(' ');
-                                          setHumanizeText(aiParts);
-                                          setResult(null);
-                                          pendingScrollRef.current = true;
-                                          setActiveTab('humanize');
+                                          flushSync(() => {
+                                            setHumanizeText(aiParts);
+                                            setResult(null);
+                                            setActiveTab('humanize');
+                                          });
+                                          scrollToTop();
+                                          setTimeout(scrollToTop, 50);
+                                          setTimeout(scrollToTop, 150);
                                         }}
                                         variant="outline"
                                         className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 rounded-full px-6"
@@ -1204,10 +1209,14 @@ export default function Dashboard() {
                                   <div className="flex flex-wrap gap-3">
                                     <Button
                                       onClick={() => {
-                                        setDetectText(result.output_text);
-                                        setResult(null);
-                                        pendingScrollRef.current = true;
-                                        setActiveTab('detect');
+                                        flushSync(() => {
+                                          setDetectText(result.output_text);
+                                          setResult(null);
+                                          setActiveTab('detect');
+                                        });
+                                        scrollToTop();
+                                        setTimeout(scrollToTop, 50);
+                                        setTimeout(scrollToTop, 150);
                                       }}
                                       className="bg-emerald-500 hover:bg-emerald-600 text-black rounded-full px-6"
                                     >
