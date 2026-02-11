@@ -1482,7 +1482,7 @@ class MLModelService:
         sentences = re.split(r'(?<=[.!?])\s+', text.strip())
         return [s.strip() for s in sentences if s.strip()]
     
-    def _humanize_single(self, sentence: str, use_post_processor: bool = True, passes: int = 2) -> str:
+    def _humanize_single(self, sentence: str, use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> str:
         """Humanize a single sentence using the T5 model."""
         try:
             self._load_humanizer()
@@ -1505,7 +1505,7 @@ class MLModelService:
             model_output = self._humanize_with_hf_api(sentence)
         
         if use_post_processor:
-            model_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=sentence)
+            model_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=sentence, mode=mode)
         return model_output
     
     def _calculate_confidence_score(self, ai_prob: float) -> int:
@@ -1851,7 +1851,7 @@ class MLModelService:
             result = result[0].upper() + result[1:]
         return result.strip()
     
-    def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2, original_text: Optional[str] = None) -> str:
+    def _apply_stealthwriter_postprocessor(self, text: str, passes: int = 2, original_text: Optional[str] = None, mode: str = 'casual') -> str:
         """
         Apply Stealthwriter-style transformations to make text sound more human.
         
@@ -1867,21 +1867,23 @@ class MLModelService:
         result = self._remove_meta_commentary(result, original_text=original_text)
         
         for _ in range(passes):
-            # Step 1: Apply phrase replacements FIRST (longer patterns before shorter)
-            # Sort by length descending to avoid partial matches
-            sorted_phrases = sorted(STEALTHWRITER_PHRASE_REPLACEMENTS.items(), 
-                                   key=lambda x: len(x[0]), reverse=True)
-            for phrase, replacement in sorted_phrases:
-                # Case-insensitive replacement while preserving sentence case
-                pattern = re.compile(re.escape(phrase), re.IGNORECASE)
-                matches = pattern.findall(result)
-                for match in matches:
-                    # Preserve capitalization of first letter
-                    if match[0].isupper():
-                        new_replacement = replacement[0].upper() + replacement[1:]
-                    else:
-                        new_replacement = replacement
-                    result = result.replace(match, new_replacement, 1)
+            starter_prob = 0.3 if mode == 'casual' else (0.1 if mode == 'professional' else 0.0)
+            # Step 1: Apply phrase replacements FIRST (skip for academic)
+            if mode != 'academic':
+                # Sort by length descending to avoid partial matches
+                sorted_phrases = sorted(STEALTHWRITER_PHRASE_REPLACEMENTS.items(), 
+                                       key=lambda x: len(x[0]), reverse=True)
+                for phrase, replacement in sorted_phrases:
+                    # Case-insensitive replacement while preserving sentence case
+                    pattern = re.compile(re.escape(phrase), re.IGNORECASE)
+                    matches = pattern.findall(result)
+                    for match in matches:
+                        # Preserve capitalization of first letter
+                        if match[0].isupper():
+                            new_replacement = replacement[0].upper() + replacement[1:]
+                        else:
+                            new_replacement = replacement
+                        result = result.replace(match, new_replacement, 1)
             
             # Step 2: Expand contractions
             for contraction, expansion in CONTRACTION_EXPANSIONS.items():
@@ -1891,7 +1893,7 @@ class MLModelService:
             for filler in FILLERS_TO_REMOVE:
                 result = result.replace(filler, "").replace(filler.capitalize(), "")
             
-            # Step 4: Apply word replacements
+            # Step 4: Apply word replacements (skip for academic)
             words = result.split()
             new_words = []
             for word in words:
@@ -1899,7 +1901,7 @@ class MLModelService:
                 clean_word = word.strip('.,!?;:()[]{}"\'-')
                 lower_word = clean_word.lower()
                 
-                if lower_word in SYNONYM_REPLACEMENTS:
+                if mode != 'academic' and lower_word in SYNONYM_REPLACEMENTS:
                     replacement = SYNONYM_REPLACEMENTS[lower_word]
                     # Preserve capitalization
                     if clean_word and clean_word[0].isupper():
@@ -1916,7 +1918,7 @@ class MLModelService:
             sentences = self._split_sentences(result)
             new_sentences = []
             for i, sentence in enumerate(sentences):
-                if i == 0 and len(sentence) > 20 and random.random() < 0.3:
+                if i == 0 and len(sentence) > 20 and random.random() < starter_prob:
                     starter = random.choice(FORMAL_STARTERS)
                     sentence = starter + sentence[0].lower() + sentence[1:]
                 new_sentences.append(sentence)
@@ -1976,14 +1978,21 @@ class MLModelService:
             logger.warning(f"HuggingFace API fallback failed: {e}")
             return text
     
-    def humanize(self, text: str, preserved_indices: Optional[List[int]] = None, use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+    def humanize(self, text: str, preserved_indices: Optional[List[int]] = None, use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> Dict[str, Any]:
         """Humanize AI text using Stealthwriter T5 Chaos model.
         
         If preserved_indices is provided, only humanize sentences NOT in the list.
         Preserved sentences are kept exactly as-is in the output.
+        Mode controls temperature and post-processing: 'academic', 'professional', or 'casual'.
         """
+        mode_config = {
+            'academic': {'temperature': 0.7, 'top_p': 0.9},
+            'professional': {'temperature': 0.75, 'top_p': 0.92},
+            'casual': {'temperature': 0.85, 'top_p': 0.93},
+        }
+        config = mode_config.get(mode, mode_config['casual'])
         if preserved_indices is not None:
-            return self._humanize_selective(text, preserved_indices, use_post_processor, passes)
+            return self._humanize_selective(text, preserved_indices, use_post_processor, passes, mode=mode)
         
         model_output = None
         use_fallback = False
@@ -2009,7 +2018,7 @@ class MLModelService:
             use_fallback = True
             model_output = self._humanize_with_hf_api(text)
         
-        final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text) if use_post_processor else model_output
+        final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text, mode=mode) if use_post_processor else model_output
         original_words = text.lower().split()
         final_words = final_output.lower().split()
         changes = len(set(original_words).symmetric_difference(set(final_words)))
@@ -2022,10 +2031,11 @@ class MLModelService:
             "humanized_length": len(final_output),
             "post_processor_used": use_post_processor,
             "passes": passes,
-            "used_fallback": use_fallback
+            "used_fallback": use_fallback,
+            "mode": mode
         }
     
-    def _humanize_selective(self, text: str, preserved_indices: List[int], use_post_processor: bool = True, passes: int = 2) -> Dict[str, Any]:
+    def _humanize_selective(self, text: str, preserved_indices: List[int], use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> Dict[str, Any]:
         """Humanize text selectively - only humanize sentences not in preserved_indices."""
         sentences = self._split_sentences_preserve(text)
         result_sentences = []
@@ -2044,7 +2054,7 @@ class MLModelService:
                 })
                 total_preserved += 1
             else:
-                humanized = self._humanize_single(sentence, use_post_processor, passes)
+                humanized = self._humanize_single(sentence, use_post_processor, passes, mode=mode)
                 result_sentences.append(humanized)
                 sentence_details.append({
                     "index": i,

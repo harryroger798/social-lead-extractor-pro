@@ -294,7 +294,7 @@ async def humanize_text(
             db_session=db
         )
         
-        result = ml_service.humanize(scan.input_text, preserved_indices=scan_data.preserved_indices)
+        result = ml_service.humanize(scan.input_text, preserved_indices=scan_data.preserved_indices, mode=scan_data.mode or 'casual')
         scan.output_text = result["humanized_text"]
         
         # Store hash of humanized output for future AI detection bypass
