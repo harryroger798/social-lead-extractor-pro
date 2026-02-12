@@ -228,37 +228,35 @@ class WritingToolsService:
             return False
     
     def _load_grammar_model(self):
-        """Load T5 grammar correction model from iDrive e2."""
+        """Load CoEdIT-large grammar correction model from iDrive e2."""
         if self._grammar_model is not None:
             return True
         
         try:
-            model_dir = os.path.join(settings.MODELS_DIR, 't5-grammar-correction')
+            model_dir = os.path.join(settings.MODELS_DIR, 'coedit-large')
             
-            # Download from iDrive if not present
             if not os.path.exists(model_dir) or not os.listdir(model_dir):
-                success = self._download_model_from_s3('grammar-checker/t5-base-grammar-correction/', model_dir)
+                success = self._download_model_from_s3('grammar-checker/coedit-large/', model_dir)
                 if not success:
-                    # Fallback to HuggingFace
-                    logger.info("Downloading t5-base-grammar-correction from HuggingFace...")
-                    self._grammar_tokenizer = T5Tokenizer.from_pretrained("vennify/t5-base-grammar-correction")
-                    self._grammar_model = T5ForConditionalGeneration.from_pretrained("vennify/t5-base-grammar-correction")
+                    logger.info("Downloading coedit-large from HuggingFace...")
+                    self._grammar_tokenizer = AutoTokenizer.from_pretrained("grammarly/coedit-large")
+                    self._grammar_model = T5ForConditionalGeneration.from_pretrained("grammarly/coedit-large", torch_dtype=torch.float16)
                     self._grammar_model.eval()
-                    logger.info("Grammar T5 model loaded from HuggingFace")
+                    logger.info("CoEdIT-large model loaded from HuggingFace")
                     return True
             
-            self._grammar_tokenizer = T5Tokenizer.from_pretrained(model_dir)
-            self._grammar_model = T5ForConditionalGeneration.from_pretrained(model_dir)
+            self._grammar_tokenizer = AutoTokenizer.from_pretrained(model_dir)
+            self._grammar_model = T5ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16)
             self._grammar_model.eval()
-            logger.info("Grammar T5 model loaded successfully from local storage")
+            logger.info("CoEdIT-large model loaded successfully from local storage")
             return True
         except Exception as e:
-            logger.error(f"Failed to load Grammar T5 model: {e}")
+            logger.error(f"Failed to load CoEdIT-large model: {e}")
             return False
     
     def _correct_grammar_chunk(self, chunk: str) -> str:
-        """Correct grammar for a single chunk that fits within T5 token limit."""
-        input_text = f"grammar: {chunk}"
+        """Correct grammar for a single chunk using instruction-tuned model."""
+        input_text = f"Fix grammatical errors in this sentence: {chunk}"
         inputs = self._grammar_tokenizer(
             input_text,
             return_tensors="pt",
