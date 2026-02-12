@@ -154,11 +154,12 @@ export const scanApi = {
     return response.data;
   },
 
-  humanize: async (text: string, preservedIndices?: number[]) => {
+  humanize: async (text: string, options?: { preservedIndices?: number[]; mode?: 'academic' | 'professional' | 'casual' }) => {
     const response = await api.post('/api/scan/humanize', {
       text,
       scan_type: 'humanize',
-      ...(preservedIndices !== undefined && { preserved_indices: preservedIndices }),
+      ...(options?.preservedIndices !== undefined && { preserved_indices: options.preservedIndices }),
+      ...(options?.mode && { mode: options.mode }),
     }, {
       timeout: SCAN_TIMEOUT,
     });

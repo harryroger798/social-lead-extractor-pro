@@ -8,6 +8,7 @@ class ScanCreate(BaseModel):
     text: str = Field(..., min_length=10, max_length=50000)
     scan_type: ScanType
     preserved_indices: Optional[List[int]] = None
+    mode: Optional[str] = Field(default='casual', pattern='^(academic|professional|casual)$')
 
 
 class AIDetectionResult(BaseModel):

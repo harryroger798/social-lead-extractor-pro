@@ -292,6 +292,7 @@ export default function Dashboard() {
   const [sentenceMode, setSentenceMode] = useState(false);
   const [preservedIndices, setPreservedIndices] = useState<Set<number>>(new Set());
   const [sentences, setSentences] = useState<string[]>([]);
+  const [humanizeMode, setHumanizeMode] = useState<'academic' | 'professional' | 'casual'>('casual');
     const [plagiarismText, setPlagiarismText] = useState('');
       const [result, setResult] = useState<any>(null);
       const [copied, setCopied] = useState(false);
@@ -418,8 +419,8 @@ export default function Dashboard() {
   });
 
   const humanizeMutation = useMutation({
-    mutationFn: ({ text, preservedIndices: pi }: { text: string; preservedIndices?: number[] }) =>
-      scanApi.humanize(text, pi),
+    mutationFn: ({ text, preservedIndices: pi, mode }: { text: string; preservedIndices?: number[]; mode?: 'academic' | 'professional' | 'casual' }) =>
+      scanApi.humanize(text, { preservedIndices: pi, mode }),
     onSuccess: (data) => {
       setResult(data);
       refetchCredits();
@@ -567,7 +568,7 @@ export default function Dashboard() {
       detectMutation.mutate(text);
     } else if (activeTab === 'humanize') {
       const pi = sentenceMode && preservedIndices.size > 0 ? Array.from(preservedIndices) : undefined;
-      humanizeMutation.mutate({ text, preservedIndices: pi });
+      humanizeMutation.mutate({ text, preservedIndices: pi, mode: humanizeMode });
     } else if (activeTab === 'plagiarism') {
       plagiarismMutation.mutate(text);
     }
@@ -731,6 +732,29 @@ export default function Dashboard() {
                             )}
                           </div>
               
+                          {activeTab === 'humanize' && (
+                            <div className="mb-4 flex items-center gap-2">
+                              <span className="text-xs text-gray-400">Mode:</span>
+                              {([
+                                { key: 'academic', label: 'Academic' },
+                                { key: 'professional', label: 'Professional' },
+                                { key: 'casual', label: 'Casual' },
+                              ] as const).map(({ key, label }) => (
+                                <button
+                                  key={key}
+                                  onClick={() => setHumanizeMode(key as 'academic' | 'professional' | 'casual')}
+                                  className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${
+                                    humanizeMode === (key as any)
+                                      ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                                      : 'text-gray-400 hover:text-white hover:bg-white/5 border-white/10'
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
                           {!(activeTab === 'humanize' && sentenceMode) && (
                           <Textarea
                             placeholder="Paste your text here..."
