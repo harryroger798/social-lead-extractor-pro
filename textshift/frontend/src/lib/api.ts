@@ -137,6 +137,13 @@ export const authApi = {
     const response = await api.post('/api/auth/resend-verification', { email });
     return response.data;
   },
+
+  auth0Callback: async (accessToken: string) => {
+    const response = await api.post('/api/auth/auth0/callback', {
+      access_token: accessToken,
+    });
+    return response.data;
+  },
 };
 
 // 5 minute timeout for all scan/processing endpoints (ML operations can take time)
