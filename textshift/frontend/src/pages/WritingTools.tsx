@@ -465,7 +465,9 @@ export default function WritingTools() {
                       <Copy className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                  <div className="max-h-[400px] overflow-y-auto">
+                    <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                  </div>
                 </div>
               </>
             )}
@@ -480,13 +482,35 @@ export default function WritingTools() {
                 <span className="text-gray-500 text-sm">Issues Found:</span>
                 {result.errors.map((err: any, i: number) => (
                   <div key={i} className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-                    <p className="text-rose-400 text-sm font-medium">{err.message}</p>
-                    {err.replacements && err.replacements.length > 0 && (
-                      <p className="text-gray-400 text-xs mt-1">
-                        <span className="text-emerald-400">Suggestion:</span> {err.replacements[0]}
-                        {err.replacements.length > 1 && ` (or: ${err.replacements.slice(1).join(', ')})`}
-                      </p>
-                    )}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-rose-400 text-sm font-medium">{err.message}</p>
+                        {err.replacements && err.replacements.length > 0 && (
+                          <p className="text-gray-400 text-xs mt-1">
+                            <span className="text-emerald-400">Suggestion:</span> {err.replacements[0]}
+                            {err.replacements.length > 1 && ` (or: ${err.replacements.slice(1).join(', ')})`}
+                          </p>
+                        )}
+                      </div>
+                      {err.original && err.replacements && err.replacements.length > 0 && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 flex-shrink-0 text-xs px-2 py-1 h-auto"
+                          onClick={() => {
+                            const original = err.original as string;
+                            const replacement = err.replacements[0] as string;
+                            const idx = text.indexOf(original);
+                            if (idx !== -1) {
+                              const updated = text.substring(0, idx) + replacement + text.substring(idx + original.length);
+                              setText(updated);
+                            }
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

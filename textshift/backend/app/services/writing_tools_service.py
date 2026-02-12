@@ -256,8 +256,27 @@ class WritingToolsService:
             logger.error(f"Failed to load Grammar T5 model: {e}")
             return False
     
+    def _correct_grammar_chunk(self, chunk: str) -> str:
+        """Correct grammar for a single chunk that fits within T5 token limit."""
+        input_text = f"grammar: {chunk}"
+        inputs = self._grammar_tokenizer(
+            input_text,
+            return_tensors="pt",
+            truncation=True,
+            max_length=512
+        )
+        with torch.no_grad():
+            outputs = self._grammar_model.generate(
+                **inputs,
+                max_length=512,
+                num_beams=5,
+                early_stopping=True
+            )
+        corrected = self._grammar_tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return corrected.strip() if corrected else chunk
+
     def _correct_grammar_with_t5(self, text: str) -> Optional[str]:
-        """Correct grammar using T5 model."""
+        """Correct grammar using T5 model, processing long texts in sentence chunks."""
         try:
             if not self._load_grammar_model():
                 return None
@@ -265,26 +284,31 @@ class WritingToolsService:
             if self._grammar_model is None or self._grammar_tokenizer is None:
                 return None
             
-            # T5 grammar model expects "grammar: " prefix
-            input_text = f"grammar: {text}"
-            
-            inputs = self._grammar_tokenizer(
-                input_text,
-                return_tensors="pt",
-                truncation=True,
-                max_length=512
-            )
-            
-            with torch.no_grad():
-                outputs = self._grammar_model.generate(
-                    **inputs,
-                    max_length=512,
-                    num_beams=5,
-                    early_stopping=True
-                )
-            
-            corrected_text = self._grammar_tokenizer.decode(outputs[0], skip_special_tokens=True)
-            return corrected_text.strip() if corrected_text else None
+            token_count = len(self._grammar_tokenizer.encode(f"grammar: {text}"))
+            if token_count <= 480:
+                return self._correct_grammar_chunk(text)
+
+            sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+            corrected_chunks: list[str] = []
+            current_chunk: list[str] = []
+            current_tokens = 0
+
+            for sentence in sentences:
+                sentence_tokens = len(self._grammar_tokenizer.encode(sentence))
+                if current_tokens + sentence_tokens > 450 and current_chunk:
+                    chunk_text = ' '.join(current_chunk)
+                    corrected_chunks.append(self._correct_grammar_chunk(chunk_text))
+                    current_chunk = [sentence]
+                    current_tokens = sentence_tokens
+                else:
+                    current_chunk.append(sentence)
+                    current_tokens += sentence_tokens
+
+            if current_chunk:
+                chunk_text = ' '.join(current_chunk)
+                corrected_chunks.append(self._correct_grammar_chunk(chunk_text))
+
+            return ' '.join(corrected_chunks)
         except Exception as e:
             logger.error(f"T5 grammar correction failed: {e}")
             return None

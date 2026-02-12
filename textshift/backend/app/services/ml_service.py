@@ -1506,6 +1506,7 @@ class MLModelService:
         
         if use_post_processor:
             model_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=sentence, mode=mode)
+        model_output = self._apply_spelling_only_pass(model_output)
         return model_output
     
     def _calculate_confidence_score(self, ai_prob: float) -> int:
@@ -1929,6 +1930,72 @@ class MLModelService:
         # Clean up extra whitespace
         return re.sub(r'\s+', ' ', result).strip()
     
+    def _apply_spelling_only_pass(self, text: str) -> str:
+        """Apply spelling-only corrections using LanguageTool API.
+        
+        Only fixes typos and orthography — no grammar, style, or word-level rewrites.
+        Preserves proper nouns, casing, and punctuation. Skips URLs and code blocks.
+        """
+        try:
+            url_pattern = re.compile(r'https?://\S+|www\.\S+')
+            code_pattern = re.compile(r'`[^`]+`')
+            
+            protected_regions: list[tuple[int, int]] = []
+            for match in url_pattern.finditer(text):
+                protected_regions.append((match.start(), match.end()))
+            for match in code_pattern.finditer(text):
+                protected_regions.append((match.start(), match.end()))
+
+            response = httpx.post(
+                "https://api.languagetool.org/v2/check",
+                data={
+                    "text": text,
+                    "language": "en-US",
+                    "enabledCategories": "TYPOS",
+                    "enabledOnly": "true",
+                },
+                timeout=15.0,
+            )
+
+            if response.status_code != 200:
+                logger.warning(f"LanguageTool spelling pass returned {response.status_code}")
+                return text
+
+            matches = response.json().get("matches", [])
+            if not matches:
+                return text
+
+            replacements: list[tuple[int, int, str]] = []
+            for match in matches:
+                offset = match.get("offset", 0)
+                length = match.get("length", 0)
+                suggestions = match.get("replacements", [])
+                if not suggestions:
+                    continue
+
+                in_protected = False
+                for start, end in protected_regions:
+                    if offset < end and (offset + length) > start:
+                        in_protected = True
+                        break
+                if in_protected:
+                    continue
+
+                replacements.append((offset, length, suggestions[0].get("value", "")))
+
+            if not replacements:
+                return text
+
+            replacements.sort(key=lambda r: r[0], reverse=True)
+            result = text
+            for offset, length, replacement in replacements:
+                result = result[:offset] + replacement + result[offset + length:]
+
+            return result
+        except Exception as e:
+            logger.warning(f"Spelling-only pass failed (non-fatal): {e}")
+            return text
+
     def _humanize_with_hf_api(self, text: str) -> str:
         """Fallback humanization using HuggingFace Inference API."""
         try:
@@ -2019,6 +2086,7 @@ class MLModelService:
             model_output = self._humanize_with_hf_api(text)
         
         final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text, mode=mode) if use_post_processor else model_output
+        final_output = self._apply_spelling_only_pass(final_output)
         original_words = text.lower().split()
         final_words = final_output.lower().split()
         changes = len(set(original_words).symmetric_difference(set(final_words)))
@@ -2032,7 +2100,8 @@ class MLModelService:
             "post_processor_used": use_post_processor,
             "passes": passes,
             "used_fallback": use_fallback,
-            "mode": mode
+            "mode": mode,
+            "spelling_pass_applied": True
         }
     
     def _humanize_selective(self, text: str, preserved_indices: List[int], use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> Dict[str, Any]:
@@ -2065,6 +2134,7 @@ class MLModelService:
                 total_humanized += 1
         
         final_output = ' '.join(result_sentences)
+        final_output = self._apply_spelling_only_pass(final_output)
         original_words = text.lower().split()
         final_words = final_output.lower().split()
         changes = len(set(original_words).symmetric_difference(set(final_words)))
@@ -2082,7 +2152,8 @@ class MLModelService:
             "sentence_count": len(sentences),
             "preserved_count": total_preserved,
             "humanized_count": total_humanized,
-            "sentence_details": sentence_details
+            "sentence_details": sentence_details,
+            "spelling_pass_applied": True
         }
     
     def _sync_web_search(self, text: str) -> List[Dict[str, Any]]:
