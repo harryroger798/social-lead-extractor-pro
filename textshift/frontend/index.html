@@ -25,6 +25,10 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://textshift.org/" />
     
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="en" href="https://textshift.org/" />
+    <link rel="alternate" hreflang="x-default" href="https://textshift.org/" />
+    
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/png" href="/images/logo.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png" />
@@ -80,7 +84,7 @@
       "url": "https://textshift.org",
       "logo": "https://textshift.org/images/logo.png",
       "description": "AI content detection and humanization platform with 99.18% accuracy",
-      "sameAs": []
+      "sameAs": ["https://textshift.blog"]
     }
     </script>
     
@@ -90,12 +94,7 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "TextShift",
-      "url": "https://textshift.org",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://textshift.org/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "url": "https://textshift.org"
     }
     </script>
     
@@ -113,10 +112,16 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "1250"
+      "review": {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "TextShift"
+        }
       }
     }
     </script>

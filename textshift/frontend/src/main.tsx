@@ -23,9 +23,7 @@ const setVH = () => {
 setVH();
 window.addEventListener('resize', setVH, { passive: true });
 
-if (import.meta.env.DEV) {
-  reportWebVitals();
-}
+reportWebVitals();
 
 const root = document.getElementById('root')!;
 createRoot(root).render(
