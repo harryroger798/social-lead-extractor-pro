@@ -460,14 +460,19 @@ class WritingToolsService:
             except Exception as lt_e:
                 logger.warning(f"LanguageTool API failed (using T5 only): {lt_e}")
             
-            # Merge errors - avoid duplicates
-            existing_corrections = {e.get("replacement", "").lower() for e in errors}
+            # Merge errors - avoid duplicates by (offset, length) pairs
+            existing_spans = set()
+            for e in errors:
+                o = e.get("offset")
+                l = e.get("length")
+                if o is not None and l:
+                    existing_spans.add((o, l))
             for lt_error in lt_errors:
-                if lt_error["replacements"]:
-                    replacement = lt_error["replacements"][0].lower()
-                    if replacement not in existing_corrections:
-                        errors.append(lt_error)
-                        existing_corrections.add(replacement)
+                o = lt_error.get("offset")
+                l = lt_error.get("length")
+                if o is not None and l and (o, l) not in existing_spans:
+                    errors.append(lt_error)
+                    existing_spans.add((o, l))
             
             # Step 3: Build corrected_text by applying replacements to original text
             # This avoids T5 seq2seq truncation by starting from the full original
@@ -485,12 +490,17 @@ class WritingToolsService:
                 replacement_val = replacements[0]
                 
                 if offset is not None and length and length > 0:
-                    replacement_ops.append({
-                        "offset": offset,
-                        "length": length,
-                        "original": text[offset:offset + length],
-                        "replacement": replacement_val
-                    })
+                    start = offset
+                    end = offset + length
+                    before_ok = (start == 0 or not text[start - 1].isalnum())
+                    after_ok = (end >= len(text) or not text[end].isalnum())
+                    if before_ok and after_ok:
+                        replacement_ops.append({
+                            "offset": offset,
+                            "length": length,
+                            "original": text[offset:offset + length],
+                            "replacement": replacement_val
+                        })
                 elif original_str:
                     idx = text.find(original_str)
                     if idx != -1:

@@ -487,8 +487,8 @@ export default function WritingTools() {
                       return (
                         <p className="text-white whitespace-pre-wrap leading-relaxed">
                           {parts.map((part, i) => {
-                            if (part.type === 'removed') return <span key={i} className="text-rose-400 line-through opacity-70">{part.text}</span>;
-                            if (part.type === 'added') return <span key={i} className="text-emerald-400 font-medium">{part.text}</span>;
+                            if (part.type === 'removed') return <span key={i} className="text-rose-400 line-through opacity-70 mx-0.5 bg-rose-500/10 px-0.5 rounded">{part.text}</span>;
+                            if (part.type === 'added') return <span key={i} className="text-emerald-400 font-medium mx-0.5 bg-emerald-500/10 px-0.5 rounded">{part.text}</span>;
                             return <span key={i}>{part.text}</span>;
                           })}
                         </p>
