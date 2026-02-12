@@ -277,7 +277,7 @@ class WritingToolsService:
         return corrected.strip() if corrected else chunk
 
     def _correct_grammar_with_t5(self, text: str) -> Optional[str]:
-        """Correct grammar using T5 model, processing long texts in sentence chunks."""
+        """Correct grammar using T5 model, always processing in sentence chunks to avoid truncation."""
         try:
             if not self._load_grammar_model():
                 return None
@@ -285,18 +285,17 @@ class WritingToolsService:
             if self._grammar_model is None or self._grammar_tokenizer is None:
                 return None
             
-            token_count = len(self._grammar_tokenizer.encode(f"grammar: {text}"))
-            if token_count <= 350:
+            sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+            if len(sentences) <= 1:
                 return self._correct_grammar_chunk(text)
 
-            sentences = re.split(r'(?<=[.!?])\s+', text.strip())
             corrected_chunks: list[str] = []
             current_chunk: list[str] = []
             current_tokens = 0
 
             for sentence in sentences:
                 sentence_tokens = len(self._grammar_tokenizer.encode(sentence))
-                if current_tokens + sentence_tokens > 300 and current_chunk:
+                if current_tokens + sentence_tokens > 200 and current_chunk:
                     chunk_text = ' '.join(current_chunk)
                     corrected_chunks.append(self._correct_grammar_chunk(chunk_text))
                     current_chunk = [sentence]
