@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { triggerConfetti } from '@/components/animations/ConfettiEffect';
 import { ParticlesBackground, GradientBackground, NoiseOverlay } from '@/components/animations';
 import { usePageSEO } from '@/hooks/usePageSEO';
+import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -60,6 +61,14 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-3xl p-6 md:p-8">
+          <SocialLoginButtons mode="signup" />
+
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-gray-500 uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-sm">

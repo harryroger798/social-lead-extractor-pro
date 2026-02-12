@@ -26,6 +26,7 @@ from app.schemas.user import (
     ResendVerificationRequest
 )
 from app.services.email_service import email_service, generate_token
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -311,14 +312,11 @@ async def resend_verification(
     user = db.query(User).filter(User.email == request.email).first()
     
     if not user:
-        # Don't reveal if email exists or not for security
         return {"message": "If an unverified account with that email exists, a verification link has been sent.", "sent": False}
     
     if user.is_verified:
-        # Account is already verified - let frontend know
         return {"message": "This email is already verified. You can log in to your account.", "already_verified": True, "sent": False}
     
-    # User exists and is not verified - send verification email
     token = generate_token()
     user.verification_token = token
     user.verification_token_expires_at = datetime.utcnow() + timedelta(
@@ -333,3 +331,98 @@ async def resend_verification(
     )
     
     return {"message": "Verification email sent successfully.", "sent": True}
+
+
+class Auth0TokenExchange(BaseModel):
+    access_token: str
+
+
+@router.post("/auth0/callback", response_model=TokenResponse)
+async def auth0_callback(
+    payload: Auth0TokenExchange,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """Exchange Auth0 access token for a local JWT. Creates user if needed."""
+    try:
+        userinfo_resp = httpx.get(
+            f"https://{settings.AUTH0_DOMAIN}/userinfo",
+            headers={"Authorization": f"Bearer {payload.access_token}"},
+            timeout=10,
+        )
+        if userinfo_resp.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Auth0 token",
+            )
+        userinfo = userinfo_resp.json()
+    except httpx.HTTPError:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to verify Auth0 token",
+        )
+
+    auth0_sub = userinfo.get("sub", "")
+    email = userinfo.get("email", "")
+    name = userinfo.get("name") or userinfo.get("nickname") or ""
+    email_verified = userinfo.get("email_verified", False)
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email not provided by identity provider",
+        )
+
+    provider = "auth0"
+    if auth0_sub.startswith("google-oauth2|"):
+        provider = "google"
+    elif auth0_sub.startswith("github|"):
+        provider = "github"
+    elif auth0_sub.startswith("windowslive|"):
+        provider = "microsoft"
+
+    user = db.query(User).filter(User.auth0_sub == auth0_sub).first()
+
+    if user is None:
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            user.auth0_sub = auth0_sub
+            user.auth_provider = provider
+            if email_verified and not user.is_verified:
+                user.is_verified = True
+            db.commit()
+        else:
+            from app.core.security import get_password_hash
+            import secrets
+            user = User(
+                email=email,
+                hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+                full_name=name,
+                auth0_sub=auth0_sub,
+                auth_provider=provider,
+                is_verified=email_verified,
+                credits_balance=settings.FREE_TIER_CREDITS,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            if email_verified:
+                background_tasks.add_task(
+                    email_service.send_welcome_email,
+                    user.email,
+                    user.full_name,
+                )
+
+    user.last_login_at = datetime.utcnow()
+    db.commit()
+    db.refresh(user)
+
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+
+    return TokenResponse(
+        access_token=access_token,
+        user=UserResponse.model_validate(user),
+    )

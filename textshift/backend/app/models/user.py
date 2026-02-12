@@ -29,6 +29,10 @@ class User(Base):
     credits_balance = Column(Integer, default=5000)  # Free tier: 5K words/month
     credits_used_total = Column(Integer, default=0)
     
+    # Auth0 social login
+    auth0_sub = Column(String(255), nullable=True, unique=True, index=True)
+    auth_provider = Column(String(50), default="local")
+
     # Status
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)

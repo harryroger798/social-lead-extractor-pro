@@ -31,6 +31,7 @@ const PricingDetailsPage = lazy(() => import('@/pages/PricingDetailsPage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage'));
 const RefundPolicyPage = lazy(() => import('@/pages/RefundPolicyPage'));
+const Auth0Callback = lazy(() => import('@/pages/Auth0Callback'));
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
     <div className="flex flex-col items-center gap-4">
@@ -118,6 +119,9 @@ function App() {
                         <Route path="/terms" element={<TermsPage />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="/refund-policy" element={<RefundPolicyPage />} />
+            
+            {/* Auth0 callback */}
+            <Route path="/auth/callback" element={<Auth0Callback />} />
             
             {/* Auth pages - redirect if logged in */}
             <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
