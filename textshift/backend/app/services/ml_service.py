@@ -1506,7 +1506,6 @@ class MLModelService:
         
         if use_post_processor:
             model_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=sentence, mode=mode)
-        model_output = self._apply_spelling_only_pass(model_output)
         return model_output
     
     def _calculate_confidence_score(self, ai_prob: float) -> int:
@@ -2086,6 +2085,7 @@ class MLModelService:
             model_output = self._humanize_with_hf_api(text)
         
         final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text, mode=mode) if use_post_processor else model_output
+        before_spelling = final_output
         final_output = self._apply_spelling_only_pass(final_output)
         original_words = text.lower().split()
         final_words = final_output.lower().split()
@@ -2101,7 +2101,7 @@ class MLModelService:
             "passes": passes,
             "used_fallback": use_fallback,
             "mode": mode,
-            "spelling_pass_applied": True
+            "spelling_pass_applied": final_output != before_spelling
         }
     
     def _humanize_selective(self, text: str, preserved_indices: List[int], use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> Dict[str, Any]:
@@ -2134,6 +2134,7 @@ class MLModelService:
                 total_humanized += 1
         
         final_output = ' '.join(result_sentences)
+        before_spelling = final_output
         final_output = self._apply_spelling_only_pass(final_output)
         original_words = text.lower().split()
         final_words = final_output.lower().split()
@@ -2153,7 +2154,7 @@ class MLModelService:
             "preserved_count": total_preserved,
             "humanized_count": total_humanized,
             "sentence_details": sentence_details,
-            "spelling_pass_applied": True
+            "spelling_pass_applied": final_output != before_spelling
         }
     
     def _sync_web_search(self, text: str) -> List[Dict[str, Any]]:
