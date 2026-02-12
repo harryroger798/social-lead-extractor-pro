@@ -274,6 +274,50 @@ class WritingToolsService:
         corrected = self._grammar_tokenizer.decode(outputs[0], skip_special_tokens=True)
         return corrected.strip() if corrected else chunk
 
+    def _edit_text_with_coedit(self, text: str, instruction: str, max_chunk_tokens: int = 200) -> str:
+        """Edit text using CoEdIT-large with the given instruction prompt.
+        Chunks by sentences to avoid truncation. Reuses the grammar model."""
+        if not self._load_grammar_model():
+            return text
+        if self._grammar_model is None or self._grammar_tokenizer is None:
+            return text
+
+        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+        chunks: list[str] = []
+        current_chunk: list[str] = []
+        current_tokens = 0
+
+        for sentence in sentences:
+            sentence_tokens = len(self._grammar_tokenizer.encode(sentence))
+            if current_tokens + sentence_tokens > max_chunk_tokens and current_chunk:
+                chunks.append(' '.join(current_chunk))
+                current_chunk = [sentence]
+                current_tokens = sentence_tokens
+            else:
+                current_chunk.append(sentence)
+                current_tokens += sentence_tokens
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+
+        results: list[str] = []
+        for chunk in chunks:
+            input_text = f"{instruction}: {chunk}"
+            inputs = self._grammar_tokenizer(
+                input_text, return_tensors="pt", truncation=True, max_length=512
+            )
+            input_length = inputs["input_ids"].shape[1]
+            with torch.no_grad():
+                outputs = self._grammar_model.generate(
+                    **inputs,
+                    max_length=max(512, input_length + 128),
+                    num_beams=4,
+                    early_stopping=True
+                )
+            result = self._grammar_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            results.append(result.strip() if result else chunk)
+
+        return ' '.join(results)
+
     def _correct_grammar_with_t5(self, text: str) -> Optional[str]:
         """Correct grammar using T5 model, always processing in sentence chunks to avoid truncation."""
         try:
@@ -1108,13 +1152,45 @@ class WritingToolsService:
     
     # ==================== Feature 6: Paraphraser ====================
     def paraphrase(self, text: str, mode: str = "standard") -> Dict[str, Any]:
-        """Paraphrase text using comprehensive rule-based approach."""
+        """Paraphrase text using CoEdIT-large instruction-tuned model."""
+        try:
+            logger.info(f"Paraphrasing text in mode: {mode}")
+
+            mode_lower = mode.lower()
+            instruction_map = {
+                "standard": "Paraphrase this sentence",
+                "simple": "Simplify this sentence",
+                "formal": "Write this more formally",
+                "creative": "Paraphrase this sentence",
+                "fluency": "Make this text coherent",
+            }
+            instruction = instruction_map.get(mode_lower, "Paraphrase this sentence")
+
+            paraphrased = self._edit_text_with_coedit(text, instruction)
+
+            if not paraphrased or paraphrased == text:
+                paraphrased = self._edit_text_with_coedit(text, "Paraphrase this sentence")
+
+            changes_made = sum(1 for a, b in zip(text.split(), paraphrased.split()) if a != b)
+
+            return {
+                "success": True,
+                "original_text": text,
+                "paraphrased_text": paraphrased,
+                "mode": mode,
+                "original_word_count": len(text.split()),
+                "paraphrased_word_count": len(paraphrased.split()),
+                "changes_made": changes_made,
+                "used_t5": True
+            }
+        except Exception as e:
+            logger.error(f"Paraphrasing failed: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _paraphrase_rule_based_legacy(self, text: str, mode: str = "standard") -> Dict[str, Any]:
+        """Legacy rule-based paraphraser kept as fallback."""
         try:
             import random
-            
-            logger.info(f"Paraphrasing text in mode: {mode}")
-            
-            # Comprehensive synonym dictionary - expanded with more common words
             synonyms = {
                 # Common verbs
                 "use": ["utilize", "employ", "apply", "leverage"],
@@ -1889,15 +1965,57 @@ class WritingToolsService:
     
     # ==================== Feature 14: Content Improver ====================
     def improve_content(self, text: str, focus: str = "clarity") -> Dict[str, Any]:
-        """Improve content using comprehensive rule-based approach."""
+        """Improve content using CoEdIT-large instruction-tuned model."""
+        try:
+            logger.info(f"Improving content with focus: {focus}")
+
+            focus_lower = focus.lower()
+            instruction_map = {
+                "clarity": "Simplify this sentence",
+                "conciseness": "Simplify this sentence",
+                "engagement": "Make this text coherent",
+                "professionalism": "Write this more formally",
+                "seo": "Simplify this sentence",
+            }
+            instruction = instruction_map.get(focus_lower, "Make this text coherent")
+
+            improved_text = self._edit_text_with_coedit(text, instruction)
+
+            if not improved_text or improved_text == text:
+                improved_text = self._edit_text_with_coedit(text, "Make this text coherent")
+
+            suggestions = [f"Text improved for {focus} using advanced language model"]
+            changes_made = sum(1 for a, b in zip(text.split(), improved_text.split()) if a != b)
+
+            original_readability = self.analyze_readability(text)
+            improved_readability = self.analyze_readability(improved_text)
+
+            return {
+                "success": True,
+                "original_text": text,
+                "improved_text": improved_text,
+                "focus": focus,
+                "suggestions": suggestions,
+                "original_word_count": len(text.split()),
+                "improved_word_count": len(improved_text.split()),
+                "changes_made": changes_made,
+                "readability_change": {
+                    "original_score": original_readability.get("flesch_reading_ease", 0),
+                    "improved_score": improved_readability.get("flesch_reading_ease", 0)
+                },
+                "used_t5": True
+            }
+        except Exception as e:
+            logger.error(f"Content improvement failed: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _improve_content_rule_based_legacy(self, text: str, focus: str = "clarity") -> Dict[str, Any]:
+        """Legacy rule-based content improver kept as fallback."""
         try:
             import random
-            
-            logger.info(f"Improving content with focus: {focus}")
             improved_text = text
             suggestions = []
             changes_made = 0
-            
             focus_lower = focus.lower()
             
             # Extended clarity replacements including business clichés

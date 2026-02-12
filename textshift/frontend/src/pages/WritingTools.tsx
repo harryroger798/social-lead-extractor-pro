@@ -521,17 +521,24 @@ export default function WritingTools() {
                           </p>
                         )}
                       </div>
-                      {err.original && err.replacements && err.replacements.length > 0 && (
+                      {err.replacements && err.replacements.length > 0 && (err.original || err.offset !== undefined) && (
                         <Button
                           size="sm"
                           variant="ghost"
                           className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 flex-shrink-0 text-xs px-2 py-1 h-auto"
                           onClick={() => {
-                            const original = err.original as string;
+                            const original = (err.original || '') as string;
                             const replacement = err.replacements[0] as string;
-                            const idx = text.indexOf(original);
-                            if (idx !== -1) {
-                              const updated = text.substring(0, idx) + replacement + text.substring(idx + original.length);
+                            if (original) {
+                              const idx = text.indexOf(original);
+                              if (idx !== -1) {
+                                const updated = text.substring(0, idx) + replacement + text.substring(idx + original.length);
+                                setText(updated);
+                              }
+                            } else if (err.offset !== undefined) {
+                              const offset = err.offset as number;
+                              const length = (err.length || 0) as number;
+                              const updated = text.substring(0, offset) + replacement + text.substring(offset + length);
                               setText(updated);
                             }
                           }}
