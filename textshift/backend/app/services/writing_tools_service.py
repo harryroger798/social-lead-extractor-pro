@@ -265,10 +265,11 @@ class WritingToolsService:
             truncation=True,
             max_length=512
         )
+        input_length = inputs["input_ids"].shape[1]
         with torch.no_grad():
             outputs = self._grammar_model.generate(
                 **inputs,
-                max_length=512,
+                max_length=max(512, input_length + 128),
                 num_beams=5,
                 early_stopping=True
             )
@@ -285,7 +286,7 @@ class WritingToolsService:
                 return None
             
             token_count = len(self._grammar_tokenizer.encode(f"grammar: {text}"))
-            if token_count <= 480:
+            if token_count <= 350:
                 return self._correct_grammar_chunk(text)
 
             sentences = re.split(r'(?<=[.!?])\s+', text.strip())
@@ -295,7 +296,7 @@ class WritingToolsService:
 
             for sentence in sentences:
                 sentence_tokens = len(self._grammar_tokenizer.encode(sentence))
-                if current_tokens + sentence_tokens > 450 and current_chunk:
+                if current_tokens + sentence_tokens > 300 and current_chunk:
                     chunk_text = ' '.join(current_chunk)
                     corrected_chunks.append(self._correct_grammar_chunk(chunk_text))
                     current_chunk = [sentence]
@@ -432,11 +433,14 @@ class WritingToolsService:
                         matches = data.get("matches", [])
                         
                         for match in matches:
+                            offset = match.get("offset", 0)
+                            length = match.get("length", 0)
                             lt_error = {
                                 "message": match.get("message", ""),
                                 "short_message": match.get("shortMessage", ""),
-                                "offset": match.get("offset", 0),
-                                "length": match.get("length", 0),
+                                "offset": offset,
+                                "length": length,
+                                "original": text[offset:offset + length] if length > 0 else "",
                                 "context": match.get("context", {}).get("text", ""),
                                 "rule_id": match.get("rule", {}).get("id", ""),
                                 "rule_category": match.get("rule", {}).get("category", {}).get("name", ""),
