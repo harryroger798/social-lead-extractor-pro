@@ -502,8 +502,11 @@ class WritingToolsService:
                             "replacement": replacement_val
                         })
                 elif original_str:
-                    idx = text.find(original_str)
-                    if idx != -1:
+                    import re
+                    pattern = re.compile(r'(?<![\w])' + re.escape(original_str) + r'(?![\w])')
+                    m = pattern.search(text)
+                    if m:
+                        idx = m.start()
                         new_end = idx + len(original_str)
                         overlap = any(
                             not (new_end <= op["offset"] or idx >= op["offset"] + op["length"])
