@@ -366,6 +366,10 @@ class WritingToolsService:
         
         for tag, i1, i2, j1, j2 in matcher.get_opcodes():
             if tag == 'replace':
+                orig_word_count = i2 - i1
+                corr_word_count = j2 - j1
+                if orig_word_count > 4 and corr_word_count < orig_word_count // 2:
+                    continue
                 original_segment = ' '.join(original_words[i1:i2])
                 corrected_segment = ' '.join(corrected_words[j1:j2])
                 errors.append({
@@ -377,6 +381,8 @@ class WritingToolsService:
                     "replacements": [corrected_segment]
                 })
             elif tag == 'delete':
+                if (i2 - i1) > 4:
+                    continue
                 original_segment = ' '.join(original_words[i1:i2])
                 errors.append({
                     "message": f"Remove '{original_segment}'",
@@ -387,6 +393,8 @@ class WritingToolsService:
                     "replacements": [""]
                 })
             elif tag == 'insert':
+                if (j2 - j1) > 4:
+                    continue
                 corrected_segment = ' '.join(corrected_words[j1:j2])
                 errors.append({
                     "message": f"Insert '{corrected_segment}'",
