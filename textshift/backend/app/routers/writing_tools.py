@@ -41,7 +41,12 @@ class ToneDetectResponse(BaseModel):
     success: bool
     primary_tone: Optional[str] = None
     primary_confidence: Optional[float] = None
+    overall_category: Optional[str] = None
+    category_breakdown: Optional[Dict[str, Any]] = None
     all_tones: Optional[List[Dict[str, Any]]] = None
+    sentence_tones: Optional[List[Dict[str, Any]]] = None
+    consistency_score: Optional[float] = None
+    sentence_count_analyzed: Optional[int] = None
     error: Optional[str] = None
 
 class ToneAdjustRequest(BaseModel):
@@ -64,6 +69,8 @@ class ReadabilityResponse(BaseModel):
     flesch_reading_ease: Optional[float] = None
     reading_level: Optional[str] = None
     recommended_audience: Optional[str] = None
+    grade_explanation: Optional[str] = None
+    average_grade_level: Optional[float] = None
     word_count: Optional[int] = None
     sentence_count: Optional[int] = None
     flesch_kincaid_grade: Optional[float] = None
@@ -78,6 +85,8 @@ class ReadabilityResponse(BaseModel):
     complex_word_percentage: Optional[float] = None
     character_count: Optional[int] = None
     total_syllables: Optional[int] = None
+    vocabulary_richness: Optional[float] = None
+    paragraph_breakdown: Optional[List[Dict[str, Any]]] = None
     suggestions: Optional[List[str]] = None
     error: Optional[str] = None
 
@@ -128,10 +137,23 @@ class WordCountResponse(BaseModel):
     word_count: Optional[int] = None
     character_count: Optional[int] = None
     character_count_no_spaces: Optional[int] = None
+    letter_count: Optional[int] = None
+    digit_count: Optional[int] = None
+    special_char_count: Optional[int] = None
     sentence_count: Optional[int] = None
     paragraph_count: Optional[int] = None
+    unique_words: Optional[int] = None
+    avg_word_length: Optional[float] = None
+    avg_sentence_length: Optional[float] = None
+    longest_sentence_words: Optional[int] = None
+    shortest_sentence_words: Optional[int] = None
+    avg_paragraph_length: Optional[float] = None
     reading_time_minutes: Optional[float] = None
+    reading_time_display: Optional[str] = None
     speaking_time_minutes: Optional[float] = None
+    speaking_time_display: Optional[str] = None
+    top_words: Optional[List[Dict[str, Any]]] = None
+    keyword_density: Optional[List[Dict[str, Any]]] = None
     error: Optional[str] = None
 
 class TranslateRequest(BaseModel):
@@ -169,7 +191,21 @@ class StyleAnalysisResponse(BaseModel):
     vocabulary_diversity: Optional[float] = None
     vocabulary_level: Optional[str] = None
     avg_sentence_length: Optional[float] = None
+    sentence_length_variation: Optional[float] = None
+    sentence_variety_score: Optional[float] = None
     passive_voice_percentage: Optional[float] = None
+    passive_voice_sentences: Optional[List[str]] = None
+    transition_word_count: Optional[int] = None
+    transition_words_found: Optional[List[str]] = None
+    pos_distribution: Optional[Dict[str, Any]] = None
+    formality_score: Optional[float] = None
+    formality_label: Optional[str] = None
+    question_count: Optional[int] = None
+    exclamation_count: Optional[int] = None
+    unique_word_count: Optional[int] = None
+    total_word_count: Optional[int] = None
+    overused_words: Optional[List[Dict[str, Any]]] = None
+    overused_adverbs: Optional[List[Dict[str, Any]]] = None
     recommendations: Optional[List[str]] = None
     error: Optional[str] = None
 
