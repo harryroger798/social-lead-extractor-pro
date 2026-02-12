@@ -30,6 +30,7 @@ class GrammarCheckResponse(BaseModel):
     success: bool
     original_text: Optional[str] = None
     corrected_text: Optional[str] = None
+    corrections: Optional[List[Dict[str, Any]]] = None
     error_count: Optional[int] = None
     errors: Optional[List[Dict[str, Any]]] = None
     error: Optional[str] = None
