@@ -139,7 +139,7 @@ export const authApi = {
   },
 
   auth0Callback: async (accessToken: string) => {
-    const response = await api.post('/api/auth/auth0-callback', {
+    const response = await api.post('/api/auth/auth0/callback', {
       access_token: accessToken,
     });
     return response.data;

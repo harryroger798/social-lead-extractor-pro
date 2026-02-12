@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
-
-const AUTH0_DOMAIN = 'textshift.us.auth0.com';
-const AUTH0_CLIENT_ID = '7P4gnXh1bRHbGeIY0wWD8sC8IJ7zj8oO';
+import { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_REDIRECT_URI } from '@/lib/auth0';
 
 type Provider = 'google-oauth2' | 'github' | 'windowslive';
 
@@ -57,14 +55,14 @@ export default function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
         domain: AUTH0_DOMAIN,
         clientId: AUTH0_CLIENT_ID,
         authorizationParams: {
-          redirect_uri: `${window.location.origin}/auth/callback`,
+          redirect_uri: AUTH0_REDIRECT_URI,
         },
       });
 
       await client.loginWithRedirect({
         authorizationParams: {
           connection,
-          redirect_uri: `${window.location.origin}/auth/callback`,
+          redirect_uri: AUTH0_REDIRECT_URI,
           screen_hint: mode === 'signup' ? 'signup' : undefined,
         },
       });
