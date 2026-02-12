@@ -466,7 +466,36 @@ export default function WritingTools() {
                     </Button>
                   </div>
                   <div className="max-h-[400px] overflow-y-auto">
-                    <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                    {result.corrections && result.corrections.length > 0 && result.original_text ? (() => {
+                      const corrections = result.corrections as Array<{offset: number; length: number; original: string; replacement: string}>;
+                      const orig = result.original_text as string;
+                      const parts: Array<{type: string; text: string}> = [];
+                      let lastEnd = 0;
+                      for (const corr of corrections) {
+                        if (corr.offset > lastEnd) {
+                          parts.push({ type: 'equal', text: orig.substring(lastEnd, corr.offset) });
+                        }
+                        parts.push({ type: 'removed', text: orig.substring(corr.offset, corr.offset + corr.length) });
+                        if (corr.replacement) {
+                          parts.push({ type: 'added', text: corr.replacement });
+                        }
+                        lastEnd = corr.offset + corr.length;
+                      }
+                      if (lastEnd < orig.length) {
+                        parts.push({ type: 'equal', text: orig.substring(lastEnd) });
+                      }
+                      return (
+                        <p className="text-white whitespace-pre-wrap leading-relaxed">
+                          {parts.map((part, i) => {
+                            if (part.type === 'removed') return <span key={i} className="text-rose-400 line-through opacity-70">{part.text}</span>;
+                            if (part.type === 'added') return <span key={i} className="text-emerald-400 font-medium">{part.text}</span>;
+                            return <span key={i}>{part.text}</span>;
+                          })}
+                        </p>
+                      );
+                    })() : (
+                      <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                    )}
                   </div>
                 </div>
               </>

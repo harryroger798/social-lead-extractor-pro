@@ -400,21 +400,24 @@ class WritingToolsService:
         return errors
     
     async def check_grammar(self, text: str) -> Dict[str, Any]:
-        """Check grammar using T5 model (primary) + LanguageTool API (supplementary)."""
+        """Check grammar using T5 model (primary) + LanguageTool API (supplementary).
+        
+        Builds corrected_text by applying individual replacements to the original
+        text instead of using T5 raw output, which avoids seq2seq truncation.
+        Returns a corrections array with offset/length/replacement for each fix
+        so the frontend can render a precise diff view.
+        """
         try:
             errors = []
-            corrected_text = text
             
-            # Step 1: Use T5 grammar model for correction (primary)
+            # Step 1: Use T5 grammar model for error detection
             t5_corrected = self._correct_grammar_with_t5(text)
             
             if t5_corrected and t5_corrected != text:
-                corrected_text = t5_corrected
-                # Find differences between original and T5 corrected
                 t5_errors = self._find_differences(text, t5_corrected)
                 errors.extend(t5_errors)
             
-            # Step 2: Also run LanguageTool for additional error explanations
+            # Step 2: Run LanguageTool for errors with exact positions
             lt_errors = []
             try:
                 async with httpx.AsyncClient(timeout=30.0) as client:
@@ -449,7 +452,7 @@ class WritingToolsService:
             except Exception as lt_e:
                 logger.warning(f"LanguageTool API failed (using T5 only): {lt_e}")
             
-            # Merge errors - avoid duplicates by checking if correction already exists
+            # Merge errors - avoid duplicates
             existing_corrections = {e.get("replacement", "").lower() for e in errors}
             for lt_error in lt_errors:
                 if lt_error["replacements"]:
@@ -458,10 +461,75 @@ class WritingToolsService:
                         errors.append(lt_error)
                         existing_corrections.add(replacement)
             
+            # Step 3: Build corrected_text by applying replacements to original text
+            # This avoids T5 seq2seq truncation by starting from the full original
+            replacement_ops: list[dict] = []
+            
+            for error in errors:
+                offset = error.get("offset")
+                length = error.get("length")
+                original_str = error.get("original", "")
+                replacements = error.get("replacements", [])
+                
+                if not replacements or replacements[0] == "":
+                    continue
+                
+                replacement_val = replacements[0]
+                
+                if offset is not None and length and length > 0:
+                    replacement_ops.append({
+                        "offset": offset,
+                        "length": length,
+                        "original": text[offset:offset + length],
+                        "replacement": replacement_val
+                    })
+                elif original_str:
+                    idx = text.find(original_str)
+                    if idx != -1:
+                        new_end = idx + len(original_str)
+                        overlap = any(
+                            not (new_end <= op["offset"] or idx >= op["offset"] + op["length"])
+                            for op in replacement_ops
+                        )
+                        if not overlap:
+                            replacement_ops.append({
+                                "offset": idx,
+                                "length": len(original_str),
+                                "original": original_str,
+                                "replacement": replacement_val
+                            })
+            
+            # De-duplicate overlapping ops: keep the one with the earlier offset
+            replacement_ops.sort(key=lambda x: x["offset"])
+            deduped_ops: list[dict] = []
+            for op in replacement_ops:
+                if deduped_ops:
+                    prev = deduped_ops[-1]
+                    if op["offset"] < prev["offset"] + prev["length"]:
+                        continue
+                deduped_ops.append(op)
+            
+            # Apply replacements right-to-left to preserve offsets
+            corrected_text = text
+            for op in reversed(deduped_ops):
+                corrected_text = (
+                    corrected_text[:op["offset"]]
+                    + op["replacement"]
+                    + corrected_text[op["offset"] + op["length"]:]
+                )
+            
+            # Build corrections array for frontend diff rendering
+            corrections = [
+                {"offset": op["offset"], "length": op["length"],
+                 "original": op["original"], "replacement": op["replacement"]}
+                for op in deduped_ops
+            ]
+            
             return {
                 "success": True,
                 "original_text": text,
                 "corrected_text": corrected_text,
+                "corrections": corrections,
                 "error_count": len(errors),
                 "errors": errors,
                 "language": "en-US",
