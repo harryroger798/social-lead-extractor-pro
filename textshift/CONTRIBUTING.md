@@ -14,8 +14,8 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Create .env with required variables (see README.md)
-cp .env.example .env
+# Create .env with required variables (see README.md for the full list)
+touch .env
 
 # Run development server
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
