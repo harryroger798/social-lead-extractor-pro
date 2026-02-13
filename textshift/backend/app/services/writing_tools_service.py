@@ -722,11 +722,36 @@ class WritingToolsService:
     
     # ==================== Feature 3: Tone Adjuster ====================
     def adjust_tone(self, text: str, target_tone: str) -> Dict[str, Any]:
-        """Adjust text tone using comprehensive rule-based transformation."""
+        """Adjust text tone using CoEdIT-large (primary) with rule-based fallback."""
         try:
             import random
-            adjusted_text = text
             target = target_tone.lower()
+
+            tone_instructions = {
+                "formal": "Make this paragraph more formal",
+                "casual": "Make this paragraph more casual",
+                "persuasive": "Make this paragraph more persuasive",
+                "academic": "Make this paragraph more academic",
+                "confident": "Make this paragraph more assertive",
+                "empathetic": "Make this paragraph more empathetic",
+            }
+
+            instruction = tone_instructions.get(target)
+            if instruction:
+                coedit_result = self._edit_text_with_coedit(text, instruction)
+                if coedit_result and coedit_result.strip() != text.strip() and len(coedit_result) > 20:
+                    return {
+                        "success": True,
+                        "original_text": text,
+                        "adjusted_text": coedit_result,
+                        "target_tone": target_tone,
+                        "word_count_original": len(text.split()),
+                        "word_count_adjusted": len(coedit_result.split()),
+                        "transformation_applied": target,
+                        "method": "coedit-large"
+                    }
+
+            adjusted_text = text
             
             # Aggressive/negative phrase replacements for formal tone
             aggressive_to_formal = {
@@ -1890,7 +1915,7 @@ class WritingToolsService:
     
     # ==================== Feature 10: Export Options ====================
     def export_text(self, text: str, format: str, title: str = "Document") -> Dict[str, Any]:
-        """Export text to different formats (TXT, HTML, Markdown)."""
+        """Export text to different formats (TXT, HTML, Markdown, PDF)."""
         try:
             timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
             
@@ -1927,6 +1952,42 @@ class WritingToolsService:
                 content = f"# {title}\n\n{text}\n\n---\n*Exported from TextShift on {timestamp}*"
                 mime_type = "text/markdown"
                 extension = "md"
+            
+            elif format.lower() == "pdf":
+                import base64
+                try:
+                    from fpdf import FPDF
+                except ImportError:
+                    return {"success": False, "error": "PDF export requires the fpdf2 library. Please install it with: pip install fpdf2"}
+                
+                pdf = FPDF()
+                pdf.set_auto_page_break(auto=True, margin=25)
+                pdf.add_page()
+                pdf.set_font("Helvetica", "B", 18)
+                pdf.cell(0, 12, title, new_x="LMARGIN", new_y="NEXT", align="C")
+                pdf.ln(8)
+                pdf.set_font("Helvetica", "", 11)
+                pdf.multi_cell(0, 6, text)
+                pdf.ln(10)
+                pdf.set_font("Helvetica", "I", 9)
+                pdf.set_text_color(128, 128, 128)
+                pdf.cell(0, 6, f"Exported from TextShift on {timestamp}", align="C")
+                
+                pdf_bytes = pdf.output()
+                content = base64.b64encode(pdf_bytes).decode("utf-8")
+                mime_type = "application/pdf"
+                extension = "pdf"
+                
+                return {
+                    "success": True,
+                    "content": content,
+                    "format": "pdf",
+                    "mime_type": mime_type,
+                    "extension": extension,
+                    "filename": f"{title.replace(' ', '_').lower()}.pdf",
+                    "size_bytes": len(pdf_bytes),
+                    "encoding": "base64"
+                }
             
             else:
                 return {"success": False, "error": f"Unsupported format: {format}"}
