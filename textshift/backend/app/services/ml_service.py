@@ -15,11 +15,14 @@ from botocore.config import Config
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, T5Tokenizer, T5ForConditionalGeneration
+from optimum.onnxruntime import ORTModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from collections import Counter
 from app.core.config import settings
 from app.services.feature_extractor import FeatureExtractor565
+from app.services.sagemaker_client import sagemaker_client
+from app.services.hf_inference_client import hf_client
 
 logger = logging.getLogger(__name__)
 
@@ -1435,16 +1438,25 @@ class MLModelService:
             return False
     
     def _load_humanizer(self):
-        """Load Stealthwriter T5 Chaos humanizer (trained for 0% AI detection)."""
+        """Load Stealthwriter T5 Chaos humanizer (ONNX quantized if available)."""
         if self._current_model != "humanizer":
             self._unload_all_models()
             
-            # Try to download model from iDrive if not available locally
+            onnx_dir = os.path.join(settings.MODELS_DIR, 'flan-t5-base-onnx')
+            if os.path.exists(onnx_dir) and any(f.endswith('.onnx') for f in os.listdir(onnx_dir)):
+                self._humanizer_tokenizer = AutoTokenizer.from_pretrained(onnx_dir)
+                self._humanizer_model = ORTModelForSeq2SeqLM.from_pretrained(onnx_dir)
+                self._is_onnx_humanizer = True
+                logger.info("Loaded humanizer ONNX quantized model")
+                self._current_model = "humanizer"
+                return
+
             model_path = settings.HUMANIZER_MODEL_PATH
             if not os.path.exists(os.path.join(model_path, "model.safetensors")):
                 self._download_humanizer_from_idrive()
             
             logger.info("Loading Stealthwriter T5 Chaos humanizer...")
+            self._is_onnx_humanizer = False
             if os.path.exists(os.path.join(model_path, "model.safetensors")):
                 self._humanizer_tokenizer = T5Tokenizer.from_pretrained(model_path)
                 self._humanizer_model = T5ForConditionalGeneration.from_pretrained(model_path, torch_dtype=torch.float32)
@@ -1483,25 +1495,45 @@ class MLModelService:
         return [s.strip() for s in sentences if s.strip()]
     
     def _humanize_single(self, sentence: str, use_post_processor: bool = True, passes: int = 2, mode: str = 'casual') -> str:
-        """Humanize a single sentence using the T5 model."""
+        """Humanize a single sentence using HF API (primary) → ONNX local (fast) → SageMaker (fallback)."""
+        model_output = None
         try:
-            self._load_humanizer()
-            input_text = f"humanize: {sentence}"
-            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
-            with torch.no_grad():
-                outputs = self._humanizer_model.generate(
-                    **inputs,
-                    max_length=1024,
-                    num_beams=1,
-                    do_sample=True,
-                    temperature=1.0,
-                    top_p=0.95,
-                    repetition_penalty=2.5,
-                    no_repeat_ngram_size=3
-                )
-            model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            hf_result = hf_client.invoke_text2text("humanizer", f"humanize: {sentence}")
+            if hf_result and len(hf_result) > 10:
+                model_output = hf_result
         except Exception as e:
-            logger.warning(f"Single sentence humanize failed: {e}, using HF API fallback")
+            logger.warning(f"HF API humanize_single failed: {e}")
+
+        if not model_output:
+            try:
+                self._load_humanizer()
+                input_text = f"humanize: {sentence}"
+                inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
+                with torch.no_grad():
+                    outputs = self._humanizer_model.generate(
+                        **inputs,
+                        max_length=1024,
+                        num_beams=1,
+                        do_sample=True,
+                        temperature=1.0,
+                        top_p=0.95,
+                        repetition_penalty=2.5,
+                        no_repeat_ngram_size=3
+                    )
+                local_result = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+                if local_result and len(local_result) > 10:
+                    model_output = local_result
+                    logger.info("Humanizer via ONNX local successful")
+            except Exception as e:
+                logger.warning(f"ONNX local humanize failed: {e}")
+
+        if not model_output:
+            sm_result = sagemaker_client.invoke_text2text("humanizer", f"humanize: {sentence}")
+            if sm_result and len(sm_result) > 10:
+                model_output = sm_result
+                logger.info("Humanizer via SageMaker fallback")
+
+        if not model_output:
             model_output = self._humanize_with_hf_api(sentence)
         
         if use_post_processor:
@@ -1666,11 +1698,32 @@ class MLModelService:
         return results
     
     def _get_roberta_prediction(self, text: str) -> Dict[str, float]:
-        """Get AI probability from RoBERTa model.
+        """Get AI probability from HF API (primary) → SageMaker (fallback) → local RoBERTa (last resort).
         
         Returns:
             Dict with 'ai_prob' and 'human_prob'
         """
+        for backend_name, invoke_fn in [
+            ("HF API", lambda: hf_client.invoke_classification("detector", text, top_k=2)),
+            ("SageMaker", lambda: sagemaker_client.invoke_classification("detector", text, top_k=2)),
+        ]:
+            try:
+                result = invoke_fn()
+                if result:
+                    human_prob = 0.5
+                    ai_prob = 0.5
+                    for item in result:
+                        label = item.get("label", "")
+                        if label in ("LABEL_0", "Real"):
+                            human_prob = item["score"]
+                        elif label in ("LABEL_1", "Fake"):
+                            ai_prob = item["score"]
+                    logger.info(f"{backend_name} detector: AI={ai_prob*100:.1f}%")
+                    return {'ai_prob': ai_prob, 'human_prob': human_prob}
+            except Exception as e:
+                logger.warning(f"{backend_name} detector failed: {e}")
+
+        logger.info("HF API + SageMaker detector unavailable, falling back to local RoBERTa")
         self._load_detector()
         
         inputs = self._detector_tokenizer(text, return_tensors="pt", truncation=True, max_length=512, padding=True)
@@ -2064,25 +2117,40 @@ class MLModelService:
         use_fallback = False
         
         try:
-            self._load_humanizer()
-            input_text = f"humanize: {text}"
-            inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
-            with torch.no_grad():
-                outputs = self._humanizer_model.generate(
-                    **inputs,
-                    max_length=1024,
-                    num_beams=1,
-                    do_sample=True,
-                    temperature=1.0,
-                    top_p=0.95,
-                    repetition_penalty=2.5,
-                    no_repeat_ngram_size=3
-                )
-            model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            hf_result = hf_client.invoke_text2text("humanizer", f"humanize: {text}")
+            if hf_result and len(hf_result) > 10:
+                model_output = hf_result
+                logger.info("Humanizer via HF API successful")
         except Exception as e:
-            logger.warning(f"Local humanizer model failed: {e}, using HuggingFace API fallback")
-            use_fallback = True
-            model_output = self._humanize_with_hf_api(text)
+            logger.warning(f"HF API humanizer failed: {e}")
+
+        if not model_output:
+            sm_result = sagemaker_client.invoke_text2text("humanizer", f"humanize: {text}")
+            if sm_result and len(sm_result) > 10:
+                model_output = sm_result
+                logger.info("Humanizer via SageMaker successful")
+
+        if not model_output:
+            try:
+                self._load_humanizer()
+                input_text = f"humanize: {text}"
+                inputs = self._humanizer_tokenizer(input_text, return_tensors="pt", truncation=True, max_length=1024, padding=True)
+                with torch.no_grad():
+                    outputs = self._humanizer_model.generate(
+                        **inputs,
+                        max_length=1024,
+                        num_beams=1,
+                        do_sample=True,
+                        temperature=1.0,
+                        top_p=0.95,
+                        repetition_penalty=2.5,
+                        no_repeat_ngram_size=3
+                    )
+                model_output = self._humanizer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            except Exception as e:
+                logger.warning(f"Local humanizer model failed: {e}, using HuggingFace API fallback")
+                use_fallback = True
+                model_output = self._humanize_with_hf_api(text)
         
         final_output = self._apply_stealthwriter_postprocessor(model_output, passes, original_text=text, mode=mode) if use_post_processor else model_output
         before_spelling = final_output
