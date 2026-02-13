@@ -59,6 +59,10 @@ class ToneAdjustResponse(BaseModel):
     original_text: Optional[str] = None
     adjusted_text: Optional[str] = None
     target_tone: Optional[str] = None
+    word_count_original: Optional[int] = None
+    word_count_adjusted: Optional[int] = None
+    transformation_applied: Optional[str] = None
+    method: Optional[str] = None
     error: Optional[str] = None
 
 class ReadabilityRequest(BaseModel):
@@ -181,6 +185,9 @@ class ExportResponse(BaseModel):
     format: Optional[str] = None
     mime_type: Optional[str] = None
     filename: Optional[str] = None
+    extension: Optional[str] = None
+    size_bytes: Optional[int] = None
+    encoding: Optional[str] = None
     error: Optional[str] = None
 
 class StyleAnalysisRequest(BaseModel):

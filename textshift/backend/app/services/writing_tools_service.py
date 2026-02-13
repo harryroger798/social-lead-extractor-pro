@@ -929,7 +929,8 @@ class WritingToolsService:
                 "target_tone": target_tone,
                 "word_count_original": len(text.split()),
                 "word_count_adjusted": len(adjusted_text.split()),
-                "transformation_applied": target
+                "transformation_applied": target,
+                "method": "rule-based"
             }
         except Exception as e:
             logger.error(f"Tone adjustment failed: {e}")
