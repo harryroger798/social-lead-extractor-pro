@@ -190,10 +190,16 @@ const endpoints: Endpoint[] = [
       success: true,
       primary_tone: 'joy',
       primary_confidence: 92.5,
+      overall_category: 'Positive',
+      category_breakdown: { Positive: 75.0, Neutral: 20.0, Negative: 5.0 },
       all_tones: [
-        { tone: 'joy', confidence: 92.5 },
-        { tone: 'optimism', confidence: 45.2 }
-      ]
+        { tone: 'joy', confidence: 92.5, category: 'Positive' },
+        { tone: 'optimism', confidence: 45.2, category: 'Positive' }
+      ],
+      sentence_tones: [
+        { sentence: 'I am so excited about this new feature!', tone: 'excitement', confidence: 79.5 }
+      ],
+      consistency_score: 85.0
     }
   },
   {
@@ -204,9 +210,11 @@ const endpoints: Endpoint[] = [
     requestBody: { text: 'Hey, can you help me with this?', target_tone: 'formal' },
     responseExample: {
       success: true,
-      original_text: 'Hey, can you help me with this?',
       adjusted_text: 'I would appreciate your assistance with this matter.',
-      target_tone: 'formal'
+      original_word_count: 8,
+      adjusted_word_count: 8,
+      target_tone: 'formal',
+      method: 'coedit-large'
     }
   },
   {
@@ -222,7 +230,13 @@ const endpoints: Endpoint[] = [
       word_count: 6,
       sentence_count: 1,
       flesch_kincaid_grade: 8.2,
-      gunning_fog_index: 9.1
+      gunning_fog_index: 9.1,
+      average_grade_level: 7.8,
+      vocabulary_richness: 92.3,
+      grade_explanation: 'Suitable for 7th-8th grade readers',
+      paragraph_breakdown: [
+        { paragraph: 1, flesch_score: 65.2, word_count: 6, sentence_count: 1 }
+      ]
     }
   },
   {
@@ -281,7 +295,13 @@ const endpoints: Endpoint[] = [
       sentence_count: 1,
       paragraph_count: 1,
       reading_time_minutes: 0.03,
-      speaking_time_minutes: 0.05
+      reading_time_display: '0 min 1 sec',
+      speaking_time_minutes: 0.05,
+      speaking_time_display: '0 min 3 sec',
+      keyword_density: [
+        { word: 'text', count: 1, density: 14.3 }
+      ],
+      sentence_stats: { average_length: 7, longest: 7, shortest: 7 }
     }
   },
   {
@@ -302,14 +322,15 @@ const endpoints: Endpoint[] = [
     method: 'POST',
     path: '/api/tools/export',
     description: 'Export text to different formats',
-    tier: 'Free (txt), Starter+ (html, markdown)',
-    requestBody: { text: 'Your text to export.', format: 'markdown', title: 'My Document' },
+    tier: 'Free (txt), Starter+ (html, markdown, pdf)',
+    requestBody: { text: 'Your text to export.', format: 'pdf', title: 'My Document' },
     responseExample: {
       success: true,
-      content: '# My Document\n\nYour text to export.',
-      format: 'markdown',
-      mime_type: 'text/markdown',
-      filename: 'My Document.md'
+      content: '<base64-encoded content for pdf, plain text for other formats>',
+      format: 'pdf',
+      encoding: 'base64',
+      size_bytes: 1351,
+      extension: 'pdf'
     }
   },
   {
@@ -320,11 +341,14 @@ const endpoints: Endpoint[] = [
     requestBody: { text: 'Your text to analyze for writing style patterns and characteristics.' },
     responseExample: {
       success: true,
-      style_type: 'Formal',
+      formality_score: 62.5,
+      formality_label: 'Neutral',
       vocabulary_diversity: 0.85,
-      vocabulary_level: 'Advanced',
       avg_sentence_length: 12.5,
-      passive_voice_percentage: 15.2,
+      sentence_variety_score: 42.8,
+      pos_distribution: { nouns: 5, verbs: 3, adjectives: 2, adverbs: 1 },
+      transition_words_found: ['furthermore', 'however'],
+      passive_voice_sentences: ['The report was written by the team.'],
       recommendations: ['Consider varying sentence length', 'Reduce passive voice usage']
     }
   },

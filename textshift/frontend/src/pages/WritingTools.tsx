@@ -173,7 +173,7 @@ const tools: ToolConfig[] = [
   {
     id: 'export',
     name: 'Export Options',
-    description: 'Export text to TXT, HTML, or Markdown',
+    description: 'Export text to TXT, HTML, Markdown, or PDF',
     icon: FileOutput,
     color: 'orange',
     minTier: 'free',
@@ -183,7 +183,8 @@ const tools: ToolConfig[] = [
     options: [
       { value: 'txt', label: 'Plain Text (.txt)' },
       { value: 'html', label: 'HTML (.html)' },
-      { value: 'markdown', label: 'Markdown (.md)' }
+      { value: 'markdown', label: 'Markdown (.md)' },
+      { value: 'pdf', label: 'PDF (.pdf)' }
     ]
   },
   {
@@ -413,7 +414,17 @@ export default function WritingTools() {
 
   const downloadResult = () => {
     if (!result?.content) return;
-    const blob = new Blob([result.content], { type: result.mime_type || 'text/plain' });
+    let blob: Blob;
+    if (result.encoding === 'base64') {
+      const binaryString = atob(result.content);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      blob = new Blob([bytes], { type: result.mime_type || 'application/octet-stream' });
+    } else {
+      blob = new Blob([result.content], { type: result.mime_type || 'text/plain' });
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -465,7 +476,38 @@ export default function WritingTools() {
                       <Copy className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {result.corrections && result.corrections.length > 0 && result.original_text ? (() => {
+                      const corrections = result.corrections as Array<{offset: number; length: number; original: string; replacement: string}>;
+                      const orig = result.original_text as string;
+                      const parts: Array<{type: string; text: string}> = [];
+                      let lastEnd = 0;
+                      for (const corr of corrections) {
+                        if (corr.offset > lastEnd) {
+                          parts.push({ type: 'equal', text: orig.substring(lastEnd, corr.offset) });
+                        }
+                        parts.push({ type: 'removed', text: orig.substring(corr.offset, corr.offset + corr.length) });
+                        if (corr.replacement) {
+                          parts.push({ type: 'added', text: corr.replacement });
+                        }
+                        lastEnd = corr.offset + corr.length;
+                      }
+                      if (lastEnd < orig.length) {
+                        parts.push({ type: 'equal', text: orig.substring(lastEnd) });
+                      }
+                      return (
+                        <p className="text-white whitespace-pre-wrap leading-relaxed">
+                          {parts.map((part, i) => {
+                            if (part.type === 'removed') return <span key={i} className="text-rose-400 line-through opacity-70 bg-rose-500/15 px-0.5 rounded">{part.text}</span>;
+                            if (part.type === 'added') return <span key={i}><span className="text-gray-500 text-xs mx-0.5">→</span><span className="text-emerald-400 font-medium bg-emerald-500/15 px-0.5 rounded">{part.text}</span></span>;
+                            return <span key={i}>{part.text}</span>;
+                          })}
+                        </p>
+                      );
+                    })() : (
+                      <p className="text-white whitespace-pre-wrap">{result.corrected_text}</p>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -480,13 +522,42 @@ export default function WritingTools() {
                 <span className="text-gray-500 text-sm">Issues Found:</span>
                 {result.errors.map((err: any, i: number) => (
                   <div key={i} className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-                    <p className="text-rose-400 text-sm font-medium">{err.message}</p>
-                    {err.replacements && err.replacements.length > 0 && (
-                      <p className="text-gray-400 text-xs mt-1">
-                        <span className="text-emerald-400">Suggestion:</span> {err.replacements[0]}
-                        {err.replacements.length > 1 && ` (or: ${err.replacements.slice(1).join(', ')})`}
-                      </p>
-                    )}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-rose-400 text-sm font-medium">{err.message}</p>
+                        {err.replacements && err.replacements.length > 0 && (
+                          <p className="text-gray-400 text-xs mt-1">
+                            <span className="text-emerald-400">Suggestion:</span> {err.replacements[0]}
+                            {err.replacements.length > 1 && ` (or: ${err.replacements.slice(1).join(', ')})`}
+                          </p>
+                        )}
+                      </div>
+                      {err.replacements && err.replacements.length > 0 && (err.original || err.offset !== undefined) && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 flex-shrink-0 text-xs px-2 py-1 h-auto"
+                          onClick={() => {
+                            const original = (err.original || '') as string;
+                            const replacement = err.replacements[0] as string;
+                            if (original) {
+                              const idx = text.indexOf(original);
+                              if (idx !== -1) {
+                                const updated = text.substring(0, idx) + replacement + text.substring(idx + original.length);
+                                setText(updated);
+                              }
+                            } else if (err.offset !== undefined) {
+                              const offset = err.offset as number;
+                              const length = (err.length || 0) as number;
+                              const updated = text.substring(0, offset) + replacement + text.substring(offset + length);
+                              setText(updated);
+                            }
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -501,14 +572,67 @@ export default function WritingTools() {
               <span className="text-gray-500 text-sm">Primary Tone</span>
               <p className={`text-2xl font-bold ${colorClasses.text} capitalize mt-1`}>{result.primary_tone}</p>
               <p className="text-gray-400 text-sm">{result.primary_confidence}% confidence</p>
+              {result.overall_category && (
+                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${
+                  result.overall_category === 'Positive' ? 'bg-emerald-500/20 text-emerald-400' :
+                  result.overall_category === 'Negative' ? 'bg-rose-500/20 text-rose-400' :
+                  result.overall_category === 'Mixed' ? 'bg-amber-500/20 text-amber-400' :
+                  'bg-gray-500/20 text-gray-400'
+                }`}>{result.overall_category}</span>
+              )}
             </div>
+            {result.category_breakdown && (
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 bg-emerald-500/10 rounded-lg text-center border border-emerald-500/20">
+                  <span className="text-gray-500 text-xs">Positive</span>
+                  <p className="text-emerald-400 font-medium">{result.category_breakdown.positive}%</p>
+                </div>
+                <div className="p-3 bg-rose-500/10 rounded-lg text-center border border-rose-500/20">
+                  <span className="text-gray-500 text-xs">Negative</span>
+                  <p className="text-rose-400 font-medium">{result.category_breakdown.negative}%</p>
+                </div>
+                <div className="p-3 bg-gray-500/10 rounded-lg text-center border border-gray-500/20">
+                  <span className="text-gray-500 text-xs">Neutral</span>
+                  <p className="text-gray-300 font-medium">{result.category_breakdown.neutral}%</p>
+                </div>
+              </div>
+            )}
+            {result.consistency_score !== undefined && (
+              <div className="p-3 bg-black/20 rounded-lg flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Tone Consistency</span>
+                <span className={`font-medium ${result.consistency_score >= 70 ? 'text-emerald-400' : result.consistency_score >= 40 ? 'text-amber-400' : 'text-rose-400'}`}>
+                  {result.consistency_score}%
+                </span>
+              </div>
+            )}
             {result.all_tones && result.all_tones.length > 1 && (
               <div className="space-y-2">
                 <span className="text-gray-500 text-sm">All Detected Tones:</span>
                 {result.all_tones.map((tone: any, i: number) => (
                   <div key={i} className="flex items-center justify-between p-2 bg-black/20 rounded-lg">
-                    <span className="text-white capitalize">{tone.tone}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white capitalize">{tone.tone}</span>
+                      {tone.category && <span className="text-gray-500 text-xs">({tone.category})</span>}
+                    </div>
                     <span className="text-gray-400">{tone.confidence}%</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {result.sentence_tones && result.sentence_tones.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">Sentence-Level Tones ({result.sentence_count_analyzed} analyzed):</span>
+                {result.sentence_tones.map((st: any, i: number) => (
+                  <div key={i} className="p-2 bg-black/20 rounded-lg">
+                    <p className="text-gray-300 text-xs truncate">{st.sentence}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        st.category === 'Positive' ? 'bg-emerald-500/20 text-emerald-400' :
+                        st.category === 'Negative' ? 'bg-rose-500/20 text-rose-400' :
+                        'bg-gray-500/20 text-gray-400'
+                      }`}>{st.primary_tone}</span>
+                      <span className="text-gray-500 text-xs">{st.confidence}%</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -555,6 +679,22 @@ export default function WritingTools() {
                 <p className="text-white text-sm mt-1">{result.recommended_audience}</p>
               </div>
             )}
+            {result.grade_explanation && (
+              <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-blue-400 text-sm font-medium">Average Grade Level: {result.average_grade_level}</span>
+                </div>
+                <p className="text-white text-sm mt-1">{result.grade_explanation}</p>
+              </div>
+            )}
+            {result.vocabulary_richness !== undefined && (
+              <div className="p-3 bg-black/20 rounded-lg flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Vocabulary Richness (TTR)</span>
+                <span className={`font-medium ${result.vocabulary_richness > 60 ? 'text-emerald-400' : result.vocabulary_richness > 40 ? 'text-amber-400' : 'text-rose-400'}`}>
+                  {result.vocabulary_richness}%
+                </span>
+              </div>
+            )}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div className="p-3 bg-black/20 rounded-lg text-center">
                 <span className="text-gray-500 text-xs">Grade Level</span>
@@ -599,6 +739,22 @@ export default function WritingTools() {
                 <p className="text-white text-sm">{result.complex_word_percentage}%</p>
               </div>
             </div>
+            {result.paragraph_breakdown && result.paragraph_breakdown.length > 1 && (
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">Paragraph Readability:</span>
+                {result.paragraph_breakdown.map((pb: any) => (
+                  <div key={pb.paragraph} className="flex items-center justify-between p-2 bg-black/20 rounded-lg">
+                    <span className="text-gray-300 text-sm">Paragraph {pb.paragraph}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-500 text-xs">{pb.word_count} words</span>
+                      <span className={`font-medium text-sm ${pb.flesch_score > 60 ? 'text-emerald-400' : pb.flesch_score > 30 ? 'text-amber-400' : 'text-rose-400'}`}>
+                        {pb.flesch_score}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             {result.suggestions && result.suggestions.length > 0 && (
               <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
                 <span className="text-amber-400 text-sm font-medium">Suggestions</span>
@@ -659,31 +815,82 @@ export default function WritingTools() {
 
       case 'word-count':
         return (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Words</span>
-              <p className="text-2xl font-bold text-white">{result.word_count}</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Words</span>
+                <p className="text-2xl font-bold text-white">{result.word_count}</p>
+              </div>
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Characters</span>
+                <p className="text-2xl font-bold text-white">{result.character_count}</p>
+                <p className="text-gray-500 text-xs">({result.character_count_no_spaces} no spaces)</p>
+              </div>
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Sentences</span>
+                <p className="text-2xl font-bold text-white">{result.sentence_count}</p>
+              </div>
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Paragraphs</span>
+                <p className="text-2xl font-bold text-white">{result.paragraph_count}</p>
+              </div>
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Reading Time</span>
+                <p className="text-lg font-bold text-white">{result.reading_time_display || `${result.reading_time_minutes} min`}</p>
+                <p className="text-gray-500 text-xs">238 wpm</p>
+              </div>
+              <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
+                <span className="text-gray-500 text-sm">Speaking Time</span>
+                <p className="text-lg font-bold text-white">{result.speaking_time_display || `${result.speaking_time_minutes} min`}</p>
+                <p className="text-gray-500 text-xs">150 wpm</p>
+              </div>
             </div>
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Characters</span>
-              <p className="text-2xl font-bold text-white">{result.character_count}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Unique Words</span>
+                <p className="text-white text-sm">{result.unique_words}</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Avg Word Length</span>
+                <p className="text-white text-sm">{result.avg_word_length}</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Avg Sentence</span>
+                <p className="text-white text-sm">{result.avg_sentence_length} words</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Avg Paragraph</span>
+                <p className="text-white text-sm">{result.avg_paragraph_length} words</p>
+              </div>
             </div>
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Sentences</span>
-              <p className="text-2xl font-bold text-white">{result.sentence_count}</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Longest Sentence</span>
+                <p className="text-white text-sm">{result.longest_sentence_words} words</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Shortest Sentence</span>
+                <p className="text-white text-sm">{result.shortest_sentence_words} words</p>
+              </div>
+              <div className="p-2 bg-black/10 rounded text-center">
+                <span className="text-gray-500 text-xs">Letters / Digits</span>
+                <p className="text-white text-sm">{result.letter_count} / {result.digit_count}</p>
+              </div>
             </div>
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Paragraphs</span>
-              <p className="text-2xl font-bold text-white">{result.paragraph_count}</p>
-            </div>
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Reading Time</span>
-              <p className="text-2xl font-bold text-white">{result.reading_time_minutes} min</p>
-            </div>
-            <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
-              <span className="text-gray-500 text-sm">Speaking Time</span>
-              <p className="text-2xl font-bold text-white">{result.speaking_time_minutes} min</p>
-            </div>
+            {result.keyword_density && result.keyword_density.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">Keyword Density (Top 10):</span>
+                {result.keyword_density.map((kw: any, i: number) => (
+                  <div key={i} className="flex items-center justify-between p-2 bg-black/20 rounded-lg">
+                    <span className="text-white text-sm">{kw.word}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-500 text-xs">{kw.count}x</span>
+                      <span className="text-emerald-400 text-sm font-medium">{kw.density}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -723,15 +930,23 @@ export default function WritingTools() {
             <div className="p-4 bg-black/30 rounded-xl border border-white/10 text-center">
               <span className="text-gray-500 text-sm">Writing Style</span>
               <p className={`text-xl font-bold ${colorClasses.text} mt-1`}>{result.style_type}</p>
+              {result.formality_label && (
+                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${
+                  result.formality_score >= 55 ? 'bg-blue-500/20 text-blue-400' :
+                  result.formality_score >= 40 ? 'bg-gray-500/20 text-gray-400' :
+                  'bg-amber-500/20 text-amber-400'
+                }`}>{result.formality_label} ({result.formality_score})</span>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 bg-black/20 rounded-lg">
                 <span className="text-gray-500 text-xs">Vocabulary Diversity</span>
                 <p className="text-white">{result.vocabulary_diversity}%</p>
+                <p className="text-gray-500 text-xs">{result.vocabulary_level}</p>
               </div>
               <div className="p-3 bg-black/20 rounded-lg">
-                <span className="text-gray-500 text-xs">Vocabulary Level</span>
-                <p className="text-white">{result.vocabulary_level}</p>
+                <span className="text-gray-500 text-xs">Sentence Variety</span>
+                <p className="text-white">{result.sentence_variety_score}/100</p>
               </div>
               <div className="p-3 bg-black/20 rounded-lg">
                 <span className="text-gray-500 text-xs">Avg Sentence Length</span>
@@ -742,6 +957,49 @@ export default function WritingTools() {
                 <p className="text-white">{result.passive_voice_percentage}%</p>
               </div>
             </div>
+            {result.pos_distribution && (
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">POS Distribution:</span>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="p-2 bg-blue-500/10 rounded-lg text-center border border-blue-500/20">
+                    <span className="text-gray-500 text-xs">Nouns</span>
+                    <p className="text-blue-400 font-medium">{result.pos_distribution.nouns}</p>
+                  </div>
+                  <div className="p-2 bg-emerald-500/10 rounded-lg text-center border border-emerald-500/20">
+                    <span className="text-gray-500 text-xs">Verbs</span>
+                    <p className="text-emerald-400 font-medium">{result.pos_distribution.verbs}</p>
+                  </div>
+                  <div className="p-2 bg-amber-500/10 rounded-lg text-center border border-amber-500/20">
+                    <span className="text-gray-500 text-xs">Adjectives</span>
+                    <p className="text-amber-400 font-medium">{result.pos_distribution.adjectives}</p>
+                  </div>
+                  <div className="p-2 bg-purple-500/10 rounded-lg text-center border border-purple-500/20">
+                    <span className="text-gray-500 text-xs">Adverbs</span>
+                    <p className="text-purple-400 font-medium">{result.pos_distribution.adverbs}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {result.transition_words_found && result.transition_words_found.length > 0 && (
+              <div className="p-3 bg-black/20 rounded-lg">
+                <span className="text-gray-500 text-sm">Transition Words ({result.transition_word_count}):</span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {result.transition_words_found.map((tw: string, i: number) => (
+                    <span key={i} className="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded text-xs">{tw}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {result.passive_voice_sentences && result.passive_voice_sentences.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">Passive Voice Sentences:</span>
+                {result.passive_voice_sentences.map((s: string, i: number) => (
+                  <div key={i} className="p-2 bg-rose-500/10 rounded-lg border border-rose-500/20">
+                    <p className="text-gray-300 text-xs">{s}</p>
+                  </div>
+                ))}
+              </div>
+            )}
             {result.recommendations && result.recommendations.length > 0 && (
               <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                 <span className="text-amber-400 text-sm font-medium">Recommendations:</span>
