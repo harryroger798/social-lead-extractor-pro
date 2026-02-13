@@ -173,7 +173,7 @@ const tools: ToolConfig[] = [
   {
     id: 'export',
     name: 'Export Options',
-    description: 'Export text to TXT, HTML, or Markdown',
+    description: 'Export text to TXT, HTML, Markdown, or PDF',
     icon: FileOutput,
     color: 'orange',
     minTier: 'free',
@@ -183,7 +183,8 @@ const tools: ToolConfig[] = [
     options: [
       { value: 'txt', label: 'Plain Text (.txt)' },
       { value: 'html', label: 'HTML (.html)' },
-      { value: 'markdown', label: 'Markdown (.md)' }
+      { value: 'markdown', label: 'Markdown (.md)' },
+      { value: 'pdf', label: 'PDF (.pdf)' }
     ]
   },
   {
@@ -413,7 +414,17 @@ export default function WritingTools() {
 
   const downloadResult = () => {
     if (!result?.content) return;
-    const blob = new Blob([result.content], { type: result.mime_type || 'text/plain' });
+    let blob: Blob;
+    if (result.encoding === 'base64') {
+      const binaryString = atob(result.content);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      blob = new Blob([bytes], { type: result.mime_type || 'application/octet-stream' });
+    } else {
+      blob = new Blob([result.content], { type: result.mime_type || 'text/plain' });
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
