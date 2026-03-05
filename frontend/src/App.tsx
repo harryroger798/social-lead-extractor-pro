@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ToastProvider } from '@/components/ui/Toast';
 import Sidebar from '@/components/layout/Sidebar';
 import Dashboard from '@/components/dashboard/Dashboard';
 import NewExtraction from '@/components/extraction/NewExtraction';
@@ -35,19 +36,21 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-bg-primary">
-      <Sidebar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-      <main className="flex-1 overflow-hidden bg-bg-primary">
-        <div className="h-full">
-          {renderSection()}
-        </div>
-      </main>
-    </div>
+    <ToastProvider>
+      <div className="flex h-screen w-full overflow-hidden bg-bg-primary">
+        <Sidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+        <main className="flex-1 overflow-hidden bg-bg-primary">
+          <div className="h-full">
+            {renderSection()}
+          </div>
+        </main>
+      </div>
+    </ToastProvider>
   );
 }
 

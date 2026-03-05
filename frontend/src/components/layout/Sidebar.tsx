@@ -34,8 +34,8 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
   return (
     <aside
       className={cn(
-        'h-screen bg-bg-secondary border-r border-border flex flex-col transition-all duration-300 ease-in-out',
-        collapsed ? 'w-18' : 'w-60'
+        'h-screen bg-bg-secondary border-r border-border flex flex-col transition-all duration-300 ease-in-out flex-shrink-0',
+        collapsed ? 'w-16' : 'w-60'
       )}
     >
       {/* Logo */}
@@ -72,7 +72,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
               )}
               title={collapsed ? item.label : undefined}
             >
-              <Icon className={cn('w-4.5 h-4.5 flex-shrink-0', isActive && 'text-accent')} />
+              <Icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-accent')} />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </button>
           );
