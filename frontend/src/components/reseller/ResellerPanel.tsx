@@ -114,36 +114,41 @@ export default function ResellerPanel() {
   }
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Reseller Panel</h1>
-          <p className="text-sm text-text-muted mt-1">Generate and manage license keys</p>
-        </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-8 py-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Reseller Panel</h1>
+            <p className="text-sm text-text-secondary mt-1">Generate and manage license keys</p>
+          </div>
         <button onClick={() => setShowGenerate(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/20"
         >
           <Plus className="w-4 h-4" />
           Generate Keys
         </button>
+        </div>
       </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-5">
         {[
           { label: 'Total Keys', value: stats.total, icon: Key, color: '#3B82F6' },
           { label: 'Active', value: stats.active, icon: CheckCircle, color: '#10B981' },
           { label: 'Expired', value: stats.expired, icon: Clock, color: '#F59E0B' },
           { label: 'Revoked', value: stats.revoked, icon: XCircle, color: '#EF4444' },
         ].map(s => (
-          <div key={s.label} className="bg-bg-secondary rounded-xl border border-border p-4">
+          <div key={s.label} className="bg-bg-secondary rounded-xl border border-border p-5 hover:border-border-light transition-all duration-200">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-text-muted uppercase tracking-wider">{s.label}</p>
-                <p className="text-xl font-bold text-text-primary tabular-nums mt-1">{s.value}</p>
+              <div className="space-y-1.5">
+                <p className="text-[11px] font-semibold text-text-muted uppercase tracking-widest">{s.label}</p>
+                <p className="text-2xl font-bold text-text-primary tabular-nums">{s.value}</p>
               </div>
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: s.color + '15', color: s.color }}>
-                <s.icon className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: s.color + '15', color: s.color }}>
+                <s.icon className="w-5 h-5" />
               </div>
             </div>
           </div>
@@ -153,36 +158,36 @@ export default function ResellerPanel() {
       {/* Generate Form */}
       {showGenerate && (
         <div className="bg-bg-secondary rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">Generate License Keys</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h3 className="text-sm font-semibold text-text-primary mb-5">Generate License Keys</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Buyer Name</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Name</label>
               <input type="text" value={genForm.buyer_name} onChange={e => setGenForm(p => ({ ...p, buyer_name: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 placeholder="John Doe" />
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Buyer Email</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Email</label>
               <input type="email" value={genForm.buyer_email} onChange={e => setGenForm(p => ({ ...p, buyer_email: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 placeholder="john@example.com" />
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Quantity</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Quantity</label>
               <input type="number" value={genForm.quantity} onChange={e => setGenForm(p => ({ ...p, quantity: parseInt(e.target.value) || 1 }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 min={1} max={100} />
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Max Activations</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Max Activations</label>
               <input type="number" value={genForm.max_activations} onChange={e => setGenForm(p => ({ ...p, max_activations: parseInt(e.target.value) || 1 }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 min={1} max={10} />
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Duration (months)</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Duration (months)</label>
               <select value={genForm.duration_months} onChange={e => setGenForm(p => ({ ...p, duration_months: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
                 {[1, 3, 6, 12, 24, 36].map(m => <option key={m} value={m}>{m} month{m > 1 ? 's' : ''}</option>)}
               </select>
@@ -203,14 +208,14 @@ export default function ResellerPanel() {
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input type="text" placeholder="Search licenses..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
+            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1">
+        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1.5">
           {['all', 'active', 'expired', 'revoked'].map(f => (
             <button key={f} onClick={() => setStatusFilter(f)}
-              className={cn('px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize', statusFilter === f ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary')}
+              className={cn('px-3.5 py-2 rounded-md text-xs font-medium transition-all capitalize', statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary')}
             >{f}</button>
           ))}
         </div>
@@ -227,21 +232,21 @@ export default function ResellerPanel() {
         <div className="bg-bg-secondary rounded-xl border border-border overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">License Key</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Buyer</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Activations</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Expires</th>
-                <th className="px-4 py-3"></th>
+              <tr className="border-b border-border bg-bg-tertiary/30">
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">License Key</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Buyer</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Status</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Activations</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Expires</th>
+                <th className="px-5 py-3.5"></th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(license => (
-                <tr key={license.id} className="border-b border-border/50 hover:bg-bg-tertiary/30 transition-colors">
-                  <td className="px-4 py-3">
+                <tr key={license.id} className="border-b border-border/50 hover:bg-bg-tertiary/20 transition-colors">
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <code className="text-xs font-mono text-text-primary bg-bg-tertiary px-2 py-1 rounded">
+                      <code className="text-xs font-mono text-text-primary bg-bg-tertiary px-2.5 py-1.5 rounded-md">
                         {showKeys ? license.key : license.key.substring(0, 8) + '...' + license.key.slice(-4)}
                       </code>
                       <button onClick={() => copyKey(license.key)} className="p-1 rounded hover:bg-bg-tertiary text-text-muted hover:text-accent transition-all">
@@ -249,21 +254,21 @@ export default function ResellerPanel() {
                       </button>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <p className="text-sm text-text-primary">{license.buyer_name}</p>
-                    <p className="text-xs text-text-muted">{license.buyer_email}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{license.buyer_email}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <span className={cn(
-                      'px-2 py-0.5 rounded-md text-xs font-semibold',
+                      'px-2.5 py-1 rounded-md text-[11px] font-semibold',
                       license.status === 'active' && 'bg-success/10 text-success',
                       license.status === 'expired' && 'bg-warning/10 text-warning',
                       license.status === 'revoked' && 'bg-error/10 text-error'
                     )}>{license.status}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-text-secondary tabular-nums">{license.current_activations}/{license.max_activations}</td>
-                  <td className="px-4 py-3 text-xs text-text-muted">{formatDate(license.expires_at)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4 text-sm text-text-secondary tabular-nums">{license.current_activations}/{license.max_activations}</td>
+                  <td className="px-5 py-4 text-xs text-text-muted whitespace-nowrap">{formatDate(license.expires_at)}</td>
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-1">
                       {license.status === 'active' && (
                         <button onClick={() => handleRevoke(license.id)} className="p-1.5 rounded hover:bg-warning/10 text-text-muted hover:text-warning transition-all" title="Revoke">
@@ -291,9 +296,11 @@ export default function ResellerPanel() {
       )}
 
       {/* Reseller Info */}
-      <div className="bg-bg-secondary rounded-xl border border-border p-5">
-        <div className="flex items-start gap-3">
-          <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+      <div className="bg-bg-secondary rounded-xl border border-border p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-5 h-5 text-accent" />
+          </div>
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-1">Reseller Program</h3>
             <p className="text-xs text-text-secondary leading-relaxed">
@@ -307,6 +314,7 @@ export default function ResellerPanel() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

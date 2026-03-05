@@ -106,15 +106,15 @@ export default function Settings() {
     if (type === 'toggle') {
       const enabled = settings[key] === 'true';
       return (
-        <div className="flex items-center justify-between py-3">
-          <div>
+        <div className="flex items-center justify-between py-4">
+          <div className="pr-4">
             <p className="text-sm font-medium text-text-primary">{label}</p>
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
-            className={cn('relative w-11 h-6 rounded-full transition-colors', enabled ? 'bg-accent' : 'bg-bg-tertiary')}
+            className={cn('relative w-11 h-6 rounded-full transition-colors flex-shrink-0', enabled ? 'bg-accent' : 'bg-bg-tertiary border border-border')}
           >
-            <span className={cn('absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform', enabled && 'translate-x-5')} />
+            <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform', enabled && 'translate-x-5')} />
           </button>
         </div>
       );
@@ -122,11 +122,11 @@ export default function Settings() {
 
     if (type === 'select' && options) {
       return (
-        <div className="py-3">
+        <div className="py-4">
           <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
-            className="w-full max-w-xs px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent transition-all"
+            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -135,23 +135,25 @@ export default function Settings() {
     }
 
     return (
-      <div className="py-3">
+      <div className="py-4">
         <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
-          className="w-full max-w-xs px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent transition-all"
+          className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
     );
   };
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Settings</h1>
-          <p className="text-sm text-text-muted mt-1">Configure your extraction preferences</p>
-        </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-8 py-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Settings</h1>
+            <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
+          </div>
         <button
           onClick={handleSave} disabled={!dirty || saving}
           className={cn(
@@ -162,12 +164,15 @@ export default function Settings() {
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
+        </div>
       </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8">
       <div className="flex gap-6">
         {/* Tab Navigation */}
         <div className="w-48 flex-shrink-0">
-          <nav className="space-y-1">
+          <nav className="bg-bg-secondary rounded-lg border border-border p-3 space-y-1">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -175,7 +180,7 @@ export default function Settings() {
                   key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left',
-                    activeTab === tab.id ? 'bg-accent/10 text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                    activeTab === tab.id ? 'bg-accent/10 text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -245,6 +250,7 @@ export default function Settings() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -91,31 +91,37 @@ export default function BlacklistManager() {
   }
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
-          <p className="text-sm text-text-muted mt-1">Block emails, domains, phones, or keywords from extraction</p>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-8 py-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
+            <p className="text-sm text-text-secondary mt-1">Block emails, domains, phones, or keywords from extraction</p>
+          </div>
+          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/20">
+            <Plus className="w-4 h-4" />
+            Add Entry
+          </button>
         </div>
-        <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/20">
-          <Plus className="w-4 h-4" />
-          Add Entry
-        </button>
       </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-6">
 
       {/* Add Entry Modal */}
       {showAdd && (
         <div className="bg-bg-secondary rounded-xl border border-border p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-text-primary">Add Blacklist Entry</h3>
             <button onClick={() => setShowAdd(false)} className="p-1 rounded hover:bg-bg-tertiary text-text-muted"><X className="w-4 h-4" /></button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Type</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Type</label>
               <select
                 value={newEntry.type} onChange={e => setNewEntry(p => ({ ...p, type: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
                 <option value="email">Email</option>
                 <option value="domain">Domain</option>
@@ -124,19 +130,19 @@ export default function BlacklistManager() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Value</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Value</label>
               <input
                 type="text" value={newEntry.value} onChange={e => setNewEntry(p => ({ ...p, value: e.target.value }))}
                 placeholder={newEntry.type === 'email' ? 'spam@example.com' : newEntry.type === 'domain' ? 'example.com' : 'Enter value...'}
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-text-secondary mb-1.5 block">Reason (optional)</label>
+              <label className="text-sm font-medium text-text-primary mb-2 block">Reason (optional)</label>
               <input
                 type="text" value={newEntry.reason} onChange={e => setNewEntry(p => ({ ...p, reason: e.target.value }))}
                 placeholder="Why block this?"
-                className="w-full px-3 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
           </div>
@@ -152,20 +158,20 @@ export default function BlacklistManager() {
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search entries..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1">
+        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1.5">
           {TYPE_FILTERS.map(f => (
             <button
               key={f} onClick={() => setTypeFilter(f)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize',
-                typeFilter === f ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                'px-3.5 py-2 rounded-md text-xs font-medium transition-all capitalize',
+                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
               )}
             >{f}</button>
           ))}
@@ -208,6 +214,7 @@ export default function BlacklistManager() {
           <p className="text-sm text-text-muted">Add entries to filter out unwanted results</p>
         </div>
       )}
+      </div>
     </div>
   );
 }

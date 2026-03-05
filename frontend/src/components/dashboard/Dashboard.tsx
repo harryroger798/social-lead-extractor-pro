@@ -25,11 +25,11 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-bg-secondary rounded-xl border border-border p-5 hover:border-border-light transition-all duration-200 group relative overflow-hidden">
-      <div className="flex items-start justify-between relative">
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-text-muted uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-bold text-text-primary tracking-tight tabular-nums">
+    <div className="bg-bg-secondary rounded-xl border border-border p-6 hover:border-border-light transition-all duration-200 group">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-widest">{title}</p>
+          <p className="text-3xl font-bold text-text-primary tracking-tight tabular-nums">
             {typeof value === 'number' ? formatNumber(value) : value}
           </p>
           {change && (
@@ -39,8 +39,8 @@ function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
             </div>
           )}
         </div>
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + '15', color }}>
-          <Icon className="w-5 h-5" />
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + '15', color }}>
+          <Icon className="w-6 h-6" />
         </div>
       </div>
     </div>
@@ -110,12 +110,14 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   ];
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
-          <p className="text-sm text-text-muted mt-1">Overview of your lead extraction activity</p>
-        </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-8 py-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
+            <p className="text-sm text-text-secondary mt-1">Overview of your lead extraction activity</p>
+          </div>
         <button
           onClick={() => onNavigate('extraction')}
           className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/20"
@@ -123,16 +125,19 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <Zap className="w-4 h-4" />
           New Extraction
         </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
         <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
         <StatCard title="Leads Today" value={stats.leads_today} icon={TrendingUp} color="#10B981" />
         <StatCard title="Emails Found" value={stats.total_emails} icon={Mail} color="#8B5CF6" />
         <StatCard title="Phones Found" value={stats.total_phones} icon={Phone} color="#F59E0B" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-5">
         <StatCard
           title="Verified Emails" value={stats.verified_emails}
           change={stats.total_emails > 0 ? `${((stats.verified_emails / stats.total_emails) * 100).toFixed(1)}% rate` : '0%'}
@@ -143,9 +148,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 bg-bg-secondary rounded-xl border border-border p-6">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-6">
             <h3 className="text-sm font-semibold text-text-primary">Leads by Platform</h3>
-            <span className="text-xs text-text-muted px-2.5 py-1 rounded-lg bg-bg-tertiary">All Time</span>
+            <span className="text-[11px] text-text-muted px-3 py-1.5 rounded-lg bg-bg-tertiary font-medium">All Time</span>
           </div>
           {stats.platform_breakdown.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -167,7 +172,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </div>
 
         <div className="bg-bg-secondary rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-text-primary mb-5">Emails vs Phones</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-6">Emails vs Phones</h3>
           {stats.total_emails + stats.total_phones > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={220}>
@@ -196,11 +201,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       <div className="bg-bg-secondary rounded-xl border border-border p-6">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-6">
           <h3 className="text-sm font-semibold text-text-primary">7-Day Extraction Trend</h3>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-accent" /><span className="text-xs text-text-muted">Emails</span></div>
-            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-success" /><span className="text-xs text-text-muted">Phones</span></div>
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-accent" /><span className="text-xs text-text-muted font-medium">Emails</span></div>
+            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-success" /><span className="text-xs text-text-muted font-medium">Phones</span></div>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={240}>
@@ -221,14 +226,14 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <button onClick={() => onNavigate('history')} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View All</button>
         </div>
         {stats.recent_sessions.length > 0 ? (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {stats.recent_sessions.map((s: SessionItem) => (
-              <div key={s.id} className="flex items-center justify-between p-4 bg-bg-primary rounded-xl border border-border hover:border-border-light transition-all duration-200">
+              <div key={s.id} className="flex items-center justify-between p-4 bg-bg-primary/50 rounded-xl border border-border hover:border-border-light transition-all duration-200">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1.5">
                     <h4 className="text-sm font-semibold text-text-primary truncate">{s.name}</h4>
                     <span className={cn(
-                      'px-2 py-0.5 rounded-md text-xs font-semibold',
+                      'px-2.5 py-0.5 rounded-md text-[11px] font-semibold',
                       s.status === 'completed' && 'bg-success/10 text-success',
                       s.status === 'running' && 'bg-accent/10 text-accent',
                       s.status === 'failed' && 'bg-error/10 text-error',
@@ -258,8 +263,15 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12"><p className="text-sm text-text-muted">No recent extractions</p></div>
+          <div className="text-center py-16">
+              <div className="w-14 h-14 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-7 h-7 text-text-muted" />
+              </div>
+              <p className="text-sm font-medium text-text-secondary">No recent extractions</p>
+              <p className="text-xs text-text-muted mt-1">Start an extraction to see results here</p>
+            </div>
         )}
+      </div>
       </div>
     </div>
   );

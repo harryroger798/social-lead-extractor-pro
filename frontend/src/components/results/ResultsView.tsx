@@ -102,40 +102,45 @@ export default function ResultsView() {
   }
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Results</h1>
-          <p className="text-sm text-text-muted mt-1">{total.toLocaleString()} leads extracted</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {['csv', 'xlsx', 'json'].map(fmt => (
-            <button key={fmt} onClick={() => handleExport(fmt)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-bg-secondary border border-border hover:border-border-light rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary transition-all"
-            >
-              <Download className="w-3.5 h-3.5" />{fmt.toUpperCase()}
-            </button>
-          ))}
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-8 py-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Results</h1>
+            <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {['csv', 'xlsx', 'json'].map(fmt => (
+              <button key={fmt} onClick={() => handleExport(fmt)}
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-bg-secondary border border-border hover:border-border-light rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary transition-all"
+              >
+                <Download className="w-3.5 h-3.5" />{fmt.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-5">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search leads..." value={search}
             onChange={e => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1 overflow-x-auto">
+        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1.5 overflow-x-auto">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {PLATFORMS.map(p => (
             <button key={p} onClick={() => handlePlatformChange(p)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
-                platform === p ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                'px-3.5 py-2 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
+                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
               )}
             >{p}</button>
           ))}
@@ -149,72 +154,72 @@ export default function ResultsView() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-4 py-3 text-left">
+                  <tr className="border-b border-border bg-bg-tertiary/30">
+                    <th className="px-5 py-3.5 text-left">
                       <input type="checkbox" checked={selected.size === leads.length && leads.length > 0}
                         onChange={toggleAll}
                         className="w-4 h-4 rounded border-border bg-bg-primary text-accent focus:ring-accent/20"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Contact</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Platform</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Keyword</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Quality</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Verified</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-3"></th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Contact</th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Platform</th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Keyword</th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Quality</th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Verified</th>
+                    <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Date</th>
+                    <th className="px-5 py-3.5"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {leads.map(lead => (
-                    <tr key={lead.id} className="border-b border-border/50 hover:bg-bg-tertiary/30 transition-colors">
-                      <td className="px-4 py-3">
+                    <tr key={lead.id} className="border-b border-border/50 hover:bg-bg-tertiary/20 transition-colors">
+                      <td className="px-5 py-4">
                         <input type="checkbox" checked={selected.has(lead.id)}
                           onChange={() => toggleSelect(lead.id)}
                           className="w-4 h-4 rounded border-border bg-bg-primary text-accent focus:ring-accent/20"
                         />
                       </td>
-                      <td className="px-4 py-3">
-                        <div>
+                      <td className="px-5 py-4">
+                        <div className="space-y-1">
                           {lead.email && (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-2">
                               <Mail className="w-3.5 h-3.5 text-accent flex-shrink-0" />
                               <span className="text-sm text-text-primary truncate max-w-48">{lead.email}</span>
                             </div>
                           )}
                           {lead.phone && (
-                            <div className="flex items-center gap-1.5 mt-0.5">
+                            <div className="flex items-center gap-2">
                               <Phone className="w-3.5 h-3.5 text-success flex-shrink-0" />
                               <span className="text-sm text-text-primary">{lead.phone}</span>
                             </div>
                           )}
-                          {lead.name && <p className="text-xs text-text-muted mt-0.5">{lead.name}</p>}
+                          {lead.name && <p className="text-xs text-text-muted">{lead.name}</p>}
                         </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-bg-tertiary text-text-secondary capitalize">{lead.platform}</span>
+                      <td className="px-5 py-4">
+                        <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-bg-tertiary text-text-secondary capitalize">{lead.platform}</span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">{lead.keyword}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-12 h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
+                      <td className="px-5 py-4 text-sm text-text-secondary">{lead.keyword}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-14 h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
                             <div className={cn('h-full rounded-full', lead.quality_score >= 70 ? 'bg-success' : lead.quality_score >= 40 ? 'bg-warning' : 'bg-error')} style={{ width: `${lead.quality_score}%` }} />
                           </div>
                           <span className="text-xs text-text-muted tabular-nums">{lead.quality_score}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         {lead.verified ? <CheckCircle className="w-4 h-4 text-success" /> : <XCircle className="w-4 h-4 text-text-muted" />}
                       </td>
-                      <td className="px-4 py-3 text-xs text-text-muted">{formatDate(lead.extracted_at)}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4 text-xs text-text-muted whitespace-nowrap">{formatDate(lead.extracted_at)}</td>
+                      <td className="px-5 py-4">
                         <div className="flex items-center gap-1">
                           {lead.source_url && (
-                            <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-bg-tertiary text-text-muted hover:text-accent transition-all">
+                            <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-bg-tertiary text-text-muted hover:text-accent transition-all">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           )}
-                          <button onClick={() => handleDelete(lead.id)} className="p-1.5 rounded hover:bg-error/10 text-text-muted hover:text-error transition-all">
+                          <button onClick={() => handleDelete(lead.id)} className="p-2 rounded-lg hover:bg-error/10 text-text-muted hover:text-error transition-all">
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -234,11 +239,11 @@ export default function ResultsView() {
             </p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-                className="p-2 rounded-lg bg-bg-secondary border border-border hover:border-border-light text-text-secondary disabled:opacity-30 transition-all"
+                className="p-2.5 rounded-lg bg-bg-secondary border border-border hover:border-border-light text-text-secondary disabled:opacity-30 transition-all"
               ><ChevronLeft className="w-4 h-4" /></button>
-              <span className="text-xs text-text-muted tabular-nums">Page {page} of {totalPages}</span>
+              <span className="text-xs text-text-muted tabular-nums px-2">Page {page} of {totalPages}</span>
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}
-                className="p-2 rounded-lg bg-bg-secondary border border-border hover:border-border-light text-text-secondary disabled:opacity-30 transition-all"
+                className="p-2.5 rounded-lg bg-bg-secondary border border-border hover:border-border-light text-text-secondary disabled:opacity-30 transition-all"
               ><ChevronRight className="w-4 h-4" /></button>
             </div>
           </div>
@@ -252,6 +257,7 @@ export default function ResultsView() {
           <p className="text-sm text-text-muted">Run an extraction to start collecting leads</p>
         </div>
       )}
+      </div>
     </div>
   );
 }

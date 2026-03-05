@@ -84,30 +84,35 @@ export default function History() {
   }
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full">
-      <div>
-        <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Extraction History</h1>
-        <p className="text-sm text-text-muted mt-1">Browse and manage past extraction sessions</p>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+        <div className="px-8 py-5">
+          <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Extraction History</h1>
+          <p className="text-sm text-text-secondary mt-1">Browse and manage past extraction sessions</p>
+        </div>
       </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-6">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search sessions..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1">
-          <Filter className="w-4 h-4 text-text-muted ml-2" />
+        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1.5">
+          <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {STATUS_FILTERS.map(f => (
             <button
               key={f} onClick={() => setStatusFilter(f)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize',
-                statusFilter === f ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                'px-3.5 py-2 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
+                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
               )}
             >{f}</button>
           ))}
@@ -186,6 +191,7 @@ export default function History() {
           <p className="text-sm text-text-muted">Start a new extraction to see history here</p>
         </div>
       )}
+      </div>
     </div>
   );
 }
