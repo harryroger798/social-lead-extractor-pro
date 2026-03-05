@@ -102,9 +102,9 @@ export default function ResultsView() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-5">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Results</h1>
@@ -115,7 +115,7 @@ export default function ResultsView() {
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
               <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-3.5 py-2 rounded-[6px] text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-all"
+                className="px-3.5 py-2 rounded-[6px] text-xs font-semibold bg-bg-tertiary border border-border text-text-secondary hover:text-text-primary hover:border-border-light hover:bg-bg-tertiary/80 transition-all"
               >
                 {fmt.toUpperCase()}
               </button>
@@ -125,7 +125,7 @@ export default function ResultsView() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-5">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-5">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
@@ -149,11 +149,12 @@ export default function ResultsView() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Container - fills remaining height */}
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
       {leads.length > 0 ? (
         <>
-          <div className="bg-bg-secondary rounded-[10px] border border-border overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <div className="overflow-x-auto flex-1">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-bg-tertiary/30">
@@ -234,7 +235,7 @@ export default function ResultsView() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between">
+          <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-border">
             <p className="text-xs text-text-muted">
               Showing {((page - 1) * 50) + 1}-{Math.min(page * 50, total)} of {total.toLocaleString()} results
               {selected.size > 0 && <span className="ml-2 text-accent font-medium">({selected.size} selected)</span>}
@@ -251,9 +252,9 @@ export default function ResultsView() {
           </div>
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <Database className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <Database className="w-10 h-10 text-text-muted" />
           </div>
           <p className="text-base font-semibold text-text-secondary">No leads found</p>
           <p className="text-sm text-text-muted mb-2">Run an extraction to start collecting leads</p>
@@ -265,6 +266,7 @@ export default function ResultsView() {
           </button>
         </div>
       )}
+      </div>
       </div>
     </div>
   );

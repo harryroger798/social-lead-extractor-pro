@@ -71,7 +71,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         {navGroups.map((group, gi) => (
           <div key={group.label} className="mb-5 last:mb-0">
             {!collapsed && (
-              <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest px-3 mb-2">
+              <p className="text-[9px] font-medium text-text-muted/60 uppercase tracking-[0.15em] px-3 mb-1.5 select-none">
                 {group.label}
               </p>
             )}
@@ -113,9 +113,10 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         )}
         <button
           onClick={onToggleCollapse}
-          className="w-full flex items-center justify-center py-2.5 text-text-muted hover:text-text-primary transition-colors rounded-[8px] hover:bg-bg-tertiary"
+          className="w-full flex items-center justify-center gap-2 py-2.5 text-text-muted hover:text-text-primary transition-colors rounded-[8px] hover:bg-bg-tertiary"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {!collapsed && <span className="text-xs">Collapse</span>}
         </button>
       </div>
     </aside>

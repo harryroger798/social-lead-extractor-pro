@@ -102,13 +102,14 @@ export default function Settings() {
     );
   }
 
-  const renderInput = (key: string, label: string, type: 'text' | 'number' | 'password' | 'toggle' | 'select', options?: string[]) => {
+  const renderInput = (key: string, label: string, type: 'text' | 'number' | 'password' | 'toggle' | 'select', options?: string[], description?: string) => {
     if (type === 'toggle') {
       const enabled = settings[key] === 'true';
       return (
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-4 min-h-[56px]">
           <div className="pr-4">
             <p className="text-sm font-medium text-text-primary">{label}</p>
+            {description && <p className="text-xs text-text-muted mt-0.5">{description}</p>}
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
@@ -124,9 +125,10 @@ export default function Settings() {
       return (
         <div className="py-4">
           <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
+          {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
-            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -137,18 +139,19 @@ export default function Settings() {
     return (
       <div className="py-4">
         <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
+        {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
-          className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+          className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
     );
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-5">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Settings</h1>
@@ -168,11 +171,11 @@ export default function Settings() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8">
-      <div className="flex gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="flex gap-6 min-h-full">
         {/* Tab Navigation */}
-        <div className="w-48 flex-shrink-0">
-          <nav className="bg-bg-secondary rounded-[10px] border border-border p-3 space-y-1">
+        <div className="w-52 flex-shrink-0">
+          <nav className="bg-bg-secondary rounded-[10px] border border-border p-3 space-y-1 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -192,61 +195,92 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border p-6">
+        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border p-6 min-h-[500px]">
           {activeTab === 'general' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('app_name', 'Application Name', 'text')}
-              {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'])}
-              {renderInput('language', 'Language', 'select', ['en', 'es', 'fr', 'de', 'pt'])}
-              {renderInput('default_export_format', 'Default Export Format', 'select', ['csv', 'xlsx', 'json', 'html'])}
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">General Settings</h3>
+              <p className="text-xs text-text-muted mb-4">Manage your application preferences</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
+                {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'], 'Choose your preferred color scheme')}
+                {renderInput('language', 'Language', 'select', ['en', 'es', 'fr', 'de', 'pt'], 'Interface language')}
+                {renderInput('default_export_format', 'Default Export Format', 'select', ['csv', 'xlsx', 'json', 'html'], 'Format used when exporting leads')}
+              </div>
             </div>
           )}
 
           {activeTab === 'extraction' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('pages_per_keyword', 'Pages per Keyword', 'number')}
-              {renderInput('delay_between_requests', 'Delay Between Requests (seconds)', 'number')}
-              {renderInput('max_concurrent_sessions', 'Max Concurrent Sessions', 'number')}
-              {renderInput('auto_verify_emails', 'Auto-verify Emails (MX Check)', 'toggle')}
-              {renderInput('use_google_dorking', 'Google Dorking (Primary)', 'toggle')}
-              {renderInput('use_direct_scraping', 'Direct Scraping (Secondary)', 'toggle')}
-              {renderInput('browser_headless', 'Headless Browser Mode', 'toggle')}
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">Extraction Settings</h3>
+              <p className="text-xs text-text-muted mb-4">Configure how extractions are performed</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('pages_per_keyword', 'Pages per Keyword', 'number', undefined, 'Number of search result pages to scrape per keyword')}
+                {renderInput('delay_between_requests', 'Delay Between Requests (seconds)', 'number', undefined, 'Wait time between requests to avoid rate limiting')}
+                {renderInput('max_concurrent_sessions', 'Max Concurrent Sessions', 'number', undefined, 'Maximum parallel extraction sessions')}
+                {renderInput('auto_verify_emails', 'Auto-verify Emails (MX Check)', 'toggle')}
+                {renderInput('use_google_dorking', 'Google Dorking (Primary)', 'toggle')}
+                {renderInput('use_direct_scraping', 'Direct Scraping (Secondary)', 'toggle')}
+                {renderInput('browser_headless', 'Headless Browser Mode', 'toggle')}
+              </div>
             </div>
           )}
 
           {activeTab === 'api' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password')}
-              <div className="py-3">
-                <p className="text-xs text-text-muted">Firecrawl is used for website enrichment. You have 1.18M+ credits available.</p>
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">API Keys</h3>
+              <p className="text-xs text-text-muted mb-4">Manage third-party service integrations</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
+              </div>
+              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+                <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
               </div>
             </div>
           )}
 
           {activeTab === 'notifications' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
-              {renderInput('email_notifications', 'Email Notifications', 'toggle')}
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">Notifications</h3>
+              <p className="text-xs text-text-muted mb-4">Control how you receive alerts</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
+                {renderInput('email_notifications', 'Email Notifications', 'toggle')}
+              </div>
+              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+                <p className="text-xs text-text-muted">Notifications are sent when extractions complete, fail, or when new leads match your criteria.</p>
+              </div>
             </div>
           )}
 
           {activeTab === 'storage' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('data_retention_days', 'Data Retention (days)', 'number')}
-              {renderInput('auto_backup', 'Auto Backup', 'toggle')}
-              <div className="py-3 flex items-center gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 bg-bg-primary border border-border rounded-[8px] text-sm text-text-secondary hover:text-text-primary transition-all">
-                  <RefreshCw className="w-4 h-4" />
-                  Clear Cache
-                </button>
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">Storage & Data</h3>
+              <p className="text-xs text-text-muted mb-4">Manage data retention and backups</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
+                {renderInput('auto_backup', 'Auto Backup', 'toggle')}
+                <div className="py-4 flex items-center gap-3">
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-[8px] text-sm text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
+                    <RefreshCw className="w-4 h-4" />
+                    Clear Cache
+                  </button>
+                  <span className="text-xs text-text-muted">Free up space by clearing cached search results</span>
+                </div>
               </div>
             </div>
           )}
 
           {activeTab === 'security' && (
-            <div className="space-y-1 divide-y divide-border">
-              {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
-              {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'])}
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">Security & Proxy</h3>
+              <p className="text-xs text-text-muted mb-4">Configure proxy and privacy settings</p>
+              <div className="space-y-1 divide-y divide-border">
+                {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
+                {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
+              </div>
+              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+                <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during direct scraping. Google Dorking does not require proxies.</p>
+              </div>
             </div>
           )}
         </div>

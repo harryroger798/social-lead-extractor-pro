@@ -91,9 +91,9 @@ export default function BlacklistManager() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-5">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
@@ -107,7 +107,7 @@ export default function BlacklistManager() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-6">
 
       {/* Add Entry Modal */}
       {showAdd && (
@@ -178,9 +178,10 @@ export default function BlacklistManager() {
         </div>
       </div>
 
-      {/* Entries */}
+      {/* Entries List - fills remaining height */}
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
@@ -206,9 +207,9 @@ export default function BlacklistManager() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <Shield className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <Shield className="w-10 h-10 text-text-muted" />
           </div>
           <p className="text-base font-semibold text-text-secondary">No blacklist entries</p>
           <p className="text-sm text-text-muted mb-2">Add entries to filter out unwanted results</p>
@@ -220,6 +221,7 @@ export default function BlacklistManager() {
           </button>
         </div>
       )}
+      </div>
       </div>
     </div>
   );

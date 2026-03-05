@@ -107,8 +107,8 @@ export default function NewExtraction() {
   }, []);
 
   const renderToggle = (enabled: boolean, onChange: () => void, label: string, description?: string) => (
-    <div className="flex items-center justify-between py-4">
-      <div className="pr-4">
+    <div className="flex items-center justify-between py-4 min-h-[56px]">
+      <div className="pr-4 flex-1">
         <p className="text-sm font-medium text-text-primary">{label}</p>
         {description && <p className="text-xs text-text-muted mt-1 leading-relaxed">{description}</p>}
       </div>
@@ -120,8 +120,8 @@ export default function NewExtraction() {
 
   if (step === 'running' || step === 'complete') {
     return (
-      <div className="h-full flex flex-col overflow-hidden">
-        <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
           <div className="px-8 py-5">
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">
               {step === 'running' ? 'Extraction in Progress' : 'Extraction Complete'}
@@ -130,7 +130,7 @@ export default function NewExtraction() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
 
         {status && (
           <>
@@ -199,9 +199,9 @@ export default function NewExtraction() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="px-8 py-5">
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">New Extraction</h1>
           <p className="text-sm text-text-secondary mt-1">Configure and start a new lead extraction session</p>
@@ -209,7 +209,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
 
       {error && (
         <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/20 rounded-xl">
@@ -256,16 +256,16 @@ export default function NewExtraction() {
           {PLATFORMS.map(p => (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
               className={cn(
-                'flex items-center gap-3 p-3.5 rounded-[10px] border transition-all duration-200',
+                'flex items-center gap-3 p-4 rounded-[10px] border-2 transition-all duration-200',
                 selectedPlatforms.includes(p.id)
-                  ? 'border-accent/40 bg-accent/5 shadow-sm shadow-accent/10'
-                  : 'border-border bg-bg-tertiary/50 hover:border-border-light hover:bg-bg-tertiary'
+                  ? 'border-accent/50 bg-accent/5 shadow-sm shadow-accent/10'
+                  : 'border-border bg-bg-tertiary/30 hover:border-border-light hover:bg-bg-tertiary/60 opacity-80 hover:opacity-100'
               )}
             >
-              <div className="w-9 h-9 rounded-[8px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
-                <Globe className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-[8px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '18', color: p.color }}>
+                <Globe className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium text-text-primary">{p.name}</span>
+              <span className={cn('text-sm font-medium', selectedPlatforms.includes(p.id) ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
               {selectedPlatforms.includes(p.id) && <CheckCircle className="w-4 h-4 text-accent ml-auto flex-shrink-0" />}
             </button>
           ))}
@@ -348,7 +348,11 @@ export default function NewExtraction() {
       </div>
 
       {/* Start Button */}
-      <div className="flex justify-end pb-2">
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-text-primary">Ready to extract?</p>
+          <p className="text-xs text-text-muted mt-0.5">{selectedPlatforms.length} platform{selectedPlatforms.length !== 1 ? 's' : ''} selected · {keywords.split('\n').filter(Boolean).length} keyword{keywords.split('\n').filter(Boolean).length !== 1 ? 's' : ''}</p>
+        </div>
         <button onClick={handleStart} disabled={starting}
           className="flex items-center gap-2.5 px-8 py-3.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/30 disabled:opacity-50"
         >

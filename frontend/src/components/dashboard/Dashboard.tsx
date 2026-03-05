@@ -110,9 +110,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   ];
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-5">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
@@ -129,7 +129,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
         {/* Stat Cards - 3 per row */}
         <div className="grid grid-cols-3 gap-4">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
@@ -166,11 +166,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </ResponsiveContainer>
           ) : (
             <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-12 h-12 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-text-muted" />
+                <div className="w-14 h-14 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+                  <BarChart3 className="w-7 h-7 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">Add platforms to start collecting leads</p>
-                <button onClick={() => onNavigate('extraction')} className="flex items-center gap-1.5 text-xs text-accent hover:text-accent-hover font-medium transition-colors">
+                <button onClick={() => onNavigate('extraction')} className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-xs font-medium transition-all shadow-lg shadow-accent/20">
                   <Search className="w-3.5 h-3.5" />
                   Start Extraction
                 </button>
@@ -203,8 +203,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-12 h-12 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-text-muted" />
+                <div className="w-14 h-14 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+                  <Mail className="w-7 h-7 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">No contact data yet</p>
               </div>
@@ -215,7 +215,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-text-primary">7-Day Extraction Trend</h3>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 mr-2">
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-accent" /><span className="text-xs text-text-muted font-medium">Emails</span></div>
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-success" /><span className="text-xs text-text-muted font-medium">Phones</span></div>
           </div>

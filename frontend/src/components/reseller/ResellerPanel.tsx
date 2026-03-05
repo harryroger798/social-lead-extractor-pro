@@ -114,9 +114,9 @@ export default function ResellerPanel() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-5">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Reseller Panel</h1>
@@ -132,7 +132,7 @@ export default function ResellerPanel() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-6">
       {/* Stats */}
       <div className="grid grid-cols-4 gap-5">
         {[
@@ -227,9 +227,10 @@ export default function ResellerPanel() {
         </button>
       </div>
 
-      {/* License Table */}
+      {/* License Table - fills remaining height */}
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="bg-bg-secondary rounded-[10px] border border-border overflow-hidden">
+        <div className="flex-1 overflow-hidden flex flex-col">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-bg-tertiary/30">
@@ -286,9 +287,9 @@ export default function ResellerPanel() {
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <Key className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <Key className="w-10 h-10 text-text-muted" />
           </div>
           <p className="text-base font-semibold text-text-secondary">No license keys found</p>
           <p className="text-sm text-text-muted mb-2">Generate keys to start selling</p>
@@ -300,6 +301,7 @@ export default function ResellerPanel() {
           </button>
         </div>
       )}
+      </div>
 
       {/* Reseller Info */}
       <div className="bg-bg-secondary rounded-[10px] border border-border p-6">

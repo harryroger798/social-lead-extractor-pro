@@ -84,9 +84,9 @@ export default function History() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="flex-none border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
+      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="px-8 py-5">
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Extraction History</h1>
           <p className="text-sm text-text-secondary mt-1">Browse and manage past extraction sessions</p>
@@ -94,7 +94,7 @@ export default function History() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-6">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
@@ -119,9 +119,10 @@ export default function History() {
         </div>
       </div>
 
-      {/* Sessions List */}
+      {/* Sessions List - fills remaining height */}
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {filtered.map(s => (
             <div key={s.id} className="bg-bg-secondary rounded-[10px] border border-border p-5 hover:border-border-light transition-all duration-200">
               <div className="flex items-start justify-between">
@@ -183,9 +184,9 @@ export default function History() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <FolderOpen className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <FolderOpen className="w-10 h-10 text-text-muted" />
           </div>
           <p className="text-base font-semibold text-text-secondary">No sessions found</p>
           <p className="text-sm text-text-muted mb-2">Start a new extraction to see history here</p>
@@ -197,6 +198,7 @@ export default function History() {
           </button>
         </div>
       )}
+      </div>
       </div>
     </div>
   );
