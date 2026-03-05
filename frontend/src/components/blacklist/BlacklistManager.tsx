@@ -107,7 +107,8 @@ export default function BlacklistManager() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="min-h-full flex flex-col gap-6">
 
       {/* Add Entry Modal */}
       {showAdd && (
@@ -221,6 +222,7 @@ export default function BlacklistManager() {
           </button>
         </div>
       )}
+      </div>
       </div>
       </div>
     </div>

@@ -94,7 +94,8 @@ export default function History() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="min-h-full flex flex-col gap-6">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
@@ -198,6 +199,7 @@ export default function History() {
           </button>
         </div>
       )}
+      </div>
       </div>
       </div>
     </div>

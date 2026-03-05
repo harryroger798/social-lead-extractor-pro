@@ -125,7 +125,8 @@ export default function ResultsView() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8 flex flex-col gap-5">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="min-h-full flex flex-col gap-5">
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
@@ -266,6 +267,7 @@ export default function ResultsView() {
           </button>
         </div>
       )}
+      </div>
       </div>
       </div>
     </div>
