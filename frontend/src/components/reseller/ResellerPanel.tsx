@@ -119,11 +119,11 @@ export default function ResellerPanel() {
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Reseller Panel</h1>
+            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Reseller Panel</h1>
             <p className="text-sm text-text-secondary mt-1">Generate and manage license keys</p>
           </div>
         <button onClick={() => setShowGenerate(true)}
-          className="flex items-center gap-2 px-7 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-bold transition-all shadow-lg shadow-accent/25"
+          className="flex items-center gap-2 px-7 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-bold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
         >
           <Plus className="w-4 h-4" />
           Generate Keys
@@ -135,14 +135,14 @@ export default function ResellerPanel() {
       <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
       <div className="min-h-full flex flex-col gap-6">
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-4 gap-6">
         {[
           { label: 'Total Keys', value: stats.total, icon: Key, color: '#3B82F6' },
           { label: 'Active', value: stats.active, icon: CheckCircle, color: '#10B981' },
           { label: 'Expired', value: stats.expired, icon: Clock, color: '#F59E0B' },
           { label: 'Revoked', value: stats.revoked, icon: XCircle, color: '#EF4444' },
         ].map(s => (
-          <div key={s.label} className="bg-bg-secondary rounded-[10px] border border-border/80 px-6 py-5 hover:border-border-light transition-all duration-200 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+          <div key={s.label} className="bg-bg-card rounded-2xl border border-white/10 p-5 hover:border-white/20 hover:-translate-y-[1px] transition-all duration-200">
             <div className="flex items-center justify-between">
               <div className="space-y-1.5">
                 <p className="text-[11px] font-semibold text-text-muted uppercase tracking-widest">{s.label}</p>
@@ -158,8 +158,11 @@ export default function ResellerPanel() {
 
       {/* Generate Form */}
       {showGenerate && (
-        <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
-          <h3 className="text-sm font-semibold text-text-primary mb-5">Generate License Keys</h3>
+        <div className="bg-bg-card rounded-2xl border border-white/10">
+          <div className="px-6 py-4 border-b border-white/10">
+            <h3 className="text-sm font-medium text-text-primary">Generate License Keys</h3>
+          </div>
+          <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Name</label>
@@ -203,6 +206,7 @@ export default function ResellerPanel() {
               Generate
             </button>
           </div>
+          </div>
         </div>
       )}
 
@@ -229,7 +233,7 @@ export default function ResellerPanel() {
       </div>
 
       {/* License Table - fills remaining height */}
-      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden flex flex-col min-h-[400px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+      <div className="flex-1 bg-bg-card rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
         <div className="flex-1 overflow-hidden flex flex-col">
           <table className="w-full">
@@ -288,14 +292,14 @@ export default function ResellerPanel() {
           </table>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-12">
-          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
-            <Key className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center pt-24 gap-4 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+            <Key className="h-6 w-6 text-text-muted" />
           </div>
-          <p className="text-lg font-semibold text-text-secondary">No license keys found</p>
-          <p className="text-sm text-text-muted mb-2">Generate keys to start selling</p>
+          <p className="text-sm font-semibold text-text-primary">No license keys found</p>
+          <p className="text-sm text-text-muted mt-1">Generate keys to start selling</p>
           <button onClick={() => setShowGenerate(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/20"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20 text-white rounded-lg text-sm font-medium transition-all mt-3"
           >
             <Plus className="w-4 h-4" />
             Generate First Key
@@ -305,7 +309,7 @@ export default function ResellerPanel() {
       </div>
 
       {/* Reseller Info */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-[10px] bg-accent/10 flex items-center justify-center flex-shrink-0">
             <TrendingUp className="w-5 h-5 text-accent" />

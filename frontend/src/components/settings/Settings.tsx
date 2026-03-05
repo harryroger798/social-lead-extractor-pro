@@ -154,7 +154,7 @@ export default function Settings() {
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Settings</h1>
+            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Settings</h1>
             <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
           </div>
         <button
@@ -172,10 +172,10 @@ export default function Settings() {
 
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
-      <div className="flex gap-6 min-h-full">
+      <div className="grid grid-cols-[220px_1fr] gap-8 min-h-full">
         {/* Tab Navigation */}
         <div className="w-52 flex-shrink-0">
-          <nav className="bg-bg-secondary rounded-[10px] border border-border/80 p-3 space-y-1 sticky top-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+          <nav className="bg-bg-card rounded-2xl border border-white/10 p-3 space-y-1 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -195,7 +195,7 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 p-8 min-h-[500px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+        <div className="bg-bg-card rounded-2xl border border-white/10 p-8 min-h-[500px]">
           {activeTab === 'general' && (
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">General Settings</h3>

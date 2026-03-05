@@ -25,7 +25,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-bg-secondary rounded-[10px] border border-border/80 px-6 py-5 hover:border-border-light transition-all duration-200 group shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+    <div className="bg-bg-card rounded-2xl border border-white/10 p-5 hover:border-white/20 hover:-translate-y-[1px] transition-all duration-200 group">
       <div className="flex items-start justify-between">
         <div className="space-y-1.5">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-widest">{title}</p>
@@ -115,12 +115,12 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
+            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
             <p className="text-sm text-text-secondary mt-1">Overview of your lead extraction activity</p>
           </div>
         <button
           onClick={() => onNavigate('extraction')}
-          className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/25"
+          className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
         >
           <Zap className="w-4 h-4" />
           New Extraction
@@ -131,7 +131,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
         {/* Stat Cards - 3 per row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-6">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
           <StatCard title="Leads Today" value={stats.leads_today} icon={TrendingUp} color="#10B981" />
           <StatCard title="Emails Found" value={stats.total_emails} icon={Mail} color="#8B5CF6" />
@@ -144,12 +144,13 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <StatCard title="Sessions Done" value={stats.sessions_completed} icon={Activity} color="#EC4899" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
-            <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold text-text-primary">Leads by Platform</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-bg-card rounded-2xl border border-white/10">
+            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-text-primary">Leads by Platform</h3>
             <span className="text-[11px] text-text-muted px-3 py-1.5 rounded-[6px] bg-bg-tertiary font-medium">All Time</span>
           </div>
+          <div className="p-6">
           {stats.platform_breakdown.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={stats.platform_breakdown} barSize={32}>
@@ -165,8 +166,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <div className="flex flex-col items-center pt-16 gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
                   <BarChart3 className="w-8 h-8 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">Add platforms to start collecting leads</p>
@@ -176,10 +177,14 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                 </button>
               </div>
           )}
+          </div>
         </div>
 
-          <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
-            <h3 className="text-sm font-semibold text-text-primary mb-5">Emails vs Phones</h3>
+          <div className="bg-bg-card rounded-2xl border border-white/10">
+            <div className="px-6 py-4 border-b border-white/10">
+              <h3 className="text-sm font-medium text-text-primary">Emails vs Phones</h3>
+            </div>
+            <div className="p-6">
           {stats.total_emails + stats.total_phones > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={220}>
@@ -202,24 +207,26 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+            <div className="flex flex-col items-center pt-16 gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
                   <Mail className="w-8 h-8 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">No contact data yet</p>
               </div>
           )}
+            </div>
         </div>
       </div>
 
-        <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold text-text-primary">7-Day Extraction Trend</h3>
+        <div className="bg-bg-card rounded-2xl border border-white/10">
+          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-text-primary">7-Day Extraction Trend</h3>
           <div className="flex items-center gap-5 mr-2">
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-accent" /><span className="text-xs text-text-muted font-medium">Emails</span></div>
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-success" /><span className="text-xs text-text-muted font-medium">Phones</span></div>
           </div>
         </div>
+        <div className="p-6">
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={stats.daily_trend}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
@@ -230,10 +237,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <Line type="monotone" dataKey="phones" stroke="#10B981" strokeWidth={2.5} dot={{ fill: '#10B981', r: 3, strokeWidth: 0 }} />
           </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
         {/* Recent Extractions - Full Width Table */}
-        <div className="bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden min-h-[280px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+        <div className="bg-bg-card rounded-2xl border border-white/10 overflow-hidden min-h-[280px]">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h3 className="text-sm font-semibold text-text-primary">Recent Extractions</h3>
             <button onClick={() => onNavigate('history')} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View All</button>
@@ -278,8 +286,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-16 px-8">
-              <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center mx-auto mb-4">
+            <div className="flex flex-col items-center py-24 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-text-muted" />
               </div>
               <p className="text-sm font-medium text-text-secondary mb-1">No recent extractions</p>

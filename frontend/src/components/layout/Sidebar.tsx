@@ -104,7 +104,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       </nav>
 
       {/* Version + Collapse */}
-      <div className="border-t border-border px-4 py-3 space-y-2">
+      <div className="border-t border-white/10 px-4 py-4 space-y-2">
         {!collapsed && (
           <div className="px-4 py-3 rounded-[8px] bg-bg-tertiary/50">
             <p className="text-[11px] text-text-muted">Version 1.0.0</p>

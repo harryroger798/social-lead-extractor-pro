@@ -4,8 +4,9 @@
   --color-bg-primary: #0B1120;
   --color-bg-secondary: #111827;
   --color-bg-tertiary: #1F2937;
-  --color-bg-card: #141E33;
-  --color-bg-card-elevated: #162036;
+  --color-bg-card: #0f1a2e;
+  --color-bg-card-elevated: #111c35;
+  --color-bg-input: #111c35;
   --color-accent: #3B82F6;
   --color-accent-hover: #2563EB;
   --color-accent-glow: rgba(59, 130, 246, 0.15);
@@ -73,11 +74,15 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 main > div {

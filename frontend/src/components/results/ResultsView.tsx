@@ -107,7 +107,7 @@ export default function ResultsView() {
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Results</h1>
+            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Results</h1>
             <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
           </div>
           <div className="flex items-center gap-1.5 bg-bg-secondary rounded-[8px] border border-border p-1.5">
@@ -151,7 +151,7 @@ export default function ResultsView() {
       </div>
 
       {/* Table Container - fills remaining height */}
-      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden flex flex-col min-h-[400px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+      <div className="flex-1 bg-bg-card rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[400px]">
       {leads.length > 0 ? (
         <>
           <div className="flex-1 overflow-hidden flex flex-col">
@@ -253,14 +253,14 @@ export default function ResultsView() {
           </div>
         </>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-12">
-          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
-            <Database className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center pt-24 gap-4 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+            <Database className="h-6 w-6 text-text-muted" />
           </div>
-          <p className="text-lg font-semibold text-text-secondary">No leads found</p>
-          <p className="text-sm text-text-muted mb-2">Run an extraction to start collecting leads</p>
+          <p className="text-sm font-semibold text-text-primary">No leads found</p>
+          <p className="text-sm text-text-muted mt-1">Run an extraction to start collecting leads</p>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/20"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20 text-white rounded-lg text-sm font-medium transition-all mt-3"
           >
             <Search className="w-4 h-4" />
             Start New Extraction

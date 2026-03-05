@@ -96,10 +96,10 @@ export default function BlacklistManager() {
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
         <div className="flex items-center justify-between px-8 py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
+            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
             <p className="text-sm text-text-secondary mt-1">Block emails, domains, phones, or keywords from extraction</p>
           </div>
-          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/25">
+          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
             <Plus className="w-4 h-4" />
             Add Entry
           </button>
@@ -112,11 +112,12 @@ export default function BlacklistManager() {
 
       {/* Add Entry Modal */}
       {showAdd && (
-        <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold text-text-primary">Add Blacklist Entry</h3>
+        <div className="bg-bg-card rounded-2xl border border-white/10">
+          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-text-primary">Add Blacklist Entry</h3>
             <button onClick={() => setShowAdd(false)} className="p-1 rounded hover:bg-bg-tertiary text-text-muted"><X className="w-4 h-4" /></button>
           </div>
+          <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Type</label>
@@ -146,6 +147,7 @@ export default function BlacklistManager() {
                 className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
+          </div>
           </div>
           <div className="flex justify-end mt-4">
             <button onClick={handleAdd} disabled={adding} className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all disabled:opacity-50">
@@ -180,13 +182,13 @@ export default function BlacklistManager() {
       </div>
 
       {/* Entries List - fills remaining height */}
-      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden flex flex-col min-h-[400px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+      <div className="flex-1 bg-bg-card rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
-              <div key={entry.id} className="flex items-center justify-between p-4 bg-bg-secondary rounded-[10px] border border-border/80 hover:border-border-light transition-all">
+              <div key={entry.id} className="flex items-center justify-between p-4 bg-bg-card rounded-2xl border border-white/10 hover:border-white/20 transition-all">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-9 h-9 rounded-[8px] bg-bg-tertiary flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4 h-4 text-text-muted" />
@@ -208,14 +210,14 @@ export default function BlacklistManager() {
           })}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-12">
-          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
-            <Shield className="w-8 h-8 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center pt-24 gap-4 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+            <Shield className="h-6 w-6 text-text-muted" />
           </div>
-          <p className="text-lg font-semibold text-text-secondary">No blacklist entries</p>
-          <p className="text-sm text-text-muted mb-2">Add entries to filter out unwanted results</p>
+          <p className="text-sm font-semibold text-text-primary">No blacklist entries</p>
+          <p className="text-sm text-text-muted mt-1">Add entries to filter out unwanted results</p>
           <button onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/20"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20 text-white rounded-lg text-sm font-medium transition-all mt-3"
           >
             <ShieldPlus className="w-4 h-4" />
             Add First Entry
