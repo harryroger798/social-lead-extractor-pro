@@ -10,6 +10,7 @@ import {
 import { cn, formatNumber, formatDate } from '@/lib/utils';
 import { fetchDashboardStats } from '@/lib/api';
 import type { DashboardStatsResponse, SessionItem } from '@/lib/api';
+import type { Section } from '@/types';
 
 const PLATFORM_COLORS = ['#0A66C2','#1877F2','#E4405F','#1DA1F2','#FF0000','#FF4500','#6366F1','#E60023','#36465D'];
 const PIE_COLORS = ['#3B82F6','#10B981'];
@@ -47,7 +48,7 @@ function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
 }
 
 interface DashboardProps {
-  onNavigate: (section: string) => void;
+  onNavigate: (section: Section) => void;
 }
 
 export default function Dashboard({ onNavigate }: DashboardProps) {
