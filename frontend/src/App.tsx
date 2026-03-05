@@ -42,8 +42,10 @@ function App() {
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      <main className="flex-1 overflow-hidden">
-        {renderSection()}
+      <main className="flex-1 overflow-hidden bg-bg-primary">
+        <div className="h-full">
+          {renderSection()}
+        </div>
       </main>
     </div>
   );

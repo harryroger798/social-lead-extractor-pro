@@ -84,18 +84,18 @@ export default function BlacklistManager() {
   };
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
+    <div className="p-8 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary">Blacklist Manager</h2>
-          <p className="text-sm text-text-secondary mt-1">
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Blacklist Manager</h2>
+          <p className="text-sm text-text-muted mt-1">
             {stats.total} entries blocking unwanted results
           </p>
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/20"
         >
           {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showAddForm ? 'Cancel' : 'Add Entry'}
@@ -113,12 +113,12 @@ export default function BlacklistManager() {
         ].map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-bg-secondary rounded-lg border border-border p-4">
-              <div className="flex items-center gap-2 mb-1">
+            <div key={stat.label} className="bg-bg-secondary rounded-xl border border-border p-4 hover:border-border-light transition-all duration-200">
+              <div className="flex items-center gap-2 mb-1.5">
                 <Icon className={cn('w-4 h-4', stat.color)} />
-                <span className="text-xs text-text-muted">{stat.label}</span>
+                <span className="text-xs font-medium text-text-muted uppercase tracking-wider">{stat.label}</span>
               </div>
-              <p className="text-xl font-bold text-text-primary">{stat.value}</p>
+              <p className="text-xl font-bold text-text-primary tracking-tight">{stat.value}</p>
             </div>
           );
         })}
@@ -126,13 +126,13 @@ export default function BlacklistManager() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-bg-secondary rounded-xl border border-accent/30 p-5 mb-6">
+        <div className="bg-bg-secondary rounded-xl border border-accent/20 p-6 mb-6">
           <h3 className="text-sm font-semibold text-text-primary mb-4">Add Blacklist Entry</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <select
               value={newType}
               onChange={(e) => setNewType(e.target.value as BlacklistEntry['type'])}
-              className="px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
+              className="px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
             >
               <option value="email">Email</option>
               <option value="domain">Domain</option>
@@ -149,19 +149,19 @@ export default function BlacklistManager() {
                 newType === 'phone' ? '+15555555555' :
                 'unwanted keyword'
               }
-              className="px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+              className="px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
             />
             <input
               type="text"
               value={newReason}
               onChange={(e) => setNewReason(e.target.value)}
               placeholder="Reason (optional)"
-              className="px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+              className="px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
             />
             <button
               onClick={addEntry}
               disabled={!newValue.trim()}
-              className="px-4 py-2.5 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2.5 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all"
             >
               Add
             </button>
@@ -170,21 +170,21 @@ export default function BlacklistManager() {
       )}
 
       {/* Filters */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search blacklist..."
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
         </div>
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
+          className="px-3.5 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
         >
           <option value="all">All Types</option>
           <option value="email">Emails</option>
@@ -201,7 +201,7 @@ export default function BlacklistManager() {
           return (
             <div
               key={entry.id}
-              className="flex items-center justify-between bg-bg-secondary rounded-lg border border-border p-4 hover:border-border-light transition-colors"
+              className="flex items-center justify-between bg-bg-secondary rounded-xl border border-border p-4 hover:border-border-light transition-all duration-200"
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0', typeColors[entry.type])}>
@@ -229,10 +229,10 @@ export default function BlacklistManager() {
       </div>
 
       {filteredEntries.length === 0 && (
-        <div className="text-center py-12">
-          <ShieldBan className="w-12 h-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-secondary">No blacklist entries found</p>
-          <p className="text-sm text-text-muted mt-1">Add entries to filter out unwanted results</p>
+        <div className="text-center py-16">
+          <ShieldBan className="w-12 h-12 text-text-muted mx-auto mb-4" />
+          <p className="text-sm font-medium text-text-secondary">No blacklist entries found</p>
+          <p className="text-xs text-text-muted mt-1.5">Add entries to filter out unwanted results</p>
         </div>
       )}
     </div>

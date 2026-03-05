@@ -74,20 +74,20 @@ export default function Settings() {
   ];
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
+    <div className="p-8 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary">Settings</h2>
-          <p className="text-sm text-text-secondary mt-1">Configure your application preferences</p>
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Settings</h2>
+          <p className="text-sm text-text-muted mt-1">Configure your application preferences</p>
         </div>
         <button
           onClick={handleSave}
           className={cn(
-            'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
+            'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all',
             saved
-              ? 'bg-success/20 text-success'
-              : 'bg-accent hover:bg-accent-hover text-white'
+              ? 'bg-success/10 text-success'
+              : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20'
           )}
         >
           {saved ? <CheckCircle className="w-4 h-4" /> : <Save className="w-4 h-4" />}
@@ -98,7 +98,7 @@ export default function Settings() {
       {/* Settings Tabs */}
       <div className="flex gap-6">
         {/* Tab Navigation */}
-        <div className="w-48 space-y-1 flex-shrink-0">
+        <div className="w-48 space-y-0.5 flex-shrink-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -108,11 +108,11 @@ export default function Settings() {
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left',
                   activeTab === tab.id
-                    ? 'bg-accent text-white'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                    ? 'bg-accent/10 text-accent border border-accent/20'
+                    : 'text-text-muted hover:text-text-primary hover:bg-bg-secondary border border-transparent'
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={cn('w-4 h-4', activeTab === tab.id && 'text-accent')} />
                 {tab.label}
               </button>
             );
@@ -129,7 +129,7 @@ export default function Settings() {
                 <p className="text-sm text-text-secondary">Enter your license key to activate the application</p>
               </div>
 
-              <div className="p-4 rounded-lg border border-border bg-bg-primary">
+              <div className="p-5 rounded-xl border border-border bg-bg-primary">
                 <div className="flex items-center gap-3 mb-4">
                   {settings.licenseStatus === 'active' ? (
                     <>
@@ -150,11 +150,11 @@ export default function Settings() {
                     value={settings.licenseKey}
                     onChange={(e) => updateSetting('licenseKey', e.target.value)}
                     placeholder="XXXX-XXXX-XXXX-XXXX"
-                    className="flex-1 px-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent font-mono"
+                    className="flex-1 px-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent font-mono"
                   />
                   <button
                     onClick={activateLicense}
-                    className="px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-colors"
+                    className="px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all"
                   >
                     Activate
                   </button>
@@ -163,11 +163,11 @@ export default function Settings() {
 
               {settings.licenseStatus === 'active' && (
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg border border-border bg-bg-primary">
+                  <div className="p-4 rounded-xl border border-border bg-bg-primary">
                     <p className="text-xs text-text-muted mb-1">License Type</p>
                     <p className="text-sm font-medium text-text-primary">Professional</p>
                   </div>
-                  <div className="p-4 rounded-lg border border-border bg-bg-primary">
+                  <div className="p-4 rounded-xl border border-border bg-bg-primary">
                     <p className="text-xs text-text-muted mb-1">Expires</p>
                     <p className="text-sm font-medium text-text-primary">Never (Lifetime)</p>
                   </div>
@@ -263,7 +263,7 @@ export default function Settings() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border">
+              <div className="flex items-center justify-between p-4 bg-bg-primary rounded-xl border border-border">
                 <div>
                   <p className="text-sm font-medium text-text-primary">Auto-Verify Emails</p>
                   <p className="text-xs text-text-muted mt-0.5">Automatically verify email domains via MX records</p>
@@ -306,7 +306,7 @@ export default function Settings() {
                   desc: 'Play sound when extraction completes',
                 },
               ].map((item) => (
-                <div key={item.key} className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border">
+                <div key={item.key} className="flex items-center justify-between p-4 bg-bg-primary rounded-xl border border-border">
                   <div>
                     <p className="text-sm font-medium text-text-primary">{item.label}</p>
                     <p className="text-xs text-text-muted mt-0.5">{item.desc}</p>
@@ -338,7 +338,7 @@ export default function Settings() {
                 <p className="text-sm text-text-secondary">Manage your local SQLite database</p>
               </div>
 
-              <div className="p-4 rounded-lg border border-border bg-bg-primary">
+              <div className="p-5 rounded-xl border border-border bg-bg-primary">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-sm font-medium text-text-primary">Database Location</p>
@@ -351,7 +351,7 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border">
+              <div className="flex items-center justify-between p-4 bg-bg-primary rounded-xl border border-border">
                 <div>
                   <p className="text-sm font-medium text-text-primary">Auto Backup</p>
                   <p className="text-xs text-text-muted mt-0.5">Automatically backup database every {settings.backupInterval} hours</p>
@@ -372,20 +372,20 @@ export default function Settings() {
                 </button>
               </div>
 
-              <div className="flex gap-3">
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm font-medium text-text-primary hover:border-border-light transition-colors">
+              <div className="flex flex-wrap gap-3">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm font-medium text-text-primary hover:border-border-light transition-all">
                   <Download className="w-4 h-4" />
                   Export Database
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm font-medium text-text-primary hover:border-border-light transition-colors">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm font-medium text-text-primary hover:border-border-light transition-all">
                   <Upload className="w-4 h-4" />
                   Import Database
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm font-medium text-text-primary hover:border-border-light transition-colors">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm font-medium text-text-primary hover:border-border-light transition-all">
                   <RefreshCw className="w-4 h-4" />
                   Optimize
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-error/10 border border-error/30 rounded-lg text-sm font-medium text-error hover:bg-error/20 transition-colors">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-error/10 border border-error/20 rounded-xl text-sm font-medium text-error hover:bg-error/20 transition-all">
                   <Trash2 className="w-4 h-4" />
                   Clear All Data
                 </button>

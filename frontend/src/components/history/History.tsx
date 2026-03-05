@@ -117,25 +117,25 @@ export default function History() {
   });
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
+    <div className="p-8 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary">History & Sessions</h2>
-          <p className="text-sm text-text-secondary mt-1">{sessions.length} extraction sessions</p>
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">History & Sessions</h2>
+          <p className="text-sm text-text-muted mt-1">{sessions.length} extraction sessions</p>
         </div>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search sessions..."
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function History() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
+            className="px-3.5 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="completed">Completed</option>
@@ -159,19 +159,19 @@ export default function History() {
         {filteredSessions.map((session) => (
           <div
             key={session.id}
-            className="bg-bg-secondary rounded-xl border border-border p-5 hover:border-border-light transition-colors"
+            className="bg-bg-secondary rounded-xl border border-border p-5 hover:border-border-light transition-all duration-200"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-base font-semibold text-text-primary truncate">{session.name}</h3>
+                  <h3 className="text-sm font-semibold text-text-primary truncate">{session.name}</h3>
                   <span
                     className={cn(
-                      'px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
-                      session.status === 'completed' && 'bg-success/20 text-success',
-                      session.status === 'running' && 'bg-accent/20 text-accent',
-                      session.status === 'failed' && 'bg-error/20 text-error',
-                      session.status === 'paused' && 'bg-warning/20 text-warning'
+                      'px-2 py-0.5 rounded-md text-xs font-semibold flex-shrink-0',
+                      session.status === 'completed' && 'bg-success/10 text-success',
+                      session.status === 'running' && 'bg-accent/10 text-accent',
+                      session.status === 'failed' && 'bg-error/10 text-error',
+                      session.status === 'paused' && 'bg-warning/10 text-warning'
                     )}
                   >
                     {session.status}
@@ -192,7 +192,7 @@ export default function History() {
 
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {session.keywords.map((kw) => (
-                    <span key={kw} className="px-2 py-0.5 bg-bg-primary rounded text-xs text-text-secondary border border-border">
+                    <span key={kw} className="px-2 py-0.5 bg-bg-primary rounded-md text-xs text-text-secondary border border-border">
                       {kw}
                     </span>
                   ))}
@@ -232,35 +232,35 @@ export default function History() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+              <div className="flex items-center gap-1 ml-4 flex-shrink-0">
                 <button
-                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-colors"
+                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-all"
                   title="View results"
                 >
                   <Eye className="w-4 h-4" />
                 </button>
                 <button
-                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-colors"
+                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-all"
                   title="Re-run extraction"
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
                 {session.status === 'paused' && (
                   <button
-                    className="p-2 rounded-lg text-accent hover:bg-accent/10 transition-colors"
+                    className="p-2 rounded-lg text-accent hover:bg-accent/10 transition-all"
                     title="Resume"
                   >
                     <Play className="w-4 h-4" />
                   </button>
                 )}
                 <button
-                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-colors"
+                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-all"
                   title="Export"
                 >
                   <Download className="w-4 h-4" />
                 </button>
                 <button
-                  className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-error/10 transition-colors"
+                  className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-error/10 transition-all"
                   title="Delete"
                 >
                   <Trash2 className="w-4 h-4" />

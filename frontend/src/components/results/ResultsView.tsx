@@ -116,23 +116,23 @@ export default function ResultsView() {
   };
 
   return (
-    <div className="p-6 h-full flex flex-col overflow-hidden">
+    <div className="p-8 h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-shrink-0">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary">Results</h2>
-          <p className="text-sm text-text-secondary mt-1">
-            {filteredLeads.length} leads found {selectedLeads.size > 0 && `(${selectedLeads.size} selected)`}
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Results</h2>
+          <p className="text-sm text-text-muted mt-1">
+            {filteredLeads.length} leads found {selectedLeads.size > 0 && <span className="text-accent font-medium">({selectedLeads.size} selected)</span>}
           </p>
         </div>
         <div className="flex items-center gap-3">
           {selectedLeads.size > 0 && (
-            <button className="flex items-center gap-2 px-3 py-2 bg-error/20 text-error rounded-lg text-sm font-medium hover:bg-error/30 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-error/10 text-error rounded-xl text-sm font-semibold hover:bg-error/20 transition-all">
               <Trash2 className="w-4 h-4" />
               Delete ({selectedLeads.size})
             </button>
           )}
-          <button className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-colors">
+          <button className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/20">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -140,15 +140,15 @@ export default function ResultsView() {
       </div>
 
       {/* Filters Bar */}
-      <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+      <div className="flex items-center gap-3 mb-5 flex-shrink-0">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             placeholder="Search emails, names, phones..."
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ export default function ResultsView() {
           <select
             value={platformFilter}
             onChange={(e) => { setPlatformFilter(e.target.value); setCurrentPage(1); }}
-            className="px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
+            className="px-3.5 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer"
           >
             <option value="all">All Platforms</option>
             <option value="linkedin">LinkedIn</option>
@@ -176,7 +176,7 @@ export default function ResultsView() {
       <div className="flex-1 overflow-auto bg-bg-secondary rounded-xl border border-border">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-bg-secondary z-10">
-            <tr className="border-b border-border">
+            <tr className="border-b border-border/80">
               <th className="px-4 py-3 text-left">
                 <input
                   type="checkbox"
@@ -292,7 +292,7 @@ export default function ResultsView() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between mt-4 flex-shrink-0">
+      <div className="flex items-center justify-between mt-5 flex-shrink-0">
         <p className="text-sm text-text-muted">
           Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredLeads.length)} of{' '}
           {filteredLeads.length}
@@ -301,7 +301,7 @@ export default function ResultsView() {
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -313,8 +313,8 @@ export default function ResultsView() {
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={cn(
-                  'w-8 h-8 rounded-lg text-sm font-medium transition-colors',
-                  page === currentPage ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                  'w-8 h-8 rounded-lg text-sm font-medium transition-all',
+                  page === currentPage ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-muted hover:text-text-primary hover:bg-bg-tertiary'
                 )}
               >
                 {page}
@@ -324,7 +324,7 @@ export default function ResultsView() {
           <button
             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

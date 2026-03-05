@@ -34,25 +34,28 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
   return (
     <aside
       className={cn(
-        'h-screen bg-bg-secondary border-r border-border flex flex-col transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        'h-screen bg-bg-secondary border-r border-border flex flex-col transition-all duration-300 ease-in-out',
+        collapsed ? 'w-18' : 'w-60'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border">
-        <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 h-16 border-b border-border flex-shrink-0">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-blue-400 flex items-center justify-center flex-shrink-0 shadow-lg shadow-accent/20">
           <Zap className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="text-sm font-bold text-text-primary truncate">Social Lead Extractor</h1>
-            <p className="text-xs text-text-muted">Pro Edition</p>
+            <h1 className="text-sm font-bold text-text-primary tracking-tight leading-tight">Lead Extractor</h1>
+            <p className="text-xs text-accent font-medium">Pro Edition</p>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
+        <p className={cn('text-xs font-semibold text-text-muted uppercase tracking-wider mb-2', collapsed ? 'px-1 text-center' : 'px-3')}>
+          {collapsed ? '' : 'Menu'}
+        </p>
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
@@ -61,27 +64,34 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
               key={item.id}
               onClick={() => onSectionChange(item.id)}
               className={cn(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
+                'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                collapsed && 'justify-center px-2',
                 isActive
-                  ? 'bg-accent text-white shadow-lg shadow-accent/25'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                  ? 'bg-accent/10 text-accent border border-accent/20'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
               )}
               title={collapsed ? item.label : undefined}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className={cn('w-4.5 h-4.5 flex-shrink-0', isActive && 'text-accent')} />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </button>
           );
         })}
       </nav>
 
-      {/* Collapse Toggle */}
-      <div className="border-t border-border p-2">
+      {/* Version + Collapse */}
+      <div className="border-t border-border p-2.5 space-y-2">
+        {!collapsed && (
+          <div className="px-3 py-2 rounded-lg bg-bg-tertiary/50">
+            <p className="text-xs text-text-muted">Version 1.0.0</p>
+            <p className="text-xs text-accent font-medium">Professional License</p>
+          </div>
+        )}
         <button
           onClick={onToggleCollapse}
           className="w-full flex items-center justify-center py-2 text-text-muted hover:text-text-primary transition-colors rounded-lg hover:bg-bg-tertiary"
         >
-          {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
     </aside>

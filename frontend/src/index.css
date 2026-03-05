@@ -1,19 +1,25 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @theme {
-  --color-bg-primary: #0F172A;
-  --color-bg-secondary: #1E293B;
-  --color-bg-tertiary: #273549;
+  --color-bg-primary: #0B1120;
+  --color-bg-secondary: #131C31;
+  --color-bg-tertiary: #1A2540;
+  --color-bg-card: #141E33;
   --color-accent: #3B82F6;
   --color-accent-hover: #2563EB;
-  --color-success: #22C55E;
+  --color-accent-glow: rgba(59, 130, 246, 0.15);
+  --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
-  --color-text-primary: #F8FAFC;
+  --color-text-primary: #F1F5F9;
   --color-text-secondary: #94A3B8;
   --color-text-muted: #64748B;
-  --color-border: #334155;
-  --color-border-light: #475569;
+  --color-border: #1E293B;
+  --color-border-light: #334155;
+  --color-purple: #8B5CF6;
+  --color-pink: #EC4899;
+  --color-cyan: #06B6D4;
 }
 
 * {
@@ -22,11 +28,18 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 14px;
+}
+
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0F172A;
-  color: #F8FAFC;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #0B1120;
+  color: #F1F5F9;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
@@ -36,19 +49,40 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 3px;
+  background: #334155;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: #475569;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+main > div {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

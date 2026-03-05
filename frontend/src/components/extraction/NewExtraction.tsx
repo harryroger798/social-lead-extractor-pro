@@ -128,26 +128,26 @@ export default function NewExtraction() {
   };
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
+    <div className="p-8 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary">New Extraction</h2>
-          <p className="text-sm text-text-secondary mt-1">Configure and start a new lead extraction session</p>
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">New Extraction</h2>
+          <p className="text-sm text-text-muted mt-1">Configure and start a new lead extraction session</p>
         </div>
         <div className="flex items-center gap-3">
           {isRunning ? (
             <>
               <button
                 onClick={handlePause}
-                className="flex items-center gap-2 px-4 py-2.5 bg-warning/20 text-warning rounded-lg text-sm font-medium hover:bg-warning/30 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-warning/10 text-warning rounded-xl text-sm font-semibold hover:bg-warning/20 transition-all"
               >
                 <Pause className="w-4 h-4" />
                 {isPaused ? 'Resume' : 'Pause'}
               </button>
               <button
                 onClick={handleStop}
-                className="flex items-center gap-2 px-4 py-2.5 bg-error/20 text-error rounded-lg text-sm font-medium hover:bg-error/30 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-error/10 text-error rounded-xl text-sm font-semibold hover:bg-error/20 transition-all"
               >
                 <Square className="w-4 h-4" />
                 Stop
@@ -157,7 +157,7 @@ export default function NewExtraction() {
             <button
               onClick={handleStart}
               disabled={keywords.length === 0}
-              className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/20 hover:shadow-accent/30"
             >
               <Play className="w-4 h-4" />
               Start Extraction
@@ -168,7 +168,7 @@ export default function NewExtraction() {
 
       {/* Progress Bar (when running) */}
       {isRunning && (
-        <div className="mb-6 bg-bg-secondary rounded-xl border border-border p-4">
+        <div className="mb-6 bg-bg-secondary rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-text-secondary">
               {isPaused ? 'Paused' : 'Extracting...'} - {leadsFound} leads found
@@ -185,7 +185,7 @@ export default function NewExtraction() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-bg-secondary rounded-lg p-1 border border-border overflow-x-auto">
+      <div className="flex gap-1 mb-6 bg-bg-secondary rounded-xl p-1.5 border border-border overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -193,10 +193,10 @@ export default function NewExtraction() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all',
+                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
                 activeTab === tab.id
-                  ? 'bg-accent text-white shadow-sm'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                  ? 'bg-accent/10 text-accent border border-accent/20'
+                  : 'text-text-muted hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
               )}
             >
               <Icon className="w-4 h-4" />
@@ -207,7 +207,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-bg-secondary rounded-xl border border-border p-6">
+      <div className="bg-bg-secondary rounded-xl border border-border p-6 space-y-0">
         {/* Search Tab */}
         {activeTab === 'search' && (
           <div className="space-y-6">
