@@ -52,31 +52,43 @@ function startBackend() {
   const backendDir = path.join(__dirname, '..', 'backend');
   const isPackaged = app.isPackaged;
 
-  if (isPackaged) {
-    // In production, use bundled Python
-    backendProcess = spawn('python', ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
-      cwd: backendDir,
-      env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+  try {
+    if (isPackaged) {
+      // In production, try python3 first, then python
+      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+      backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
+        cwd: backendDir,
+        env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+      });
+    } else {
+      // In development, use poetry
+      backendProcess = spawn('poetry', ['run', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
+        cwd: backendDir,
+        env: { ...process.env },
+      });
+    }
+
+    backendProcess.stdout.on('data', (data) => {
+      console.log(`[Backend] ${data}`);
     });
-  } else {
-    // In development, use poetry
-    backendProcess = spawn('poetry', ['run', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
-      cwd: backendDir,
-      env: { ...process.env },
+
+    backendProcess.stderr.on('data', (data) => {
+      console.error(`[Backend] ${data}`);
     });
+
+    backendProcess.on('error', (err) => {
+      console.error(`[Backend] Failed to start: ${err.message}`);
+      console.error('[Backend] Python may not be installed. The UI will still work but extraction features require Python.');
+      backendProcess = null;
+    });
+
+    backendProcess.on('close', (code) => {
+      console.log(`[Backend] Process exited with code ${code}`);
+    });
+  } catch (err) {
+    console.error(`[Backend] Failed to start backend: ${err.message}`);
+    backendProcess = null;
   }
-
-  backendProcess.stdout.on('data', (data) => {
-    console.log(`[Backend] ${data}`);
-  });
-
-  backendProcess.stderr.on('data', (data) => {
-    console.error(`[Backend] ${data}`);
-  });
-
-  backendProcess.on('close', (code) => {
-    console.log(`[Backend] Process exited with code ${code}`);
-  });
 }
 
 function stopBackend() {
@@ -87,10 +99,9 @@ function stopBackend() {
 }
 
 app.whenReady().then(() => {
+  // Create window immediately, start backend in background
+  createWindow();
   startBackend();
-
-  // Give backend time to start
-  setTimeout(createWindow, 2000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
