@@ -132,7 +132,7 @@ export default function ResellerPanel() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
       <div className="min-h-full flex flex-col gap-6">
       {/* Stats */}
       <div className="grid grid-cols-4 gap-6">
@@ -292,7 +292,7 @@ export default function ResellerPanel() {
           </table>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center pt-24 gap-4 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center py-32 text-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
             <Key className="h-6 w-6 text-text-muted" />
           </div>

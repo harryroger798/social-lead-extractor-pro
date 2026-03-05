@@ -209,8 +209,8 @@ export default function NewExtraction() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
-      <div className="max-w-4xl space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
+      <div className="max-w-[900px] space-y-6">
 
       {error && (
         <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/20 rounded-xl">

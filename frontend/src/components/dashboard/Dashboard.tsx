@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Mail, Phone, Users, TrendingUp, Zap, CheckCircle, Activity,
+  Mail, Phone, Users, TrendingUp, Zap,
   ArrowUpRight, Clock, Loader2, AlertCircle, BarChart3, Search,
 } from 'lucide-react';
 import {
@@ -129,22 +129,16 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
-        {/* Stat Cards - 3 per row */}
-        <div className="grid grid-cols-3 gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8 space-y-8">
+        {/* Stat Cards - 4 per row */}
+        <div className="grid grid-cols-4 gap-6">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
           <StatCard title="Leads Today" value={stats.leads_today} icon={TrendingUp} color="#10B981" />
           <StatCard title="Emails Found" value={stats.total_emails} icon={Mail} color="#8B5CF6" />
           <StatCard title="Phones Found" value={stats.total_phones} icon={Phone} color="#F59E0B" />
-          <StatCard
-            title="Verified Emails" value={stats.verified_emails}
-            change={stats.total_emails > 0 ? `${((stats.verified_emails / stats.total_emails) * 100).toFixed(1)}% rate` : '0%'}
-            icon={CheckCircle} color="#10B981"
-          />
-          <StatCard title="Sessions Done" value={stats.sessions_completed} icon={Activity} color="#EC4899" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-bg-card rounded-2xl border border-white/10">
             <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <h3 className="text-sm font-medium text-text-primary">Leads by Platform</h3>
@@ -286,7 +280,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </tbody>
             </table>
           ) : (
-            <div className="flex flex-col items-center py-24 text-center">
+            <div className="flex flex-col items-center justify-center py-32 text-center">
               <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-text-muted" />
               </div>

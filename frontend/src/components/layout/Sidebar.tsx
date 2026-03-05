@@ -85,11 +85,11 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[13px] font-medium transition-all duration-200',
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200',
                       collapsed && 'justify-center px-0',
                       isActive
-                        ? 'bg-accent/10 text-accent border border-accent/20'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
+                        ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent'
                     )}
                     title={collapsed ? item.label : undefined}
                   >

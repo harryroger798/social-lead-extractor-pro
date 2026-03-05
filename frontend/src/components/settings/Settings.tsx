@@ -171,10 +171,10 @@ export default function Settings() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
-      <div className="grid grid-cols-[220px_1fr] gap-8 min-h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
+      <div className="grid grid-cols-[240px_1fr] gap-10 min-h-full">
         {/* Tab Navigation */}
-        <div className="w-52 flex-shrink-0">
+        <div className="flex-shrink-0">
           <nav className="bg-bg-card rounded-2xl border border-white/10 p-3 space-y-1 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
