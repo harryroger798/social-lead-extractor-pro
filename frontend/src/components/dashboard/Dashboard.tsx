@@ -147,14 +147,6 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     { name: 'Phones', value: stats.total_phones },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent" />
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6 overflow-y-auto h-full">
       {/* Header */}
