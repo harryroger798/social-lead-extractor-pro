@@ -1,0 +1,56 @@
+{
+  "name": "social-lead-extractor-pro",
+  "version": "1.0.0",
+  "description": "Social Lead Extractor Pro - Extract emails and phone numbers from 9 social media platforms",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:electron": "NODE_ENV=development electron .",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.socialleadextractor.pro",
+    "productName": "Social Lead Extractor Pro",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "!backend/.venv/**",
+      "!backend/__pycache__/**",
+      "!**/node_modules/**"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "electron/assets/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "electron/assets/icon.icns",
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "electron/assets/icon.png",
+      "category": "Office"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "concurrently": "^9.0.0"
+  },
+  "author": "Social Lead Extractor Pro",
+  "license": "MIT"
+}
