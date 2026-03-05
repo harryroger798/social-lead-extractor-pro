@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #0B1120;
-  --color-bg-secondary: #111827;
-  --color-bg-tertiary: #1F2937;
-  --color-bg-card: #0f1a2e;
-  --color-bg-card-elevated: #111c35;
-  --color-bg-input: #111c35;
+  --color-bg-primary: #0a0f1a;
+  --color-bg-secondary: #0f1525;
+  --color-bg-tertiary: #1a2236;
+  --color-bg-card: #111827;
+  --color-bg-card-elevated: #151d30;
+  --color-bg-input: #141c2e;
   --color-accent: #3B82F6;
   --color-accent-hover: #2563EB;
   --color-accent-glow: rgba(59, 130, 246, 0.15);
@@ -39,7 +39,7 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #0B1120;
+  background-color: #0a0f1a;
   color: #F1F5F9;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -74,23 +74,23 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 button {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 main > div {
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.15s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

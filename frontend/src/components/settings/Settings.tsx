@@ -113,9 +113,9 @@ export default function Settings() {
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
-            className={cn('relative w-11 h-6 rounded-full transition-colors flex-shrink-0', enabled ? 'bg-accent' : 'bg-bg-tertiary border border-border')}
+            className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-white/[0.08]')}
           >
-            <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform', enabled && 'translate-x-5')} />
+            <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
           </button>
         </div>
       );
@@ -151,17 +151,17 @@ export default function Settings() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-4">
+      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-8 py-5">
           <div>
-            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Settings</h1>
-            <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
+            <h1 className="text-lg font-semibold text-text-primary tracking-tight">Settings</h1>
+            <p className="text-sm text-text-secondary mt-0.5">Configure your extraction preferences</p>
           </div>
         <button
           onClick={handleSave} disabled={!dirty || saving}
           className={cn(
-            'flex items-center gap-2 px-6 py-2.5 rounded-[8px] text-sm font-semibold transition-all',
-            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-bg-secondary border border-border text-text-muted cursor-not-allowed'
+            'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
+            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-white/[0.03] border border-white/[0.08] text-text-muted cursor-not-allowed'
           )}
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -171,19 +171,19 @@ export default function Settings() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-      <div className="grid grid-cols-[240px_1fr] gap-10 min-h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="grid grid-cols-[220px_1fr] gap-6 min-h-full">
         {/* Tab Navigation */}
         <div className="flex-shrink-0">
-          <nav className="bg-bg-card rounded-2xl border border-white/10 p-3 space-y-1 sticky top-0">
+          <nav className="bg-bg-card rounded-xl border border-white/[0.08] p-2.5 space-y-0.5 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-all text-left',
-                    activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
+                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
+                    activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06] border border-transparent'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -195,7 +195,8 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-bg-card rounded-2xl border border-white/10 p-8 min-h-[500px]">
+        <div className="bg-bg-card rounded-xl border border-white/[0.08] p-8 min-h-[500px]">
+          <div className="max-w-[640px]">
           {activeTab === 'general' && (
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">General Settings</h3>
@@ -283,6 +284,7 @@ export default function Settings() {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
       </div>

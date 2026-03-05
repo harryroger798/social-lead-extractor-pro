@@ -69,9 +69,9 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       {/* Navigation - Grouped */}
       <nav className="flex-1 py-3 px-3 overflow-y-auto">
         {navGroups.map((group, gi) => (
-          <div key={group.label} className="mb-5 last:mb-0">
+          <div key={group.label} className={cn('mb-1 last:mb-0', gi > 0 && 'mt-6')}>
             {!collapsed && (
-              <p className="text-[9px] font-medium text-text-muted/60 uppercase tracking-[0.15em] px-3 mb-1.5 select-none">
+              <p className="text-[10px] font-semibold text-text-muted/70 uppercase tracking-[0.12em] px-3 mb-2 select-none">
                 {group.label}
               </p>
             )}
@@ -85,11 +85,11 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200',
+                      'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150',
                       collapsed && 'justify-center px-0',
                       isActive
-                        ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent'
+                        ? 'bg-accent/10 text-accent border border-accent/20 shadow-sm shadow-accent/5'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06] border border-transparent'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
@@ -104,9 +104,9 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       </nav>
 
       {/* Version + Collapse */}
-      <div className="border-t border-white/10 px-4 py-4 space-y-2">
+      <div className="border-t border-white/[0.06] px-4 py-3 space-y-2">
         {!collapsed && (
-          <div className="px-4 py-3 rounded-[8px] bg-bg-tertiary/50">
+          <div className="px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
             <p className="text-[11px] text-text-muted">Version 1.0.0</p>
             <p className="text-[11px] text-accent font-medium">Professional License</p>
           </div>

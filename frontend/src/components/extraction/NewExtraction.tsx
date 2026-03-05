@@ -112,8 +112,8 @@ export default function NewExtraction() {
         <p className="text-sm font-medium text-text-primary">{label}</p>
         {description && <p className="text-xs text-text-muted mt-1 leading-relaxed">{description}</p>}
       </div>
-      <button onClick={onChange} className={cn('relative w-11 h-6 rounded-full transition-colors flex-shrink-0', enabled ? 'bg-accent' : 'bg-bg-tertiary border border-border')}>
-        <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform', enabled && 'translate-x-5')} />
+      <button onClick={onChange} className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-white/[0.08]')}>
+        <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
       </button>
     </div>
   );
@@ -121,21 +121,21 @@ export default function NewExtraction() {
   if (step === 'running' || step === 'complete') {
     return (
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-          <div className="px-8 py-4">
-            <h1 className="text-xl font-semibold text-text-primary tracking-tight">
+        <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
+          <div className="px-8 py-5">
+            <h1 className="text-lg font-semibold text-text-primary tracking-tight">
               {step === 'running' ? 'Extraction in Progress' : 'Extraction Complete'}
             </h1>
-            <p className="text-sm text-text-secondary mt-1">{name}</p>
+            <p className="text-sm text-text-secondary mt-0.5">{name}</p>
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-5">
 
         {status && (
           <>
             {/* Progress */}
-            <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+            <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   {step === 'running' ? (
@@ -165,18 +165,18 @@ export default function NewExtraction() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-5">
-              <div className="bg-bg-card rounded-2xl border border-white/10 p-6 text-center">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6 text-center">
                 <Users className="w-6 h-6 text-accent mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.total_leads}</p>
                 <p className="text-xs text-text-muted mt-1.5">Total Leads</p>
               </div>
-              <div className="bg-bg-card rounded-2xl border border-white/10 p-6 text-center">
+              <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6 text-center">
                 <Mail className="w-6 h-6 text-blue-400 mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.emails_found}</p>
                 <p className="text-xs text-text-muted mt-1.5">Emails Found</p>
               </div>
-              <div className="bg-bg-card rounded-2xl border border-white/10 p-6 text-center">
+              <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6 text-center">
                 <Phone className="w-6 h-6 text-success mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.phones_found}</p>
                 <p className="text-xs text-text-muted mt-1.5">Phones Found</p>
@@ -201,16 +201,16 @@ export default function NewExtraction() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="px-8 py-4">
-          <h1 className="text-xl font-semibold text-text-primary tracking-tight">New Extraction</h1>
-          <p className="text-sm text-text-secondary mt-1">Configure and start a new lead extraction session</p>
+      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
+        <div className="px-8 py-5">
+          <h1 className="text-lg font-semibold text-text-primary tracking-tight">New Extraction</h1>
+          <p className="text-sm text-text-secondary mt-0.5">Configure and start a new lead extraction session</p>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-      <div className="max-w-[900px] space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="max-w-[900px] space-y-5">
 
       {error && (
         <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/20 rounded-xl">
@@ -220,9 +220,9 @@ export default function NewExtraction() {
       )}
 
       {/* Session Name */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
           </div>
           Basic Configuration
@@ -245,9 +245,9 @@ export default function NewExtraction() {
       </div>
 
       {/* Platform Selection */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
           </div>
           Platforms
@@ -257,13 +257,13 @@ export default function NewExtraction() {
           {PLATFORMS.map(p => (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
               className={cn(
-                'flex items-center gap-3 p-4 rounded-[10px] border-2 transition-all duration-200',
-                selectedPlatforms.includes(p.id)
-                  ? 'border-accent/50 bg-accent/5 shadow-sm shadow-accent/10'
-                  : 'border-border bg-bg-tertiary/30 hover:border-border-light hover:bg-bg-tertiary/60 opacity-80 hover:opacity-100'
+                  'flex items-center gap-3 p-4 rounded-xl border transition-all duration-200',
+                  selectedPlatforms.includes(p.id)
+                    ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
+                    : 'border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]'
               )}
             >
-              <div className="w-10 h-10 rounded-[8px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '18', color: p.color }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
                 <Globe className="w-5 h-5" />
               </div>
               <span className={cn('text-sm font-medium', selectedPlatforms.includes(p.id) ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
@@ -274,9 +274,9 @@ export default function NewExtraction() {
       </div>
 
       {/* Extraction Speed */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Search className="w-4 h-4 text-accent" />
           </div>
           Extraction Speed
@@ -298,9 +298,9 @@ export default function NewExtraction() {
       </div>
 
       {/* Output Settings */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <CheckCircle className="w-4 h-4 text-accent" />
           </div>
           Output
@@ -321,9 +321,9 @@ export default function NewExtraction() {
       </div>
 
       {/* Scraping Method */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
           </div>
           Scraping Method
@@ -335,9 +335,9 @@ export default function NewExtraction() {
       </div>
 
       {/* Security Settings */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
           </div>
           Security
@@ -349,13 +349,13 @@ export default function NewExtraction() {
       </div>
 
       {/* Start Button */}
-      <div className="bg-bg-card rounded-2xl border border-white/10 p-6 flex items-center justify-between">
+      <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-text-primary">Ready to extract?</p>
           <p className="text-xs text-text-muted mt-0.5">{selectedPlatforms.length} platform{selectedPlatforms.length !== 1 ? 's' : ''} selected · {keywords.split('\n').filter(Boolean).length} keyword{keywords.split('\n').filter(Boolean).length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={handleStart} disabled={starting}
-          className="flex items-center gap-2.5 px-8 py-3.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/40 disabled:opacity-50"
+          className="flex items-center gap-2.5 px-7 py-3 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30 disabled:opacity-50"
         >
           {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
           {starting ? 'Starting Extraction...' : 'Start Extraction'}

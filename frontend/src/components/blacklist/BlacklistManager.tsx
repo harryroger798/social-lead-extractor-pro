@@ -93,13 +93,13 @@ export default function BlacklistManager() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-4">
+      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-8 py-5">
           <div>
-            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
-            <p className="text-sm text-text-secondary mt-1">Block emails, domains, phones, or keywords from extraction</p>
+            <h1 className="text-lg font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
+            <p className="text-sm text-text-secondary mt-0.5">Block emails, domains, phones, or keywords from extraction</p>
           </div>
-          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
+          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
             <Plus className="w-4 h-4" />
             Add Entry
           </button>
@@ -107,13 +107,13 @@ export default function BlacklistManager() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-      <div className="min-h-full flex flex-col gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="min-h-full flex flex-col gap-4">
 
       {/* Add Entry Modal */}
       {showAdd && (
-        <div className="bg-bg-card rounded-2xl border border-white/10">
-          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+        <div className="bg-bg-card rounded-xl border border-white/[0.08]">
+          <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
             <h3 className="text-sm font-medium text-text-primary">Add Blacklist Entry</h3>
             <button onClick={() => setShowAdd(false)} className="p-1 rounded hover:bg-bg-tertiary text-text-muted"><X className="w-4 h-4" /></button>
           </div>
@@ -159,22 +159,22 @@ export default function BlacklistManager() {
       )}
 
       {/* Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search entries..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-[8px] border border-border p-1.5">
+        <div className="flex items-center gap-1 bg-white/[0.03] rounded-lg border border-white/[0.08] p-1">
           {TYPE_FILTERS.map(f => (
             <button
               key={f} onClick={() => setTypeFilter(f)}
               className={cn(
-                'px-3.5 py-2 rounded-[6px] text-xs font-medium transition-all capitalize',
-                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize',
+                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06]'
               )}
             >{f}</button>
           ))}
@@ -182,13 +182,13 @@ export default function BlacklistManager() {
       </div>
 
       {/* Entries List - fills remaining height */}
-      <div className="flex-1 bg-bg-card rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[400px]">
+      <div className="flex-1 bg-bg-card rounded-xl border border-white/[0.08] overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
           {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
-              <div key={entry.id} className="flex items-center justify-between p-4 bg-bg-card rounded-2xl border border-white/10 hover:border-white/20 transition-all">
+              <div key={entry.id} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.03] transition-all">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-9 h-9 rounded-[8px] bg-bg-tertiary flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4 h-4 text-text-muted" />
@@ -210,14 +210,14 @@ export default function BlacklistManager() {
           })}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center py-32 text-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
-            <Shield className="h-6 w-6 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center py-20 text-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-accent/[0.08] flex items-center justify-center">
+            <Shield className="h-7 w-7 text-accent/60" />
           </div>
-          <p className="text-sm font-semibold text-text-primary">No blacklist entries</p>
-          <p className="text-sm text-text-muted mt-1">Add entries to filter out unwanted results</p>
+          <p className="text-base font-semibold text-text-primary">No blacklist entries</p>
+          <p className="text-sm text-text-muted max-w-[280px]">Add entries to filter out unwanted results</p>
           <button onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20 text-white rounded-lg text-sm font-medium transition-all mt-3"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 text-white rounded-lg text-sm font-medium transition-all mt-2"
           >
             <ShieldPlus className="w-4 h-4" />
             Add First Entry

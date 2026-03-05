@@ -104,18 +104,18 @@ export default function ResultsView() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-4">
+      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-8 py-5">
           <div>
-            <h1 className="text-xl font-semibold text-text-primary tracking-tight">Results</h1>
-            <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
+            <h1 className="text-lg font-semibold text-text-primary tracking-tight">Results</h1>
+            <p className="text-sm text-text-secondary mt-0.5">{total.toLocaleString()} leads extracted</p>
           </div>
-          <div className="flex items-center gap-1.5 bg-bg-secondary rounded-[8px] border border-border p-1.5">
+          <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-lg border border-white/[0.08] p-1.5">
             <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
               <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-3.5 py-2 rounded-[6px] text-xs font-semibold bg-bg-tertiary border border-border text-text-secondary hover:text-text-primary hover:border-border-light hover:bg-bg-tertiary/80 transition-all"
+                className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white/[0.04] border border-white/[0.08] text-text-secondary hover:text-text-primary hover:border-white/[0.15] hover:bg-white/[0.06] transition-all"
               >
                 {fmt.toUpperCase()}
               </button>
@@ -125,25 +125,25 @@ export default function ResultsView() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-      <div className="min-h-full flex flex-col gap-5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="min-h-full flex flex-col gap-4">
       {/* Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search leads..." value={search}
             onChange={e => handleSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-[8px] border border-border p-1.5 overflow-x-auto">
+        <div className="flex items-center gap-1 bg-white/[0.03] rounded-lg border border-white/[0.08] p-1 overflow-x-auto">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {PLATFORMS.map(p => (
             <button key={p} onClick={() => handlePlatformChange(p)}
               className={cn(
-                'px-3.5 py-2 rounded-[6px] text-xs font-medium transition-all capitalize whitespace-nowrap',
-                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
+                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06]'
               )}
             >{p}</button>
           ))}
@@ -151,7 +151,7 @@ export default function ResultsView() {
       </div>
 
       {/* Table Container - fills remaining height */}
-      <div className="flex-1 bg-bg-card rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[400px]">
+      <div className="flex-1 bg-bg-card rounded-xl border border-white/[0.08] overflow-hidden flex flex-col min-h-[400px]">
       {leads.length > 0 ? (
         <>
           <div className="flex-1 overflow-hidden flex flex-col">
@@ -253,14 +253,14 @@ export default function ResultsView() {
           </div>
         </>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center py-32 text-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
-            <Database className="h-6 w-6 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center py-20 text-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-accent/[0.08] flex items-center justify-center">
+            <Database className="h-7 w-7 text-accent/60" />
           </div>
-          <p className="text-sm font-semibold text-text-primary">No leads found</p>
-          <p className="text-sm text-text-muted mt-1">Run an extraction to start collecting leads</p>
+          <p className="text-base font-semibold text-text-primary">No leads found</p>
+          <p className="text-sm text-text-muted max-w-[280px]">Run an extraction to start collecting leads</p>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20 text-white rounded-lg text-sm font-medium transition-all mt-3"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 text-white rounded-lg text-sm font-medium transition-all mt-2"
           >
             <Search className="w-4 h-4" />
             Start New Extraction
