@@ -87,14 +87,14 @@ export default function History() {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="px-8 py-5">
+        <div className="px-8 py-4">
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Extraction History</h1>
           <p className="text-sm text-text-secondary mt-1">Browse and manage past extraction sessions</p>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
       <div className="min-h-full flex flex-col gap-6">
       {/* Filters */}
       <div className="flex items-center gap-4">
@@ -121,11 +121,11 @@ export default function History() {
       </div>
 
       {/* Sessions List - fills remaining height */}
-      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden flex flex-col min-h-[400px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
       {filtered.length > 0 ? (
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {filtered.map(s => (
-            <div key={s.id} className="bg-bg-secondary rounded-[10px] border border-border p-5 hover:border-border-light transition-all duration-200">
+            <div key={s.id} className="bg-bg-secondary rounded-[10px] border border-border/80 p-5 hover:border-border-light transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
@@ -185,14 +185,14 @@ export default function History() {
           ))}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <FolderOpen className="w-10 h-10 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-12">
+          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+            <FolderOpen className="w-8 h-8 text-text-muted" />
           </div>
-          <p className="text-base font-semibold text-text-secondary">No sessions found</p>
+          <p className="text-lg font-semibold text-text-secondary">No sessions found</p>
           <p className="text-sm text-text-muted mb-2">Start a new extraction to see history here</p>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all shadow-lg shadow-accent/20"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/20"
           >
             <Zap className="w-4 h-4" />
             New Extraction

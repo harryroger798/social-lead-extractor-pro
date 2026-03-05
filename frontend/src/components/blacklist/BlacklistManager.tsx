@@ -94,7 +94,7 @@ export default function BlacklistManager() {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-5">
+        <div className="flex items-center justify-between px-8 py-4">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Blacklist Manager</h1>
             <p className="text-sm text-text-secondary mt-1">Block emails, domains, phones, or keywords from extraction</p>
@@ -107,12 +107,12 @@ export default function BlacklistManager() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
       <div className="min-h-full flex flex-col gap-6">
 
       {/* Add Entry Modal */}
       {showAdd && (
-        <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+        <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-text-primary">Add Blacklist Entry</h3>
             <button onClick={() => setShowAdd(false)} className="p-1 rounded hover:bg-bg-tertiary text-text-muted"><X className="w-4 h-4" /></button>
@@ -180,13 +180,13 @@ export default function BlacklistManager() {
       </div>
 
       {/* Entries List - fills remaining height */}
-      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border overflow-hidden flex flex-col min-h-[400px]">
+      <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden flex flex-col min-h-[400px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
       {filtered.length > 0 ? (
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
-              <div key={entry.id} className="flex items-center justify-between p-4 bg-bg-secondary rounded-[10px] border border-border hover:border-border-light transition-all">
+              <div key={entry.id} className="flex items-center justify-between p-4 bg-bg-secondary rounded-[10px] border border-border/80 hover:border-border-light transition-all">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-9 h-9 rounded-[8px] bg-bg-tertiary flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4 h-4 text-text-muted" />
@@ -208,14 +208,14 @@ export default function BlacklistManager() {
           })}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <div className="w-20 h-20 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-            <Shield className="w-10 h-10 text-text-muted" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-12">
+          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+            <Shield className="w-8 h-8 text-text-muted" />
           </div>
-          <p className="text-base font-semibold text-text-secondary">No blacklist entries</p>
+          <p className="text-lg font-semibold text-text-secondary">No blacklist entries</p>
           <p className="text-sm text-text-muted mb-2">Add entries to filter out unwanted results</p>
           <button onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all shadow-lg shadow-accent/20"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/20"
           >
             <ShieldPlus className="w-4 h-4" />
             Add First Entry

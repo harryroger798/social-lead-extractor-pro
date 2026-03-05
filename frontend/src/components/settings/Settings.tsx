@@ -152,7 +152,7 @@ export default function Settings() {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-5">
+        <div className="flex items-center justify-between px-8 py-4">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Settings</h1>
             <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
@@ -171,11 +171,11 @@ export default function Settings() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
       <div className="flex gap-6 min-h-full">
         {/* Tab Navigation */}
         <div className="w-52 flex-shrink-0">
-          <nav className="bg-bg-secondary rounded-[10px] border border-border p-3 space-y-1 sticky top-0">
+          <nav className="bg-bg-secondary rounded-[10px] border border-border/80 p-3 space-y-1 sticky top-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -195,10 +195,10 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border p-6 min-h-[500px]">
+        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border/80 p-8 min-h-[500px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
           {activeTab === 'general' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">General Settings</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">General Settings</h3>
               <p className="text-xs text-text-muted mb-4">Manage your application preferences</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
@@ -211,7 +211,7 @@ export default function Settings() {
 
           {activeTab === 'extraction' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Extraction Settings</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">Extraction Settings</h3>
               <p className="text-xs text-text-muted mb-4">Configure how extractions are performed</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('pages_per_keyword', 'Pages per Keyword', 'number', undefined, 'Number of search result pages to scrape per keyword')}
@@ -227,7 +227,7 @@ export default function Settings() {
 
           {activeTab === 'api' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">API Keys</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">API Keys</h3>
               <p className="text-xs text-text-muted mb-4">Manage third-party service integrations</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
@@ -240,7 +240,7 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Notifications</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">Notifications</h3>
               <p className="text-xs text-text-muted mb-4">Control how you receive alerts</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
@@ -254,7 +254,7 @@ export default function Settings() {
 
           {activeTab === 'storage' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Storage & Data</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">Storage & Data</h3>
               <p className="text-xs text-text-muted mb-4">Manage data retention and backups</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
@@ -272,7 +272,7 @@ export default function Settings() {
 
           {activeTab === 'security' && (
             <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Security & Proxy</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-1">Security & Proxy</h3>
               <p className="text-xs text-text-muted mb-4">Configure proxy and privacy settings</p>
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}

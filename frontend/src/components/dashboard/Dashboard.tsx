@@ -25,7 +25,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-bg-secondary rounded-[10px] border border-border p-5 hover:border-border-light transition-all duration-200 group">
+    <div className="bg-bg-secondary rounded-[10px] border border-border/80 px-6 py-5 hover:border-border-light transition-all duration-200 group shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
       <div className="flex items-start justify-between">
         <div className="space-y-1.5">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-widest">{title}</p>
@@ -113,7 +113,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-8 py-5">
+        <div className="flex items-center justify-between px-8 py-4">
           <div>
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Dashboard</h1>
             <p className="text-sm text-text-secondary mt-1">Overview of your lead extraction activity</p>
@@ -129,7 +129,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
         {/* Stat Cards - 3 per row */}
         <div className="grid grid-cols-3 gap-4">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
@@ -145,7 +145,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 bg-bg-secondary rounded-[10px] border border-border p-6">
+          <div className="lg:col-span-2 bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
             <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-text-primary">Leads by Platform</h3>
             <span className="text-[11px] text-text-muted px-3 py-1.5 rounded-[6px] bg-bg-tertiary font-medium">All Time</span>
@@ -166,8 +166,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </ResponsiveContainer>
           ) : (
             <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-14 h-14 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-                  <BarChart3 className="w-7 h-7 text-text-muted" />
+                <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+                  <BarChart3 className="w-8 h-8 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">Add platforms to start collecting leads</p>
                 <button onClick={() => onNavigate('extraction')} className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-xs font-medium transition-all shadow-lg shadow-accent/20">
@@ -178,7 +178,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           )}
         </div>
 
-          <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+          <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
             <h3 className="text-sm font-semibold text-text-primary mb-5">Emails vs Phones</h3>
           {stats.total_emails + stats.total_phones > 0 ? (
             <>
@@ -203,8 +203,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-60 gap-3">
-                <div className="w-14 h-14 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
-                  <Mail className="w-7 h-7 text-text-muted" />
+                <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
+                  <Mail className="w-8 h-8 text-text-muted" />
                 </div>
                 <p className="text-sm text-text-muted">No contact data yet</p>
               </div>
@@ -212,7 +212,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </div>
       </div>
 
-        <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+        <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-text-primary">7-Day Extraction Trend</h3>
           <div className="flex items-center gap-5 mr-2">
@@ -233,7 +233,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
         {/* Recent Extractions - Full Width Table */}
-        <div className="bg-bg-secondary rounded-[10px] border border-border overflow-hidden">
+        <div className="bg-bg-secondary rounded-[10px] border border-border/80 overflow-hidden min-h-[280px] shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h3 className="text-sm font-semibold text-text-primary">Recent Extractions</h3>
             <button onClick={() => onNavigate('history')} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View All</button>
@@ -278,9 +278,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-12 px-6">
-              <div className="w-14 h-14 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center mx-auto mb-4">
-                <Search className="w-7 h-7 text-text-muted" />
+            <div className="text-center py-16 px-8">
+              <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-text-muted" />
               </div>
               <p className="text-sm font-medium text-text-secondary mb-1">No recent extractions</p>
               <p className="text-xs text-text-muted mb-4">Start your first lead extraction to see results here</p>

@@ -122,7 +122,7 @@ export default function NewExtraction() {
     return (
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-          <div className="px-8 py-5">
+          <div className="px-8 py-4">
             <h1 className="text-2xl font-semibold text-text-primary tracking-tight">
               {step === 'running' ? 'Extraction in Progress' : 'Extraction Complete'}
             </h1>
@@ -130,7 +130,7 @@ export default function NewExtraction() {
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
 
         {status && (
           <>
@@ -202,14 +202,14 @@ export default function NewExtraction() {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
       <div className="shrink-0 border-b border-border bg-bg-secondary/50 backdrop-blur-sm">
-        <div className="px-8 py-5">
+        <div className="px-8 py-4">
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">New Extraction</h1>
           <p className="text-sm text-text-secondary mt-1">Configure and start a new lead extraction session</p>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
 
       {error && (
         <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/20 rounded-xl">
@@ -219,7 +219,7 @@ export default function NewExtraction() {
       )}
 
       {/* Session Name */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
@@ -244,7 +244,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Platform Selection */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
@@ -273,7 +273,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Extraction Speed */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Search className="w-4 h-4 text-accent" />
@@ -297,7 +297,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Output Settings */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <CheckCircle className="w-4 h-4 text-accent" />
@@ -320,7 +320,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Scraping Method */}
-      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border/80 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />

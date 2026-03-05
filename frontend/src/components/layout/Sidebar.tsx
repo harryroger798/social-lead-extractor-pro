@@ -54,7 +54,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-border flex-shrink-0">
+      <div className="flex items-center gap-3 px-5 h-16 border-b border-border flex-shrink-0">
         <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-accent to-blue-400 flex items-center justify-center flex-shrink-0 shadow-lg shadow-accent/20">
           <Zap className="w-5 h-5 text-white" />
         </div>
@@ -104,9 +104,9 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       </nav>
 
       {/* Version + Collapse */}
-      <div className="border-t border-border p-3 space-y-2">
+      <div className="border-t border-border px-4 py-3 space-y-2">
         {!collapsed && (
-          <div className="px-3 py-2.5 rounded-[8px] bg-bg-tertiary/50">
+          <div className="px-4 py-3 rounded-[8px] bg-bg-tertiary/50">
             <p className="text-[11px] text-text-muted">Version 1.0.0</p>
             <p className="text-[11px] text-accent font-medium">Professional License</p>
           </div>
