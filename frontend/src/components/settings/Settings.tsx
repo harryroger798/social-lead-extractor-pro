@@ -97,7 +97,7 @@ export default function Settings() {
         </div>
         <p className="text-base font-semibold text-text-primary">Failed to load settings</p>
         <p className="text-sm text-text-muted">{error}</p>
-        <button onClick={loadSettings} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all">Retry</button>
+        <button onClick={loadSettings} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all">Retry</button>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function Settings() {
           <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
-            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -139,7 +139,7 @@ export default function Settings() {
         <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
-          className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+          className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
     );
@@ -157,8 +157,8 @@ export default function Settings() {
         <button
           onClick={handleSave} disabled={!dirty || saving}
           className={cn(
-            'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
-            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20' : 'bg-bg-secondary border border-border text-text-muted cursor-not-allowed'
+            'flex items-center gap-2 px-6 py-2.5 rounded-[8px] text-sm font-semibold transition-all',
+            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-bg-secondary border border-border text-text-muted cursor-not-allowed'
           )}
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -172,15 +172,15 @@ export default function Settings() {
       <div className="flex gap-6">
         {/* Tab Navigation */}
         <div className="w-48 flex-shrink-0">
-          <nav className="bg-bg-secondary rounded-lg border border-border p-3 space-y-1">
+          <nav className="bg-bg-secondary rounded-[10px] border border-border p-3 space-y-1">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left',
-                    activeTab === tab.id ? 'bg-accent/10 text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-all text-left',
+                    activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -192,7 +192,7 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-bg-secondary rounded-xl border border-border p-6">
+        <div className="flex-1 bg-bg-secondary rounded-[10px] border border-border p-6">
           {activeTab === 'general' && (
             <div className="space-y-1 divide-y divide-border">
               {renderInput('app_name', 'Application Name', 'text')}
@@ -235,7 +235,7 @@ export default function Settings() {
               {renderInput('data_retention_days', 'Data Retention (days)', 'number')}
               {renderInput('auto_backup', 'Auto Backup', 'toggle')}
               <div className="py-3 flex items-center gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-secondary hover:text-text-primary transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-bg-primary border border-border rounded-[8px] text-sm text-text-secondary hover:text-text-primary transition-all">
                   <RefreshCw className="w-4 h-4" />
                   Clear Cache
                 </button>

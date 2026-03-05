@@ -166,17 +166,17 @@ export default function NewExtraction() {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-5">
-              <div className="bg-bg-secondary rounded-xl border border-border p-6 text-center">
+              <div className="bg-bg-secondary rounded-[10px] border border-border p-6 text-center">
                 <Users className="w-6 h-6 text-accent mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.total_leads}</p>
                 <p className="text-xs text-text-muted mt-1.5">Total Leads</p>
               </div>
-              <div className="bg-bg-secondary rounded-xl border border-border p-6 text-center">
+              <div className="bg-bg-secondary rounded-[10px] border border-border p-6 text-center">
                 <Mail className="w-6 h-6 text-blue-400 mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.emails_found}</p>
                 <p className="text-xs text-text-muted mt-1.5">Emails Found</p>
               </div>
-              <div className="bg-bg-secondary rounded-xl border border-border p-6 text-center">
+              <div className="bg-bg-secondary rounded-[10px] border border-border p-6 text-center">
                 <Phone className="w-6 h-6 text-success mx-auto mb-3" />
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{status.phones_found}</p>
                 <p className="text-xs text-text-muted mt-1.5">Phones Found</p>
@@ -188,7 +188,7 @@ export default function NewExtraction() {
         {step === 'complete' && (
           <div className="flex justify-center gap-3">
             <button onClick={() => { setStep('config'); setStatus(null); setName(''); setKeywords(''); }}
-              className="px-6 py-3 bg-bg-secondary border border-border rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
+              className="px-6 py-3 bg-bg-secondary border border-border rounded-[8px] text-sm font-medium text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
               New Extraction
             </button>
           </div>
@@ -219,9 +219,9 @@ export default function NewExtraction() {
       )}
 
       {/* Session Name */}
-      <div className="bg-bg-secondary rounded-xl border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
           </div>
           Basic Configuration
@@ -231,22 +231,22 @@ export default function NewExtraction() {
             <label className="text-sm font-medium text-text-primary mb-2 block">Session Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="e.g., LinkedIn CEO Emails Q1 2026"
-              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
             <label className="text-sm font-medium text-text-primary mb-2 block">Keywords (one per line)</label>
             <textarea value={keywords} onChange={e => setKeywords(e.target.value)}
               placeholder={"CEO email marketing\nCTO contact SaaS\nfounder email fintech"}
               rows={4}
-              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
+              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
           </div>
         </div>
       </div>
 
       {/* Platform Selection */}
-      <div className="bg-bg-secondary rounded-xl border border-border p-6">
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
           </div>
           Platforms
@@ -256,13 +256,13 @@ export default function NewExtraction() {
           {PLATFORMS.map(p => (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
               className={cn(
-                'flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200',
+                'flex items-center gap-3 p-3.5 rounded-[10px] border transition-all duration-200',
                 selectedPlatforms.includes(p.id)
                   ? 'border-accent/40 bg-accent/5 shadow-sm shadow-accent/10'
                   : 'border-border bg-bg-tertiary/50 hover:border-border-light hover:bg-bg-tertiary'
               )}
             >
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
+              <div className="w-9 h-9 rounded-[8px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
                 <Globe className="w-4 h-4" />
               </div>
               <span className="text-sm font-medium text-text-primary">{p.name}</span>
@@ -272,42 +272,76 @@ export default function NewExtraction() {
         </div>
       </div>
 
-      {/* Extraction Settings */}
-      <div className="bg-bg-secondary rounded-xl border border-border p-6">
+      {/* Extraction Speed */}
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
         <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
             <Search className="w-4 h-4 text-accent" />
           </div>
-          Extraction Settings
+          Extraction Speed
         </h3>
-        <div className="grid grid-cols-2 gap-5 mb-5">
+        <div className="grid grid-cols-2 gap-5">
           <div>
             <label className="text-sm font-medium text-text-primary mb-2 block">Pages per Keyword</label>
             <input type="number" value={pagesPerKeyword} onChange={e => setPagesPerKeyword(parseInt(e.target.value) || 3)}
               min={1} max={20}
-              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
             <label className="text-sm font-medium text-text-primary mb-2 block">Delay Between Requests (sec)</label>
             <input type="number" value={delay} onChange={e => setDelay(parseInt(e.target.value) || 2)}
               min={1} max={30}
-              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>
-        <div className="mb-5">
+      </div>
+
+      {/* Output Settings */}
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+            <CheckCircle className="w-4 h-4 text-accent" />
+          </div>
+          Output
+        </h3>
+        <div className="mb-4">
           <label className="text-sm font-medium text-text-primary mb-2 block">Export Format</label>
           <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}
-            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+            className="w-full max-w-xs px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
             <option value="csv">CSV</option>
             <option value="xlsx">Excel (XLSX)</option>
             <option value="json">JSON</option>
             <option value="html">HTML</option>
           </select>
         </div>
-        <div className="divide-y divide-border border-t border-border">
+        <div className="border-t border-border">
+          {renderToggle(autoVerify, () => setAutoVerify(!autoVerify), 'Auto-verify Emails', 'Check MX records to verify email deliverability')}
+        </div>
+      </div>
+
+      {/* Scraping Method */}
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+            <Globe className="w-4 h-4 text-accent" />
+          </div>
+          Scraping Method
+        </h3>
+        <div className="divide-y divide-border">
           {renderToggle(useDorking, () => setUseDorking(!useDorking), 'Google Dorking', 'Primary extraction method - search Google for indexed emails/phones')}
           {renderToggle(useDirectScraping, () => setUseDirectScraping(!useDirectScraping), 'Direct Scraping', 'Secondary method - scrape platform pages directly with Patchright')}
-          {renderToggle(autoVerify, () => setAutoVerify(!autoVerify), 'Auto-verify Emails', 'Check MX records to verify email deliverability')}
+        </div>
+      </div>
+
+      {/* Security Settings */}
+      <div className="bg-bg-secondary rounded-[10px] border border-border p-6">
+        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[8px] bg-accent/10 flex items-center justify-center">
+            <Settings className="w-4 h-4 text-accent" />
+          </div>
+          Security
+        </h3>
+        <div className="divide-y divide-border">
           {renderToggle(useProxies, () => setUseProxies(!useProxies), 'Use Proxies', 'Route requests through proxy servers for anti-detection')}
           {renderToggle(headless, () => setHeadless(!headless), 'Headless Mode', 'Run browser in background (disable to see browser window)')}
         </div>
@@ -316,7 +350,7 @@ export default function NewExtraction() {
       {/* Start Button */}
       <div className="flex justify-end pb-2">
         <button onClick={handleStart} disabled={starting}
-          className="flex items-center gap-2.5 px-8 py-3.5 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/30 disabled:opacity-50"
+          className="flex items-center gap-2.5 px-8 py-3.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-semibold transition-all shadow-lg shadow-accent/30 disabled:opacity-50"
         >
           {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
           {starting ? 'Starting Extraction...' : 'Start Extraction'}

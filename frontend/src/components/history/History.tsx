@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Clock, Trash2, Search, Filter, Loader2, AlertCircle,
-  FolderOpen, Mail, Phone, CheckCircle, XCircle, Pause, Play,
+  FolderOpen, Mail, Phone, CheckCircle, XCircle, Pause, Play, Zap,
 } from 'lucide-react';
 import { cn, formatDate, formatDuration } from '@/lib/utils';
 import { fetchHistory, deleteSession } from '@/lib/api';
@@ -78,7 +78,7 @@ export default function History() {
         </div>
         <p className="text-base font-semibold text-text-primary">Failed to load history</p>
         <p className="text-sm text-text-muted">{error}</p>
-        <button onClick={loadHistory} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all">Retry</button>
+        <button onClick={loadHistory} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all">Retry</button>
       </div>
     );
   }
@@ -102,16 +102,16 @@ export default function History() {
           <input
             type="text" placeholder="Search sessions..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-lg border border-border p-1.5">
+        <div className="flex items-center gap-1.5 bg-bg-secondary rounded-[8px] border border-border p-1.5">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {STATUS_FILTERS.map(f => (
             <button
               key={f} onClick={() => setStatusFilter(f)}
               className={cn(
-                'px-3.5 py-2 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
+                'px-3.5 py-2 rounded-[6px] text-xs font-medium transition-all capitalize whitespace-nowrap',
                 statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
               )}
             >{f}</button>
@@ -123,14 +123,14 @@ export default function History() {
       {filtered.length > 0 ? (
         <div className="space-y-3">
           {filtered.map(s => (
-            <div key={s.id} className="bg-bg-secondary rounded-xl border border-border p-5 hover:border-border-light transition-all duration-200">
+            <div key={s.id} className="bg-bg-secondary rounded-[10px] border border-border p-5 hover:border-border-light transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     {statusIcon(s.status)}
                     <h3 className="text-sm font-semibold text-text-primary truncate">{s.name}</h3>
                     <span className={cn(
-                      'px-2 py-0.5 rounded-md text-xs font-semibold',
+                      'px-2.5 py-1 rounded-[6px] text-[11px] font-semibold',
                       s.status === 'completed' && 'bg-success/10 text-success',
                       s.status === 'running' && 'bg-accent/10 text-accent',
                       s.status === 'failed' && 'bg-error/10 text-error',
@@ -184,11 +184,17 @@ export default function History() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-bg-tertiary/50 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-[10px] bg-bg-tertiary/50 flex items-center justify-center">
             <FolderOpen className="w-8 h-8 text-text-muted" />
           </div>
           <p className="text-base font-semibold text-text-secondary">No sessions found</p>
-          <p className="text-sm text-text-muted">Start a new extraction to see history here</p>
+          <p className="text-sm text-text-muted mb-2">Start a new extraction to see history here</p>
+          <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all shadow-lg shadow-accent/20"
+          >
+            <Zap className="w-4 h-4" />
+            New Extraction
+          </button>
         </div>
       )}
       </div>
