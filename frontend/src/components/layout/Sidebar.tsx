@@ -87,7 +87,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
     >
       {/* Logo */}
       <div className="flex items-center gap-3.5 px-5 h-[72px] border-b border-[#3f3f46] flex-shrink-0">
-        <img src="/favicon.png" alt="SnapLeads" className="w-10 h-10 rounded-xl flex-shrink-0 shadow-lg shadow-accent/25" />
+        <img src="./favicon.png" alt="SnapLeads" className="w-10 h-10 rounded-xl flex-shrink-0 shadow-lg shadow-accent/25" />
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">SnapLeads</h1>

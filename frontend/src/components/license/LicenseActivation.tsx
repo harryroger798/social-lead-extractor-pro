@@ -54,7 +54,7 @@ export default function LicenseActivation() {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="w-20 h-20 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto shadow-lg shadow-accent/10">
-            <img src="/favicon.png" alt="SnapLeads" className="w-12 h-12 rounded-xl" />
+            <img src="./favicon.png" alt="SnapLeads" className="w-12 h-12 rounded-xl" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-text-primary tracking-tight">Activate SnapLeads</h1>

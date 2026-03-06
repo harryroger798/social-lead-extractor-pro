@@ -64,8 +64,19 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       setError(null);
       const data = await fetchDashboardStats();
       setStats(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+    } catch {
+      // Backend not running — show empty state instead of error
+      setStats({
+        total_leads: 0,
+        leads_today: 0,
+        total_emails: 0,
+        total_phones: 0,
+        verified_emails: 0,
+        sessions_completed: 0,
+        platform_breakdown: [],
+        daily_trend: [],
+        recent_sessions: [],
+      });
     } finally {
       setLoading(false);
     }

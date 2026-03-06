@@ -1,13 +1,14 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const https = require('https');
 const http = require('http');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 
 let mainWindow;
 let backendProcess;
+let backendReady = false;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
@@ -52,14 +53,136 @@ function createWindow() {
   });
 }
 
+function findPython() {
+  // Try multiple Python commands in order of preference
+  const candidates = process.platform === 'win32'
+    ? ['python', 'python3', 'py']
+    : ['python3', 'python'];
+
+  for (const cmd of candidates) {
+    try {
+      const version = execSync(`${cmd} --version`, { encoding: 'utf-8', timeout: 5000 }).trim();
+      console.log(`[Backend] Found ${cmd}: ${version}`);
+      return cmd;
+    } catch {
+      // Not found, try next
+    }
+  }
+  return null;
+}
+
+function getPythonDownloadUrl() {
+  switch (process.platform) {
+    case 'win32': return 'https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe';
+    case 'darwin': return 'https://www.python.org/ftp/python/3.12.8/python-3.12.8-macos11.pkg';
+    default: return 'https://www.python.org/downloads/';
+  }
+}
+
+function getPythonInstallInstructions() {
+  switch (process.platform) {
+    case 'win32':
+      return 'Windows Installation:\n\n' +
+        '1. Download Python from the link below\n' +
+        '2. IMPORTANT: Check "Add Python to PATH" at the bottom of the installer\n' +
+        '3. Click "Install Now"\n' +
+        '4. After installation completes, restart SnapLeads\n\n' +
+        'Download: ' + getPythonDownloadUrl();
+    case 'darwin':
+      return 'macOS Installation:\n\n' +
+        '1. Download Python from the link below\n' +
+        '2. Open the .pkg file and follow the installer\n' +
+        '3. After installation completes, restart SnapLeads\n\n' +
+        'Or install via Homebrew: brew install python3\n\n' +
+        'Download: ' + getPythonDownloadUrl();
+    default:
+      return 'Linux Installation:\n\n' +
+        'Ubuntu/Debian: sudo apt install python3 python3-pip python3-venv\n' +
+        'Fedora: sudo dnf install python3 python3-pip\n' +
+        'Arch: sudo pacman -S python python-pip\n\n' +
+        'After installation, restart SnapLeads.';
+  }
+}
+
+function showPythonRequiredDialog() {
+  if (!mainWindow) return;
+  const instructions = getPythonInstallInstructions();
+  const downloadUrl = getPythonDownloadUrl();
+
+  dialog.showMessageBox(mainWindow, {
+    type: 'warning',
+    title: 'Python Required',
+    message: 'Python 3.10+ is required for SnapLeads extraction features.',
+    detail: instructions,
+    buttons: ['Download Python', 'Continue Without Backend', 'Close App'],
+    defaultId: 0,
+    cancelId: 1,
+  }).then(({ response }) => {
+    if (response === 0) {
+      shell.openExternal(downloadUrl);
+    } else if (response === 2) {
+      app.quit();
+    }
+    // response === 1: continue without backend (UI still works)
+  });
+}
+
+function installBackendDeps(pythonCmd, backendDir) {
+  try {
+    // Check if dependencies are already installed by testing import
+    execSync(`${pythonCmd} -c "import fastapi; import uvicorn"`, {
+      cwd: backendDir,
+      timeout: 10000,
+      env: { ...process.env, PYTHONPATH: backendDir },
+    });
+    console.log('[Backend] Dependencies already installed');
+    return true;
+  } catch {
+    // Dependencies not installed — try to install them
+    console.log('[Backend] Installing dependencies...');
+    try {
+      execSync(`${pythonCmd} -m pip install fastapi[standard] uvicorn aiosqlite pydantic-settings python-dotenv dnspython requests[socks] openpyxl python-multipart aiohttp-socks psycopg[binary] --quiet`, {
+        cwd: backendDir,
+        timeout: 120000,
+        env: { ...process.env },
+      });
+      console.log('[Backend] Dependencies installed successfully');
+      return true;
+    } catch (installErr) {
+      console.error(`[Backend] Failed to install dependencies: ${installErr.message}`);
+      return false;
+    }
+  }
+}
+
 function startBackend() {
   const backendDir = path.join(__dirname, '..', 'backend');
   const isPackaged = app.isPackaged;
 
   try {
     if (isPackaged) {
-      // In production, try python3 first, then python
-      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+      // Production: find Python and auto-install deps
+      const pythonCmd = findPython();
+
+      if (!pythonCmd) {
+        console.error('[Backend] Python not found on this system');
+        // Show dialog after window is ready
+        if (mainWindow) {
+          showPythonRequiredDialog();
+        } else {
+          app.once('browser-window-created', () => {
+            setTimeout(showPythonRequiredDialog, 2000);
+          });
+        }
+        return;
+      }
+
+      // Auto-install dependencies if needed
+      const depsOk = installBackendDeps(pythonCmd, backendDir);
+      if (!depsOk) {
+        console.error('[Backend] Could not install dependencies. Extraction features will be unavailable.');
+      }
+
       backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
         cwd: backendDir,
         env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
@@ -73,21 +196,33 @@ function startBackend() {
     }
 
     backendProcess.stdout.on('data', (data) => {
-      console.log(`[Backend] ${data}`);
+      const msg = data.toString();
+      console.log(`[Backend] ${msg}`);
+      if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
+        backendReady = true;
+        console.log('[Backend] Server is ready');
+      }
     });
 
     backendProcess.stderr.on('data', (data) => {
-      console.error(`[Backend] ${data}`);
+      const msg = data.toString();
+      console.error(`[Backend] ${msg}`);
+      if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
+        backendReady = true;
+        console.log('[Backend] Server is ready');
+      }
     });
 
     backendProcess.on('error', (err) => {
       console.error(`[Backend] Failed to start: ${err.message}`);
-      console.error('[Backend] Python may not be installed. The UI will still work but extraction features require Python.');
       backendProcess = null;
+      // Show Python required dialog
+      setTimeout(showPythonRequiredDialog, 1000);
     });
 
     backendProcess.on('close', (code) => {
       console.log(`[Backend] Process exited with code ${code}`);
+      backendReady = false;
     });
   } catch (err) {
     console.error(`[Backend] Failed to start backend: ${err.message}`);
