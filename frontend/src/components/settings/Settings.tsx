@@ -182,7 +182,7 @@ export default function Settings() {
                 <button
                   key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all text-left',
+                    'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium transition-all text-left',
                     activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
                   )}
                 >
@@ -261,7 +261,7 @@ export default function Settings() {
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
                 {renderInput('auto_backup', 'Auto Backup', 'toggle')}
                 <div className="py-4 flex items-center gap-3">
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">
+                  <button className="flex items-center gap-2 px-5 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">
                     <RefreshCw className="w-4 h-4" />
                     Clear Cache
                   </button>

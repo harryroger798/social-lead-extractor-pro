@@ -112,8 +112,8 @@ export default function History() {
             <button
               key={f} onClick={() => setStatusFilter(f)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
+                                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
               )}
             >{f}</button>
           ))}
@@ -132,7 +132,7 @@ export default function History() {
                     {statusIcon(s.status)}
                     <h3 className="text-sm font-semibold text-text-primary truncate">{s.name}</h3>
                     <span className={cn(
-                      'px-3 py-1 rounded-lg text-[11px] font-bold',
+                      'px-3.5 py-1.5 rounded-lg text-[11px] font-bold',
                       s.status === 'completed' && 'bg-success/10 text-success',
                       s.status === 'running' && 'bg-accent/10 text-accent',
                       s.status === 'failed' && 'bg-error/10 text-error',

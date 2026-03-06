@@ -174,8 +174,8 @@ export default function BlacklistManager() {
             <button
               key={f} onClick={() => setTypeFilter(f)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
+                                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
               )}
             >{f}</button>
           ))}
@@ -197,7 +197,7 @@ export default function BlacklistManager() {
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-text-primary truncate">{entry.value}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{entry.type}</span>
+                      <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{entry.type}</span>
                       {entry.reason && <span className="text-xs text-text-muted truncate">{entry.reason}</span>}
                       <span className="text-xs text-text-muted">{formatDate(entry.added_at)}</span>
                     </div>

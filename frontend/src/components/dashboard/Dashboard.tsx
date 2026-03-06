@@ -142,7 +142,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <div className="lg:col-span-2 card">
             <div className="px-6 py-5 border-b border-[#3f3f46] flex items-center justify-between">
               <h3 className="text-sm font-bold text-text-primary">Leads by Platform</h3>
-              <span className="text-[11px] text-text-muted px-2.5 py-1 rounded-md bg-white/[0.04] font-medium">All Time</span>
+              <span className="text-[11px] text-text-muted px-3.5 py-1.5 rounded-lg bg-white/[0.04] font-medium">All Time</span>
             </div>
             <div className="p-6">
           {stats.platform_breakdown.length > 0 ? (
@@ -165,7 +165,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   <BarChart3 className="w-7 h-7 text-accent/60" />
                 </div>
                 <p className="text-sm text-text-muted">Add platforms to start collecting leads</p>
-                <button onClick={() => onNavigate('extraction')} className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-xs font-medium transition-all shadow-lg shadow-accent/20">
+                <button onClick={() => onNavigate('extraction')} className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-xs font-medium transition-all shadow-lg shadow-accent/20">
                   <Search className="w-3.5 h-3.5" />
                   Start Extraction
                 </button>
@@ -262,7 +262,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                     </td>
                     <td className="px-6 py-3.5">
                       <span className={cn(
-                        'px-2.5 py-1 rounded-[6px] text-[11px] font-semibold capitalize',
+                        'px-3.5 py-1.5 rounded-lg text-[11px] font-semibold capitalize',
                         s.status === 'completed' && 'bg-success/10 text-success',
                         s.status === 'running' && 'bg-accent/10 text-accent',
                         s.status === 'failed' && 'bg-error/10 text-error',

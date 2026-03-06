@@ -221,12 +221,12 @@ export default function ResellerPanel() {
           <Key className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {['all', 'active', 'expired', 'revoked'].map(f => (
             <button key={f} onClick={() => setStatusFilter(f)}
-              className={cn('px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap', statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]')}
+              className={cn('px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap', statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]')}
             >{f}</button>
           ))}
         </div>
         <button onClick={() => setShowKeys(!showKeys)}
-          className="flex items-center gap-2 px-3.5 py-2 bg-bg-card border border-[#3f3f46] rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-[#3f3f46] rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
         >
           {showKeys ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           {showKeys ? 'Hide' : 'Show'} Keys
@@ -253,7 +253,7 @@ export default function ResellerPanel() {
                 <tr key={license.id} className="border-b border-[#3f3f46]/40 hover:bg-white/[0.02] transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <code className="text-xs font-mono text-text-primary bg-white/[0.04] px-2.5 py-1.5 rounded-lg">
+                      <code className="text-xs font-mono text-text-primary bg-white/[0.04] px-3 py-2 rounded-lg">
                         {showKeys ? license.key : license.key.substring(0, 8) + '...' + license.key.slice(-4)}
                       </code>
                       <button onClick={() => copyKey(license.key)} className="p-1.5 rounded-lg hover:bg-white/[0.04] text-text-muted hover:text-accent transition-all">
@@ -267,7 +267,7 @@ export default function ResellerPanel() {
                   </td>
                   <td className="px-5 py-4">
                     <span className={cn(
-                      'px-3 py-1 rounded-lg text-[11px] font-bold',
+                      'px-3.5 py-1.5 rounded-lg text-[11px] font-bold',
                       license.status === 'active' && 'bg-success/10 text-success',
                       license.status === 'expired' && 'bg-warning/10 text-warning',
                       license.status === 'revoked' && 'bg-error/10 text-error'

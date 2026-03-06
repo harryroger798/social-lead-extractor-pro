@@ -115,7 +115,7 @@ export default function ResultsView() {
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
               <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.04] border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-semibold bg-white/[0.04] border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
               >
                 {fmt.toUpperCase()}
               </button>
@@ -142,8 +142,8 @@ export default function ResultsView() {
           {PLATFORMS.map(p => (
             <button key={p} onClick={() => handlePlatformChange(p)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
+                                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
               )}
             >{p}</button>
           ))}
@@ -201,7 +201,7 @@ export default function ResultsView() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="px-3 py-1 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{lead.platform}</span>
+                        <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{lead.platform}</span>
                       </td>
                       <td className="px-5 py-4 text-sm text-text-secondary">{lead.keyword}</td>
                       <td className="px-5 py-4">
