@@ -86,34 +86,34 @@ export default function History() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
-        <div className="px-8 py-5">
-          <h1 className="text-lg font-semibold text-text-primary tracking-tight">Extraction History</h1>
-          <p className="text-sm text-text-secondary mt-0.5">Browse and manage past extraction sessions</p>
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight">Extraction History</h1>
+          <p className="text-sm text-text-secondary mt-1">Browse and manage past extraction sessions</p>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
-      <div className="min-h-full flex flex-col gap-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="min-h-full flex flex-col gap-5">
       {/* Filters */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text" placeholder="Search sessions..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1 bg-white/[0.03] rounded-lg border border-white/[0.08] p-1">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-border p-1.5">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {STATUS_FILTERS.map(f => (
             <button
               key={f} onClick={() => setStatusFilter(f)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-all capitalize whitespace-nowrap',
-                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06]'
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
+                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
               )}
             >{f}</button>
           ))}
@@ -121,18 +121,18 @@ export default function History() {
       </div>
 
       {/* Sessions List - fills remaining height */}
-      <div className="flex-1 bg-bg-card rounded-xl border border-white/[0.08] overflow-hidden flex flex-col min-h-[400px]">
+      <div className="flex-1 card overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {filtered.map(s => (
-            <div key={s.id} className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-5 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all duration-200">
+            <div key={s.id} className="card-elevated p-6 hover:border-border-bright transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     {statusIcon(s.status)}
                     <h3 className="text-sm font-semibold text-text-primary truncate">{s.name}</h3>
                     <span className={cn(
-                      'px-2.5 py-1 rounded-[6px] text-[11px] font-semibold',
+                      'px-3 py-1 rounded-lg text-[11px] font-bold',
                       s.status === 'completed' && 'bg-success/10 text-success',
                       s.status === 'running' && 'bg-accent/10 text-accent',
                       s.status === 'failed' && 'bg-error/10 text-error',
@@ -185,14 +185,16 @@ export default function History() {
           ))}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center py-20 text-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-accent/[0.08] flex items-center justify-center">
-            <FolderOpen className="h-7 w-7 text-accent/60" />
+        <div className="flex-1 flex flex-col items-center justify-center py-20 text-center gap-5">
+          <div className="w-20 h-20 rounded-2xl bg-accent/8 flex items-center justify-center">
+            <FolderOpen className="h-9 w-9 text-accent/50" />
           </div>
-          <p className="text-base font-semibold text-text-primary">No sessions found</p>
-          <p className="text-sm text-text-muted max-w-[280px]">Start a new extraction to see history here</p>
+          <div>
+            <p className="text-base font-bold text-text-primary mb-1.5">No sessions found</p>
+            <p className="text-sm text-text-muted max-w-[300px]">Start a new extraction to see history here</p>
+          </div>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 text-white rounded-lg text-sm font-medium transition-all mt-2"
+            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 mt-2"
           >
             <Zap className="w-4 h-4" />
             New Extraction

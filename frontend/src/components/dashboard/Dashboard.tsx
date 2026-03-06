@@ -25,21 +25,21 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-bg-card rounded-xl border border-white/[0.08] p-6 hover:border-white/[0.15] hover:shadow-lg hover:shadow-black/20 transition-all duration-200 group">
+    <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 hover:border-[#475569] transition-all duration-200 group">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-bold text-text-primary tracking-tight tabular-nums">
+          <p className="text-[11px] font-semibold text-[#94a3b8] uppercase tracking-wider">{title}</p>
+          <p className="text-2xl font-bold text-[#f1f5f9] tracking-tight tabular-nums">
             {typeof value === 'number' ? formatNumber(value) : value}
           </p>
           {change && (
-            <div className="flex items-center gap-1 pt-0.5">
+            <div className="flex items-center gap-1.5 pt-0.5">
               <ArrowUpRight className="w-3.5 h-3.5 text-success" />
-              <span className="text-xs text-success font-medium">{change}</span>
+              <span className="text-xs text-success font-semibold">{change}</span>
             </div>
           )}
         </div>
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + '12', color }}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + '18', color }}>
           <Icon className="w-6 h-6" />
         </div>
       </div>
@@ -112,15 +112,15 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
-        <div className="flex items-center justify-between px-8 py-5">
+      <div className="shrink-0 page-header">
+        <div className="flex items-center justify-between px-10 py-6">
           <div>
-            <h1 className="text-lg font-semibold text-text-primary tracking-tight">Dashboard</h1>
-            <p className="text-sm text-text-secondary mt-0.5">Overview of your lead extraction activity</p>
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Dashboard</h1>
+            <p className="text-sm text-text-secondary mt-1">Overview of your lead extraction activity</p>
           </div>
           <button
             onClick={() => onNavigate('extraction')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
+            className="flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
           >
             <Zap className="w-4 h-4" />
             New Extraction
@@ -129,19 +129,19 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8 space-y-7">
         {/* Stat Cards - 4 per row */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-5">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
           <StatCard title="Leads Today" value={stats.leads_today} icon={TrendingUp} color="#10B981" />
           <StatCard title="Emails Found" value={stats.total_emails} icon={Mail} color="#8B5CF6" />
           <StatCard title="Phones Found" value={stats.total_phones} icon={Phone} color="#F59E0B" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 bg-bg-card rounded-xl border border-white/[0.08]">
-            <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
-              <h3 className="text-sm font-medium text-text-primary">Leads by Platform</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 card">
+            <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+              <h3 className="text-sm font-bold text-text-primary">Leads by Platform</h3>
               <span className="text-[11px] text-text-muted px-2.5 py-1 rounded-md bg-white/[0.04] font-medium">All Time</span>
             </div>
             <div className="p-6">
@@ -174,9 +174,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </div>
         </div>
 
-          <div className="bg-bg-card rounded-xl border border-white/[0.08]">
-            <div className="px-6 py-4 border-b border-white/[0.06]">
-              <h3 className="text-sm font-medium text-text-primary">Emails vs Phones</h3>
+          <div className="card">
+            <div className="px-6 py-5 border-b border-border">
+              <h3 className="text-sm font-bold text-text-primary">Emails vs Phones</h3>
             </div>
             <div className="p-6">
           {stats.total_emails + stats.total_phones > 0 ? (
@@ -202,8 +202,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </>
           ) : (
             <div className="flex flex-col items-center pt-12 gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-accent/[0.08] flex items-center justify-center">
-                  <Mail className="w-7 h-7 text-accent/60" />
+                <div className="w-14 h-14 rounded-2xl                 bg-accent/10 flex items-center justify-center">
+                                  <Mail className="w-7 h-7 text-accent/60" />
                 </div>
                 <p className="text-sm text-text-muted">No contact data yet</p>
               </div>
@@ -212,9 +212,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </div>
       </div>
 
-        <div className="bg-bg-card rounded-xl border border-white/[0.08]">
-          <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
-            <h3 className="text-sm font-medium text-text-primary">7-Day Extraction Trend</h3>
+        <div className="card">
+          <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+            <h3 className="text-sm font-bold text-text-primary">7-Day Extraction Trend</h3>
           <div className="flex items-center gap-5 mr-2">
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-accent" /><span className="text-xs text-text-muted font-medium">Emails</span></div>
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-success" /><span className="text-xs text-text-muted font-medium">Phones</span></div>
@@ -235,9 +235,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
         {/* Recent Extractions - Full Width Table */}
-        <div className="bg-bg-card rounded-xl border border-white/[0.08] overflow-hidden min-h-[280px]">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-            <h3 className="text-sm font-semibold text-text-primary">Recent Extractions</h3>
+        <div className="card overflow-hidden min-h-[280px]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+            <h3 className="text-sm font-bold text-text-primary">Recent Extractions</h3>
             <button onClick={() => onNavigate('history')} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View All</button>
           </div>
           {stats.recent_sessions.length > 0 ? (
@@ -281,7 +281,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </table>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-accent/[0.08] flex items-center justify-center mb-5">
+              <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-5">
                 <Search className="w-8 h-8 text-accent/60" />
               </div>
               <p className="text-base font-semibold text-text-primary mb-1.5">No recent extractions</p>

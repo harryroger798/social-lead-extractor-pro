@@ -49,34 +49,35 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
   return (
     <aside
       className={cn(
-        'h-screen bg-bg-secondary border-r border-border flex flex-col transition-all duration-300 ease-in-out flex-shrink-0',
-        collapsed ? 'w-[68px]' : 'w-[240px]'
+        'sidebar h-screen flex flex-col transition-all duration-300 ease-in-out flex-shrink-0',
+        'bg-bg-sidebar',
+        collapsed ? 'w-[72px]' : 'w-[260px]'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 h-16 border-b border-border flex-shrink-0">
-        <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-accent to-blue-400 flex items-center justify-center flex-shrink-0 shadow-lg shadow-accent/20">
+      <div className="flex items-center gap-3.5 px-5 h-[72px] border-b border-border flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-blue-400 flex items-center justify-center flex-shrink-0 shadow-lg shadow-accent/25">
           <Zap className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="text-sm font-bold text-text-primary tracking-tight leading-tight">Lead Extractor</h1>
-            <p className="text-[11px] text-accent font-medium">Pro Edition</p>
+            <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">Lead Extractor</h1>
+            <p className="text-[11px] text-accent font-semibold tracking-wide">PRO EDITION</p>
           </div>
         )}
       </div>
 
-      {/* Navigation - Grouped */}
-      <nav className="flex-1 py-3 px-3 overflow-y-auto">
+      {/* Navigation */}
+      <nav className="flex-1 py-5 px-3.5 overflow-y-auto">
         {navGroups.map((group, gi) => (
-          <div key={group.label} className={cn('mb-1 last:mb-0', gi > 0 && 'mt-6')}>
+          <div key={group.label} className={cn(gi > 0 && 'mt-7')}>
             {!collapsed && (
-              <p className="text-[10px] font-semibold text-text-muted/70 uppercase tracking-[0.12em] px-3 mb-2 select-none">
+              <p className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.15em] px-3 mb-3 select-none">
                 {group.label}
               </p>
             )}
-            {collapsed && gi > 0 && <div className="h-px bg-border mx-2 mb-2" />}
-            <div className="space-y-0.5">
+            {collapsed && gi > 0 && <div className="h-px bg-border mx-3 mb-3 mt-2" />}
+            <div className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
@@ -85,15 +86,15 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150',
-                      collapsed && 'justify-center px-0',
+                      'w-full flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-150',
+                      collapsed ? 'justify-center px-0 py-2.5' : 'px-3.5 py-2.5',
                       isActive
-                        ? 'bg-accent/10 text-accent border border-accent/20 shadow-sm shadow-accent/5'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06] border border-transparent'
+                        ? 'bg-accent/12 text-accent shadow-sm shadow-accent/10 border border-accent/25'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04] border border-transparent'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
-                    <Icon className={cn('w-[18px] h-[18px] flex-shrink-0', isActive && 'text-accent')} />
+                    <Icon className={cn('w-[18px] h-[18px] flex-shrink-0', isActive ? 'text-accent' : '')} />
                     {!collapsed && <span className="truncate">{item.label}</span>}
                   </button>
                 );
@@ -103,20 +104,20 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         ))}
       </nav>
 
-      {/* Version + Collapse */}
-      <div className="border-t border-white/[0.06] px-4 py-3 space-y-2">
+      {/* Footer */}
+      <div className="border-t border-border px-3.5 py-4 space-y-3">
         {!collapsed && (
-          <div className="px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-            <p className="text-[11px] text-text-muted">Version 1.0.0</p>
-            <p className="text-[11px] text-accent font-medium">Professional License</p>
+          <div className="px-3.5 py-3 rounded-xl bg-white/[0.02] border border-border">
+            <p className="text-[11px] text-text-muted font-medium">Version 1.0.0</p>
+            <p className="text-[11px] text-accent font-semibold mt-0.5">Professional License</p>
           </div>
         )}
         <button
           onClick={onToggleCollapse}
-          className="w-full flex items-center justify-center gap-2 py-2.5 text-text-muted hover:text-text-primary transition-colors rounded-[8px] hover:bg-bg-tertiary"
+          className="w-full flex items-center justify-center gap-2 py-2.5 text-text-muted hover:text-text-secondary transition-colors rounded-xl hover:bg-white/[0.03]"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          {!collapsed && <span className="text-xs">Collapse</span>}
+          {!collapsed && <span className="text-xs font-medium">Collapse</span>}
         </button>
       </div>
     </aside>

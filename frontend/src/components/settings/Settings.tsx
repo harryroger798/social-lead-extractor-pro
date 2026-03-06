@@ -97,7 +97,7 @@ export default function Settings() {
         </div>
         <p className="text-base font-semibold text-text-primary">Failed to load settings</p>
         <p className="text-sm text-text-muted">{error}</p>
-        <button onClick={loadSettings} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-[8px] text-sm font-medium transition-all">Retry</button>
+        <button onClick={loadSettings} className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-accent/25">Retry</button>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function Settings() {
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
-            className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-white/[0.08]')}
+            className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-border-light')}
           >
             <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
           </button>
@@ -128,7 +128,7 @@ export default function Settings() {
           {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
-            className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -142,7 +142,7 @@ export default function Settings() {
         {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
-          className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-[8px] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+          className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
     );
@@ -151,17 +151,17 @@ export default function Settings() {
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Fixed Header */}
-      <div className="shrink-0 border-b border-white/[0.06] bg-bg-secondary/80 backdrop-blur-xl">
-        <div className="flex items-center justify-between px-8 py-5">
+      <div className="shrink-0 page-header">
+        <div className="flex items-center justify-between px-10 py-6">
           <div>
-            <h1 className="text-lg font-semibold text-text-primary tracking-tight">Settings</h1>
-            <p className="text-sm text-text-secondary mt-0.5">Configure your extraction preferences</p>
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Settings</h1>
+            <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
           </div>
         <button
           onClick={handleSave} disabled={!dirty || saving}
           className={cn(
-            'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
-            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-white/[0.03] border border-white/[0.08] text-text-muted cursor-not-allowed'
+            'flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all',
+            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-bg-card border border-border text-text-muted cursor-not-allowed'
           )}
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -171,19 +171,19 @@ export default function Settings() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
       <div className="grid grid-cols-[220px_1fr] gap-6 min-h-full">
         {/* Tab Navigation */}
         <div className="flex-shrink-0">
-          <nav className="bg-bg-card rounded-xl border border-white/[0.08] p-2.5 space-y-0.5 sticky top-0">
+          <nav className="card p-3 space-y-1 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
-                    activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.06] border border-transparent'
+                    'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all text-left',
+                    activeTab === tab.id ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -195,7 +195,7 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-bg-card rounded-xl border border-white/[0.08] p-8 min-h-[500px]">
+        <div className="card p-8 min-h-[500px] overflow-hidden">
           <div className="max-w-[640px]">
           {activeTab === 'general' && (
             <div>
@@ -233,7 +233,7 @@ export default function Settings() {
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
               </div>
-              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
                 <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
               </div>
             </div>
@@ -247,7 +247,7 @@ export default function Settings() {
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
               </div>
-              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
                 <p className="text-xs text-text-muted">Notifications are sent when extractions complete, fail, or when new leads match your criteria.</p>
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function Settings() {
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
                 {renderInput('auto_backup', 'Auto Backup', 'toggle')}
                 <div className="py-4 flex items-center gap-3">
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-primary border border-border rounded-[8px] text-sm text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-input border border-border rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
                     <RefreshCw className="w-4 h-4" />
                     Clear Cache
                   </button>
@@ -279,7 +279,7 @@ export default function Settings() {
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
                 {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
               </div>
-              <div className="mt-6 p-4 bg-bg-tertiary/30 rounded-[8px] border border-border">
+              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during direct scraping. Google Dorking does not require proxies.</p>
               </div>
             </div>
