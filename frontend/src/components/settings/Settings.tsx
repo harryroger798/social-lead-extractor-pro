@@ -272,7 +272,7 @@ export default function Settings() {
 
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="flex flex-col gap-5 min-h-full">
+      <div className="flex flex-col gap-5">
 
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -311,7 +311,7 @@ export default function Settings() {
         )}
       </div>
 
-      <div className="grid grid-cols-[220px_1fr] gap-6">
+      <div className="grid grid-cols-[220px_1fr] gap-6 min-h-[500px]">
         {/* Tab Navigation */}
         <div className="flex-shrink-0">
           <nav className="card p-3 flex flex-col gap-1 sticky top-0">
