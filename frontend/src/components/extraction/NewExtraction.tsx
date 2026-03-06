@@ -107,10 +107,10 @@ export default function NewExtraction() {
   }, []);
 
   const renderToggle = (enabled: boolean, onChange: () => void, label: string, description?: string) => (
-    <div className="flex items-center justify-between py-4 min-h-[56px]">
+    <div className="flex items-center justify-between py-5 min-h-[56px]">
       <div className="pr-4 flex-1">
         <p className="text-sm font-medium text-text-primary">{label}</p>
-        {description && <p className="text-xs text-text-muted mt-1 leading-relaxed">{description}</p>}
+        {description && <p className="text-xs text-text-muted mt-1.5 leading-relaxed">{description}</p>}
       </div>
       <button onClick={onChange} className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-[#52525b]')}>
         <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
@@ -210,7 +210,7 @@ export default function NewExtraction() {
 
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="max-w-[900px] space-y-5">
+      <div className="max-w-[900px] space-y-6">
 
       {error && (
         <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/20 rounded-xl">
@@ -220,22 +220,22 @@ export default function NewExtraction() {
       )}
 
       {/* Session Name */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
           </div>
           Basic Configuration
         </h3>
-        <div className="space-y-5">
+        <div className="space-y-6">
           <div>
-            <label className="text-sm font-medium text-text-primary mb-2 block">Session Name</label>
+            <label className="text-sm font-medium text-text-primary mb-3 block">Session Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="e.g., LinkedIn CEO Emails Q1 2026"
               className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
-            <label className="text-sm font-medium text-text-primary mb-2 block">Keywords (one per line)</label>
+            <label className="text-sm font-medium text-text-primary mb-3 block">Keywords (one per line)</label>
             <textarea value={keywords} onChange={e => setKeywords(e.target.value)}
               placeholder={"CEO email marketing\nCTO contact SaaS\nfounder email fintech"}
               rows={4}
@@ -245,8 +245,8 @@ export default function NewExtraction() {
       </div>
 
       {/* Platform Selection */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
           </div>
@@ -274,8 +274,8 @@ export default function NewExtraction() {
       </div>
 
       {/* Extraction Speed */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Search className="w-4 h-4 text-accent" />
           </div>
@@ -283,13 +283,13 @@ export default function NewExtraction() {
         </h3>
         <div className="grid grid-cols-2 gap-5">
           <div>
-            <label className="text-sm font-medium text-text-primary mb-2 block">Pages per Keyword</label>
+            <label className="text-sm font-medium text-text-primary mb-3 block">Pages per Keyword</label>
             <input type="number" value={pagesPerKeyword} onChange={e => setPagesPerKeyword(parseInt(e.target.value) || 3)}
               min={1} max={20}
               className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
-            <label className="text-sm font-medium text-text-primary mb-2 block">Delay Between Requests (sec)</label>
+            <label className="text-sm font-medium text-text-primary mb-3 block">Delay Between Requests (sec)</label>
             <input type="number" value={delay} onChange={e => setDelay(parseInt(e.target.value) || 2)}
               min={1} max={30}
               className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
@@ -298,15 +298,15 @@ export default function NewExtraction() {
       </div>
 
       {/* Output Settings */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <CheckCircle className="w-4 h-4 text-accent" />
           </div>
           Output
         </h3>
-        <div className="mb-4">
-          <label className="text-sm font-medium text-text-primary mb-2 block">Export Format</label>
+        <div className="mb-5">
+          <label className="text-sm font-medium text-text-primary mb-3 block">Export Format</label>
           <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}
             className="w-full max-w-xs px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
             <option value="csv">CSV</option>
@@ -321,8 +321,8 @@ export default function NewExtraction() {
       </div>
 
       {/* Scraping Method */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Globe className="w-4 h-4 text-accent" />
           </div>
@@ -335,8 +335,8 @@ export default function NewExtraction() {
       </div>
 
       {/* Security Settings */}
-      <div className="card p-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-5 flex items-center gap-2.5">
+      <div className="card p-7">
+        <h3 className="text-sm font-semibold text-text-primary mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-accent" />
           </div>
@@ -349,7 +349,7 @@ export default function NewExtraction() {
       </div>
 
       {/* Start Button */}
-      <div className="card p-6 flex items-center justify-between">
+      <div className="card p-7 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-text-primary">Ready to extract?</p>
           <p className="text-xs text-text-muted mt-0.5">{selectedPlatforms.length} platform{selectedPlatforms.length !== 1 ? 's' : ''} selected · {keywords.split('\n').filter(Boolean).length} keyword{keywords.split('\n').filter(Boolean).length !== 1 ? 's' : ''}</p>

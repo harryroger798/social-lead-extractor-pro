@@ -106,10 +106,10 @@ export default function Settings() {
     if (type === 'toggle') {
       const enabled = settings[key] === 'true';
       return (
-        <div className="flex items-center justify-between py-4 min-h-[56px]">
+        <div className="flex items-center justify-between py-5 min-h-[56px]">
           <div className="pr-4">
             <p className="text-sm font-medium text-text-primary">{label}</p>
-            {description && <p className="text-xs text-text-muted mt-0.5">{description}</p>}
+            {description && <p className="text-xs text-text-muted mt-1">{description}</p>}
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
@@ -123,9 +123,9 @@ export default function Settings() {
 
     if (type === 'select' && options) {
       return (
-        <div className="py-4">
-          <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
-          {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
+        <div className="py-5">
+          <label className="text-sm font-medium text-text-primary mb-3 block">{label}</label>
+          {description && <p className="text-xs text-text-muted mb-3">{description}</p>}
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
             className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
@@ -137,9 +137,9 @@ export default function Settings() {
     }
 
     return (
-      <div className="py-4">
-        <label className="text-sm font-medium text-text-primary mb-2 block">{label}</label>
-        {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
+      <div className="py-5">
+        <label className="text-sm font-medium text-text-primary mb-3 block">{label}</label>
+        {description && <p className="text-xs text-text-muted mb-3">{description}</p>}
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
           className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
@@ -199,8 +199,8 @@ export default function Settings() {
           <div className="max-w-[640px]">
           {activeTab === 'general' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">General Settings</h3>
-              <p className="text-xs text-text-muted mb-4">Manage your application preferences</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">General Settings</h3>
+              <p className="text-xs text-text-muted mb-6">Manage your application preferences</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
                 {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'], 'Choose your preferred color scheme')}
@@ -212,8 +212,8 @@ export default function Settings() {
 
           {activeTab === 'extraction' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">Extraction Settings</h3>
-              <p className="text-xs text-text-muted mb-4">Configure how extractions are performed</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">Extraction Settings</h3>
+              <p className="text-xs text-text-muted mb-6">Configure how extractions are performed</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('pages_per_keyword', 'Pages per Keyword', 'number', undefined, 'Number of search result pages to scrape per keyword')}
                 {renderInput('delay_between_requests', 'Delay Between Requests (seconds)', 'number', undefined, 'Wait time between requests to avoid rate limiting')}
@@ -228,8 +228,8 @@ export default function Settings() {
 
           {activeTab === 'api' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">API Keys</h3>
-              <p className="text-xs text-text-muted mb-4">Manage third-party service integrations</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">API Keys</h3>
+              <p className="text-xs text-text-muted mb-6">Manage third-party service integrations</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
               </div>
@@ -241,8 +241,8 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">Notifications</h3>
-              <p className="text-xs text-text-muted mb-4">Control how you receive alerts</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">Notifications</h3>
+              <p className="text-xs text-text-muted mb-6">Control how you receive alerts</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
@@ -255,8 +255,8 @@ export default function Settings() {
 
           {activeTab === 'storage' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">Storage & Data</h3>
-              <p className="text-xs text-text-muted mb-4">Manage data retention and backups</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">Storage & Data</h3>
+              <p className="text-xs text-text-muted mb-6">Manage data retention and backups</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
                 {renderInput('auto_backup', 'Auto Backup', 'toggle')}
@@ -273,8 +273,8 @@ export default function Settings() {
 
           {activeTab === 'security' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">Security & Proxy</h3>
-              <p className="text-xs text-text-muted mb-4">Configure proxy and privacy settings</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">Security & Proxy</h3>
+              <p className="text-xs text-text-muted mb-6">Configure proxy and privacy settings</p>
               <div className="space-y-1 divide-y divide-[#3f3f46]">
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
                 {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
