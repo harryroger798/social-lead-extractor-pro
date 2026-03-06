@@ -138,18 +138,18 @@ export default function ResultsView() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+          <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Shows</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Shows</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />All extracted leads with email, phone, name, platform, and quality score</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Verification status showing which emails have been confirmed deliverable</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Source links to view the original page where the lead was found</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">Available Actions</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Available Actions</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search:</strong> Filter leads by email, name, or any text</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Platform Filter:</strong> View leads from a specific platform only</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Export:</strong> Download as CSV, XLSX, or JSON. Select specific leads or export all</li>
@@ -158,7 +158,7 @@ export default function ResultsView() {
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-              <p className="text-xs text-green-400 font-medium">Tip: Use the quality score to prioritize high-value leads. Scores above 70 indicate verified, complete contact info.</p>
+              <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: Use the quality score to prioritize high-value leads. Scores above 70 indicate verified, complete contact info.</p>
             </div>
           </div>
         )}

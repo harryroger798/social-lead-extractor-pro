@@ -143,10 +143,10 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRightIcon className="w-4 h-4 text-text-muted" />}
           </button>
           {showGuide && (
-            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+            <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Shows</h4>
-                <ul className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Shows</h4>
+                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Total leads, emails, and phones extracted across all sessions</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Platform breakdown chart showing which platforms yield the most leads</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />7-day extraction trend showing your daily email and phone collection</li>
@@ -154,15 +154,15 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">Quick Actions</h4>
-                <ul className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">Quick Actions</h4>
+                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">New Extraction:</strong> Click the button in the top right to start a fresh extraction</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">View All History:</strong> Click "View All" on recent extractions to see full history</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Charts:</strong> Hover over any chart bar or line to see detailed numbers</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-                <p className="text-xs text-green-400 font-medium">Tip: The dashboard updates automatically after each extraction. Run your first extraction to see data populate here.</p>
+                <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: The dashboard updates automatically after each extraction. Run your first extraction to see data populate here.</p>
               </div>
             </div>
           )}

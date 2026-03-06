@@ -61,10 +61,10 @@ export default function SafetyGuide() {
             {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
           </button>
           {showGuide && (
-            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+            <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Shows</h4>
-                <ul className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Shows</h4>
+                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Ban risk level for each platform (LOW, MEDIUM, HIGH)</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />How platforms detect automated scraping</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Prevention techniques to avoid getting banned</li>
@@ -72,8 +72,8 @@ export default function SafetyGuide() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">How to Use It</h4>
-                <ol className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">How to Use It</h4>
+                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Read the General Safety Tips that apply to all platforms</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Click on any platform card to expand its detailed guide</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Follow the recommended limits when setting up extractions</li>
@@ -81,7 +81,7 @@ export default function SafetyGuide() {
                 </ol>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-                <p className="text-xs text-green-400 font-medium">Tip: Always start with small extraction sizes and increase gradually. The app has built-in protections, but following the recommended limits ensures maximum safety.</p>
+                <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: Always start with small extraction sizes and increase gradually. The app has built-in protections, but following the recommended limits ensures maximum safety.</p>
               </div>
             </div>
           )}
@@ -93,7 +93,7 @@ export default function SafetyGuide() {
             <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" /> General Safety Tips
             </h3>
-            <ul className="space-y-3 text-xs text-text-secondary">
+            <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
               {guide.general_tips.map((tip, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
@@ -123,10 +123,10 @@ export default function SafetyGuide() {
                 {isExpanded ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
               </button>
               {isExpanded && (
-                <div className="px-5 pb-6 space-y-6 border-t border-border pt-5">
+                <div className="px-5 pb-7 space-y-8 border-t border-border pt-6">
                   {p.detection_methods && (
                     <div>
-                      <h4 className="text-xs font-semibold text-text-primary mb-3">Detection Methods</h4>
+                      <h4 className="text-sm font-semibold text-text-primary mb-4">Detection Methods</h4>
                       <ul className="space-y-1 text-xs text-text-muted">
                         {p.detection_methods.map((d, i) => (
                           <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 flex-shrink-0" />{d}</li>
@@ -136,7 +136,7 @@ export default function SafetyGuide() {
                   )}
                   {p.prevention && (
                     <div>
-                      <h4 className="text-xs font-semibold text-text-primary mb-3">Prevention Techniques</h4>
+                      <h4 className="text-sm font-semibold text-text-primary mb-4">Prevention Techniques</h4>
                       <ul className="space-y-1 text-xs text-text-muted">
                         {p.prevention.map((prev, i) => (
                           <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />{prev}</li>
@@ -146,7 +146,7 @@ export default function SafetyGuide() {
                   )}
                   {p.what_happens && (
                     <div>
-                      <h4 className="text-xs font-semibold text-text-primary mb-3">What Happens If Caught</h4>
+                      <h4 className="text-sm font-semibold text-text-primary mb-4">What Happens If Caught</h4>
                       <ul className="space-y-1 text-xs text-text-muted">
                         {p.what_happens.map((w, i) => (
                           <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />{w}</li>
@@ -156,7 +156,7 @@ export default function SafetyGuide() {
                   )}
                   {p.recommended_limits && (
                     <div>
-                      <h4 className="text-xs font-semibold text-text-primary mb-3">Recommended Limits</h4>
+                      <h4 className="text-sm font-semibold text-text-primary mb-4">Recommended Limits</h4>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         {Object.entries(p.recommended_limits).map(([k, v]) => (
                           <div key={k} className="flex justify-between py-1.5 px-3 rounded-lg bg-bg-primary">
@@ -182,7 +182,7 @@ export default function SafetyGuide() {
               We use the dorking approach exclusively to keep your LinkedIn account safe.
             </p>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-              <p className="text-xs text-green-400 font-medium">
+              <p className="text-[13px] leading-relaxed text-green-400 font-medium">
                 Google Dorking extracts LinkedIn profile data through Google search results — LinkedIn never sees automated requests from your account.
               </p>
             </div>

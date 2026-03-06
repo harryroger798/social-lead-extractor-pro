@@ -284,10 +284,10 @@ export default function Settings() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+          <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">Settings Tabs</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Settings Tabs</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">General:</strong> App name, theme, language, default export format</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Extraction:</strong> Pages per keyword, delay, concurrent sessions, dorking/scraping toggles</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Proxies:</strong> Add, test, and manage proxy servers from any provider</li>
@@ -298,14 +298,14 @@ export default function Settings() {
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">How to Save</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">How to Save</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" />Make changes in any tab — the "Save Changes" button activates automatically</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" />All settings persist across sessions and apply immediately after saving</li>
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-              <p className="text-xs text-green-400 font-medium">Tip: Start with the Extraction tab to optimize your scraping speed and method. Enable Google Dorking for the safest extraction with zero ban risk.</p>
+              <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: Start with the Extraction tab to optimize your scraping speed and method. Enable Google Dorking for the safest extraction with zero ban risk.</p>
             </div>
           </div>
         )}

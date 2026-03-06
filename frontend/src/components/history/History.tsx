@@ -108,25 +108,25 @@ export default function History() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+          <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Shows</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Shows</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />All past extraction sessions with their status, duration, and lead counts</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Progress bars for currently running extractions</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keywords and platforms used in each session</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">Available Actions</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Available Actions</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search:</strong> Find sessions by name or keyword</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Filter by Status:</strong> Show only completed, running, failed, or paused sessions</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Remove a session and its data with the trash icon</li>
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-              <p className="text-xs text-green-400 font-medium">Tip: Completed sessions keep all their leads in the Results tab. Deleting a session here also removes its leads.</p>
+              <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: Completed sessions keep all their leads in the Results tab. Deleting a session here also removes its leads.</p>
             </div>
           </div>
         )}

@@ -65,18 +65,18 @@ export default function WhatsAppScraper() {
             {showHowTo ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
           </button>
           {showHowTo && (
-            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+            <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">What You Need</h4>
-                <ul className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">What You Need</h4>
+                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />A WhatsApp account (use a secondary number, not your main)</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />WhatsApp Web access (you'll scan a QR code on first use)</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />Be a member of the group you want to extract from</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">How It Works</h4>
-                <ol className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">How It Works</h4>
+                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter the exact group name as it appears in your WhatsApp chats</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set max members and delay (8+ seconds recommended)</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Click "Extract Members" — WhatsApp Web opens in a browser</li>
@@ -85,8 +85,8 @@ export default function WhatsAppScraper() {
                 </ol>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-3">What Each Option Does</h4>
-                <ul className="space-y-3 text-xs text-text-secondary">
+                <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
+                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Group Name:</strong> Must exactly match the group name in your chat list</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Members:</strong> How many members to extract (10-500). Start with 50 for safety</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each extraction. 8-15s recommended. Higher = safer</li>
@@ -110,7 +110,7 @@ export default function WhatsAppScraper() {
               <Shield className="w-4 h-4 text-yellow-400" />
               <h3 className="text-sm font-semibold text-text-primary">Ban Prevention Techniques</h3>
             </div>
-            <ul className="space-y-3 text-xs text-text-secondary">
+            <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
               {guide.prevention.map((p, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
@@ -120,7 +120,7 @@ export default function WhatsAppScraper() {
             </ul>
 
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">What You Get</h4>
+              <h4 className="text-sm font-semibold text-text-primary mb-4">What You Get</h4>
               <div className="grid grid-cols-2 gap-1.5 text-xs text-text-muted">
                 {guide.what_you_get.map((w, i) => (
                   <div key={i} className="flex items-center gap-1.5">
@@ -131,7 +131,7 @@ export default function WhatsAppScraper() {
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">How to Get More Numbers Safely</h4>
+              <h4 className="text-sm font-semibold text-text-primary mb-4">How to Get More Numbers Safely</h4>
               <ul className="space-y-1.5 text-xs text-text-muted">
                 {guide.how_to_get_more.map((h, i) => (
                   <li key={i} className="flex gap-2">

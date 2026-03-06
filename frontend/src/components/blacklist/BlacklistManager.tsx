@@ -122,18 +122,18 @@ export default function BlacklistManager() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
+          <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Does</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Does</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Block specific emails, domains, phone numbers, or keywords from being extracted</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Blacklisted items are automatically filtered out during future extractions</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keeps your lead lists clean by preventing unwanted contacts</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-3">Entry Types</h4>
-              <ul className="space-y-3 text-xs text-text-secondary">
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Entry Types</h4>
+              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Email:</strong> Block a specific email address (e.g. spam@example.com)</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Domain:</strong> Block all emails from a domain (e.g. competitor.com)</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone:</strong> Block a specific phone number</li>
@@ -141,7 +141,7 @@ export default function BlacklistManager() {
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-              <p className="text-xs text-green-400 font-medium">Tip: Block competitor domains to keep your lead lists focused on genuine prospects. Add common spam domains to improve lead quality.</p>
+              <p className="text-[13px] leading-relaxed text-green-400 font-medium">Tip: Block competitor domains to keep your lead lists focused on genuine prospects. Add common spam domains to improve lead quality.</p>
             </div>
           </div>
         )}
