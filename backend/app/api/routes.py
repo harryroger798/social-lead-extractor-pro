@@ -22,6 +22,13 @@ from app.models.schemas import (
     DashboardStats,
     SessionResponse,
     LeadResponse,
+    GoogleMapsSearchRequest,
+    ScheduleCreateRequest,
+    EmailFinderRequest,
+    CRMExportRequest,
+    OutreachSendRequest,
+    TelegramScrapeRequest,
+    WhatsAppScrapeRequest,
 )
 from app.services.extractor import extract_emails, extract_phones, classify_email, score_lead
 from app.services.verifier import verify_email
@@ -791,3 +798,835 @@ async def delete_license(license_id: str) -> dict:
         await db.execute("DELETE FROM licenses WHERE id = ?", (license_id,))
         await db.commit()
     return {"status": "deleted"}
+
+
+# ─── Enhancement #1: Google Maps Extractor ───────────────────────────────────
+
+@router.post("/maps/search")
+async def search_google_maps(
+    req: GoogleMapsSearchRequest,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """Search Google Maps for business listings."""
+    session_id = str(uuid.uuid4())
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"Google Maps: {req.query}",
+             json.dumps(["google_maps"]),
+             json.dumps([req.query]),
+             datetime.now().isoformat(),
+             json.dumps(req.model_dump())),
+        )
+        await db.commit()
+
+    background_tasks.add_task(_run_gmaps_extraction, session_id, req)
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_gmaps_extraction(session_id: str, req: GoogleMapsSearchRequest) -> None:
+    """Background task to run Google Maps extraction."""
+    from app.services.gmaps_scraper import scrape_google_maps, enrich_gmaps_with_emails
+    from app.services.duplicate_detector import compute_lead_hash
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    try:
+        businesses = await scrape_google_maps(
+            query=req.query,
+            max_results=req.max_results,
+            delay=req.delay,
+        )
+
+        async with get_db() as db:
+            emails_found = 0
+            phones_found = 0
+            total = 0
+
+            for biz in businesses:
+                lead_id = str(uuid.uuid4())
+                email = biz.get("email", "")
+                phone = biz.get("phone", "")
+                name = biz.get("name", "")
+                website = biz.get("website", "")
+
+                lead_hash = compute_lead_hash(email, phone, name)
+                quality = calculate_lead_score(
+                    email=email, phone=phone, name=name,
+                    website=website, verified=False,
+                )
+                category = get_score_label(quality)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id,
+                         lead_hash, lead_score, score_category, website, address, rating, category)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, email, phone, name, "google_maps",
+                         website, req.query, "",
+                         "unknown", 0, quality,
+                         datetime.now().isoformat(), session_id,
+                         lead_hash, quality, category, website,
+                         biz.get("address", ""), biz.get("rating", ""),
+                         biz.get("category", "")),
+                    )
+                    total += 1
+                    if email:
+                        emails_found += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, emails_found=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, emails_found, phones_found,
+                 datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+    except Exception:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+
+# ─── Enhancement #2: Duplicate Detection ─────────────────────────────────────
+
+@router.post("/duplicates/check")
+async def check_duplicates() -> dict:
+    """Scan all leads and identify duplicates across sessions."""
+    from app.services.duplicate_detector import compute_lead_hash
+
+    async with get_db() as db:
+        cursor = await db.execute("SELECT id, email, phone, name FROM leads")
+        rows = await cursor.fetchall()
+
+        hash_map: dict[str, list[str]] = {}
+        for r in rows:
+            h = compute_lead_hash(r[1], r[2], r[3])
+            if h not in hash_map:
+                hash_map[h] = []
+            hash_map[h].append(r[0])
+
+        # Find duplicates (hashes with more than one lead)
+        duplicates = {h: ids for h, ids in hash_map.items() if len(ids) > 1}
+        total_duplicates = sum(len(ids) - 1 for ids in duplicates.values())
+
+        return {
+            "total_leads": len(rows),
+            "unique_leads": len(hash_map),
+            "duplicate_groups": len(duplicates),
+            "total_duplicates": total_duplicates,
+        }
+
+
+@router.post("/duplicates/remove")
+async def remove_duplicates() -> dict:
+    """Remove duplicate leads, keeping the first occurrence."""
+    from app.services.duplicate_detector import compute_lead_hash
+
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT id, email, phone, name, extracted_at FROM leads ORDER BY extracted_at ASC"
+        )
+        rows = await cursor.fetchall()
+
+        seen_hashes: set[str] = set()
+        to_delete: list[str] = []
+
+        for r in rows:
+            h = compute_lead_hash(r[1], r[2], r[3])
+            if h in seen_hashes:
+                to_delete.append(r[0])
+            else:
+                seen_hashes.add(h)
+
+        if to_delete:
+            placeholders = ",".join("?" for _ in to_delete)
+            await db.execute(f"DELETE FROM leads WHERE id IN ({placeholders})", to_delete)
+            await db.commit()
+
+        return {"removed": len(to_delete), "remaining": len(rows) - len(to_delete)}
+
+
+# ─── Enhancement #3: Lead Scoring ────────────────────────────────────────────
+
+@router.post("/leads/rescore")
+async def rescore_all_leads() -> dict:
+    """Recalculate quality scores for all leads using enhanced scoring."""
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT id, email, phone, name, verified, email_type, website, source_url FROM leads"
+        )
+        rows = await cursor.fetchall()
+
+        updated = 0
+        score_dist = {"hot": 0, "warm": 0, "cold": 0}
+
+        for r in rows:
+            new_score = calculate_lead_score(
+                email=r[1], phone=r[2], name=r[3],
+                website=r[6] or "", verified=bool(r[4]),
+                email_type=r[5] or "unknown",
+            )
+            category = get_score_label(new_score)
+            score_dist[category] += 1
+
+            await db.execute(
+                "UPDATE leads SET quality_score=?, lead_score=?, score_category=? WHERE id=?",
+                (new_score, new_score, category, r[0]),
+            )
+            updated += 1
+
+        await db.commit()
+        return {"updated": updated, "distribution": score_dist}
+
+
+@router.get("/leads/{lead_id}/score-breakdown")
+async def get_lead_score_breakdown(lead_id: str) -> dict:
+    """Get detailed scoring breakdown for a lead."""
+    from app.services.lead_scorer import get_scoring_breakdown, calculate_lead_score, get_score_label
+
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT email, phone, name, verified, email_type, website FROM leads WHERE id = ?",
+            (lead_id,),
+        )
+        row = await cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Lead not found")
+
+        breakdown = get_scoring_breakdown(
+            email=row[0], phone=row[1], name=row[2],
+            verified=bool(row[3]), email_type=row[4] or "unknown",
+            website=row[5] or "",
+        )
+        total = calculate_lead_score(
+            email=row[0], phone=row[1], name=row[2],
+            verified=bool(row[3]), email_type=row[4] or "unknown",
+            website=row[5] or "",
+        )
+        return {
+            "lead_id": lead_id,
+            "score": total,
+            "category": get_score_label(total),
+            "breakdown": breakdown,
+        }
+
+
+# ─── Enhancement #4: Scheduled Extractions ───────────────────────────────────
+
+@router.get("/schedules")
+async def get_schedules() -> list[dict]:
+    """Get all scheduled extraction jobs."""
+    async with get_db() as db:
+        cursor = await db.execute("SELECT * FROM schedules ORDER BY created_at DESC")
+        rows = await cursor.fetchall()
+        return [
+            {
+                "id": r[0], "name": r[1],
+                "keywords": json.loads(r[2]), "platforms": json.loads(r[3]),
+                "frequency": r[4], "cron_expression": r[5],
+                "pages_per_keyword": r[6], "delay_between_requests": r[7],
+                "use_proxies": bool(r[8]), "use_google_dorking": bool(r[9]),
+                "use_firecrawl_enrichment": bool(r[10]), "auto_verify": bool(r[11]),
+                "status": r[12], "created_at": r[13],
+                "last_run": r[14], "next_run": r[15],
+                "total_runs": r[16],
+            }
+            for r in rows
+        ]
+
+
+@router.post("/schedules")
+async def create_schedule(req: ScheduleCreateRequest) -> dict:
+    """Create a new scheduled extraction."""
+    from app.services.scheduler_service import create_schedule as svc_create
+
+    schedule = await svc_create(
+        name=req.name,
+        keywords=req.keywords,
+        platforms=req.platforms,
+        frequency=req.frequency,
+        cron_expression=req.cron_expression,
+        pages_per_keyword=req.pages_per_keyword,
+        delay_between_requests=req.delay_between_requests,
+        use_proxies=req.use_proxies,
+        use_google_dorking=req.use_google_dorking,
+        use_firecrawl_enrichment=req.use_firecrawl_enrichment,
+        auto_verify=req.auto_verify,
+    )
+
+    # Persist to DB
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO schedules
+            (id, name, keywords, platforms, frequency, cron_expression,
+             pages_per_keyword, delay_between_requests, use_proxies,
+             use_google_dorking, use_firecrawl_enrichment, auto_verify,
+             status, created_at, last_run, next_run, total_runs)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (schedule["id"], schedule["name"],
+             json.dumps(schedule["keywords"]), json.dumps(schedule["platforms"]),
+             schedule["frequency"], schedule["cron_expression"],
+             schedule.get("pages_per_keyword", 3),
+             schedule.get("delay_between_requests", 3.0),
+             1 if schedule.get("use_proxies") else 0,
+             1 if schedule.get("use_google_dorking", True) else 0,
+             1 if schedule.get("use_firecrawl_enrichment") else 0,
+             1 if schedule.get("auto_verify", True) else 0,
+             schedule["status"], schedule["created_at"],
+             schedule.get("last_run"), schedule.get("next_run"),
+             schedule.get("total_runs", 0)),
+        )
+        await db.commit()
+
+    return schedule
+
+
+@router.put("/schedules/{schedule_id}/pause")
+async def pause_schedule_endpoint(schedule_id: str) -> dict:
+    """Pause a scheduled extraction."""
+    from app.services.scheduler_service import pause_schedule
+
+    success = await pause_schedule(schedule_id)
+    if success:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE schedules SET status='paused' WHERE id=?", (schedule_id,)
+            )
+            await db.commit()
+    return {"status": "paused" if success else "error"}
+
+
+@router.put("/schedules/{schedule_id}/resume")
+async def resume_schedule_endpoint(schedule_id: str) -> dict:
+    """Resume a paused scheduled extraction."""
+    from app.services.scheduler_service import resume_schedule
+
+    success = await resume_schedule(schedule_id)
+    if success:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE schedules SET status='active' WHERE id=?", (schedule_id,)
+            )
+            await db.commit()
+    return {"status": "active" if success else "error"}
+
+
+@router.delete("/schedules/{schedule_id}")
+async def delete_schedule_endpoint(schedule_id: str) -> dict:
+    """Delete a scheduled extraction."""
+    from app.services.scheduler_service import delete_schedule
+
+    await delete_schedule(schedule_id)
+    async with get_db() as db:
+        await db.execute("DELETE FROM schedules WHERE id=?", (schedule_id,))
+        await db.commit()
+    return {"status": "deleted"}
+
+
+# ─── Enhancement #5: Website Email Finder ─────────────────────────────────────
+
+@router.post("/email-finder/crawl")
+async def crawl_website_emails(req: EmailFinderRequest) -> dict:
+    """Crawl a website and extract email addresses."""
+    from app.services.website_email_finder import scrape_website_for_contacts
+
+    result = await scrape_website_for_contacts(
+        url=req.url,
+        max_pages=req.max_pages,
+    )
+    return {
+        "url": req.url,
+        "emails": result.get("emails", []),
+        "phones": result.get("phones", []),
+        "total_emails": len(result.get("emails", [])),
+        "total_phones": len(result.get("phones", [])),
+    }
+
+
+# ─── Enhancement #6: CRM Export ──────────────────────────────────────────────
+
+@router.post("/crm/export")
+async def export_to_crm(req: CRMExportRequest) -> dict:
+    """Export leads to HubSpot or Salesforce CRM."""
+    from app.services.crm_export import export_to_hubspot, export_to_salesforce
+
+    # Fetch leads
+    async with get_db() as db:
+        placeholders = ",".join("?" for _ in req.lead_ids)
+        cursor = await db.execute(
+            f"SELECT * FROM leads WHERE id IN ({placeholders})", req.lead_ids
+        )
+        rows = await cursor.fetchall()
+        leads = []
+        for r in rows:
+            leads.append({
+                "email": r[1], "phone": r[2], "name": r[3],
+                "platform": r[4], "source_url": r[5],
+                "keyword": r[6], "country": r[7],
+            })
+
+    if req.crm_type == "hubspot":
+        return await export_to_hubspot(req.api_key, leads)
+    elif req.crm_type == "salesforce":
+        return await export_to_salesforce(
+            req.username, req.password, req.security_token, leads
+        )
+    else:
+        raise HTTPException(status_code=400, detail="Invalid CRM type. Use 'hubspot' or 'salesforce'.")
+
+
+@router.post("/crm/test-connection")
+async def test_crm_connection(crm_type: str = "hubspot", api_key: str = "") -> dict:
+    """Test CRM API connection."""
+    from app.services.crm_export import test_hubspot_connection
+
+    if crm_type == "hubspot":
+        return await test_hubspot_connection(api_key)
+    return {"success": False, "message": "Only HubSpot connection test is supported"}
+
+
+# ─── Enhancement #7: Auto Email Outreach ──────────────────────────────────────
+
+@router.post("/outreach/send")
+async def send_outreach(
+    req: OutreachSendRequest,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """Send email outreach to selected leads."""
+    from app.services.email_outreach import send_bulk_emails
+
+    # Fetch leads
+    async with get_db() as db:
+        placeholders = ",".join("?" for _ in req.lead_ids)
+        cursor = await db.execute(
+            f"SELECT * FROM leads WHERE id IN ({placeholders})", req.lead_ids
+        )
+        rows = await cursor.fetchall()
+        recipients = []
+        for r in rows:
+            if r[1]:  # has email
+                recipients.append({
+                    "email": r[1], "name": r[3],
+                    "phone": r[2], "platform": r[4],
+                    "company": "", "website": r[5],
+                })
+
+    if not recipients:
+        raise HTTPException(status_code=400, detail="No leads with email addresses found")
+
+    # Run in background
+    async def _send_task():
+        result = await send_bulk_emails(
+            smtp_host=req.smtp_host,
+            smtp_port=req.smtp_port,
+            smtp_username=req.smtp_username,
+            smtp_password=req.smtp_password,
+            from_name=req.from_name or req.smtp_username,
+            recipients=recipients,
+            subject_template=req.subject_template,
+            body_template=req.body_template,
+            delay_seconds=req.delay_seconds,
+            use_tls=req.use_tls,
+        )
+
+        # Log results
+        async with get_db() as db:
+            for r in result.get("results", []):
+                log_id = str(uuid.uuid4())
+                await db.execute(
+                    """INSERT INTO outreach_logs
+                    (id, campaign_id, to_email, subject, status, error, sent_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (log_id, result["campaign_id"], r["to"],
+                     req.subject_template[:200], r["status"],
+                     r.get("error", ""), datetime.now().isoformat()),
+                )
+            await db.commit()
+
+    background_tasks.add_task(_send_task)
+
+    return {
+        "status": "sending",
+        "total_recipients": len(recipients),
+        "message": f"Sending to {len(recipients)} leads in background",
+    }
+
+
+@router.get("/outreach/templates")
+async def get_outreach_templates() -> list[dict]:
+    """Get built-in email templates."""
+    from app.services.email_outreach import get_default_templates
+    return get_default_templates()
+
+
+@router.get("/outreach/logs")
+async def get_outreach_logs(campaign_id: Optional[str] = None) -> list[dict]:
+    """Get outreach log history."""
+    async with get_db() as db:
+        if campaign_id:
+            cursor = await db.execute(
+                "SELECT * FROM outreach_logs WHERE campaign_id=? ORDER BY sent_at DESC",
+                (campaign_id,),
+            )
+        else:
+            cursor = await db.execute(
+                "SELECT * FROM outreach_logs ORDER BY sent_at DESC LIMIT 100"
+            )
+        rows = await cursor.fetchall()
+        return [
+            {
+                "id": r[0], "campaign_id": r[1], "to_email": r[2],
+                "subject": r[3], "status": r[4], "error": r[5],
+                "sent_at": r[6],
+            }
+            for r in rows
+        ]
+
+
+# ─── Enhancement #8: Telegram Scraper ────────────────────────────────────────
+
+@router.post("/telegram/extract")
+async def extract_telegram(
+    req: TelegramScrapeRequest,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """Extract members from a Telegram group."""
+    session_id = str(uuid.uuid4())
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"Telegram: @{req.group_username}",
+             json.dumps(["telegram"]),
+             json.dumps([req.group_username]),
+             datetime.now().isoformat(),
+             json.dumps(req.model_dump())),
+        )
+        await db.commit()
+
+    background_tasks.add_task(_run_telegram_extraction, session_id, req)
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_telegram_extraction(session_id: str, req: TelegramScrapeRequest) -> None:
+    """Background task for Telegram extraction."""
+    from app.services.telegram_scraper import scrape_telegram_group
+    from app.services.duplicate_detector import compute_lead_hash
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    try:
+        members = await scrape_telegram_group(
+            api_id=req.api_id,
+            api_hash=req.api_hash,
+            phone_number=req.phone_number,
+            group_username=req.group_username,
+            max_members=req.max_members,
+            delay=req.delay,
+        )
+
+        async with get_db() as db:
+            total = 0
+            phones_found = 0
+
+            for member in members:
+                if "error" in member:
+                    continue
+                lead_id = str(uuid.uuid4())
+                name = f"{member.get('first_name', '')} {member.get('last_name', '')}".strip()
+                phone = member.get("phone", "")
+                username = member.get("username", "")
+
+                lead_hash = compute_lead_hash("", phone, name)
+                quality = calculate_lead_score(phone=phone, name=name)
+                category = get_score_label(quality)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id,
+                         lead_hash, lead_score, score_category)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, "", phone, name, "telegram",
+                         f"https://t.me/{username}" if username else "",
+                         req.group_username, "",
+                         "unknown", 0, quality,
+                         datetime.now().isoformat(), session_id,
+                         lead_hash, quality, category),
+                    )
+                    total += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, phones_found, datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+    except Exception:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+
+@router.get("/telegram/setup")
+async def telegram_setup_guide() -> dict:
+    """Get Telegram scraper setup instructions and safety guide."""
+    from app.services.telegram_scraper import get_telegram_setup_instructions
+    return get_telegram_setup_instructions()
+
+
+# ─── Enhancement #9: WhatsApp Group Scraper ───────────────────────────────────
+
+@router.post("/whatsapp/extract")
+async def extract_whatsapp(
+    req: WhatsAppScrapeRequest,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """Extract members from a WhatsApp group."""
+    session_id = str(uuid.uuid4())
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"WhatsApp: {req.group_name}",
+             json.dumps(["whatsapp"]),
+             json.dumps([req.group_name]),
+             datetime.now().isoformat(),
+             json.dumps(req.model_dump())),
+        )
+        await db.commit()
+
+    background_tasks.add_task(_run_whatsapp_extraction, session_id, req)
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_whatsapp_extraction(session_id: str, req: WhatsAppScrapeRequest) -> None:
+    """Background task for WhatsApp extraction."""
+    from app.services.whatsapp_scraper import scrape_whatsapp_group
+    from app.services.duplicate_detector import compute_lead_hash
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    try:
+        result = await scrape_whatsapp_group(
+            group_name=req.group_name,
+            max_members=req.max_members,
+            delay=req.delay,
+        )
+
+        if result.get("requires_qr"):
+            async with get_db() as db:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
+                await db.commit()
+            return
+
+        async with get_db() as db:
+            total = 0
+            phones_found = 0
+
+            for member in result.get("members", []):
+                lead_id = str(uuid.uuid4())
+                name = member.get("name", "")
+                phone = member.get("phone", "")
+
+                lead_hash = compute_lead_hash("", phone, name)
+                quality = calculate_lead_score(phone=phone, name=name)
+                category = get_score_label(quality)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id,
+                         lead_hash, lead_score, score_category)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, "", phone, name, "whatsapp",
+                         f"WhatsApp Group: {req.group_name}", req.group_name, "",
+                         "unknown", 0, quality,
+                         datetime.now().isoformat(), session_id,
+                         lead_hash, quality, category),
+                    )
+                    total += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, phones_found, datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+    except Exception:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+
+@router.get("/whatsapp/safety-guide")
+async def whatsapp_safety_guide() -> dict:
+    """Get WhatsApp scraping safety guide and ban prevention tips."""
+    from app.services.whatsapp_scraper import get_whatsapp_safety_guide
+    return get_whatsapp_safety_guide()
+
+
+# ─── Enhancement #10: LinkedIn Improvements ──────────────────────────────────
+
+@router.get("/linkedin/ban-bypass-guide")
+async def linkedin_ban_bypass_guide() -> dict:
+    """Get LinkedIn scraping safety guide and techniques."""
+    return {
+        "title": "LinkedIn Lead Extraction Guide",
+        "primary_method": {
+            "name": "Google Dorking (RECOMMENDED - Zero ban risk)",
+            "description": "Searches Google for indexed LinkedIn profiles with email/phone data",
+            "ban_risk": "ZERO",
+            "how_it_works": [
+                "Uses Google search operators like site:linkedin.com",
+                "Extracts emails/phones from Google search snippets",
+                "No direct LinkedIn access = no ban risk",
+                "Already integrated as primary extraction method",
+            ],
+        },
+        "secondary_method": {
+            "name": "Direct Patchright Scraping (HIGH risk)",
+            "description": "Uses Patchright (undetected Playwright) to scrape LinkedIn directly",
+            "ban_risk": "HIGH",
+            "prevention": [
+                "Use 30-60 second delays between page visits",
+                "Rotate residential proxies aggressively",
+                "Don't view more than 100 profiles per day per account",
+                "Use Patchright's stealth mode (already in stack)",
+                "Randomize user-agent strings",
+                "Avoid scraping during off-hours (looks suspicious)",
+            ],
+            "what_triggers_bans": [
+                "Rapid page views (more than 100/hour)",
+                "Accessing profiles without being logged in",
+                "Using datacenter IPs",
+                "Consistent access patterns (no randomization)",
+                "Sales Navigator scraping without subscription",
+            ],
+            "recovery": [
+                "Temporary ban: wait 24-48 hours",
+                "Account restriction: verify phone number",
+                "Permanent ban: need a new account",
+            ],
+        },
+        "recommendation": "Stick with Google dorking. It's free, has zero ban risk, "
+                         "and extracts the same contact data. Direct scraping is only "
+                         "worth the risk if you need profile-specific data like job titles.",
+    }
+
+
+# ─── Platform Safety Guide (All Platforms) ───────────────────────────────────
+
+@router.get("/safety-guide")
+async def get_platform_safety_guide() -> dict:
+    """Comprehensive safety guide for all platforms."""
+    return {
+        "platforms": {
+            "reddit": {
+                "ban_risk": "LOW",
+                "method": "RSS feeds + PullPush API",
+                "notes": "Uses public APIs only. No authentication needed. Very safe.",
+            },
+            "google_maps": {
+                "ban_risk": "LOW-MEDIUM",
+                "method": "Selenium headless",
+                "prevention": ["Random 3-8 sec delays", "User-Agent rotation", "Proxy rotation"],
+            },
+            "linkedin": {
+                "ban_risk": "ZERO (dorking) / HIGH (direct)",
+                "method": "Google dorking (primary)",
+                "prevention": ["Don't use direct scraping unless necessary"],
+            },
+            "telegram": {
+                "ban_risk": "LOW",
+                "method": "Telethon (official MTProto API)",
+                "prevention": ["3-10 sec delays", "Max 5 groups/day", "Handle FloodWait"],
+            },
+            "whatsapp": {
+                "ban_risk": "MEDIUM-HIGH",
+                "method": "Selenium on WhatsApp Web",
+                "prevention": [
+                    "Use secondary/burner number",
+                    "5-15 sec delays between actions",
+                    "Max 3 groups per session",
+                    "2+ hours between sessions",
+                    "Use WhatsApp Business account",
+                    "Use residential/mobile proxy",
+                ],
+                "what_triggers_bans": [
+                    "Rapid automation detected",
+                    "Too many group member list views",
+                    "Datacenter IP addresses",
+                    "Scraping groups you're not a member of",
+                ],
+                "how_to_get_more_numbers": [
+                    "Join niche-relevant groups (WhatsApp allows 512 members each)",
+                    "Export contacts, use Website Email Finder for business emails",
+                    "Cross-reference with LinkedIn via Google dorking",
+                    "Use Telegram as safer alternative for similar leads",
+                ],
+            },
+            "facebook": {
+                "ban_risk": "ZERO (dorking only)",
+                "method": "Google dorking",
+                "notes": "Direct Facebook scraping is extremely risky. Stick to dorking.",
+            },
+            "twitter": {
+                "ban_risk": "ZERO (dorking only)",
+                "method": "Google dorking",
+                "notes": "Twitter API requires paid access. Dorking works fine.",
+            },
+        },
+        "general_tips": [
+            "Always use random delays between requests",
+            "Rotate User-Agent strings regularly",
+            "Use residential/mobile proxies over datacenter",
+            "Don't run extractions 24/7 — take breaks",
+            "Start with small batches and increase gradually",
+            "Monitor for rate limit errors and back off",
+            "Keep extraction sessions under 30 minutes",
+        ],
+    }

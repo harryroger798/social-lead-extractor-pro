@@ -210,6 +210,188 @@ export function exportResults(params: {
   });
 }
 
+// ─── Google Maps ───────────────────────────────────────────────────────
+
+export function searchGoogleMaps(params: { query: string; max_results?: number; delay?: number; enrich_emails?: boolean }) {
+  return request<{ session_id: string; status: string }>('/api/maps/search', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+// ─── Duplicates ────────────────────────────────────────────────────────
+
+export function checkDuplicates() {
+  return request<{ total_leads: number; unique_leads: number; duplicate_groups: number; total_duplicates: number }>('/api/duplicates/check', {
+    method: 'POST',
+  });
+}
+
+export function removeDuplicates() {
+  return request<{ removed: number; remaining: number }>('/api/duplicates/remove', {
+    method: 'POST',
+  });
+}
+
+// ─── Lead Scoring ──────────────────────────────────────────────────────
+
+export function rescoreAllLeads() {
+  return request<{ updated: number; distribution: { hot: number; warm: number; cold: number } }>('/api/leads/rescore', {
+    method: 'POST',
+  });
+}
+
+export function getLeadScoreBreakdown(leadId: string) {
+  return request<{ lead_id: string; score: number; category: string; breakdown: { rule: string; points: number; applied: boolean }[] }>(
+    `/api/leads/${leadId}/score-breakdown`
+  );
+}
+
+// ─── Schedules ─────────────────────────────────────────────────────────
+
+export function fetchSchedules() {
+  return request<ScheduleItem[]>('/api/schedules');
+}
+
+export function createSchedule(params: {
+  name: string;
+  keywords: string[];
+  platforms: string[];
+  frequency: string;
+  cron_expression?: string;
+  pages_per_keyword?: number;
+  delay_between_requests?: number;
+  use_proxies?: boolean;
+  use_google_dorking?: boolean;
+  use_firecrawl_enrichment?: boolean;
+  auto_verify?: boolean;
+}) {
+  return request<ScheduleItem>('/api/schedules', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export function pauseSchedule(scheduleId: string) {
+  return request<{ status: string }>(`/api/schedules/${scheduleId}/pause`, { method: 'PUT' });
+}
+
+export function resumeSchedule(scheduleId: string) {
+  return request<{ status: string }>(`/api/schedules/${scheduleId}/resume`, { method: 'PUT' });
+}
+
+export function deleteSchedule(scheduleId: string) {
+  return request<{ status: string }>(`/api/schedules/${scheduleId}`, { method: 'DELETE' });
+}
+
+// ─── Email Finder ──────────────────────────────────────────────────────
+
+export function crawlWebsiteEmails(url: string, maxPages?: number) {
+  return request<{ url: string; emails: string[]; phones: string[]; total_emails: number; total_phones: number }>(
+    '/api/email-finder/crawl',
+    { method: 'POST', body: JSON.stringify({ url, max_pages: maxPages || 5 }) }
+  );
+}
+
+// ─── CRM Export ────────────────────────────────────────────────────────
+
+export function exportToCRM(params: {
+  lead_ids: string[];
+  crm_type: string;
+  api_key?: string;
+  username?: string;
+  password?: string;
+  security_token?: string;
+}) {
+  return request<{ exported: number; failed: number; errors: string[] }>('/api/crm/export', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export function testCRMConnection(crmType: string, apiKey: string) {
+  return request<{ success: boolean; message: string }>(
+    `/api/crm/test-connection?crm_type=${crmType}&api_key=${apiKey}`,
+    { method: 'POST' }
+  );
+}
+
+// ─── Outreach ──────────────────────────────────────────────────────────
+
+export function sendOutreach(params: {
+  lead_ids: string[];
+  subject_template: string;
+  body_template: string;
+  smtp_host: string;
+  smtp_port: number;
+  smtp_username: string;
+  smtp_password: string;
+  from_name?: string;
+  delay_seconds?: number;
+  use_tls?: boolean;
+}) {
+  return request<{ status: string; total_recipients: number; message: string }>('/api/outreach/send', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export function fetchOutreachTemplates() {
+  return request<{ id: string; name: string; subject: string; body: string }[]>('/api/outreach/templates');
+}
+
+export function fetchOutreachLogs(campaignId?: string) {
+  const q = campaignId ? `?campaign_id=${campaignId}` : '';
+  return request<OutreachLogItem[]>(`/api/outreach/logs${q}`);
+}
+
+// ─── Telegram ──────────────────────────────────────────────────────────
+
+export function extractTelegram(params: {
+  api_id: number;
+  api_hash: string;
+  phone_number: string;
+  group_username: string;
+  max_members?: number;
+  delay?: number;
+}) {
+  return request<{ session_id: string; status: string }>('/api/telegram/extract', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export function fetchTelegramSetup() {
+  return request<{ title: string; steps: string[]; ban_prevention: string[]; limitations: string[]; cost: string }>('/api/telegram/setup');
+}
+
+// ─── WhatsApp ──────────────────────────────────────────────────────────
+
+export function extractWhatsApp(params: {
+  group_name: string;
+  max_members?: number;
+  delay?: number;
+}) {
+  return request<{ session_id: string; status: string }>('/api/whatsapp/extract', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export function fetchWhatsAppSafetyGuide() {
+  return request<{ title: string; ban_risk: string; prevention: string[]; what_you_get: string[]; how_to_get_more: string[]; tos_warning: string; qr_code: string }>('/api/whatsapp/safety-guide');
+}
+
+// ─── Safety Guide ──────────────────────────────────────────────────────
+
+export function fetchSafetyGuide() {
+  return request<{ platforms: Record<string, unknown>; general_tips: string[] }>('/api/safety-guide');
+}
+
+export function fetchLinkedInGuide() {
+  return request<Record<string, unknown>>('/api/linkedin/ban-bypass-guide');
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface DashboardStatsResponse {
@@ -323,4 +505,28 @@ export interface LicenseItem {
   max_activations: number;
   current_activations: number;
   created_at: string;
+}
+
+export interface ScheduleItem {
+  id: string;
+  name: string;
+  keywords: string[];
+  platforms: string[];
+  frequency: string;
+  cron_expression: string;
+  status: string;
+  created_at: string;
+  last_run: string | null;
+  next_run: string | null;
+  total_runs: number;
+}
+
+export interface OutreachLogItem {
+  id: string;
+  campaign_id: string;
+  to_email: string;
+  subject: string;
+  status: string;
+  error: string;
+  sent_at: string;
 }

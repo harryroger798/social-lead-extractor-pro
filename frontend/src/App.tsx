@@ -8,6 +8,14 @@ import History from '@/components/history/History';
 import BlacklistManager from '@/components/blacklist/BlacklistManager';
 import Settings from '@/components/settings/Settings';
 import ResellerPanel from '@/components/reseller/ResellerPanel';
+import GoogleMapsExtractor from '@/components/enhancements/GoogleMapsExtractor';
+import ScheduledExtractions from '@/components/enhancements/ScheduledExtractions';
+import EmailOutreach from '@/components/enhancements/EmailOutreach';
+import CRMExport from '@/components/enhancements/CRMExport';
+import TelegramScraper from '@/components/enhancements/TelegramScraper';
+import WhatsAppScraper from '@/components/enhancements/WhatsAppScraper';
+import EmailFinder from '@/components/enhancements/EmailFinder';
+import SafetyGuide from '@/components/enhancements/SafetyGuide';
 import type { Section } from '@/types';
 
 function App() {
@@ -30,6 +38,22 @@ function App() {
         return <Settings />;
       case 'reseller':
         return <ResellerPanel />;
+      case 'gmaps':
+        return <GoogleMapsExtractor />;
+      case 'schedules':
+        return <ScheduledExtractions />;
+      case 'outreach':
+        return <EmailOutreach />;
+      case 'crm':
+        return <CRMExport />;
+      case 'telegram':
+        return <TelegramScraper />;
+      case 'whatsapp':
+        return <WhatsAppScraper />;
+      case 'email_finder':
+        return <EmailFinder />;
+      case 'safety_guide':
+        return <SafetyGuide />;
       default:
         return <Dashboard onNavigate={setActiveSection} />;
     }

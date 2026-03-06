@@ -138,3 +138,82 @@ class DashboardStats(BaseModel):
     platform_breakdown: list[dict]
     daily_trend: list[dict]
     recent_sessions: list[SessionResponse]
+
+
+# ─── Enhancement Schemas ────────────────────────────────────────────────────
+
+class GoogleMapsSearchRequest(BaseModel):
+    query: str
+    max_results: int = 50
+    delay: float = 3.0
+    enrich_emails: bool = True
+
+
+class ScheduleCreateRequest(BaseModel):
+    name: str
+    keywords: list[str]
+    platforms: list[str]
+    frequency: str = "daily"
+    cron_expression: str = ""
+    pages_per_keyword: int = 3
+    delay_between_requests: float = 3.0
+    use_proxies: bool = False
+    use_google_dorking: bool = True
+    use_firecrawl_enrichment: bool = False
+    auto_verify: bool = True
+
+
+class ScheduleResponse(BaseModel):
+    id: str
+    name: str
+    keywords: list[str]
+    platforms: list[str]
+    frequency: str
+    cron_expression: str
+    status: str
+    created_at: str
+    last_run: Optional[str]
+    next_run: Optional[str]
+    total_runs: int
+
+
+class EmailFinderRequest(BaseModel):
+    url: str
+    max_pages: int = 5
+
+
+class CRMExportRequest(BaseModel):
+    lead_ids: list[str]
+    crm_type: str  # "hubspot" or "salesforce"
+    api_key: str = ""
+    username: str = ""
+    password: str = ""
+    security_token: str = ""
+
+
+class OutreachSendRequest(BaseModel):
+    lead_ids: list[str]
+    subject_template: str
+    body_template: str
+    smtp_host: str
+    smtp_port: int = 587
+    smtp_username: str
+    smtp_password: str
+    from_name: str = ""
+    delay_seconds: float = 30.0
+    use_tls: bool = True
+
+
+class TelegramScrapeRequest(BaseModel):
+    api_id: int
+    api_hash: str
+    phone_number: str
+    group_username: str
+    max_members: int = 500
+    delay: float = 5.0
+
+
+class WhatsAppScrapeRequest(BaseModel):
+    group_name: str
+    max_members: int = 100
+    delay: float = 8.0

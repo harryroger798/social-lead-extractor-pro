@@ -23,7 +23,10 @@ export type Platform =
   | 'youtube' 
   | 'pinterest' 
   | 'tumblr' 
-  | 'reddit';
+  | 'reddit'
+  | 'google_maps'
+  | 'telegram'
+  | 'whatsapp';
 
 export interface ExtractionSession {
   id: string;
@@ -116,4 +119,12 @@ export type Section =
   | 'history' 
   | 'blacklist' 
   | 'settings' 
-  | 'reseller';
+  | 'reseller'
+  | 'schedules'
+  | 'gmaps'
+  | 'outreach'
+  | 'crm'
+  | 'telegram'
+  | 'whatsapp'
+  | 'email_finder'
+  | 'safety_guide';

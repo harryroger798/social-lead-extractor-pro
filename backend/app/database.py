@@ -84,13 +84,63 @@ async def init_db() -> None:
                 created_at TEXT NOT NULL
             );
 
+            CREATE TABLE IF NOT EXISTS schedules (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                keywords TEXT NOT NULL DEFAULT '[]',
+                platforms TEXT NOT NULL DEFAULT '[]',
+                frequency TEXT NOT NULL DEFAULT 'daily',
+                cron_expression TEXT NOT NULL DEFAULT '',
+                pages_per_keyword INTEGER NOT NULL DEFAULT 3,
+                delay_between_requests REAL NOT NULL DEFAULT 3.0,
+                use_proxies INTEGER NOT NULL DEFAULT 0,
+                use_google_dorking INTEGER NOT NULL DEFAULT 1,
+                use_firecrawl_enrichment INTEGER NOT NULL DEFAULT 0,
+                auto_verify INTEGER NOT NULL DEFAULT 1,
+                status TEXT NOT NULL DEFAULT 'active',
+                created_at TEXT NOT NULL,
+                last_run TEXT,
+                next_run TEXT,
+                total_runs INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS outreach_logs (
+                id TEXT PRIMARY KEY,
+                campaign_id TEXT NOT NULL DEFAULT '',
+                to_email TEXT NOT NULL,
+                subject TEXT NOT NULL DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'pending',
+                error TEXT NOT NULL DEFAULT '',
+                sent_at TEXT NOT NULL,
+                lead_id TEXT NOT NULL DEFAULT ''
+            );
+
             CREATE INDEX IF NOT EXISTS idx_leads_session ON leads(session_id);
             CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
             CREATE INDEX IF NOT EXISTS idx_leads_platform ON leads(platform);
             CREATE INDEX IF NOT EXISTS idx_sessions_status ON sessions(status);
             CREATE INDEX IF NOT EXISTS idx_blacklist_type ON blacklist(type);
             CREATE INDEX IF NOT EXISTS idx_licenses_key ON licenses(key);
+            CREATE INDEX IF NOT EXISTS idx_schedules_status ON schedules(status);
+            CREATE INDEX IF NOT EXISTS idx_outreach_campaign ON outreach_logs(campaign_id);
         """)
+
+        # Add new columns to leads table (safe migration - ignore if already exists)
+        for col_sql in [
+            "ALTER TABLE leads ADD COLUMN lead_hash TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN lead_score INTEGER DEFAULT 0",
+            "ALTER TABLE leads ADD COLUMN score_category TEXT DEFAULT 'cold'",
+            "ALTER TABLE leads ADD COLUMN website TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN company TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN address TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN rating TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN category TEXT DEFAULT ''",
+        ]:
+            try:
+                await db.execute(col_sql)
+            except Exception:
+                pass  # Column already exists
+
         await db.commit()
 
 

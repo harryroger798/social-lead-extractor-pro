@@ -9,6 +9,14 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  MapPin,
+  Clock,
+  Mail,
+  Database,
+  MessageCircle,
+  Smartphone,
+  Globe,
+  Shield,
 } from 'lucide-react';
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
@@ -31,10 +39,28 @@ const navGroups = [
     ],
   },
   {
+    label: 'Scrapers',
+    items: [
+      { id: 'gmaps' as Section, label: 'Google Maps', icon: MapPin },
+      { id: 'telegram' as Section, label: 'Telegram', icon: MessageCircle },
+      { id: 'whatsapp' as Section, label: 'WhatsApp', icon: Smartphone },
+      { id: 'email_finder' as Section, label: 'Email Finder', icon: Globe },
+    ],
+  },
+  {
+    label: 'Automation',
+    items: [
+      { id: 'schedules' as Section, label: 'Schedules', icon: Clock },
+      { id: 'outreach' as Section, label: 'Email Outreach', icon: Mail },
+      { id: 'crm' as Section, label: 'CRM Export', icon: Database },
+    ],
+  },
+  {
     label: 'Management',
     items: [
       { id: 'blacklist' as Section, label: 'Blacklist', icon: ShieldBan },
       { id: 'settings' as Section, label: 'Settings', icon: Settings },
+      { id: 'safety_guide' as Section, label: 'Safety Guide', icon: Shield },
     ],
   },
   {
