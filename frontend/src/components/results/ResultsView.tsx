@@ -110,12 +110,12 @@ export default function ResultsView() {
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Results</h1>
             <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
           </div>
-          <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
+          <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
             <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
               <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.04] border border-[#27272a] text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.04] border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
               >
                 {fmt.toUpperCase()}
               </button>
@@ -134,10 +134,10 @@ export default function ResultsView() {
           <input
             type="text" placeholder="Search leads..." value={search}
             onChange={e => handleSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5 overflow-x-auto">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5 overflow-x-auto">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {PLATFORMS.map(p => (
             <button key={p} onClick={() => handlePlatformChange(p)}
@@ -158,11 +158,11 @@ export default function ResultsView() {
             <div className="overflow-x-auto flex-1">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#27272a]">
+                  <tr className="border-b border-[#3f3f46]">
                     <th className="px-5 py-4 text-left">
                       <input type="checkbox" checked={selected.size === leads.length && leads.length > 0}
                         onChange={toggleAll}
-                        className="w-4 h-4 rounded border-[#27272a] bg-bg-primary text-accent focus:ring-accent/20"
+                        className="w-4 h-4 rounded border-[#3f3f46] bg-bg-primary text-accent focus:ring-accent/20"
                       />
                     </th>
                     <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Contact</th>
@@ -176,11 +176,11 @@ export default function ResultsView() {
                 </thead>
                 <tbody>
                   {leads.map(lead => (
-                    <tr key={lead.id} className="border-b border-[#27272a]/40 hover:bg-white/[0.02] transition-colors">
+                    <tr key={lead.id} className="border-b border-[#3f3f46]/40 hover:bg-white/[0.02] transition-colors">
                       <td className="px-5 py-4">
                         <input type="checkbox" checked={selected.has(lead.id)}
                           onChange={() => toggleSelect(lead.id)}
-                          className="w-4 h-4 rounded border-[#27272a] bg-bg-primary text-accent focus:ring-accent/20"
+                          className="w-4 h-4 rounded border-[#3f3f46] bg-bg-primary text-accent focus:ring-accent/20"
                         />
                       </td>
                       <td className="px-5 py-4">
@@ -236,18 +236,18 @@ export default function ResultsView() {
           </div>
 
           {/* Pagination */}
-          <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-[#27272a]">
+          <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-[#3f3f46]">
             <p className="text-xs text-text-muted">
               Showing {((page - 1) * 50) + 1}-{Math.min(page * 50, total)} of {total.toLocaleString()} results
               {selected.size > 0 && <span className="ml-2 text-accent font-medium">({selected.size} selected)</span>}
             </p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-                className="p-2.5 rounded-lg bg-bg-secondary border border-[#27272a] hover:border-[#3f3f46] text-text-secondary disabled:opacity-30 transition-all"
+                className="p-2.5 rounded-lg bg-bg-secondary border border-[#3f3f46] hover:border-[#52525b] text-text-secondary disabled:opacity-30 transition-all"
               ><ChevronLeft className="w-4 h-4" /></button>
               <span className="text-xs text-text-muted tabular-nums px-2">Page {page} of {totalPages}</span>
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}
-                className="p-2.5 rounded-lg bg-bg-secondary border border-[#27272a] hover:border-[#3f3f46] text-text-secondary disabled:opacity-30 transition-all"
+                className="p-2.5 rounded-lg bg-bg-secondary border border-[#3f3f46] hover:border-[#52525b] text-text-secondary disabled:opacity-30 transition-all"
               ><ChevronRight className="w-4 h-4" /></button>
             </div>
           </div>

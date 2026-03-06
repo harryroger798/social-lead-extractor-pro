@@ -142,7 +142,7 @@ export default function ResellerPanel() {
           { label: 'Expired', value: stats.expired, icon: Clock, color: '#F59E0B' },
           { label: 'Revoked', value: stats.revoked, icon: XCircle, color: '#EF4444' },
         ].map(s => (
-          <div key={s.label} className="card p-6 shadow-md shadow-black/30 hover:border-[#3f3f46] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
+          <div key={s.label} className="card p-6 shadow-md shadow-black/30 hover:border-[#52525b] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{s.label}</p>
@@ -159,7 +159,7 @@ export default function ResellerPanel() {
       {/* Generate Form */}
       {showGenerate && (
         <div className="card">
-          <div className="px-6 py-5 border-b border-[#27272a]">
+          <div className="px-6 py-5 border-b border-[#3f3f46]">
             <h3 className="text-sm font-bold text-text-primary">Generate License Keys</h3>
           </div>
           <div className="p-6">
@@ -167,38 +167,38 @@ export default function ResellerPanel() {
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Name</label>
               <input type="text" value={genForm.buyer_name} onChange={e => setGenForm(p => ({ ...p, buyer_name: e.target.value }))}
-                className="w-full px-4 py-2.5 bg-bg-input border border-[#27272a] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
+                className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="John Doe" />
             </div>
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Email</label>
               <input type="email" value={genForm.buyer_email} onChange={e => setGenForm(p => ({ ...p, buyer_email: e.target.value }))}
-                className="w-full px-4 py-2.5 bg-bg-input border border-[#27272a] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
+                className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="john@example.com" />
             </div>
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Quantity</label>
               <input type="number" value={genForm.quantity} onChange={e => setGenForm(p => ({ ...p, quantity: parseInt(e.target.value) || 1 }))}
-                className="w-full px-4 py-2.5 bg-bg-input border border-[#27272a] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
+                className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={100} />
             </div>
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Max Activations</label>
               <input type="number" value={genForm.max_activations} onChange={e => setGenForm(p => ({ ...p, max_activations: parseInt(e.target.value) || 1 }))}
-                className="w-full px-4 py-2.5 bg-bg-input border border-[#27272a] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
+                className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={10} />
             </div>
             <div>
               <label className="text-sm font-medium text-text-primary mb-2 block">Duration (months)</label>
               <select value={genForm.duration_months} onChange={e => setGenForm(p => ({ ...p, duration_months: parseInt(e.target.value) }))}
-                className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
                 {[1, 3, 6, 12, 24, 36].map(m => <option key={m} value={m}>{m} month{m > 1 ? 's' : ''}</option>)}
               </select>
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-5">
-            <button onClick={() => setShowGenerate(false)} className="px-5 py-2.5 bg-bg-card border border-[#27272a] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all">Cancel</button>
+            <button onClick={() => setShowGenerate(false)} className="px-5 py-2.5 bg-bg-card border border-[#3f3f46] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">Cancel</button>
             <button onClick={handleGenerate} disabled={generating}
               className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-50 shadow-lg shadow-accent/25"
             >
@@ -215,9 +215,9 @@ export default function ResellerPanel() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input type="text" placeholder="Search licenses..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
+            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
           <Key className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {['all', 'active', 'expired', 'revoked'].map(f => (
             <button key={f} onClick={() => setStatusFilter(f)}
@@ -226,7 +226,7 @@ export default function ResellerPanel() {
           ))}
         </div>
         <button onClick={() => setShowKeys(!showKeys)}
-          className="flex items-center gap-2 px-3.5 py-2 bg-bg-card border border-[#27272a] rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all"
+          className="flex items-center gap-2 px-3.5 py-2 bg-bg-card border border-[#3f3f46] rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
         >
           {showKeys ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           {showKeys ? 'Hide' : 'Show'} Keys
@@ -239,7 +239,7 @@ export default function ResellerPanel() {
         <div className="flex-1 overflow-hidden flex flex-col">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#27272a]">
+              <tr className="border-b border-[#3f3f46]">
                 <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">License Key</th>
                 <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Buyer</th>
                 <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Status</th>
@@ -250,7 +250,7 @@ export default function ResellerPanel() {
             </thead>
             <tbody>
               {filtered.map(license => (
-                <tr key={license.id} className="border-b border-[#27272a]/40 hover:bg-white/[0.02] transition-colors">
+                <tr key={license.id} className="border-b border-[#3f3f46]/40 hover:bg-white/[0.02] transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
                       <code className="text-xs font-mono text-text-primary bg-white/[0.04] px-2.5 py-1.5 rounded-lg">

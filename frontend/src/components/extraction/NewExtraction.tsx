@@ -112,7 +112,7 @@ export default function NewExtraction() {
         <p className="text-sm font-medium text-text-primary">{label}</p>
         {description && <p className="text-xs text-text-muted mt-1 leading-relaxed">{description}</p>}
       </div>
-      <button onClick={onChange} className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-[#3f3f46]')}>
+      <button onClick={onChange} className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-[#52525b]')}>
         <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
       </button>
     </div>
@@ -188,7 +188,7 @@ export default function NewExtraction() {
         {step === 'complete' && (
           <div className="flex justify-center gap-3">
             <button onClick={() => { setStep('config'); setStatus(null); setName(''); setKeywords(''); }}
-              className="px-6 py-3 bg-bg-card border border-[#27272a] rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all">
+              className="px-6 py-3 bg-bg-card border border-[#3f3f46] rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">
               New Extraction
             </button>
           </div>
@@ -232,14 +232,14 @@ export default function NewExtraction() {
             <label className="text-sm font-medium text-text-primary mb-2 block">Session Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="e.g., LinkedIn CEO Emails Q1 2026"
-              className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
             <label className="text-sm font-medium text-text-primary mb-2 block">Keywords (one per line)</label>
             <textarea value={keywords} onChange={e => setKeywords(e.target.value)}
               placeholder={"CEO email marketing\nCTO contact SaaS\nfounder email fintech"}
               rows={4}
-              className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
+              className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
           </div>
         </div>
       </div>
@@ -260,7 +260,7 @@ export default function NewExtraction() {
                   'flex items-center gap-3 p-4 rounded-xl border transition-all duration-200',
                   selectedPlatforms.includes(p.id)
                     ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
-                    : 'border-[#27272a] bg-bg-card hover:border-[#3f3f46] hover:bg-bg-tertiary/30'
+                    : 'border-[#3f3f46] bg-bg-card hover:border-[#52525b] hover:bg-bg-tertiary/30'
               )}
             >
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
@@ -286,13 +286,13 @@ export default function NewExtraction() {
             <label className="text-sm font-medium text-text-primary mb-2 block">Pages per Keyword</label>
             <input type="number" value={pagesPerKeyword} onChange={e => setPagesPerKeyword(parseInt(e.target.value) || 3)}
               min={1} max={20}
-              className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
             <label className="text-sm font-medium text-text-primary mb-2 block">Delay Between Requests (sec)</label>
             <input type="number" value={delay} onChange={e => setDelay(parseInt(e.target.value) || 2)}
               min={1} max={30}
-              className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>
       </div>
@@ -308,14 +308,14 @@ export default function NewExtraction() {
         <div className="mb-4">
           <label className="text-sm font-medium text-text-primary mb-2 block">Export Format</label>
           <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}
-            className="w-full max-w-xs px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+            className="w-full max-w-xs px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
             <option value="csv">CSV</option>
             <option value="xlsx">Excel (XLSX)</option>
             <option value="json">JSON</option>
             <option value="html">HTML</option>
           </select>
         </div>
-        <div className="border-t border-[#27272a]">
+        <div className="border-t border-[#3f3f46]">
           {renderToggle(autoVerify, () => setAutoVerify(!autoVerify), 'Auto-verify Emails', 'Check MX records to verify email deliverability')}
         </div>
       </div>
@@ -328,7 +328,7 @@ export default function NewExtraction() {
           </div>
           Scraping Method
         </h3>
-        <div className="divide-y divide-[#27272a]">
+        <div className="divide-y divide-[#3f3f46]">
           {renderToggle(useDorking, () => setUseDorking(!useDorking), 'Google Dorking', 'Primary extraction method - search Google for indexed emails/phones')}
           {renderToggle(useDirectScraping, () => setUseDirectScraping(!useDirectScraping), 'Direct Scraping', 'Secondary method - scrape platform pages directly with Patchright')}
         </div>
@@ -342,7 +342,7 @@ export default function NewExtraction() {
           </div>
           Security
         </h3>
-        <div className="divide-y divide-[#27272a]">
+        <div className="divide-y divide-[#3f3f46]">
           {renderToggle(useProxies, () => setUseProxies(!useProxies), 'Use Proxies', 'Route requests through proxy servers for anti-detection')}
           {renderToggle(headless, () => setHeadless(!headless), 'Headless Mode', 'Run browser in background (disable to see browser window)')}
         </div>

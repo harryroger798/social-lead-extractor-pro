@@ -103,10 +103,10 @@ export default function History() {
           <input
             type="text" placeholder="Search sessions..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {STATUS_FILTERS.map(f => (
             <button
@@ -125,7 +125,7 @@ export default function History() {
       {filtered.length > 0 ? (
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {filtered.map(s => (
-            <div key={s.id} className="card-elevated p-6 hover:border-[#52525b] transition-all duration-200">
+            <div key={s.id} className="card-elevated p-6 hover:border-[#71717a] transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
