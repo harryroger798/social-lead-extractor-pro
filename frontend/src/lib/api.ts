@@ -149,6 +149,54 @@ export function deleteLicense(licenseId: string) {
   return request<{ status: string }>(`/api/licenses/${licenseId}`, { method: 'DELETE' });
 }
 
+// ─── Proxies ───────────────────────────────────────────────────────────────
+
+export function fetchProxies() {
+  return request<ProxyItem[]>('/api/proxies');
+}
+
+export function addProxy(proxy: { host: string; port: number; username?: string; password?: string; protocol?: string; country?: string }) {
+  return request<{ id: string; status: string }>('/api/proxies', {
+    method: 'POST',
+    body: JSON.stringify(proxy),
+  });
+}
+
+export function bulkImportProxies(proxiesText: string) {
+  return request<{ added: number; total_lines: number }>('/api/proxies/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ proxies_text: proxiesText }),
+  });
+}
+
+export function testProxy(proxyId: string) {
+  return request<{ status: string; speed: number; ip: string; error: string | null }>(`/api/proxies/${proxyId}/test`, {
+    method: 'POST',
+  });
+}
+
+export function testAllProxies() {
+  return request<{ tested: number; active: number; failed: number }>('/api/proxies/test-all', {
+    method: 'POST',
+  });
+}
+
+export function deleteProxy(proxyId: string) {
+  return request<{ status: string }>(`/api/proxies/${proxyId}`, { method: 'DELETE' });
+}
+
+export function deleteAllProxies() {
+  return request<{ status: string; count: number }>('/api/proxies', { method: 'DELETE' });
+}
+
+// ─── Firecrawl ─────────────────────────────────────────────────────────────
+
+export function checkFirecrawlCredits() {
+  return request<{ success: boolean; remaining_credits?: number; total_credits?: number; error?: string }>('/api/firecrawl/check-credits', {
+    method: 'POST',
+  });
+}
+
 // ─── Export ─────────────────────────────────────────────────────────────────
 
 export function exportResults(params: {
@@ -249,6 +297,19 @@ export interface BlacklistItem {
   value: string;
   reason: string;
   added_at: string;
+}
+
+export interface ProxyItem {
+  id: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  protocol: string;
+  country: string;
+  speed: number;
+  status: string;
+  last_tested: string | null;
 }
 
 export interface LicenseItem {

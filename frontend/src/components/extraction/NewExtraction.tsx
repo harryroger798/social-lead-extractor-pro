@@ -34,6 +34,7 @@ export default function NewExtraction() {
   const [autoVerify, setAutoVerify] = useState(true);
   const [useDorking, setUseDorking] = useState(true);
   const [useDirectScraping, setUseDirectScraping] = useState(false);
+  const [useFirecrawl, setUseFirecrawl] = useState(false);
   const [headless, setHeadless] = useState(true);
   const [exportFormat, setExportFormat] = useState('csv');
   const [starting, setStarting] = useState(false);
@@ -70,7 +71,7 @@ export default function NewExtraction() {
         auto_verify: autoVerify,
         use_google_dorking: useDorking,
         use_direct_scraping: useDirectScraping,
-        use_firecrawl_enrichment: false,
+        use_firecrawl_enrichment: useFirecrawl,
         browser_headless: headless,
       });
       setStep('running');
@@ -332,6 +333,7 @@ export default function NewExtraction() {
         <div className="divide-y divide-[#3f3f46]">
           {renderToggle(useDorking, () => setUseDorking(!useDorking), 'Google Dorking', 'Primary extraction method - search Google for indexed emails/phones')}
           {renderToggle(useDirectScraping, () => setUseDirectScraping(!useDirectScraping), 'Direct Scraping', 'Secondary method - scrape platform pages directly with Patchright')}
+          {renderToggle(useFirecrawl, () => setUseFirecrawl(!useFirecrawl), 'Firecrawl Enrichment', 'Scrape business websites found in results for additional emails/phones (uses Firecrawl API credits)')}
         </div>
       </div>
 

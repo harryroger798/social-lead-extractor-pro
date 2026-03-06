@@ -28,6 +28,7 @@ from app.services.verifier import verify_email
 from app.services.google_dorking import dorking_search_multi
 from app.services.reddit_extractor import reddit_search
 from app.services.proxy_manager import proxy_manager, test_proxy, parse_proxy_line
+from app.services.firecrawl_service import enrich_leads_with_firecrawl, check_firecrawl_credits
 from app.services.export_service import export_leads_bytes
 from app.services.license_service import (
     generate_license_key,
@@ -133,11 +134,33 @@ async def get_dashboard_stats() -> DashboardStats:
 
 # ─── Extraction ───────────────────────────────────────────────────────────────
 
+async def _load_proxy_pool() -> None:
+    """Load proxies from DB into the proxy manager pool."""
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT * FROM proxies WHERE status = 'active'"
+        )
+        rows = await cursor.fetchall()
+        proxy_manager.proxies = []
+        for r in rows:
+            proxy_manager.proxies.append({
+                "id": r[0], "host": r[1], "port": r[2],
+                "username": r[3], "password": r[4],
+                "protocol": r[5], "country": r[6],
+                "speed": r[7], "status": r[8],
+            })
+
+
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     """Background task to run extraction."""
     all_leads: list[dict] = []
 
     try:
+        # Load proxy pool if proxies are enabled
+        if config.use_proxies:
+            await _load_proxy_pool()
+            proxy_manager.set_strategy(config.proxy_rotation)
+
         # Google dorking for non-Reddit platforms
         if config.use_google_dorking:
             non_reddit = [p for p in config.platforms if p != "reddit"]
@@ -193,6 +216,21 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         "keyword": keyword,
                     }
                     all_leads.append(lead)
+
+        # Firecrawl enrichment — scrape business websites for additional contacts
+        if config.use_firecrawl:
+            async with get_db() as db:
+                cursor = await db.execute(
+                    "SELECT value FROM settings WHERE key = 'firecrawl_api_key'"
+                )
+                row = await cursor.fetchone()
+                firecrawl_key = row[0] if row else ""
+
+            if firecrawl_key:
+                enriched = await enrich_leads_with_firecrawl(
+                    all_leads, firecrawl_key, max_urls=50
+                )
+                all_leads.extend(enriched)
 
         # Process leads: classify, score, verify, and store
         async with get_db() as db:
@@ -451,6 +489,33 @@ async def delete_blacklist_entry(entry_id: str) -> dict:
 
 # ─── Proxies ──────────────────────────────────────────────────────────────────
 
+@router.post("/proxies/test-all")
+async def test_all_proxies() -> dict:
+    """Test all proxies and update their status."""
+    async with get_db() as db:
+        cursor = await db.execute("SELECT * FROM proxies")
+        rows = await cursor.fetchall()
+        results = {"tested": 0, "active": 0, "failed": 0}
+        for r in rows:
+            proxy_config = {
+                "host": r[1], "port": r[2], "username": r[3],
+                "password": r[4], "protocol": r[5],
+            }
+            result = await test_proxy(proxy_config)
+            await db.execute(
+                "UPDATE proxies SET status=?, speed=?, last_tested=? WHERE id=?",
+                (result["status"], result["speed"],
+                 datetime.now().isoformat(), r[0]),
+            )
+            results["tested"] += 1
+            if result["status"] == "active":
+                results["active"] += 1
+            else:
+                results["failed"] += 1
+        await db.commit()
+    return results
+
+
 @router.get("/proxies")
 async def get_proxies() -> list[dict]:
     async with get_db() as db:
@@ -529,6 +594,32 @@ async def delete_proxy(proxy_id: str) -> dict:
         await db.execute("DELETE FROM proxies WHERE id = ?", (proxy_id,))
         await db.commit()
     return {"status": "deleted"}
+
+
+@router.delete("/proxies")
+async def delete_all_proxies() -> dict:
+    """Delete all proxies."""
+    async with get_db() as db:
+        cursor = await db.execute("SELECT COUNT(*) FROM proxies")
+        row = await cursor.fetchone()
+        count = row[0] if row else 0
+        await db.execute("DELETE FROM proxies")
+        await db.commit()
+    return {"status": "deleted", "count": count}
+
+
+@router.post("/firecrawl/check-credits")
+async def check_firecrawl_credits_endpoint() -> dict:
+    """Check Firecrawl API credit balance."""
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT value FROM settings WHERE key = 'firecrawl_api_key'"
+        )
+        row = await cursor.fetchone()
+        api_key = row[0] if row else ""
+    if not api_key:
+        return {"success": False, "error": "No Firecrawl API key configured"}
+    return await check_firecrawl_credits(api_key)
 
 
 # ─── Export ───────────────────────────────────────────────────────────────────
