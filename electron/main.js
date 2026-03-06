@@ -155,38 +155,59 @@ function installBackendDeps(pythonCmd, backendDir) {
   }
 }
 
+function getBundledBackendPath() {
+  const backendDir = path.join(__dirname, '..', 'backend', 'dist');
+  const binaryName = process.platform === 'win32' ? 'snapleads-backend.exe' : 'snapleads-backend';
+  const binaryPath = path.join(backendDir, binaryName);
+  if (fs.existsSync(binaryPath)) {
+    return binaryPath;
+  }
+  return null;
+}
+
 function startBackend() {
   const backendDir = path.join(__dirname, '..', 'backend');
   const isPackaged = app.isPackaged;
 
   try {
     if (isPackaged) {
-      // Production: find Python and auto-install deps
-      const pythonCmd = findPython();
+      // Production: try bundled binary first, then system Python
+      const bundledBinary = getBundledBackendPath();
 
-      if (!pythonCmd) {
-        console.error('[Backend] Python not found on this system');
-        // Show dialog after window is ready
-        if (mainWindow) {
-          showPythonRequiredDialog();
-        } else {
-          app.once('browser-window-created', () => {
-            setTimeout(showPythonRequiredDialog, 2000);
-          });
+      if (bundledBinary) {
+        console.log(`[Backend] Using bundled binary: ${bundledBinary}`);
+        backendProcess = spawn(bundledBinary, [], {
+          cwd: backendDir,
+          env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+        });
+      } else {
+        // Fallback: find system Python
+        const pythonCmd = findPython();
+
+        if (!pythonCmd) {
+          console.error('[Backend] Python not found on this system');
+          // Show dialog after window is ready
+          if (mainWindow) {
+            showPythonRequiredDialog();
+          } else {
+            app.once('browser-window-created', () => {
+              setTimeout(showPythonRequiredDialog, 2000);
+            });
+          }
+          return;
         }
-        return;
-      }
 
-      // Auto-install dependencies if needed
-      const depsOk = installBackendDeps(pythonCmd, backendDir);
-      if (!depsOk) {
-        console.error('[Backend] Could not install dependencies. Extraction features will be unavailable.');
-      }
+        // Auto-install dependencies if needed
+        const depsOk = installBackendDeps(pythonCmd, backendDir);
+        if (!depsOk) {
+          console.error('[Backend] Could not install dependencies. Extraction features will be unavailable.');
+        }
 
-      backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
-        cwd: backendDir,
-        env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
-      });
+        backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
+          cwd: backendDir,
+          env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+        });
+      }
     } else {
       // In development, use poetry
       backendProcess = spawn('poetry', ['run', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
