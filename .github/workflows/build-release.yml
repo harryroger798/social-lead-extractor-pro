@@ -1,0 +1,129 @@
+name: Build & Release All Platforms
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            binary_name: snapleads-backend
+            electron_cmd: dist:linux
+            artifact_pattern: "release/SnapLeads-*.AppImage"
+          - os: windows-latest
+            platform: win
+            binary_name: snapleads-backend.exe
+            electron_cmd: dist:win
+            artifact_pattern: "release/SnapLeads*.exe"
+          - os: macos-latest
+            platform: mac
+            binary_name: snapleads-backend
+            electron_cmd: dist:mac
+            artifact_pattern: "release/SnapLeads-*.zip"
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python backend dependencies
+        working-directory: backend
+        run: |
+          pip install pyinstaller
+          pip install "fastapi[standard]" uvicorn psycopg[binary] dnspython "requests[socks]" openpyxl python-multipart aiosqlite pydantic-settings python-dotenv aiohttp-socks
+
+      - name: Build PyInstaller backend binary
+        working-directory: backend
+        run: |
+          pyinstaller --onefile --name snapleads-backend \
+            --hidden-import=app --hidden-import=app.main \
+            --hidden-import=app.api --hidden-import=app.api.routes \
+            --hidden-import=app.database --hidden-import=app.models \
+            --hidden-import=app.services --hidden-import=fastapi \
+            --hidden-import=uvicorn --hidden-import=aiosqlite \
+            --hidden-import=pydantic_settings --hidden-import=dotenv \
+            --hidden-import=dns --hidden-import=requests \
+            --hidden-import=openpyxl --hidden-import=multipart \
+            --hidden-import=aiohttp_socks \
+            --collect-all fastapi --collect-all uvicorn \
+            --collect-all aiosqlite --collect-all pydantic_settings \
+            --add-data "app:app" \
+            run_server.py
+        shell: bash
+
+      - name: Verify backend binary exists
+        working-directory: backend
+        run: ls -la dist/
+        shell: bash
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install root npm dependencies
+        run: npm install
+
+      - name: Install frontend npm dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build:frontend
+
+      - name: Build Electron installer
+        run: npm run ${{ matrix.electron_cmd }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.platform }}
+          path: ${{ matrix.artifact_pattern }}
+          retention-days: 30
+
+      - name: Upload backend binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-${{ matrix.platform }}
+          path: backend/dist/${{ matrix.binary_name }}
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List all artifacts
+        run: find artifacts -type f | head -50
+
+      - name: Create/Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/installer-linux/*
+            artifacts/installer-win/*
+            artifacts/installer-mac/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
