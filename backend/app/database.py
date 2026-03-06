@@ -141,6 +141,11 @@ async def init_db() -> None:
             except Exception:
                 pass  # Column already exists
 
+        # Migrate app_name from old branding to SnapLeads
+        await db.execute(
+            "UPDATE settings SET value = 'SnapLeads' WHERE key = 'app_name' AND value = 'Social Lead Extractor Pro'"
+        )
+
         await db.commit()
 
 
