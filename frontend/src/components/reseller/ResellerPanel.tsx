@@ -145,18 +145,18 @@ export default function ResellerPanel() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-2">What This Page Does</h4>
-              <ul className="space-y-2 text-xs text-text-secondary">
+              <h4 className="text-xs font-semibold text-text-primary mb-3">What This Page Does</h4>
+              <ul className="space-y-3 text-xs text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Generate and manage license keys for your customers</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Track active, expired, and revoked licenses in one place</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Control activation limits and license duration per buyer</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-2">How to Generate Keys</h4>
-              <ol className="space-y-2 text-xs text-text-secondary">
+              <h4 className="text-xs font-semibold text-text-primary mb-3">How to Generate Keys</h4>
+              <ol className="space-y-3 text-xs text-text-secondary">
                 <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Click "Generate Keys" in the top right</li>
                 <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Enter buyer name and email</li>
                 <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Set quantity, max activations, and duration</li>
@@ -164,15 +164,15 @@ export default function ResellerPanel() {
               </ol>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-2">Managing Keys</h4>
-              <ul className="space-y-2 text-xs text-text-secondary">
+              <h4 className="text-xs font-semibold text-text-primary mb-3">Managing Keys</h4>
+              <ul className="space-y-3 text-xs text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Copy:</strong> Click the copy icon to copy a license key to clipboard</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Show/Hide:</strong> Toggle key visibility for security</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Revoke:</strong> Disable an active license without deleting it</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Permanently remove a license key</li>
               </ul>
             </div>
-            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
               <p className="text-xs text-green-400 font-medium">Tip: Use the status filter to quickly find expired licenses that need renewal. Revoke keys instead of deleting to keep a record.</p>
             </div>
           </div>

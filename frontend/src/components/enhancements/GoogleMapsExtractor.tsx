@@ -79,18 +79,18 @@ export default function GoogleMapsExtractor() {
             {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
           </button>
           {showGuide && (
-            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Get</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What You Get</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Business name, phone number, website, full address</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Star rating, review count, and business category</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />All data saved to your Results tab for export</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">How It Works</h4>
-                <ol className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">How It Works</h4>
+                <ol className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter a search query like "restaurants in New York" or "dentists near Miami FL"</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set max results (higher = longer extraction time)</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Set delay between requests (higher = safer, lower risk of blocking)</li>
@@ -99,14 +99,14 @@ export default function GoogleMapsExtractor() {
                 </ol>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What Each Option Does</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search Term:</strong> Any Google Maps search query — city, business type, or both</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Results:</strong> How many listings to extract (5-200). Start small for testing</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each request. 3+ recommended to avoid detection</li>
                 </ul>
               </div>
-              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
                 <p className="text-xs text-green-400 font-medium">Tip: Use specific queries like "plumbers in Brooklyn NY" for better results than broad terms like "plumbers".</p>
               </div>
             </div>

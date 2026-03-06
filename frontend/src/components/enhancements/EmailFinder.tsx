@@ -61,18 +61,18 @@ export default function EmailFinder() {
             {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
           </button>
           {showGuide && (
-            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Get</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What You Get</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Email addresses found on the website and its subpages</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Phone numbers found on contact pages, about pages, etc.</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />One-click copy for each result, all saved to your leads database</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">How It Works</h4>
-                <ol className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">How It Works</h4>
+                <ol className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter any website URL (e.g. https://example.com)</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set how many pages to crawl (more pages = more results but slower)</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Click "Find Emails &amp; Phones" — the crawler checks /contact, /about, /team pages automatically</li>
@@ -80,13 +80,13 @@ export default function EmailFinder() {
                 </ol>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What Each Option Does</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Website URL:</strong> The domain to crawl. Include https:// for best results</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Pages:</strong> How many internal pages to scan (1-50). Contact/about pages are prioritized</li>
                 </ul>
               </div>
-              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
                 <p className="text-xs text-green-400 font-medium">Tip: This is completely safe with zero ban risk. It only reads public web pages — no login or automation required.</p>
               </div>
             </div>

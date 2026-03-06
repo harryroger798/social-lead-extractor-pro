@@ -65,18 +65,18 @@ export default function EmailOutreach() {
             {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
           </button>
           {showGuide && (
-            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Need</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What You Need</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />A Gmail account with 2-Step Verification enabled</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />A Gmail App Password (not your regular password)</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />Leads with email addresses in your database</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">How to Get a Gmail App Password</h4>
-                <ol className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">How to Get a Gmail App Password</h4>
+                <ol className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Go to Google Account &gt; Security &gt; 2-Step Verification (enable if not already)</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">2.</span> At the bottom, click "App passwords"</li>
                   <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Name it (e.g. "Lead Extractor") and click Create</li>
@@ -84,15 +84,15 @@ export default function EmailOutreach() {
                 </ol>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
-                <ul className="space-y-2 text-xs text-text-secondary">
+                <h4 className="text-xs font-semibold text-text-primary mb-3">What Each Option Does</h4>
+                <ul className="space-y-3 text-xs text-text-secondary">
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">SMTP Host/Port:</strong> Pre-filled for Gmail (smtp.gmail.com:587). Change only for other providers like Outlook</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">From Name:</strong> The sender name recipients will see in their inbox</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between each email. Higher = safer. Gmail allows 500/day</li>
                   <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Templates:</strong> Pre-built email templates with variables like {'{{name}}'} that auto-fill per lead</li>
                 </ul>
               </div>
-              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
                 <p className="text-xs text-green-400 font-medium">Tip: Start with 5-10 emails to test delivery before sending to all leads. Check your Sent folder to verify.</p>
               </div>
             </div>

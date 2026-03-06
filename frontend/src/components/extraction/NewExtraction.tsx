@@ -225,10 +225,10 @@ export default function NewExtraction() {
           {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
         </button>
         {showGuide && (
-          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+          <div className="px-6 pb-6 space-y-6 border-t border-border pt-5">
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-2">How It Works</h4>
-              <ol className="space-y-2 text-xs text-text-secondary">
+              <h4 className="text-xs font-semibold text-text-primary mb-3">How It Works</h4>
+              <ol className="space-y-3 text-xs text-text-secondary">
                 <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Name your session (e.g. "LinkedIn CEO Emails Q1 2026")</li>
                 <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Enter keywords — one per line (e.g. "CEO email marketing", "CTO SaaS contact")</li>
                 <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Select platforms to search (LinkedIn, Facebook, Reddit, etc.)</li>
@@ -238,8 +238,8 @@ export default function NewExtraction() {
               </ol>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
-              <ul className="space-y-2 text-xs text-text-secondary">
+              <h4 className="text-xs font-semibold text-text-primary mb-3">What Each Option Does</h4>
+              <ul className="space-y-3 text-xs text-text-secondary">
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Session Name:</strong> A label to identify this extraction in your history</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms used to find leads. Be specific for better results</li>
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How many search result pages to scrape (more = more leads, slower)</li>
@@ -249,7 +249,7 @@ export default function NewExtraction() {
                 <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Auto-verify:</strong> Checks MX records to confirm emails are deliverable</li>
               </ul>
             </div>
-            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
               <p className="text-xs text-green-400 font-medium">Tip: Start with Google Dorking enabled and 3 pages per keyword. This is the safest method with zero ban risk.</p>
             </div>
           </div>
