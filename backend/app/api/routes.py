@@ -218,7 +218,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     all_leads.append(lead)
 
         # Firecrawl enrichment — scrape business websites for additional contacts
-        if config.use_firecrawl:
+        if config.use_firecrawl_enrichment:
             async with get_db() as db:
                 cursor = await db.execute(
                     "SELECT value FROM settings WHERE key = 'firecrawl_api_key'"

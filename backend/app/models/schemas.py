@@ -48,7 +48,7 @@ class ExtractionRequest(BaseModel):
     auto_verify: bool = True
     use_google_dorking: bool = True
     use_direct_scraping: bool = True
-    use_firecrawl: bool = False
+    use_firecrawl_enrichment: bool = False
     headless: bool = False
 
 
