@@ -125,19 +125,19 @@ export default function BlacklistManager() {
           <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Does</h4>
-              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Block specific emails, domains, phone numbers, or keywords from being extracted</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Blacklisted items are automatically filtered out during future extractions</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keeps your lead lists clean by preventing unwanted contacts</li>
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Block specific emails, domains, phone numbers, or keywords from being extracted</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Blacklisted items are automatically filtered out during future extractions</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keeps your lead lists clean by preventing unwanted contacts</li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">Entry Types</h4>
-              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Email:</strong> Block a specific email address (e.g. spam@example.com)</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Domain:</strong> Block all emails from a domain (e.g. competitor.com)</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone:</strong> Block a specific phone number</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keyword:</strong> Skip any lead containing this keyword in their profile</li>
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Email:</strong> Block a specific email address (e.g. spam@example.com)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Domain:</strong> Block all emails from a domain (e.g. competitor.com)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone:</strong> Block a specific phone number</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keyword:</strong> Skip any lead containing this keyword in their profile</li>
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

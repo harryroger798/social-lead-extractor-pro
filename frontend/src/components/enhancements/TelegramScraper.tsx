@@ -72,29 +72,29 @@ export default function TelegramScraper() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What You Need</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />A Telegram account (6+ months old recommended)</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />API ID and API Hash from my.telegram.org</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />The username or link of a public Telegram group</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />A Telegram account (6+ months old recommended)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />API ID and API Hash from my.telegram.org</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-sky-400 mt-1.5 flex-shrink-0" />The username or link of a public Telegram group</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How to Get API Credentials</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Go to my.telegram.org and log in with your phone number</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Click "API development tools"</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Fill in app title and short name (anything works)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Copy your API ID (numbers) and API Hash (letters+numbers)</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Go to my.telegram.org and log in with your phone number</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Click "API development tools"</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Fill in app title and short name (anything works)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Copy your API ID (numbers) and API Hash (letters+numbers)</li>
                 </ol>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">API ID/Hash:</strong> Your Telegram developer credentials (free, one-time setup)</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone Number:</strong> Your Telegram account phone for authentication</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Group Username:</strong> The @username or t.me link of the target group</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Members:</strong> Limit how many members to extract (lower = safer)</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between requests. 5+ seconds recommended</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">API ID/Hash:</strong> Your Telegram developer credentials (free, one-time setup)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone Number:</strong> Your Telegram account phone for authentication</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Group Username:</strong> The @username or t.me link of the target group</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Members:</strong> Limit how many members to extract (lower = safer)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between requests. 5+ seconds recommended</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-yellow-500/5 border border-yellow-500/20 p-3">
@@ -112,7 +112,7 @@ export default function TelegramScraper() {
         {showSetup && setup && (
           <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
             <h3 className="text-sm font-semibold text-text-primary">Setup Instructions</h3>
-            <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
+            <ol className="text-[13px] leading-relaxed text-text-secondary">
               {setup.steps.map((s, i) => <li key={i} className="flex gap-2"><span className="text-accent font-bold">{i + 1}.</span> {s}</li>)}
             </ol>
             <h4 className="text-xs font-semibold text-text-primary pt-2">Ban Prevention Tips</h4>

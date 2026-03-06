@@ -82,28 +82,28 @@ export default function GoogleMapsExtractor() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What You Get</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Business name, phone number, website, full address</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Star rating, review count, and business category</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />All data saved to your Results tab for export</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Business name, phone number, website, full address</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Star rating, review count, and business category</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />All data saved to your Results tab for export</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How It Works</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter a search query like "restaurants in New York" or "dentists near Miami FL"</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set max results (higher = longer extraction time)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Set delay between requests (higher = safer, lower risk of blocking)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Click "Search Google Maps" — extraction runs in background</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Results appear automatically when done. View all leads in the Results tab</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Enter a search query like "restaurants in New York" or "dentists near Miami FL"</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Set max results (higher = longer extraction time)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Set delay between requests (higher = safer, lower risk of blocking)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Click "Search Google Maps" — extraction runs in background</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">5.</span> Results appear automatically when done. View all leads in the Results tab</li>
                 </ol>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search Term:</strong> Any Google Maps search query — city, business type, or both</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Results:</strong> How many listings to extract (5-200). Start small for testing</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each request. 3+ recommended to avoid detection</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search Term:</strong> Any Google Maps search query — city, business type, or both</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Results:</strong> How many listings to extract (5-200). Start small for testing</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each request. 3+ recommended to avoid detection</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

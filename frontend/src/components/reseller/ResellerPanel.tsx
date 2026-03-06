@@ -148,28 +148,28 @@ export default function ResellerPanel() {
           <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Does</h4>
-              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Generate and manage license keys for your customers</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Track active, expired, and revoked licenses in one place</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Control activation limits and license duration per buyer</li>
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Generate and manage license keys for your customers</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Track active, expired, and revoked licenses in one place</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Control activation limits and license duration per buyer</li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">How to Generate Keys</h4>
-              <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Click "Generate Keys" in the top right</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Enter buyer name and email</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Set quantity, max activations, and duration</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Click Generate — keys are created instantly</li>
+              <ol className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Click "Generate Keys" in the top right</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Enter buyer name and email</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Set quantity, max activations, and duration</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Click Generate — keys are created instantly</li>
               </ol>
             </div>
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">Managing Keys</h4>
-              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Copy:</strong> Click the copy icon to copy a license key to clipboard</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Show/Hide:</strong> Toggle key visibility for security</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Revoke:</strong> Disable an active license without deleting it</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Permanently remove a license key</li>
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Copy:</strong> Click the copy icon to copy a license key to clipboard</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Show/Hide:</strong> Toggle key visibility for security</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Revoke:</strong> Disable an active license without deleting it</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Permanently remove a license key</li>
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

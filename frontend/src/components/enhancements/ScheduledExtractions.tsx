@@ -84,30 +84,30 @@ export default function ScheduledExtractions() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What This Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Automatically runs lead extractions on a recurring schedule</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Set it once, new leads appear in your Results tab automatically</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Supports hourly, daily, weekly, or custom cron schedules</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Automatically runs lead extractions on a recurring schedule</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Set it once, new leads appear in your Results tab automatically</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Supports hourly, daily, weekly, or custom cron schedules</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How to Create a Schedule</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Click "New Schedule" in the top right</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Name your schedule (e.g. "Weekly React Devs")</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Enter keywords to search (comma-separated)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Choose platforms and frequency</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Click "Create Schedule" — it starts running automatically</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Click "New Schedule" in the top right</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Name your schedule (e.g. "Weekly React Devs")</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Enter keywords to search (comma-separated)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Choose platforms and frequency</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">5.</span> Click "Create Schedule" — it starts running automatically</li>
                 </ol>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms like "web developer, react developer" — each is searched separately</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Platforms:</strong> Which sites to scrape (reddit, linkedin, etc.)</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Frequency:</strong> How often to run. Daily is recommended for most use cases</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How deep to search. More pages = more results but slower</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pause/Resume:</strong> Temporarily stop a schedule without deleting it</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms like "web developer, react developer" — each is searched separately</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Platforms:</strong> Which sites to scrape (reddit, linkedin, etc.)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Frequency:</strong> How often to run. Daily is recommended for most use cases</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How deep to search. More pages = more results but slower</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pause/Resume:</strong> Temporarily stop a schedule without deleting it</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

@@ -64,26 +64,26 @@ export default function EmailFinder() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What You Get</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Email addresses found on the website and its subpages</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Phone numbers found on contact pages, about pages, etc.</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />One-click copy for each result, all saved to your leads database</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Email addresses found on the website and its subpages</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />Phone numbers found on contact pages, about pages, etc.</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />One-click copy for each result, all saved to your leads database</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How It Works</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter any website URL (e.g. https://example.com)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set how many pages to crawl (more pages = more results but slower)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Click "Find Emails &amp; Phones" — the crawler checks /contact, /about, /team pages automatically</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Results appear instantly with copy buttons for each email/phone</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Enter any website URL (e.g. https://example.com)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Set how many pages to crawl (more pages = more results but slower)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Click "Find Emails &amp; Phones" — the crawler checks /contact, /about, /team pages automatically</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Results appear instantly with copy buttons for each email/phone</li>
                 </ol>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Website URL:</strong> The domain to crawl. Include https:// for best results</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Pages:</strong> How many internal pages to scan (1-50). Contact/about pages are prioritized</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Website URL:</strong> The domain to crawl. Include https:// for best results</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Pages:</strong> How many internal pages to scan (1-50). Contact/about pages are prioritized</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

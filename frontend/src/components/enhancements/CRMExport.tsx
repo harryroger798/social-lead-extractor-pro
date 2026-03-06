@@ -76,27 +76,27 @@ export default function CRMExport() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What You Need</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />A free HubSpot account (supports up to 1M contacts) OR Salesforce Developer Edition</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Your API key or Private App Token from HubSpot, or Salesforce credentials</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Leads in your database (extract some leads first if empty)</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />A free HubSpot account (supports up to 1M contacts) OR Salesforce Developer Edition</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Your API key or Private App Token from HubSpot, or Salesforce credentials</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Leads in your database (extract some leads first if empty)</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How to Get HubSpot API Key (Free)</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Sign up at hubspot.com (free CRM tier)</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Go to Settings &gt; Integrations &gt; Private Apps</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Create a Private App, give it "Contacts" read/write scope</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Copy the token (starts with pat-na1-... or pat-na2-...)</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Sign up at hubspot.com (free CRM tier)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Go to Settings &gt; Integrations &gt; Private Apps</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Create a Private App, give it "Contacts" read/write scope</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Copy the token (starts with pat-na1-... or pat-na2-...)</li>
                 </ol>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Test Connection:</strong> Verifies your API key works before exporting</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Export All Leads:</strong> Sends all leads from your database to HubSpot/Salesforce as contacts</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">HubSpot vs Salesforce:</strong> HubSpot is simpler (just an API key). Salesforce needs username + password + security token</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Test Connection:</strong> Verifies your API key works before exporting</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Export All Leads:</strong> Sends all leads from your database to HubSpot/Salesforce as contacts</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">HubSpot vs Salesforce:</strong> HubSpot is simpler (just an API key). Salesforce needs username + password + security token</li>
                 </ul>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">

@@ -64,20 +64,20 @@ export default function SafetyGuide() {
             <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">What This Page Shows</h4>
-                <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Ban risk level for each platform (LOW, MEDIUM, HIGH)</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />How platforms detect automated scraping</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Prevention techniques to avoid getting banned</li>
-                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Recommended limits for safe scraping (requests/day, delay times)</li>
+                <ul className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Ban risk level for each platform (LOW, MEDIUM, HIGH)</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />How platforms detect automated scraping</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Prevention techniques to avoid getting banned</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Recommended limits for safe scraping (requests/day, delay times)</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-text-primary mb-4">How to Use It</h4>
-                <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Read the General Safety Tips that apply to all platforms</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Click on any platform card to expand its detailed guide</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Follow the recommended limits when setting up extractions</li>
-                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Use the prevention techniques before running large extractions</li>
+                <ol className="text-[13px] leading-relaxed text-text-secondary">
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Read the General Safety Tips that apply to all platforms</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Click on any platform card to expand its detailed guide</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Follow the recommended limits when setting up extractions</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Use the prevention techniques before running large extractions</li>
                 </ol>
               </div>
               <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
@@ -93,7 +93,7 @@ export default function SafetyGuide() {
             <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" /> General Safety Tips
             </h3>
-            <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
+            <ul className="text-[13px] leading-relaxed text-text-secondary">
               {guide.general_tips.map((tip, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />

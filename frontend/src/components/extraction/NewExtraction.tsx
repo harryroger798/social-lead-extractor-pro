@@ -228,25 +228,25 @@ export default function NewExtraction() {
           <div className="px-6 pb-7 space-y-8 border-t border-border pt-6">
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">How It Works</h4>
-              <ol className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Name your session (e.g. "LinkedIn CEO Emails Q1 2026")</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Enter keywords — one per line (e.g. "CEO email marketing", "CTO SaaS contact")</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Select platforms to search (LinkedIn, Facebook, Reddit, etc.)</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Adjust speed settings and scraping method if needed</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Click "Start Extraction" — progress shown in real-time</li>
-                <li className="flex gap-2"><span className="text-accent font-bold">6.</span> Results saved automatically to the Results tab for export</li>
+              <ol className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Name your session (e.g. "LinkedIn CEO Emails Q1 2026")</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> Enter keywords — one per line (e.g. "CEO email marketing", "CTO SaaS contact")</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Select platforms to search (LinkedIn, Facebook, Reddit, etc.)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Adjust speed settings and scraping method if needed</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">5.</span> Click "Start Extraction" — progress shown in real-time</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">6.</span> Results saved automatically to the Results tab for export</li>
               </ol>
             </div>
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">What Each Option Does</h4>
-              <ul className="space-y-4 text-[13px] leading-relaxed text-text-secondary">
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Session Name:</strong> A label to identify this extraction in your history</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms used to find leads. Be specific for better results</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How many search result pages to scrape (more = more leads, slower)</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between requests. Higher = safer but slower</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Google Dorking:</strong> Primary method — searches Google for indexed emails/phones (safest)</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Direct Scraping:</strong> Secondary method — visits platform pages directly (higher risk)</li>
-                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Auto-verify:</strong> Checks MX records to confirm emails are deliverable</li>
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Session Name:</strong> A label to identify this extraction in your history</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms used to find leads. Be specific for better results</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How many search result pages to scrape (more = more leads, slower)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between requests. Higher = safer but slower</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Google Dorking:</strong> Primary method — searches Google for indexed emails/phones (safest)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Direct Scraping:</strong> Secondary method — visits platform pages directly (higher risk)</li>
+                <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Auto-verify:</strong> Checks MX records to confirm emails are deliverable</li>
               </ul>
             </div>
             <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
