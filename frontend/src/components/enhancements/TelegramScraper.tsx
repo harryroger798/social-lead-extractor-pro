@@ -113,11 +113,11 @@ export default function TelegramScraper() {
           <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
             <h3 className="text-sm font-semibold text-text-primary">Setup Instructions</h3>
             <ol className="text-[13px] leading-relaxed text-text-secondary">
-              {setup.steps.map((s, i) => <li key={i} className="flex gap-2"><span className="text-accent font-bold">{i + 1}.</span> {s}</li>)}
+              {setup.steps.map((s, i) => <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">{i + 1}.</span> {s}</li>)}
             </ol>
-            <h4 className="text-xs font-semibold text-text-primary pt-2">Ban Prevention Tips</h4>
-            <ul className="space-y-1 text-xs text-text-muted">
-              {setup.ban_prevention.map((t, i) => <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />{t}</li>)}
+            <h4 className="text-sm font-semibold text-text-primary pt-4 mb-4">Ban Prevention Tips</h4>
+            <ul className="text-[13px] leading-relaxed text-text-secondary">
+              {setup.ban_prevention.map((t, i) => <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />{t}</li>)}
             </ul>
             <p className="text-[13px] leading-relaxed text-green-400 font-medium">Cost: {setup.cost}</p>
           </div>

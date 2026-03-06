@@ -95,8 +95,8 @@ export default function SafetyGuide() {
             </h3>
             <ul className="text-[13px] leading-relaxed text-text-secondary">
               {guide.general_tips.map((tip, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
+                <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
                   {tip}
                 </li>
               ))}
@@ -127,9 +127,9 @@ export default function SafetyGuide() {
                   {p.detection_methods && (
                     <div>
                       <h4 className="text-sm font-semibold text-text-primary mb-4">Detection Methods</h4>
-                      <ul className="space-y-1 text-xs text-text-muted">
+                      <ul className="text-[13px] leading-relaxed text-text-secondary">
                         {p.detection_methods.map((d, i) => (
-                          <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 flex-shrink-0" />{d}</li>
+                          <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-red-400 mt-1.5 flex-shrink-0" />{d}</li>
                         ))}
                       </ul>
                     </div>
@@ -137,9 +137,9 @@ export default function SafetyGuide() {
                   {p.prevention && (
                     <div>
                       <h4 className="text-sm font-semibold text-text-primary mb-4">Prevention Techniques</h4>
-                      <ul className="space-y-1 text-xs text-text-muted">
+                      <ul className="text-[13px] leading-relaxed text-text-secondary">
                         {p.prevention.map((prev, i) => (
-                          <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />{prev}</li>
+                          <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />{prev}</li>
                         ))}
                       </ul>
                     </div>
@@ -147,9 +147,9 @@ export default function SafetyGuide() {
                   {p.what_happens && (
                     <div>
                       <h4 className="text-sm font-semibold text-text-primary mb-4">What Happens If Caught</h4>
-                      <ul className="space-y-1 text-xs text-text-muted">
+                      <ul className="text-[13px] leading-relaxed text-text-secondary">
                         {p.what_happens.map((w, i) => (
-                          <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />{w}</li>
+                          <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="w-2 h-2 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />{w}</li>
                         ))}
                       </ul>
                     </div>
@@ -157,9 +157,9 @@ export default function SafetyGuide() {
                   {p.recommended_limits && (
                     <div>
                       <h4 className="text-sm font-semibold text-text-primary mb-4">Recommended Limits</h4>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="grid grid-cols-2 gap-3 text-[13px]">
                         {Object.entries(p.recommended_limits).map(([k, v]) => (
-                          <div key={k} className="flex justify-between py-1.5 px-3 rounded-lg bg-bg-primary">
+                          <div key={k} className="flex justify-between py-2.5 px-4 rounded-lg bg-bg-primary">
                             <span className="text-text-muted capitalize">{k.replace(/_/g, ' ')}</span>
                             <span className="text-text-secondary font-medium">{v}</span>
                           </div>

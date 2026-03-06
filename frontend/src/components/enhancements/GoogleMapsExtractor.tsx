@@ -203,18 +203,18 @@ export default function GoogleMapsExtractor() {
         )}
 
         {/* What you get */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-3">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-400" />
             What You Get
           </h3>
-          <div className="grid grid-cols-2 gap-2 text-xs text-text-secondary">
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Business Name</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Phone Number</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Website URL</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Address</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Rating & Reviews</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Business Category</div>
+          <div className="grid grid-cols-2 gap-3 text-[13px] leading-relaxed text-text-secondary">
+            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Name</div>
+            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Phone Number</div>
+            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Website URL</div>
+            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Address</div>
+            <div className="flex items-center gap-3 py-2"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Rating & Reviews</div>
+            <div className="flex items-center gap-3 py-2"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Category</div>
           </div>
         </div>
       </div>

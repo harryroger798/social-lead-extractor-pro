@@ -112,8 +112,8 @@ export default function WhatsAppScraper() {
             </div>
             <ul className="text-[13px] leading-relaxed text-text-secondary">
               {guide.prevention.map((p, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
+                <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0">
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
                   {p}
                 </li>
               ))}
@@ -121,10 +121,10 @@ export default function WhatsAppScraper() {
 
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">What You Get</h4>
-              <div className="grid grid-cols-2 gap-1.5 text-xs text-text-muted">
+              <div className="grid grid-cols-2 gap-3 text-[13px] leading-relaxed text-text-secondary">
                 {guide.what_you_get.map((w, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> {w}
+                  <div key={i} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" /> {w}
                   </div>
                 ))}
               </div>
@@ -132,17 +132,17 @@ export default function WhatsAppScraper() {
 
             <div>
               <h4 className="text-sm font-semibold text-text-primary mb-4">How to Get More Numbers Safely</h4>
-              <ul className="space-y-1.5 text-xs text-text-muted">
+              <ul className="text-[13px] leading-relaxed text-text-secondary">
                 {guide.how_to_get_more.map((h, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /> {h}
+                  <li key={i} className="flex gap-3 py-2 border-b border-white/5 last:border-0">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /> {h}
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-3">
-              <p className="text-xs text-red-300 font-medium">{guide.tos_warning}</p>
+            <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-4">
+              <p className="text-[13px] leading-relaxed text-red-300 font-medium">{guide.tos_warning}</p>
             </div>
           </div>
         )}
