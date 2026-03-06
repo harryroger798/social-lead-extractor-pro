@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Clock, Trash2, Search, Filter, Loader2, AlertCircle,
   FolderOpen, Mail, Phone, CheckCircle, XCircle, Pause, Play, Zap,
+  Info, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { cn, formatDate, formatDuration } from '@/lib/utils';
 import { fetchHistory, deleteSession } from '@/lib/api';
@@ -16,6 +17,7 @@ export default function History() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [showGuide, setShowGuide] = useState(false);
   const { toast } = useToast();
 
   const loadHistory = useCallback(async () => {
@@ -96,6 +98,40 @@ export default function History() {
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
       <div className="min-h-full flex flex-col gap-5">
+      {/* How to Use */}
+      <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-text-primary">How to Use History</span>
+          </div>
+          {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+        </button>
+        {showGuide && (
+          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">What This Page Shows</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />All past extraction sessions with their status, duration, and lead counts</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Progress bars for currently running extractions</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keywords and platforms used in each session</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">Available Actions</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search:</strong> Find sessions by name or keyword</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Filter by Status:</strong> Show only completed, running, failed, or paused sessions</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Remove a session and its data with the trash icon</li>
+              </ul>
+            </div>
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <p className="text-xs text-green-400 font-medium">Tip: Completed sessions keep all their leads in the Results tab. Deleting a session here also removes its leads.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">

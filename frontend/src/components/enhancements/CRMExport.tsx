@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Database, Upload, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Database, Upload, Loader2, CheckCircle, AlertCircle, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { exportToCRM, testCRMConnection, fetchResults } from '@/lib/api';
 
 export default function CRMExport() {
@@ -12,6 +12,7 @@ export default function CRMExport() {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [exportResult, setExportResult] = useState<{ exported: number; failed: number; errors: string[] } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   const handleTest = async () => {
     setTesting(true);
@@ -62,8 +63,51 @@ export default function CRMExport() {
           <p className="text-sm text-text-muted mt-2">Export leads to HubSpot (free tier) or Salesforce</p>
         </div>
 
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use CRM Export</span>
+            </div>
+            {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showGuide && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Need</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />A free HubSpot account (supports up to 1M contacts) OR Salesforce Developer Edition</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Your API key or Private App Token from HubSpot, or Salesforce credentials</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />Leads in your database (extract some leads first if empty)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How to Get HubSpot API Key (Free)</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Sign up at hubspot.com (free CRM tier)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Go to Settings &gt; Integrations &gt; Private Apps</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Create a Private App, give it "Contacts" read/write scope</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Copy the token (starts with pat-na1-... or pat-na2-...)</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Test Connection:</strong> Verifies your API key works before exporting</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Export All Leads:</strong> Sends all leads from your database to HubSpot/Salesforce as contacts</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">HubSpot vs Salesforce:</strong> HubSpot is simpler (just an API key). Salesforce needs username + password + security token</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+                <p className="text-xs text-green-400 font-medium">Tip: Always click "Test Connection" first to verify your credentials before exporting leads.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* CRM Type */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">Select CRM</h3>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setCrmType('hubspot')} className={`p-4 rounded-xl border text-left transition-all ${crmType === 'hubspot' ? 'border-orange-500/50 bg-orange-500/5' : 'border-border bg-bg-primary hover:border-border/80'}`}>
@@ -78,26 +122,26 @@ export default function CRMExport() {
         </div>
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">API Credentials</h3>
           {crmType === 'hubspot' ? (
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">HubSpot API Key (or Private App Token)</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">HubSpot API Key (or Private App Token)</label>
               <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="pat-na1-..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               <p className="text-xs text-text-muted mt-2">Get it from HubSpot &gt; Settings &gt; Integrations &gt; Private Apps</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Username</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Username</label>
                 <input type="text" value={sfUsername} onChange={e => setSfUsername(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Password</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Password</label>
                 <input type="password" value={sfPassword} onChange={e => setSfPassword(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Security Token</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Security Token</label>
                 <input type="text" value={sfToken} onChange={e => setSfToken(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
             </div>

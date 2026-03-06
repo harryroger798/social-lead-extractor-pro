@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Shield, AlertTriangle, Loader2, ChevronDown, ChevronRight, Info } from 'lucide-react';
 import { fetchSafetyGuide, fetchLinkedInGuide } from '@/lib/api';
 
 interface PlatformGuide {
@@ -15,6 +15,7 @@ export default function SafetyGuide() {
   const [linkedinGuide, setLinkedinGuide] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -48,6 +49,42 @@ export default function SafetyGuide() {
           <p className="text-sm text-text-muted mt-2">
             Comprehensive ban prevention techniques and risk assessment for all platforms
           </p>
+        </div>
+
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use the Safety Guide</span>
+            </div>
+            {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showGuide && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What This Page Shows</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Ban risk level for each platform (LOW, MEDIUM, HIGH)</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />How platforms detect automated scraping</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Prevention techniques to avoid getting banned</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />Recommended limits for safe scraping (requests/day, delay times)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How to Use It</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Read the General Safety Tips that apply to all platforms</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Click on any platform card to expand its detailed guide</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Follow the recommended limits when setting up extractions</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Use the prevention techniques before running large extractions</li>
+                </ol>
+              </div>
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+                <p className="text-xs text-green-400 font-medium">Tip: Always start with small extraction sizes and increase gradually. The app has built-in protections, but following the recommended limits ensures maximum safety.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* General Tips */}

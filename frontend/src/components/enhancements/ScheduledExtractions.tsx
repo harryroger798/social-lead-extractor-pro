@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Plus, Pause, Play, Trash2, Loader2, Calendar } from 'lucide-react';
+import { Clock, Plus, Pause, Play, Trash2, Loader2, Calendar, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { fetchSchedules, createSchedule, pauseSchedule, resumeSchedule, deleteSchedule } from '@/lib/api';
 import type { ScheduleItem } from '@/lib/api';
 
@@ -7,6 +7,7 @@ export default function ScheduledExtractions() {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [form, setForm] = useState({
     name: '', keywords: '', platforms: 'reddit,linkedin',
     frequency: 'daily', cron_expression: '',
@@ -70,25 +71,71 @@ export default function ScheduledExtractions() {
           </button>
         </div>
 
-        {showCreate && (
-          <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-text-primary">Create Schedule</h3>
-            <div className="space-y-4">
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use Scheduled Extractions</span>
+            </div>
+            {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showGuide && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Schedule Name</label>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What This Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Automatically runs lead extractions on a recurring schedule</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Set it once, new leads appear in your Results tab automatically</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 flex-shrink-0" />Supports hourly, daily, weekly, or custom cron schedules</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How to Create a Schedule</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Click "New Schedule" in the top right</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Name your schedule (e.g. "Weekly React Devs")</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Enter keywords to search (comma-separated)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Choose platforms and frequency</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Click "Create Schedule" — it starts running automatically</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keywords:</strong> Search terms like "web developer, react developer" — each is searched separately</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Platforms:</strong> Which sites to scrape (reddit, linkedin, etc.)</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Frequency:</strong> How often to run. Daily is recommended for most use cases</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pages per Keyword:</strong> How deep to search. More pages = more results but slower</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Pause/Resume:</strong> Temporarily stop a schedule without deleting it</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+                <p className="text-xs text-green-400 font-medium">Tip: Start with daily frequency and 3 pages per keyword. You can always increase later once you see results.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {showCreate && (
+          <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+            <h3 className="text-sm font-semibold text-text-primary">Create Schedule</h3>
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Schedule Name</label>
                 <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Weekly Lead Scrape" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Keywords (comma-separated)</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Keywords (comma-separated)</label>
                 <input type="text" value={form.keywords} onChange={e => setForm({...form, keywords: e.target.value})} placeholder="web developer, react developer" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Platforms (comma-separated)</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Platforms (comma-separated)</label>
                 <input type="text" value={form.platforms} onChange={e => setForm({...form, platforms: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-2">Frequency</label>
+                  <label className="block text-xs font-medium text-text-secondary mb-3">Frequency</label>
                   <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40">
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -97,13 +144,13 @@ export default function ScheduledExtractions() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-2">Pages per Keyword</label>
+                  <label className="block text-xs font-medium text-text-secondary mb-3">Pages per Keyword</label>
                   <input type="number" value={form.pages_per_keyword} onChange={e => setForm({...form, pages_per_keyword: Number(e.target.value)})} min={1} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               </div>
               {form.frequency === 'custom' && (
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-2">Cron Expression</label>
+                  <label className="block text-xs font-medium text-text-secondary mb-3">Cron Expression</label>
                   <input type="text" value={form.cron_expression} onChange={e => setForm({...form, cron_expression: e.target.value})} placeholder="0 9 * * MON" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               )}

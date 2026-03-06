@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Search, Loader2, Building2, Phone, Globe, Star, AlertTriangle } from 'lucide-react';
+import { MapPin, Search, Loader2, Building2, Phone, Globe, Star, AlertTriangle, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { searchGoogleMaps, getExtractionStatus } from '@/lib/api';
 
 export default function GoogleMapsExtractor() {
@@ -9,6 +9,7 @@ export default function GoogleMapsExtractor() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [result, setResult] = useState<{ total_leads: number; emails_found: number; phones_found: number } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -68,6 +69,50 @@ export default function GoogleMapsExtractor() {
           </div>
         </div>
 
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use Google Maps Extractor</span>
+            </div>
+            {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showGuide && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Get</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Business name, phone number, website, full address</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />Star rating, review count, and business category</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />All data saved to your Results tab for export</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How It Works</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter a search query like "restaurants in New York" or "dentists near Miami FL"</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set max results (higher = longer extraction time)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Set delay between requests (higher = safer, lower risk of blocking)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Click "Search Google Maps" — extraction runs in background</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Results appear automatically when done. View all leads in the Results tab</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search Term:</strong> Any Google Maps search query — city, business type, or both</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Results:</strong> How many listings to extract (5-200). Start small for testing</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each request. 3+ recommended to avoid detection</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+                <p className="text-xs text-green-400 font-medium">Tip: Use specific queries like "plumbers in Brooklyn NY" for better results than broad terms like "plumbers".</p>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Search Form */}
         <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
@@ -77,7 +122,7 @@ export default function GoogleMapsExtractor() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">Search Term</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">Search Term</label>
               <input
                 type="text"
                 value={query}
@@ -87,9 +132,9 @@ export default function GoogleMapsExtractor() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Max Results</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Max Results</label>
                 <input
                   type="number"
                   value={maxResults}
@@ -100,7 +145,7 @@ export default function GoogleMapsExtractor() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">Delay (seconds)</label>
+                <label className="block text-xs font-medium text-text-secondary mb-3">Delay (seconds)</label>
                 <input
                   type="number"
                   value={delay}

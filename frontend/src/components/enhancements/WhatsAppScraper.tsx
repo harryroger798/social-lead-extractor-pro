@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Smartphone, Users, Loader2, AlertTriangle, Shield, BookOpen } from 'lucide-react';
+import { Smartphone, Users, Loader2, AlertTriangle, Shield, BookOpen, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { extractWhatsApp, fetchWhatsAppSafetyGuide } from '@/lib/api';
 
 export default function WhatsAppScraper() {
@@ -10,6 +10,7 @@ export default function WhatsAppScraper() {
   const [result, setResult] = useState<string | null>(null);
   const [guide, setGuide] = useState<{ ban_risk: string; prevention: string[]; what_you_get: string[]; how_to_get_more: string[]; tos_warning: string } | null>(null);
   const [showGuide, setShowGuide] = useState(true);
+  const [showHowTo, setShowHowTo] = useState(false);
 
   useEffect(() => {
     fetchWhatsAppSafetyGuide().then(setGuide).catch(() => {});
@@ -52,6 +53,50 @@ export default function WhatsAppScraper() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowHowTo(!showHowTo)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use WhatsApp Scraper</span>
+            </div>
+            {showHowTo ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showHowTo && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Need</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />A WhatsApp account (use a secondary number, not your main)</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />WhatsApp Web access (you'll scan a QR code on first use)</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />Be a member of the group you want to extract from</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How It Works</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Enter the exact group name as it appears in your WhatsApp chats</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> Set max members and delay (8+ seconds recommended)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Click "Extract Members" — WhatsApp Web opens in a browser</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Scan the QR code with your phone (first time only)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">5.</span> Extraction runs automatically. Results saved to Results tab</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Group Name:</strong> Must exactly match the group name in your chat list</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Max Members:</strong> How many members to extract (10-500). Start with 50 for safety</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Seconds between each extraction. 8-15s recommended. Higher = safer</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-3">
+                <p className="text-xs text-red-400 font-medium">Warning: Always use a secondary WhatsApp number. Bans can be permanent. Keep delay at 8+ seconds and extract max 100 members per session.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Safety Guide */}
@@ -103,21 +148,21 @@ export default function WhatsAppScraper() {
         )}
 
         {/* Extract Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Users className="w-4 h-4 text-accent" /> Group Details
           </h3>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-2">Group Name (exact match in your chats)</label>
+            <label className="block text-xs font-medium text-text-secondary mb-3">Group Name (exact match in your chats)</label>
             <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">Max Members</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">Max Members</label>
               <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">Delay (seconds)</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">Delay (seconds)</label>
               <input type="number" value={delay} onChange={e => setDelay(Number(e.target.value))} min={5} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Search, Trash2, Download, ChevronLeft, ChevronRight,
   Loader2, AlertCircle, Database, Mail, Phone, ExternalLink,
-  CheckCircle, XCircle, Filter,
+  CheckCircle, XCircle, Filter, Info, ChevronDown,
 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
 import { fetchResults, deleteLead, exportResults } from '@/lib/api';
@@ -21,6 +21,7 @@ export default function ResultsView() {
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [showGuide, setShowGuide] = useState(false);
   const { toast } = useToast();
 
   const loadResults = useCallback(async () => {
@@ -127,6 +128,42 @@ export default function ResultsView() {
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
       <div className="min-h-full flex flex-col gap-5">
+      {/* How to Use */}
+      <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-text-primary">How to Use Results</span>
+          </div>
+          {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+        </button>
+        {showGuide && (
+          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">What This Page Shows</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />All extracted leads with email, phone, name, platform, and quality score</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Verification status showing which emails have been confirmed deliverable</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Source links to view the original page where the lead was found</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">Available Actions</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Search:</strong> Filter leads by email, name, or any text</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Platform Filter:</strong> View leads from a specific platform only</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Export:</strong> Download as CSV, XLSX, or JSON. Select specific leads or export all</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Select &amp; Bulk:</strong> Use checkboxes to select specific leads for targeted export</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delete:</strong> Remove individual leads with the trash icon</li>
+              </ul>
+            </div>
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <p className="text-xs text-green-400 font-medium">Tip: Use the quality score to prioritize high-value leads. Scores above 70 indicate verified, complete contact info.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">

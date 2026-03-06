@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Send, Loader2, Clock, AlertCircle, FileText } from 'lucide-react';
+import { Mail, Send, Loader2, Clock, AlertCircle, FileText, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { sendOutreach, fetchOutreachTemplates, fetchOutreachLogs, fetchResults } from '@/lib/api';
 import type { OutreachLogItem } from '@/lib/api';
 
@@ -10,6 +10,7 @@ export default function EmailOutreach() {
   const [logs, setLogs] = useState<OutreachLogItem[]>([]);
   const [loading, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [form, setForm] = useState({
     subject_template: '', body_template: '',
     smtp_host: 'smtp.gmail.com', smtp_port: 587,
@@ -54,43 +55,87 @@ export default function EmailOutreach() {
           <p className="text-sm text-text-muted mt-2">Send personalized emails to your leads via SMTP (free, built-in Python)</p>
         </div>
 
+        {/* How to Use */}
+        <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">How to Use Email Outreach</span>
+            </div>
+            {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+          </button>
+          {showGuide && (
+            <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What You Need</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />A Gmail account with 2-Step Verification enabled</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />A Gmail App Password (not your regular password)</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 flex-shrink-0" />Leads with email addresses in your database</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">How to Get a Gmail App Password</h4>
+                <ol className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="text-accent font-bold">1.</span> Go to Google Account &gt; Security &gt; 2-Step Verification (enable if not already)</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">2.</span> At the bottom, click "App passwords"</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">3.</span> Name it (e.g. "Lead Extractor") and click Create</li>
+                  <li className="flex gap-2"><span className="text-accent font-bold">4.</span> Copy the 16-character password and paste it in "App Password" below</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-text-primary mb-2">What Each Option Does</h4>
+                <ul className="space-y-2 text-xs text-text-secondary">
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">SMTP Host/Port:</strong> Pre-filled for Gmail (smtp.gmail.com:587). Change only for other providers like Outlook</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">From Name:</strong> The sender name recipients will see in their inbox</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Delay:</strong> Wait time between each email. Higher = safer. Gmail allows 500/day</li>
+                  <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Templates:</strong> Pre-built email templates with variables like {'{{name}}'} that auto-fill per lead</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+                <p className="text-xs text-green-400 font-medium">Tip: Start with 5-10 emails to test delivery before sending to all leads. Check your Sent folder to verify.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* SMTP Settings */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">SMTP Settings</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">SMTP Host</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">SMTP Host</label>
               <input type="text" value={form.smtp_host} onChange={e => setForm({...form, smtp_host: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">SMTP Port</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">SMTP Port</label>
               <input type="number" value={form.smtp_port} onChange={e => setForm({...form, smtp_port: Number(e.target.value)})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">Email / Username</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">Email / Username</label>
               <input type="email" value={form.smtp_username} onChange={e => setForm({...form, smtp_username: e.target.value})} placeholder="you@gmail.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">App Password</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">App Password</label>
               <input type="password" value={form.smtp_password} onChange={e => setForm({...form, smtp_password: e.target.value})} placeholder="App-specific password" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">From Name</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">From Name</label>
               <input type="text" value={form.from_name} onChange={e => setForm({...form, from_name: e.target.value})} placeholder="Your Name" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">Delay Between Emails (sec)</label>
+              <label className="block text-xs font-medium text-text-secondary mb-3">Delay Between Emails (sec)</label>
               <input type="number" value={form.delay_seconds} onChange={e => setForm({...form, delay_seconds: Number(e.target.value)})} min={10} max={120} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
         </div>
 
         {/* Templates */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <FileText className="w-4 h-4 text-accent" /> Email Templates
           </h3>
@@ -102,17 +147,17 @@ export default function EmailOutreach() {
             ))}
           </div>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-2">Subject (supports {'{{name}}'}, {'{{company}}'} variables)</label>
+            <label className="block text-xs font-medium text-text-secondary mb-3">Subject (supports {'{{name}}'}, {'{{company}}'} variables)</label>
             <input type="text" value={form.subject_template} onChange={e => setForm({...form, subject_template: e.target.value})} placeholder="Quick intro from {{from_name}}" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-2">Body (HTML supported)</label>
+            <label className="block text-xs font-medium text-text-secondary mb-3">Body (HTML supported)</label>
             <textarea value={form.body_template} onChange={e => setForm({...form, body_template: e.target.value})} rows={6} placeholder="<p>Hi {{name}},</p><p>I wanted to reach out...</p>" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none" />
           </div>
         </div>
 
         {/* Send */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
           <div className="flex items-center justify-between">
             <p className="text-sm text-text-secondary">{totalLeads} leads with email addresses selected</p>
             <div className="flex items-center gap-2 text-xs text-text-muted">

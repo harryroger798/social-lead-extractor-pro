@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Shield, Plus, Trash2, Search, Loader2, AlertCircle,
   Mail, Globe, Phone, Hash, X, ShieldPlus,
+  Info, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
 import { fetchBlacklist, addBlacklistEntry, deleteBlacklistEntry } from '@/lib/api';
@@ -20,6 +21,7 @@ export default function BlacklistManager() {
   const [showAdd, setShowAdd] = useState(false);
   const [newEntry, setNewEntry] = useState({ type: 'email', value: '', reason: '' });
   const [adding, setAdding] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const { toast } = useToast();
 
   const loadBlacklist = useCallback(async () => {
@@ -109,6 +111,41 @@ export default function BlacklistManager() {
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
       <div className="min-h-full flex flex-col gap-5">
+
+      {/* How to Use */}
+      <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-text-primary">How to Use Blacklist Manager</span>
+          </div>
+          {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+        </button>
+        {showGuide && (
+          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">What This Page Does</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Block specific emails, domains, phone numbers, or keywords from being extracted</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Blacklisted items are automatically filtered out during future extractions</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />Keeps your lead lists clean by preventing unwanted contacts</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">Entry Types</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Email:</strong> Block a specific email address (e.g. spam@example.com)</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Domain:</strong> Block all emails from a domain (e.g. competitor.com)</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Phone:</strong> Block a specific phone number</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Keyword:</strong> Skip any lead containing this keyword in their profile</li>
+              </ul>
+            </div>
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <p className="text-xs text-green-400 font-medium">Tip: Block competitor domains to keep your lead lists focused on genuine prospects. Add common spam domains to improve lead quality.</p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Add Entry Modal */}
       {showAdd && (

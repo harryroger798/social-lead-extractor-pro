@@ -3,6 +3,7 @@ import {
   Settings as SettingsIcon, Save, Loader2, AlertCircle,
   Key, Globe, Shield, Bell, Database, RefreshCw,
   Wifi, Plus, Trash2, Play, Upload, X, CheckCircle, XCircle,
+  Info, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { fetchSettings, updateSetting, fetchProxies, addProxy, bulkImportProxies, testProxy, testAllProxies, deleteProxy, deleteAllProxies, checkFirecrawlCredits } from '@/lib/api';
@@ -47,6 +48,7 @@ export default function Settings() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('general');
   const [dirty, setDirty] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const { toast } = useToast();
 
   // Proxy state
@@ -270,7 +272,46 @@ export default function Settings() {
 
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="grid grid-cols-[220px_1fr] gap-6 min-h-full">
+      <div className="flex flex-col gap-5 min-h-full">
+
+      {/* How to Use */}
+      <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-text-primary">How to Use Settings</span>
+          </div>
+          {showGuide ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+        </button>
+        {showGuide && (
+          <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">Settings Tabs</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">General:</strong> App name, theme, language, default export format</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Extraction:</strong> Pages per keyword, delay, concurrent sessions, dorking/scraping toggles</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Proxies:</strong> Add, test, and manage proxy servers from any provider</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">API Keys:</strong> Firecrawl API key for enhanced web scraping</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Notifications:</strong> Email and desktop notification preferences</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Storage:</strong> Data retention and auto-backup settings</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" /><strong className="text-text-primary">Security:</strong> Privacy and security configuration</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-text-primary mb-2">How to Save</h4>
+              <ul className="space-y-2 text-xs text-text-secondary">
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" />Make changes in any tab — the "Save Changes" button activates automatically</li>
+                <li className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0" />All settings persist across sessions and apply immediately after saving</li>
+              </ul>
+            </div>
+            <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-3">
+              <p className="text-xs text-green-400 font-medium">Tip: Start with the Extraction tab to optimize your scraping speed and method. Enable Google Dorking for the safest extraction with zero ban risk.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-[220px_1fr] gap-6">
         {/* Tab Navigation */}
         <div className="flex-shrink-0">
           <nav className="card p-3 flex flex-col gap-1 sticky top-0">
@@ -572,6 +613,7 @@ export default function Settings() {
           )}
           </div>
         </div>
+      </div>
       </div>
       </div>
     </div>
