@@ -110,7 +110,7 @@ export default function ResultsView() {
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Results</h1>
             <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
           </div>
-          <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-border p-1.5">
+          <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
             <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
@@ -137,7 +137,7 @@ export default function ResultsView() {
             className="w-full pl-11 pr-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-border p-1.5 overflow-x-auto">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5 overflow-x-auto">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {PLATFORMS.map(p => (
             <button key={p} onClick={() => handlePlatformChange(p)}

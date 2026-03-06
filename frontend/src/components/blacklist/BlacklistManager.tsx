@@ -168,7 +168,7 @@ export default function BlacklistManager() {
             className="w-full pl-11 pr-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-border p-1.5">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
           <Hash className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {TYPE_FILTERS.map(f => (
             <button

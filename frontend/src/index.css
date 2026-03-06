@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #0f172a;
-  --color-bg-secondary: #1e293b;
-  --color-bg-tertiary: #334155;
-  --color-bg-card: #1e293b;
-  --color-bg-card-elevated: #283548;
-  --color-bg-input: #0f172a;
-  --color-bg-sidebar: #0f172a;
+  --color-bg-primary: #09090b;
+  --color-bg-secondary: #18181b;
+  --color-bg-tertiary: #27272a;
+  --color-bg-card: #18181b;
+  --color-bg-card-elevated: #1f1f23;
+  --color-bg-input: #111114;
+  --color-bg-sidebar: #0f0f12;
   --color-accent: #3b82f6;
   --color-accent-hover: #2563eb;
   --color-accent-glow: rgba(59, 130, 246, 0.15);
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
-  --color-border: #334155;
-  --color-border-light: #475569;
-  --color-border-bright: #64748b;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-light: rgba(255, 255, 255, 0.18);
+  --color-border-bright: rgba(255, 255, 255, 0.25);
   --color-purple: #8b5cf6;
   --color-pink: #ec4899;
   --color-cyan: #06b6d4;
@@ -41,8 +41,8 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  background-color: #09090b;
+  color: #fafafa;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -53,34 +53,50 @@ body {
   width: 100%;
 }
 
-/* ── Card system ── */
+/* ================================================================
+   Card System - SOLID hex borders for guaranteed visibility
+   Uses zinc palette: #27272a (800), #3f3f46 (700), #52525b (600)
+   ================================================================ */
 .card {
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background-color: #18181b;
+  border: 1px solid #27272a;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: #3f3f46;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .card-elevated {
-  background-color: #283548;
-  border: 1px solid #475569;
+  background-color: #1f1f23;
+  border: 1px solid #3f3f46;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* ── Page header ── */
+.card-elevated:hover {
+  border-color: #52525b;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Page header - solid border */
 .page-header {
-  border-bottom: 1px solid #334155;
-  background-color: #0f172a;
+  border-bottom: 1px solid #27272a;
+  background-color: rgba(15, 15, 18, 0.95);
+  backdrop-filter: blur(12px);
 }
 
-/* ── Sidebar ── */
+/* Sidebar - solid border */
 .sidebar {
-  background-color: #0f172a;
-  border-right: 1px solid #334155;
+  background-color: #0f0f12;
+  border-right: 1px solid #27272a;
 }
 
-/* ── Scrollbar ── */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -91,24 +107,28 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #3f3f46;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #52525b;
 }
 
-/* ── Form inputs ── */
+/* Form inputs */
+input, select, textarea {
+  transition: all 0.15s ease;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 0 20px rgba(59, 130, 246, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
 }
 
-/* ── Buttons ── */
+/* Buttons */
 button {
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -117,13 +137,13 @@ button:active {
   transform: scale(0.98);
 }
 
-/* ── Animations ── */
+/* Animations */
 main > div {
   animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

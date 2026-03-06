@@ -25,11 +25,11 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 hover:border-[#475569] transition-all duration-200 group">
+    <div className="card p-6 hover:border-border-light transition-all duration-200 group">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-[11px] font-semibold text-[#94a3b8] uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-bold text-[#f1f5f9] tracking-tight tabular-nums">
+          <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">{title}</p>
+          <p className="text-2xl font-bold text-text-primary tracking-tight tabular-nums">
             {typeof value === 'number' ? formatNumber(value) : value}
           </p>
           {change && (
@@ -148,10 +148,10 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           {stats.platform_breakdown.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={stats.platform_breakdown} barSize={32}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-                <XAxis dataKey="platform" tick={{ fill: '#64748B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#64748B', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ backgroundColor: '#131C31', border: '1px solid #1E293B', borderRadius: '12px', color: '#F1F5F9', fontSize: '12px' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <XAxis dataKey="platform" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                   {stats.platform_breakdown.map((_e, i) => (
                     <Cell key={i} fill={PLATFORM_COLORS[i % PLATFORM_COLORS.length]} />
@@ -186,7 +186,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   <Pie data={emailPhoneData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={4} dataKey="value" stroke="none">
                     {emailPhoneData.map((_e, i) => <Cell key={i} fill={PIE_COLORS[i]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#131C31', border: '1px solid #1E293B', borderRadius: '12px', color: '#F1F5F9', fontSize: '12px' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex justify-center gap-6 mt-3">
@@ -202,8 +202,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </>
           ) : (
             <div className="flex flex-col items-center pt-12 gap-3">
-                <div className="w-14 h-14 rounded-2xl                 bg-accent/10 flex items-center justify-center">
-                                  <Mail className="w-7 h-7 text-accent/60" />
+                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center">
+                  <Mail className="w-7 h-7 text-accent/60" />
                 </div>
                 <p className="text-sm text-text-muted">No contact data yet</p>
               </div>
@@ -223,10 +223,10 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <div className="p-6">
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={stats.daily_trend}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: '#64748B', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#64748B', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ backgroundColor: '#131C31', border: '1px solid #1E293B', borderRadius: '12px', color: '#F1F5F9', fontSize: '12px' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+            <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
             <Line type="monotone" dataKey="emails" stroke="#3B82F6" strokeWidth={2.5} dot={{ fill: '#3B82F6', r: 3, strokeWidth: 0 }} />
             <Line type="monotone" dataKey="phones" stroke="#10B981" strokeWidth={2.5} dot={{ fill: '#10B981', r: 3, strokeWidth: 0 }} />
           </LineChart>

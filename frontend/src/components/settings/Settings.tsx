@@ -233,7 +233,7 @@ export default function Settings() {
               <div className="space-y-1 divide-y divide-border">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
+              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#27272a]">
                 <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
               </div>
             </div>
@@ -247,7 +247,7 @@ export default function Settings() {
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
+              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#27272a]">
                 <p className="text-xs text-text-muted">Notifications are sent when extractions complete, fail, or when new leads match your criteria.</p>
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function Settings() {
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
                 {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.02] rounded-xl border border-border">
+              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#27272a]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during direct scraping. Google Dorking does not require proxies.</p>
               </div>
             </div>

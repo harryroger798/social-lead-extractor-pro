@@ -217,7 +217,7 @@ export default function ResellerPanel() {
           <input type="text" placeholder="Search licenses..." value={search} onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-border p-1.5">
+        <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
           <Key className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {['all', 'active', 'expired', 'revoked'].map(f => (
             <button key={f} onClick={() => setStatusFilter(f)}
@@ -226,7 +226,7 @@ export default function ResellerPanel() {
           ))}
         </div>
         <button onClick={() => setShowKeys(!showKeys)}
-          className="flex items-center gap-2 px-3.5 py-2 bg-bg-card border border-border rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-border-light transition-all"
+          className="flex items-center gap-2 px-3.5 py-2 bg-bg-card border border-[#27272a] rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all"
         >
           {showKeys ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           {showKeys ? 'Hide' : 'Show'} Keys
