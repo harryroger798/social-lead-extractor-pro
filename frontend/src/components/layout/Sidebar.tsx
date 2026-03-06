@@ -6,7 +6,6 @@ import {
   ShieldBan,
   Settings,
   Crown,
-  Zap,
   ChevronLeft,
   ChevronRight,
   MapPin,
@@ -82,12 +81,10 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
     >
       {/* Logo */}
       <div className="flex items-center gap-3.5 px-5 h-[72px] border-b border-[#3f3f46] flex-shrink-0">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-blue-400 flex items-center justify-center flex-shrink-0 shadow-lg shadow-accent/25">
-          <Zap className="w-5 h-5 text-white" />
-        </div>
+        <img src="/favicon.png" alt="SnapLeads" className="w-10 h-10 rounded-xl flex-shrink-0 shadow-lg shadow-accent/25" />
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">Lead Extractor</h1>
+            <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">SnapLeads</h1>
             <p className="text-[11px] text-accent font-semibold tracking-wide">PRO EDITION</p>
           </div>
         )}

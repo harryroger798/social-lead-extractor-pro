@@ -1,7 +1,7 @@
 {
-  "name": "social-lead-extractor-pro",
+  "name": "snapleads",
   "version": "1.0.0",
-  "description": "Social Lead Extractor Pro - Extract emails and phone numbers from 9 social media platforms",
+  "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload\"",
@@ -18,8 +18,8 @@
     "dist:linux": "electron-builder --linux"
   },
   "build": {
-    "appId": "com.socialleadextractor.pro",
-    "productName": "Social Lead Extractor Pro",
+    "appId": "com.snapleads.app",
+    "productName": "SnapLeads",
     "directories": {
       "output": "release"
     },
@@ -51,6 +51,6 @@
     "electron-builder": "^25.0.0",
     "concurrently": "^9.0.0"
   },
-  "author": "Social Lead Extractor Pro",
+  "author": "SnapLeads",
   "license": "MIT"
 }

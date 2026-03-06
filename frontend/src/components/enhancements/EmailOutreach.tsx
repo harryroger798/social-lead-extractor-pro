@@ -79,7 +79,7 @@ export default function EmailOutreach() {
                 <ol className="text-[13px] leading-relaxed text-text-secondary">
                   <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">1.</span> Go to Google Account &gt; Security &gt; 2-Step Verification (enable if not already)</li>
                   <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">2.</span> At the bottom, click "App passwords"</li>
-                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Name it (e.g. "Lead Extractor") and click Create</li>
+                  <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">3.</span> Name it (e.g. "SnapLeads") and click Create</li>
                   <li className="flex gap-3 py-2 border-b border-white/5 last:border-0"><span className="text-accent font-bold">4.</span> Copy the 16-character password and paste it in "App Password" below</li>
                 </ol>
               </div>

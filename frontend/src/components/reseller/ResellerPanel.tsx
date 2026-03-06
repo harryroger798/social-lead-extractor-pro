@@ -365,7 +365,7 @@ export default function ResellerPanel() {
           <div>
             <h3 className="text-sm font-semibold text-text-primary pb-1">Reseller Program</h3>
             <p className="text-xs text-text-secondary leading-relaxed">
-              Generate unlimited license keys and sell Social Lead Extractor Pro under your own brand.
+              Generate unlimited license keys and sell SnapLeads under your own brand.
               Keys are validated locally using cryptographic signatures - no external server required.
             </p>
             <div className="flex items-center gap-4 pt-3">

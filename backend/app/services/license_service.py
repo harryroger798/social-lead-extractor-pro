@@ -6,7 +6,7 @@ import string
 from datetime import datetime, timedelta
 
 
-SECRET_KEY = "social-lead-extractor-pro-2026"
+SECRET_KEY = "snapleads-pro-2026"
 
 
 def generate_license_key() -> str:
@@ -16,7 +16,7 @@ def generate_license_key() -> str:
     for _ in range(3):
         segment = "".join(random.choices(chars, k=4))
         segments.append(segment)
-    return f"SLEP-{'-'.join(segments)}"
+    return f"SNPL-{'-'.join(segments)}"
 
 
 def generate_license_keys(quantity: int = 1) -> list[str]:
@@ -43,7 +43,7 @@ def validate_key_format(key: str) -> bool:
     parts = key.split("-")
     if len(parts) != 4:
         return False
-    if parts[0] != "SLEP":
+    if parts[0] != "SNPL":
         return False
     for part in parts[1:]:
         if len(part) != 4:

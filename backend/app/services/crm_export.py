@@ -144,7 +144,7 @@ async def export_to_salesforce(
                         "LastName": _extract_last_name(lead.get("name", "")) or "Unknown",
                         "Company": lead.get("company", lead.get("platform", "Unknown")),
                         "Website": lead.get("website", lead.get("source_url", "")),
-                        "LeadSource": "Social Lead Extractor Pro",
+                        "LeadSource": "SnapLeads",
                         "Status": "Open - Not Contacted",
                     }
 

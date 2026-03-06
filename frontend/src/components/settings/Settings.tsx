@@ -21,7 +21,7 @@ const TABS = [
 ];
 
 const DEFAULT_SETTINGS: Record<string, string> = {
-  app_name: 'Social Lead Extractor Pro',
+  app_name: 'SnapLeads',
   theme: 'dark',
   language: 'en',
   default_export_format: 'csv',

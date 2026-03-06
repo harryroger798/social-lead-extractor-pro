@@ -16,7 +16,7 @@ async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = FastAPI(
-    title="Social Lead Extractor Pro",
+    title="SnapLeads",
     version="1.0.0",
     lifespan=lifespan,
 )

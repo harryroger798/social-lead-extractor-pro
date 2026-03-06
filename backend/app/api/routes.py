@@ -1,4 +1,4 @@
-"""API routes for Social Lead Extractor Pro."""
+"""API routes for SnapLeads."""
 import json
 import uuid
 from datetime import datetime, timedelta
