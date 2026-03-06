@@ -19,7 +19,7 @@ export default function SafetyGuide() {
 
   useEffect(() => {
     Promise.all([
-      fetchSafetyGuide().then(setGuide).catch(() => {}),
+      fetchSafetyGuide().then((data) => setGuide(data as { platforms: Record<string, PlatformGuide>; general_tips: string[] })).catch(() => {}),
       fetchLinkedInGuide().then(setLinkedinGuide).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, []);

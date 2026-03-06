@@ -1,5 +1,9 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+const https = require('https');
+const http = require('http');
 const { spawn } = require('child_process');
 
 let mainWindow;
@@ -132,4 +136,139 @@ ipcMain.handle('get-user-data-path', () => {
 
 ipcMain.handle('open-external', (_event, url) => {
   shell.openExternal(url);
+});
+
+// ─── License Management IPC ───────────────────────────────────────────────
+
+const LICENSE_SECRET = process.env.SNAPLEADS_LICENSE_SECRET || 'default-license-secret';
+
+function getLicenseFilePath() {
+  return path.join(app.getPath('userData'), 'license.json');
+}
+
+function computeHmac(data) {
+  return crypto.createHmac('sha256', LICENSE_SECRET).update(data).digest('hex');
+}
+
+function getDeviceId() {
+  const os = require('os');
+  const raw = `${os.hostname()}-${os.platform()}-${os.arch()}-${os.cpus()[0]?.model || 'unknown'}`;
+  return crypto.createHash('sha256').update(raw).digest('hex').substring(0, 32);
+}
+
+ipcMain.handle('license-get', () => {
+  try {
+    const filePath = getLicenseFilePath();
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+    const raw = fs.readFileSync(filePath, 'utf-8');
+    const data = JSON.parse(raw);
+    // Verify HMAC integrity
+    const { signature, ...payload } = data;
+    const expected = computeHmac(JSON.stringify(payload));
+    if (signature !== expected) {
+      console.error('[License] Signature mismatch - license tampered');
+      return null;
+    }
+    return payload;
+  } catch (err) {
+    console.error('[License] Failed to read license:', err.message);
+    return null;
+  }
+});
+
+ipcMain.handle('license-save', (_event, licenseData) => {
+  try {
+    const filePath = getLicenseFilePath();
+    const signature = computeHmac(JSON.stringify(licenseData));
+    const dataWithSig = { ...licenseData, signature };
+    fs.writeFileSync(filePath, JSON.stringify(dataWithSig, null, 2), 'utf-8');
+    return { success: true };
+  } catch (err) {
+    console.error('[License] Failed to save license:', err.message);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('license-remove', () => {
+  try {
+    const filePath = getLicenseFilePath();
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    return { success: true };
+  } catch (err) {
+    console.error('[License] Failed to remove license:', err.message);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('license-get-device-id', () => {
+  return getDeviceId();
+});
+
+ipcMain.handle('license-activate-online', async (_event, licenseKey) => {
+  const deviceId = getDeviceId();
+  const API_URL = 'https://snapleads-api.onrender.com';
+
+  return new Promise((resolve) => {
+    const postData = JSON.stringify({ key: licenseKey, device_id: deviceId });
+    const urlObj = new URL(`${API_URL}/api/license/activate`);
+    const protocol = urlObj.protocol === 'https:' ? https : http;
+
+    const req = protocol.request({
+      hostname: urlObj.hostname,
+      port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
+      path: urlObj.pathname,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+      timeout: 15000,
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => {
+        try {
+          const result = JSON.parse(body);
+          if (res.statusCode === 200 && result.activated) {
+            // Save license locally — map backend response to local format
+            const tier = result.plan || 'starter';
+            const cycle = result.billing_cycle || 'monthly';
+            const licenseData = {
+              key: licenseKey,
+              tier: tier,
+              cycle: cycle,
+              activated_at: new Date().toISOString(),
+              expires_at: result.expires_at || null,
+              device_id: deviceId,
+              token: result.signature || '',
+            };
+            const hmacSig = computeHmac(JSON.stringify(licenseData));
+            const dataWithSig = { ...licenseData, signature: hmacSig };
+            fs.writeFileSync(getLicenseFilePath(), JSON.stringify(dataWithSig, null, 2), 'utf-8');
+            resolve({ success: true, tier: tier, cycle: cycle, expires_at: result.expires_at });
+          } else {
+            resolve({ success: false, error: result.message || result.detail || result.error || 'Activation failed' });
+          }
+        } catch (parseErr) {
+          resolve({ success: false, error: 'Invalid server response' });
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      resolve({ success: false, error: `Connection failed: ${err.message}` });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      resolve({ success: false, error: 'Connection timed out' });
+    });
+
+    req.write(postData);
+    req.end();
+  });
 });

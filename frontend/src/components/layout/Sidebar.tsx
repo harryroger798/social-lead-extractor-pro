@@ -16,9 +16,12 @@ import {
   Smartphone,
   Globe,
   Shield,
+  Lock,
+  LogOut,
 } from 'lucide-react';
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
+import { useLicense, PRO_ONLY_FEATURES } from '@/contexts/LicenseContext';
 
 interface SidebarProps {
   activeSection: Section;
@@ -71,6 +74,9 @@ const navGroups = [
 ];
 
 export default function Sidebar({ activeSection, onSectionChange, collapsed, onToggleCollapse }: SidebarProps) {
+  const { license, isPro, deactivate } = useLicense();
+  const proOnlySet = new Set<string>(PRO_ONLY_FEATURES as unknown as string[]);
+
   return (
     <aside
       className={cn(
@@ -85,7 +91,9 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">SnapLeads</h1>
-            <p className="text-[11px] text-accent font-semibold tracking-wide">PRO EDITION</p>
+            <p className={cn('text-[11px] font-semibold tracking-wide', isPro ? 'text-amber-400' : 'text-accent')}>
+              {isPro ? 'PRO EDITION' : 'STARTER EDITION'}
+            </p>
           </div>
         )}
       </div>
@@ -104,6 +112,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
+                const isProOnly = proOnlySet.has(item.id) && !isPro;
                 return (
                   <button
                     key={item.id}
@@ -113,12 +122,18 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                       collapsed ? 'justify-center px-0 py-2.5' : 'px-3.5 py-2.5',
                       isActive
                         ? 'bg-accent/12 text-accent shadow-sm shadow-accent/10 border border-accent/25'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04] border border-transparent'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04] border border-transparent',
+                      isProOnly && 'opacity-60'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className={cn('w-[18px] h-[18px] flex-shrink-0', isActive ? 'text-accent' : '')} />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
+                    {!collapsed && (
+                      <>
+                        <span className="truncate flex-1 text-left">{item.label}</span>
+                        {isProOnly && <Lock className="w-3.5 h-3.5 text-amber-400/60 flex-shrink-0" />}
+                      </>
+                    )}
                   </button>
                 );
               })}
@@ -129,10 +144,28 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
 
       {/* Footer */}
       <div className="border-t border-[#3f3f46] px-3.5 py-4 flex flex-col gap-3">
-        {!collapsed && (
+        {!collapsed && license && (
           <div className="px-3.5 py-3 rounded-xl bg-white/[0.04] border border-[#3f3f46]">
-            <p className="text-[11px] text-text-muted font-medium">Version 1.0.0</p>
-            <p className="text-[11px] text-accent font-semibold pt-0.5">Professional License</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-text-muted font-medium">Version 1.0.0</p>
+              <button
+                onClick={deactivate}
+                className="text-text-muted hover:text-error transition-colors"
+                title="Deactivate license"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5 pt-1">
+              {isPro ? (
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Shield className="w-3.5 h-3.5 text-accent" />
+              )}
+              <p className={cn('text-[11px] font-semibold', isPro ? 'text-amber-400' : 'text-accent')}>
+                {license.tier === 'pro' ? 'Pro' : 'Starter'} — {license.cycle}
+              </p>
+            </div>
           </div>
         )}
         <button
