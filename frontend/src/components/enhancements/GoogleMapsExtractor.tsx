@@ -114,15 +114,15 @@ export default function GoogleMapsExtractor() {
         </div>
 
         {/* Search Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Search className="w-4 h-4 text-accent" />
             Search Query
           </h3>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-3">Search Term</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-3">Search Term</label>
               <input
                 type="text"
                 value={query}
@@ -134,7 +134,7 @@ export default function GoogleMapsExtractor() {
 
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Max Results</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Results</label>
                 <input
                   type="number"
                   value={maxResults}
@@ -145,7 +145,7 @@ export default function GoogleMapsExtractor() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Delay (seconds)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Delay (seconds)</label>
                 <input
                   type="number"
                   value={delay}
@@ -161,7 +161,7 @@ export default function GoogleMapsExtractor() {
             <button
               onClick={handleSearch}
               disabled={loading || !query.trim()}
-              className="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
               {loading ? 'Extracting...' : 'Search Google Maps'}
@@ -203,7 +203,7 @@ export default function GoogleMapsExtractor() {
         )}
 
         {/* What you get */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-4">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-400" />
             What You Get

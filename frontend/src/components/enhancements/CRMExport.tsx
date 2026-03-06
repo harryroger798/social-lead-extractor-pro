@@ -107,7 +107,7 @@ export default function CRMExport() {
         </div>
 
         {/* CRM Type */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
           <h3 className="text-sm font-semibold text-text-primary">Select CRM</h3>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setCrmType('hubspot')} className={`p-4 rounded-xl border text-left transition-all ${crmType === 'hubspot' ? 'border-orange-500/50 bg-orange-500/5' : 'border-border bg-bg-primary hover:border-border/80'}`}>
@@ -122,26 +122,26 @@ export default function CRMExport() {
         </div>
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
           <h3 className="text-sm font-semibold text-text-primary">API Credentials</h3>
           {crmType === 'hubspot' ? (
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-3">HubSpot API Key (or Private App Token)</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-3">HubSpot API Key (or Private App Token)</label>
               <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="pat-na1-..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               <p className="text-xs text-text-muted mt-2">Get it from HubSpot &gt; Settings &gt; Integrations &gt; Private Apps</p>
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Username</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Username</label>
                 <input type="text" value={sfUsername} onChange={e => setSfUsername(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Password</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Password</label>
                 <input type="password" value={sfPassword} onChange={e => setSfPassword(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Security Token</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Security Token</label>
                 <input type="text" value={sfToken} onChange={e => setSfToken(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
             </div>

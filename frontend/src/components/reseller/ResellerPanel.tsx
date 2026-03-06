@@ -207,34 +207,34 @@ export default function ResellerPanel() {
           <div className="px-6 py-5 border-b border-[#3f3f46]">
             <h3 className="text-sm font-bold text-text-primary">Generate License Keys</h3>
           </div>
-          <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="p-7">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="text-sm font-medium text-text-primary pb-2 block">Buyer Name</label>
+              <label className="text-sm font-medium text-text-primary pb-3 block">Buyer Name</label>
               <input type="text" value={genForm.buyer_name} onChange={e => setGenForm(p => ({ ...p, buyer_name: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="John Doe" />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary pb-2 block">Buyer Email</label>
+              <label className="text-sm font-medium text-text-primary pb-3 block">Buyer Email</label>
               <input type="email" value={genForm.buyer_email} onChange={e => setGenForm(p => ({ ...p, buyer_email: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="john@example.com" />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary pb-2 block">Quantity</label>
+              <label className="text-sm font-medium text-text-primary pb-3 block">Quantity</label>
               <input type="number" value={genForm.quantity} onChange={e => setGenForm(p => ({ ...p, quantity: parseInt(e.target.value) || 1 }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={100} />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary pb-2 block">Max Activations</label>
+              <label className="text-sm font-medium text-text-primary pb-3 block">Max Activations</label>
               <input type="number" value={genForm.max_activations} onChange={e => setGenForm(p => ({ ...p, max_activations: parseInt(e.target.value) || 1 }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={10} />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary pb-2 block">Duration (months)</label>
+              <label className="text-sm font-medium text-text-primary pb-3 block">Duration (months)</label>
               <select value={genForm.duration_months} onChange={e => setGenForm(p => ({ ...p, duration_months: parseInt(e.target.value) }))}
                 className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
@@ -242,7 +242,7 @@ export default function ResellerPanel() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-5">
+          <div className="flex justify-end gap-3 pt-6">
             <button onClick={() => setShowGenerate(false)} className="px-5 py-2.5 bg-bg-card border border-[#3f3f46] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">Cancel</button>
             <button onClick={handleGenerate} disabled={generating}
               className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-50 shadow-lg shadow-accent/25"

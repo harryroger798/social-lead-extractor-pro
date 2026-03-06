@@ -148,28 +148,28 @@ export default function WhatsAppScraper() {
         )}
 
         {/* Extract Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Users className="w-4 h-4 text-accent" /> Group Details
           </h3>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-3">Group Name (exact match in your chats)</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-3">Group Name (exact match in your chats)</label>
             <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-3">Max Members</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Members</label>
               <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-3">Delay (seconds)</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-3">Delay (seconds)</label>
               <input type="number" value={delay} onChange={e => setDelay(Number(e.target.value))} min={5} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <p className="text-xs text-text-muted">
+          <p className="text-[13px] text-text-muted leading-relaxed">
             WhatsApp Web will open in a browser window. You must scan the QR code with your phone the first time.
           </p>
-          <button onClick={handleExtract} disabled={loading || !groupName.trim()} className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          <button onClick={handleExtract} disabled={loading || !groupName.trim()} className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
             {loading ? 'Starting...' : 'Extract Members'}
           </button>

@@ -118,24 +118,24 @@ export default function ScheduledExtractions() {
         </div>
 
         {showCreate && (
-          <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+          <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
             <h3 className="text-sm font-semibold text-text-primary">Create Schedule</h3>
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Schedule Name</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Schedule Name</label>
                 <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Weekly Lead Scrape" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Keywords (comma-separated)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Keywords (comma-separated)</label>
                 <input type="text" value={form.keywords} onChange={e => setForm({...form, keywords: e.target.value})} placeholder="web developer, react developer" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-3">Platforms (comma-separated)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-3">Platforms (comma-separated)</label>
                 <input type="text" value={form.platforms} onChange={e => setForm({...form, platforms: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-3">Frequency</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Frequency</label>
                   <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40">
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -144,17 +144,17 @@ export default function ScheduledExtractions() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-3">Pages per Keyword</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Pages per Keyword</label>
                   <input type="number" value={form.pages_per_keyword} onChange={e => setForm({...form, pages_per_keyword: Number(e.target.value)})} min={1} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               </div>
               {form.frequency === 'custom' && (
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-3">Cron Expression</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Cron Expression</label>
                   <input type="text" value={form.cron_expression} onChange={e => setForm({...form, cron_expression: e.target.value})} placeholder="0 9 * * MON" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               )}
-              <button onClick={handleCreate} className="w-full py-2.5 rounded-lg bg-accent hover:bg-accent/80 text-white text-sm font-semibold transition-colors">Create Schedule</button>
+              <button onClick={handleCreate} className="w-full py-3 rounded-lg bg-accent hover:bg-accent/80 text-white text-sm font-semibold transition-colors mt-2">Create Schedule</button>
             </div>
           </div>
         )}

@@ -94,19 +94,19 @@ export default function EmailFinder() {
         </div>
 
         {/* Search */}
-        <div className="rounded-xl bg-bg-card border border-border p-6 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Search className="w-4 h-4 text-accent" /> Crawl Website
           </h3>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-3">Website URL</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-3">Website URL</label>
             <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-3">Max Pages to Crawl</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Pages to Crawl</label>
             <input type="number" value={maxPages} onChange={e => setMaxPages(Number(e.target.value))} min={1} max={50} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
-          <button onClick={handleCrawl} disabled={loading || !url.trim()} className="w-full py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          <button onClick={handleCrawl} disabled={loading || !url.trim()} className="w-full py-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
             {loading ? 'Crawling...' : 'Find Emails & Phones'}
           </button>
