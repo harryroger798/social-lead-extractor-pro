@@ -27,7 +27,7 @@ function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
     <div className="card p-6 hover:border-[#52525b] transition-all duration-200 group border-l-[3px]" style={{ borderLeftColor: color }}>
       <div className="flex items-start justify-between">
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">{title}</p>
           <p className="text-2xl font-bold text-text-primary tracking-tight tabular-nums">
             {typeof value === 'number' ? formatNumber(value) : value}
@@ -116,7 +116,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <div className="flex items-center justify-between px-10 py-6">
           <div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Dashboard</h1>
-            <p className="text-sm text-text-secondary mt-1">Overview of your lead extraction activity</p>
+            <p className="text-sm text-text-secondary pt-1">Overview of your lead extraction activity</p>
           </div>
           <button
             onClick={() => onNavigate('extraction')}
@@ -129,7 +129,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8 space-y-7">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-7">
         {/* Stat Cards - 4 per row */}
         <div className="grid grid-cols-4 gap-5">
           <StatCard title="Total Leads" value={stats.total_leads} icon={Users} color="#3B82F6" />
@@ -189,7 +190,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="flex justify-center gap-6 mt-3">
+              <div className="flex justify-center gap-6 pt-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-accent" />
                   <span className="text-xs text-text-secondary font-medium">Emails ({formatNumber(stats.total_emails)})</span>
@@ -281,11 +282,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </table>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-5">
+              <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center">
                 <Search className="w-8 h-8 text-accent/60" />
               </div>
-              <p className="text-base font-semibold text-text-primary mb-1.5">No recent extractions</p>
-              <p className="text-sm text-text-muted mb-5 max-w-[280px]">Start your first lead extraction to see results here</p>
+              <p className="text-base font-semibold text-text-primary pt-5">No recent extractions</p>
+              <p className="text-sm text-text-muted pb-5 pt-1.5 max-w-[280px]">Start your first lead extraction to see results here</p>
               <button onClick={() => onNavigate('extraction')}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-accent/25"
               >
@@ -295,6 +296,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -70,14 +70,14 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       {/* Navigation */}
       <nav className="flex-1 py-5 px-3.5 overflow-y-auto">
         {navGroups.map((group, gi) => (
-          <div key={group.label} className={cn(gi > 0 && 'mt-7')}>
+          <div key={group.label} className={cn(gi > 0 && 'pt-7')}>
             {!collapsed && (
-              <p className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.15em] px-3 mb-3 select-none">
+              <p className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.15em] px-3 pb-3 select-none">
                 {group.label}
               </p>
             )}
-            {collapsed && gi > 0 && <div className="h-px bg-border mx-3 mb-3 mt-2" />}
-            <div className="space-y-1">
+            {collapsed && gi > 0 && <div className="h-px bg-border mx-3 pb-3 pt-2" />}
+            <div className="flex flex-col gap-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
@@ -105,11 +105,11 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-[#3f3f46] px-3.5 py-4 space-y-3">
+      <div className="border-t border-[#3f3f46] px-3.5 py-4 flex flex-col gap-3">
         {!collapsed && (
           <div className="px-3.5 py-3 rounded-xl bg-white/[0.04] border border-[#3f3f46]">
             <p className="text-[11px] text-text-muted font-medium">Version 1.0.0</p>
-            <p className="text-[11px] text-accent font-semibold mt-0.5">Professional License</p>
+            <p className="text-[11px] text-accent font-semibold pt-0.5">Professional License</p>
           </div>
         )}
         <button

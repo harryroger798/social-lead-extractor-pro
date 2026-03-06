@@ -97,7 +97,7 @@ export default function BlacklistManager() {
         <div className="flex items-center justify-between px-10 py-6">
           <div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Blacklist Manager</h1>
-            <p className="text-sm text-text-secondary mt-1">Block emails, domains, phones, or keywords from extraction</p>
+            <p className="text-sm text-text-secondary pt-1">Block emails, domains, phones, or keywords from extraction</p>
           </div>
           <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
             <Plus className="w-4 h-4" />
@@ -120,7 +120,7 @@ export default function BlacklistManager() {
           <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Type</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Type</label>
               <select
                 value={newEntry.type} onChange={e => setNewEntry(p => ({ ...p, type: e.target.value }))}
                 className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
@@ -132,7 +132,7 @@ export default function BlacklistManager() {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Value</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Value</label>
               <input
                 type="text" value={newEntry.value} onChange={e => setNewEntry(p => ({ ...p, value: e.target.value }))}
                 placeholder={newEntry.type === 'email' ? 'spam@example.com' : newEntry.type === 'domain' ? 'example.com' : 'Enter value...'}
@@ -140,7 +140,7 @@ export default function BlacklistManager() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Reason (optional)</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Reason (optional)</label>
               <input
                 type="text" value={newEntry.reason} onChange={e => setNewEntry(p => ({ ...p, reason: e.target.value }))}
                 placeholder="Why block this?"
@@ -185,8 +185,8 @@ export default function BlacklistManager() {
       {/* Entries List - fills remaining height */}
       <div className="flex-1 card overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="flex-1 overflow-y-auto p-5 space-y-3">
-          {filtered.map(entry => {
+                <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-3">
+                  {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
               <div key={entry.id} className="flex items-center justify-between p-5 card-elevated hover:border-[#71717a] transition-all duration-200">
@@ -196,7 +196,7 @@ export default function BlacklistManager() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-text-primary truncate">{entry.value}</p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 pt-1">
                       <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{entry.type}</span>
                       {entry.reason && <span className="text-xs text-text-muted truncate">{entry.reason}</span>}
                       <span className="text-xs text-text-muted">{formatDate(entry.added_at)}</span>
@@ -216,11 +216,11 @@ export default function BlacklistManager() {
             <Shield className="h-9 w-9 text-accent/50" />
           </div>
           <div>
-            <p className="text-base font-bold text-text-primary mb-1.5">No blacklist entries</p>
+            <p className="text-base font-bold text-text-primary pb-1.5">No blacklist entries</p>
             <p className="text-sm text-text-muted max-w-[300px]">Add entries to filter out unwanted results from extraction</p>
           </div>
           <button onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 mt-2"
+            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25"
           >
             <ShieldPlus className="w-4 h-4" />
             Add First Entry

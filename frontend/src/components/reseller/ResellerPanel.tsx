@@ -120,7 +120,7 @@ export default function ResellerPanel() {
         <div className="flex items-center justify-between px-10 py-6">
           <div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Reseller Panel</h1>
-            <p className="text-sm text-text-secondary mt-1">Generate and manage license keys</p>
+            <p className="text-sm text-text-secondary pt-1">Generate and manage license keys</p>
           </div>
         <button onClick={() => setShowGenerate(true)}
           className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30"
@@ -144,7 +144,7 @@ export default function ResellerPanel() {
         ].map(s => (
           <div key={s.label} className="card p-6 shadow-md shadow-black/30 hover:border-[#52525b] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
             <div className="flex items-center justify-between">
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{s.label}</p>
                 <p className="text-2xl font-bold text-text-primary tabular-nums">{s.value}</p>
               </div>
@@ -165,31 +165,31 @@ export default function ResellerPanel() {
           <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Name</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Buyer Name</label>
               <input type="text" value={genForm.buyer_name} onChange={e => setGenForm(p => ({ ...p, buyer_name: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="John Doe" />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Buyer Email</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Buyer Email</label>
               <input type="email" value={genForm.buyer_email} onChange={e => setGenForm(p => ({ ...p, buyer_email: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 placeholder="john@example.com" />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Quantity</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Quantity</label>
               <input type="number" value={genForm.quantity} onChange={e => setGenForm(p => ({ ...p, quantity: parseInt(e.target.value) || 1 }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={100} />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Max Activations</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Max Activations</label>
               <input type="number" value={genForm.max_activations} onChange={e => setGenForm(p => ({ ...p, max_activations: parseInt(e.target.value) || 1 }))}
                 className="w-full px-4 py-2.5 bg-bg-input border border-[#3f3f46] rounded-lg text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all"
                 min={1} max={10} />
             </div>
             <div>
-              <label className="text-sm font-medium text-text-primary mb-2 block">Duration (months)</label>
+              <label className="text-sm font-medium text-text-primary pb-2 block">Duration (months)</label>
               <select value={genForm.duration_months} onChange={e => setGenForm(p => ({ ...p, duration_months: parseInt(e.target.value) }))}
                 className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
@@ -197,7 +197,7 @@ export default function ResellerPanel() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-5">
+          <div className="flex justify-end gap-3 pt-5">
             <button onClick={() => setShowGenerate(false)} className="px-5 py-2.5 bg-bg-card border border-[#3f3f46] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all">Cancel</button>
             <button onClick={handleGenerate} disabled={generating}
               className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-50 shadow-lg shadow-accent/25"
@@ -263,7 +263,7 @@ export default function ResellerPanel() {
                   </td>
                   <td className="px-5 py-4">
                     <p className="text-sm text-text-primary">{license.buyer_name}</p>
-                    <p className="text-xs text-text-muted mt-0.5">{license.buyer_email}</p>
+                    <p className="text-xs text-text-muted pt-0.5">{license.buyer_email}</p>
                   </td>
                   <td className="px-5 py-4">
                     <span className={cn(
@@ -298,11 +298,11 @@ export default function ResellerPanel() {
             <Key className="h-9 w-9 text-accent/50" />
           </div>
           <div>
-            <p className="text-base font-bold text-text-primary mb-1.5">No license keys found</p>
+            <p className="text-base font-bold text-text-primary pb-1.5">No license keys found</p>
             <p className="text-sm text-text-muted max-w-[300px]">Generate keys to start selling</p>
           </div>
           <button onClick={() => setShowGenerate(true)}
-            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 mt-2"
+            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25"
           >
             <Plus className="w-4 h-4" />
             Generate First Key
@@ -318,12 +318,12 @@ export default function ResellerPanel() {
             <TrendingUp className="w-5 h-5 text-accent" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text-primary mb-1">Reseller Program</h3>
+            <h3 className="text-sm font-semibold text-text-primary pb-1">Reseller Program</h3>
             <p className="text-xs text-text-secondary leading-relaxed">
               Generate unlimited license keys and sell Social Lead Extractor Pro under your own brand.
               Keys are validated locally using cryptographic signatures - no external server required.
             </p>
-            <div className="flex items-center gap-4 mt-3">
+            <div className="flex items-center gap-4 pt-3">
               <div className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-accent" /><span className="text-xs text-text-secondary">Unlimited keys</span></div>
               <div className="flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5 text-success" /><span className="text-xs text-text-secondary">100% revenue</span></div>
               <div className="flex items-center gap-1.5"><Crown className="w-3.5 h-3.5 text-warning" /><span className="text-xs text-text-secondary">White-label ready</span></div>

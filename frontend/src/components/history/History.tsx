@@ -89,7 +89,7 @@ export default function History() {
       <div className="shrink-0 page-header">
         <div className="px-10 py-6">
           <h1 className="text-xl font-bold text-text-primary tracking-tight">Extraction History</h1>
-          <p className="text-sm text-text-secondary mt-1">Browse and manage past extraction sessions</p>
+          <p className="text-sm text-text-secondary pt-1">Browse and manage past extraction sessions</p>
         </div>
       </div>
 
@@ -123,12 +123,12 @@ export default function History() {
       {/* Sessions List - fills remaining height */}
       <div className="flex-1 card overflow-hidden flex flex-col min-h-[400px]">
       {filtered.length > 0 ? (
-        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-3">
           {filtered.map(s => (
             <div key={s.id} className="card-elevated p-6 hover:border-[#71717a] transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 pb-2">
                     {statusIcon(s.status)}
                     <h3 className="text-sm font-semibold text-text-primary truncate">{s.name}</h3>
                     <span className={cn(
@@ -147,7 +147,7 @@ export default function History() {
                     <span>Keywords: {s.keywords.join(', ')}</span>
                   </div>
 
-                  <div className="flex items-center gap-6 mt-3">
+                  <div className="flex items-center gap-6 pt-3">
                     <div className="flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5 text-accent" />
                       <span className="text-sm font-semibold text-text-primary tabular-nums">{s.emails_found}</span>
@@ -164,11 +164,11 @@ export default function History() {
                   </div>
 
                   {s.status === 'running' && (
-                    <div className="mt-3 w-full max-w-xs">
+                    <div className="pt-3 w-full max-w-xs">
                       <div className="w-full h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
                         <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${s.progress}%` }} />
                       </div>
-                      <p className="text-xs text-accent mt-1 font-medium tabular-nums">{s.progress}% complete</p>
+                      <p className="text-xs text-accent pt-1 font-medium tabular-nums">{s.progress}% complete</p>
                     </div>
                   )}
                 </div>
@@ -190,11 +190,11 @@ export default function History() {
             <FolderOpen className="h-9 w-9 text-accent/50" />
           </div>
           <div>
-            <p className="text-base font-bold text-text-primary mb-1.5">No sessions found</p>
+            <p className="text-base font-bold text-text-primary pb-1.5">No sessions found</p>
             <p className="text-sm text-text-muted max-w-[300px]">Start a new extraction to see history here</p>
           </div>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 mt-2"
+            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25"
           >
             <Zap className="w-4 h-4" />
             New Extraction

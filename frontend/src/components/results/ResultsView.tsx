@@ -108,7 +108,7 @@ export default function ResultsView() {
         <div className="flex items-center justify-between px-10 py-6">
           <div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Results</h1>
-            <p className="text-sm text-text-secondary mt-1">{total.toLocaleString()} leads extracted</p>
+            <p className="text-sm text-text-secondary pt-1">{total.toLocaleString()} leads extracted</p>
           </div>
           <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
             <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
@@ -184,7 +184,7 @@ export default function ResultsView() {
                         />
                       </td>
                       <td className="px-5 py-4">
-                        <div className="space-y-1">
+                        <div className="flex flex-col gap-1">
                           {lead.email && (
                             <div className="flex items-center gap-2">
                               <Mail className="w-3.5 h-3.5 text-accent flex-shrink-0" />
@@ -258,14 +258,14 @@ export default function ResultsView() {
             <Database className="h-9 w-9 text-accent/50" />
           </div>
           <div>
-            <p className="text-base font-bold text-text-primary mb-1.5">No leads found</p>
+            <p className="text-base font-bold text-text-primary pb-1.5">No leads found</p>
             <p className="text-sm text-text-muted max-w-[300px]">Run an extraction to start collecting leads</p>
           </div>
           <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'extraction' }))}
-            className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25 mt-2"
-          >
-            <Search className="w-4 h-4" />
-            Start New Extraction
+                      className="inline-flex items-center gap-2.5 px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/25"
+                    >
+                      <Search className="w-4 h-4" />
+                      Start New Extraction
           </button>
         </div>
       )}

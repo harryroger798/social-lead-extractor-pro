@@ -109,7 +109,7 @@ export default function Settings() {
         <div className="flex items-center justify-between py-5 min-h-[56px]">
           <div className="pr-4">
             <p className="text-sm font-medium text-text-primary">{label}</p>
-            {description && <p className="text-xs text-text-muted mt-1">{description}</p>}
+            {description && <p className="text-xs text-text-muted pt-1">{description}</p>}
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
@@ -124,8 +124,8 @@ export default function Settings() {
     if (type === 'select' && options) {
       return (
         <div className="py-5">
-          <label className="text-sm font-medium text-text-primary mb-3 block">{label}</label>
-          {description && <p className="text-xs text-text-muted mb-3">{description}</p>}
+          <label className="text-sm font-medium text-text-primary pb-3 block">{label}</label>
+          {description && <p className="text-xs text-text-muted pb-3">{description}</p>}
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
             className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
@@ -138,8 +138,8 @@ export default function Settings() {
 
     return (
       <div className="py-5">
-        <label className="text-sm font-medium text-text-primary mb-3 block">{label}</label>
-        {description && <p className="text-xs text-text-muted mb-3">{description}</p>}
+        <label className="text-sm font-medium text-text-primary pb-3 block">{label}</label>
+        {description && <p className="text-xs text-text-muted pb-3">{description}</p>}
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
           className="w-full px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
@@ -155,7 +155,7 @@ export default function Settings() {
         <div className="flex items-center justify-between px-10 py-6">
           <div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Settings</h1>
-            <p className="text-sm text-text-secondary mt-1">Configure your extraction preferences</p>
+            <p className="text-sm text-text-secondary pt-1">Configure your extraction preferences</p>
           </div>
         <button
           onClick={handleSave} disabled={!dirty || saving}
@@ -175,7 +175,7 @@ export default function Settings() {
       <div className="grid grid-cols-[220px_1fr] gap-6 min-h-full">
         {/* Tab Navigation */}
         <div className="flex-shrink-0">
-          <nav className="card p-3 space-y-1 sticky top-0">
+          <nav className="card p-3 flex flex-col gap-1 sticky top-0">
             {TABS.map(tab => {
               const Icon = tab.icon;
               return (
@@ -199,9 +199,9 @@ export default function Settings() {
           <div className="max-w-[640px]">
           {activeTab === 'general' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">General Settings</h3>
-              <p className="text-xs text-text-muted mb-6">Manage your application preferences</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">General Settings</h3>
+              <p className="text-xs text-text-muted pb-6">Manage your application preferences</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
                 {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'], 'Choose your preferred color scheme')}
                 {renderInput('language', 'Language', 'select', ['en', 'es', 'fr', 'de', 'pt'], 'Interface language')}
@@ -212,9 +212,9 @@ export default function Settings() {
 
           {activeTab === 'extraction' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">Extraction Settings</h3>
-              <p className="text-xs text-text-muted mb-6">Configure how extractions are performed</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">Extraction Settings</h3>
+              <p className="text-xs text-text-muted pb-6">Configure how extractions are performed</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('pages_per_keyword', 'Pages per Keyword', 'number', undefined, 'Number of search result pages to scrape per keyword')}
                 {renderInput('delay_between_requests', 'Delay Between Requests (seconds)', 'number', undefined, 'Wait time between requests to avoid rate limiting')}
                 {renderInput('max_concurrent_sessions', 'Max Concurrent Sessions', 'number', undefined, 'Maximum parallel extraction sessions')}
@@ -228,12 +228,12 @@ export default function Settings() {
 
           {activeTab === 'api' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">API Keys</h3>
-              <p className="text-xs text-text-muted mb-6">Manage third-party service integrations</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">API Keys</h3>
+              <p className="text-xs text-text-muted pb-6">Manage third-party service integrations</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
               </div>
             </div>
@@ -241,13 +241,13 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">Notifications</h3>
-              <p className="text-xs text-text-muted mb-6">Control how you receive alerts</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">Notifications</h3>
+              <p className="text-xs text-text-muted pb-6">Control how you receive alerts</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Notifications are sent when extractions complete, fail, or when new leads match your criteria.</p>
               </div>
             </div>
@@ -255,9 +255,9 @@ export default function Settings() {
 
           {activeTab === 'storage' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">Storage & Data</h3>
-              <p className="text-xs text-text-muted mb-6">Manage data retention and backups</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">Storage & Data</h3>
+              <p className="text-xs text-text-muted pb-6">Manage data retention and backups</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
                 {renderInput('auto_backup', 'Auto Backup', 'toggle')}
                 <div className="py-4 flex items-center gap-3">
@@ -273,13 +273,13 @@ export default function Settings() {
 
           {activeTab === 'security' && (
             <div>
-              <h3 className="text-base font-semibold text-text-primary mb-2">Security & Proxy</h3>
-              <p className="text-xs text-text-muted mb-6">Configure proxy and privacy settings</p>
-              <div className="space-y-1 divide-y divide-[#3f3f46]">
+              <h3 className="text-base font-semibold text-text-primary pb-2">Security & Proxy</h3>
+              <p className="text-xs text-text-muted pb-6">Configure proxy and privacy settings</p>
+              <div className="divide-y divide-[#3f3f46]">
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
                 {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
               </div>
-              <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during direct scraping. Google Dorking does not require proxies.</p>
               </div>
             </div>
