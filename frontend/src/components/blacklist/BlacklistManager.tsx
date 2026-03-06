@@ -113,7 +113,7 @@ export default function BlacklistManager() {
       {/* Add Entry Modal */}
       {showAdd && (
         <div className="card">
-          <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+          <div className="px-6 py-5 border-b border-[#27272a] flex items-center justify-between">
             <h3 className="text-sm font-bold text-text-primary">Add Blacklist Entry</h3>
             <button onClick={() => setShowAdd(false)} className="p-1.5 rounded-lg hover:bg-white/[0.04] text-text-muted"><X className="w-4 h-4" /></button>
           </div>
@@ -123,7 +123,7 @@ export default function BlacklistManager() {
               <label className="text-sm font-medium text-text-primary mb-2 block">Type</label>
               <select
                 value={newEntry.type} onChange={e => setNewEntry(p => ({ ...p, type: e.target.value }))}
-                className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
                 <option value="email">Email</option>
                 <option value="domain">Domain</option>
@@ -136,7 +136,7 @@ export default function BlacklistManager() {
               <input
                 type="text" value={newEntry.value} onChange={e => setNewEntry(p => ({ ...p, value: e.target.value }))}
                 placeholder={newEntry.type === 'email' ? 'spam@example.com' : newEntry.type === 'domain' ? 'example.com' : 'Enter value...'}
-                className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
             <div>
@@ -144,7 +144,7 @@ export default function BlacklistManager() {
               <input
                 type="text" value={newEntry.reason} onChange={e => setNewEntry(p => ({ ...p, reason: e.target.value }))}
                 placeholder="Why block this?"
-                className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function BlacklistManager() {
           <input
             type="text" placeholder="Search entries..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
         <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#27272a] p-1.5">
@@ -189,7 +189,7 @@ export default function BlacklistManager() {
           {filtered.map(entry => {
             const Icon = TYPE_ICONS[entry.type] || Hash;
             return (
-              <div key={entry.id} className="flex items-center justify-between p-5 card-elevated hover:border-border-bright transition-all duration-200">
+              <div key={entry.id} className="flex items-center justify-between p-5 card-elevated hover:border-[#52525b] transition-all duration-200">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4.5 h-4.5 text-text-muted" />

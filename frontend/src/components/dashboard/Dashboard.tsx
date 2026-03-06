@@ -25,7 +25,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="card p-6 hover:border-border-light transition-all duration-200 group">
+    <div className="card p-6 hover:border-[#3f3f46] transition-all duration-200 group">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">{title}</p>
@@ -140,7 +140,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2 card">
-            <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+            <div className="px-6 py-5 border-b border-[#27272a] flex items-center justify-between">
               <h3 className="text-sm font-bold text-text-primary">Leads by Platform</h3>
               <span className="text-[11px] text-text-muted px-2.5 py-1 rounded-md bg-white/[0.04] font-medium">All Time</span>
             </div>
@@ -175,7 +175,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </div>
 
           <div className="card">
-            <div className="px-6 py-5 border-b border-border">
+            <div className="px-6 py-5 border-b border-[#27272a]">
               <h3 className="text-sm font-bold text-text-primary">Emails vs Phones</h3>
             </div>
             <div className="p-6">
@@ -213,7 +213,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
         <div className="card">
-          <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+          <div className="px-6 py-5 border-b border-[#27272a] flex items-center justify-between">
             <h3 className="text-sm font-bold text-text-primary">7-Day Extraction Trend</h3>
           <div className="flex items-center gap-5 mr-2">
             <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-accent" /><span className="text-xs text-text-muted font-medium">Emails</span></div>
@@ -236,14 +236,14 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
         {/* Recent Extractions - Full Width Table */}
         <div className="card overflow-hidden min-h-[280px]">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-[#27272a]">
             <h3 className="text-sm font-bold text-text-primary">Recent Extractions</h3>
             <button onClick={() => onNavigate('history')} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View All</button>
           </div>
           {stats.recent_sessions.length > 0 ? (
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border bg-bg-tertiary/30">
+                <tr className="border-b border-[#27272a] bg-bg-tertiary/30">
                   <th className="px-6 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Session</th>
                   <th className="px-6 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Platforms</th>
                   <th className="px-6 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-widest">Status</th>
@@ -253,7 +253,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </thead>
               <tbody>
                 {stats.recent_sessions.map((s: SessionItem) => (
-                  <tr key={s.id} className="border-b border-border/50 hover:bg-bg-tertiary/20 transition-colors">
+                  <tr key={s.id} className="border-b border-[#27272a]/50 hover:bg-bg-tertiary/20 transition-colors">
                     <td className="px-6 py-3.5">
                       <span className="text-sm font-medium text-text-primary">{s.name}</span>
                     </td>

@@ -113,7 +113,7 @@ export default function Settings() {
           </div>
           <button
             onClick={() => handleChange(key, enabled ? 'false' : 'true')}
-            className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-border-light')}
+            className={cn('relative w-11 h-6 rounded-full transition-all flex-shrink-0', enabled ? 'bg-accent shadow-inner shadow-accent/30' : 'bg-bg-tertiary border border-[#3f3f46]')}
           >
             <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200', enabled && 'translate-x-5')} />
           </button>
@@ -128,7 +128,7 @@ export default function Settings() {
           {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
           <select
             value={settings[key]} onChange={e => handleChange(key, e.target.value)}
-            className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           >
             {options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -142,7 +142,7 @@ export default function Settings() {
         {description && <p className="text-xs text-text-muted mb-2">{description}</p>}
         <input
           type={type} value={settings[key] || ''} onChange={e => handleChange(key, e.target.value)}
-          className="w-full px-4 py-3 bg-bg-input border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+          className="w-full px-4 py-3 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
     );
@@ -161,7 +161,7 @@ export default function Settings() {
           onClick={handleSave} disabled={!dirty || saving}
           className={cn(
             'flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all',
-            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-bg-card border border-border text-text-muted cursor-not-allowed'
+            dirty ? 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25' : 'bg-bg-card border border-[#27272a] text-text-muted cursor-not-allowed'
           )}
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -201,7 +201,7 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">General Settings</h3>
               <p className="text-xs text-text-muted mb-4">Manage your application preferences</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
                 {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'], 'Choose your preferred color scheme')}
                 {renderInput('language', 'Language', 'select', ['en', 'es', 'fr', 'de', 'pt'], 'Interface language')}
@@ -214,7 +214,7 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">Extraction Settings</h3>
               <p className="text-xs text-text-muted mb-4">Configure how extractions are performed</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('pages_per_keyword', 'Pages per Keyword', 'number', undefined, 'Number of search result pages to scrape per keyword')}
                 {renderInput('delay_between_requests', 'Delay Between Requests (seconds)', 'number', undefined, 'Wait time between requests to avoid rate limiting')}
                 {renderInput('max_concurrent_sessions', 'Max Concurrent Sessions', 'number', undefined, 'Maximum parallel extraction sessions')}
@@ -230,7 +230,7 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">API Keys</h3>
               <p className="text-xs text-text-muted mb-4">Manage third-party service integrations</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — you have 1.18M+ credits available')}
               </div>
               <div className="mt-6 p-4 bg-white/[0.03] rounded-xl border border-[#27272a]">
@@ -243,7 +243,7 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">Notifications</h3>
               <p className="text-xs text-text-muted mb-4">Control how you receive alerts</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
               </div>
@@ -257,11 +257,11 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">Storage & Data</h3>
               <p className="text-xs text-text-muted mb-4">Manage data retention and backups</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('data_retention_days', 'Data Retention (days)', 'number', undefined, 'Leads older than this will be auto-deleted')}
                 {renderInput('auto_backup', 'Auto Backup', 'toggle')}
                 <div className="py-4 flex items-center gap-3">
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-input border border-border rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-border-light transition-all">
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-input border border-[#27272a] rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-[#3f3f46] transition-all">
                     <RefreshCw className="w-4 h-4" />
                     Clear Cache
                   </button>
@@ -275,7 +275,7 @@ export default function Settings() {
             <div>
               <h3 className="text-base font-semibold text-text-primary mb-1">Security & Proxy</h3>
               <p className="text-xs text-text-muted mb-4">Configure proxy and privacy settings</p>
-              <div className="space-y-1 divide-y divide-border">
+              <div className="space-y-1 divide-y divide-[#27272a]">
                 {renderInput('proxy_enabled', 'Enable Proxy', 'toggle')}
                 {renderInput('proxy_rotation', 'Proxy Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
               </div>
