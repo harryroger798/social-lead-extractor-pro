@@ -9,6 +9,7 @@ export default function GoogleMapsExtractor() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [result, setResult] = useState<{ total_leads: number; emails_found: number; phones_found: number } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [showGuide, setShowGuide] = useState(false);
 
   const handleSearch = async () => {
@@ -16,6 +17,7 @@ export default function GoogleMapsExtractor() {
     setLoading(true);
     setStatus('running');
     setResult(null);
+    setErrorMessage('');
     try {
       const res = await searchGoogleMaps({ query, max_results: maxResults, delay });
       // Poll for completion
@@ -26,6 +28,7 @@ export default function GoogleMapsExtractor() {
             clearInterval(poll);
             setStatus(s.status);
             setResult({ total_leads: s.total_leads, emails_found: s.emails_found, phones_found: s.phones_found });
+            if (s.error_message) setErrorMessage(s.error_message);
             setLoading(false);
           }
         } catch {
@@ -197,8 +200,20 @@ export default function GoogleMapsExtractor() {
         )}
 
         {status === 'failed' && !loading && (
-          <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-4">
-            <p className="text-sm text-red-400">Extraction failed. Make sure ChromeDriver is installed and try again.</p>
+          <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-4 space-y-2">
+            <p className="text-sm font-medium text-red-400 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Extraction failed
+            </p>
+            {errorMessage ? (
+              <p className="text-xs text-red-300/80">{errorMessage}</p>
+            ) : (
+              <p className="text-xs text-red-300/80">
+                The browser engine could not complete the extraction. Try restarting the app.
+                If the issue persists, ensure Patchright is installed by running:
+                <code className="block mt-1 bg-red-500/10 rounded px-2 py-1 font-mono text-[11px]">python -m patchright install chromium</code>
+              </p>
+            )}
           </div>
         )}
 

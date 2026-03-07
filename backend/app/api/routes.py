@@ -366,10 +366,16 @@ async def get_extraction_status(session_id: str) -> dict:
         row = await cursor.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Session not found")
+        error_message = ""
+        try:
+            error_message = row["error_message"] if "error_message" in row.keys() else ""
+        except Exception:
+            pass
         return {
             "id": row[0], "name": row[1], "status": row[2],
             "total_leads": row[5], "emails_found": row[6],
             "phones_found": row[7], "progress": row[11],
+            "error_message": error_message,
         }
 
 
@@ -922,12 +928,23 @@ async def _run_gmaps_extraction(session_id: str, req: GoogleMapsSearchRequest) -
             )
             await db.commit()
 
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error("Google Maps extraction failed: %s", e)
+        error_msg = str(e)
+        if "patchright" in error_msg.lower() or "browser" in error_msg.lower() or "chromium" in error_msg.lower():
+            error_msg = f"Browser engine error: {error_msg}. Try restarting the app or run 'python -m patchright install chromium' in the backend folder."
         async with get_db() as db:
-            await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
-            )
+            try:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=?, error_message=? WHERE id=?",
+                    (datetime.now().isoformat(), error_msg, session_id),
+                )
+            except Exception:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
             await db.commit()
 
 
@@ -1417,12 +1434,20 @@ async def _run_telegram_extraction(session_id: str, req: TelegramScrapeRequest) 
             )
             await db.commit()
 
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error("Telegram extraction failed: %s", e)
         async with get_db() as db:
-            await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
-            )
+            try:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=?, error_message=? WHERE id=?",
+                    (datetime.now().isoformat(), str(e), session_id),
+                )
+            except Exception:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
             await db.commit()
 
 
@@ -1523,12 +1548,20 @@ async def _run_whatsapp_extraction(session_id: str, req: WhatsAppScrapeRequest) 
             )
             await db.commit()
 
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error("WhatsApp extraction failed: %s", e)
         async with get_db() as db:
-            await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
-            )
+            try:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=?, error_message=? WHERE id=?",
+                    (datetime.now().isoformat(), str(e), session_id),
+                )
+            except Exception:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
             await db.commit()
 
 
