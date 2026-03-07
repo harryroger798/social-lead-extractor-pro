@@ -28,8 +28,23 @@ export default function ResellerPanel() {
       setError(null);
       const data = await fetchLicenses(statusFilter !== 'all' ? statusFilter : undefined);
       setLicenses(data);
+      // Cache licenses locally
+      try { localStorage.setItem('snapleads_licenses', JSON.stringify(data)); } catch { /* ignore */ }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load licenses');
+      // Backend unavailable — try loading from cache
+      try {
+        const cached = localStorage.getItem('snapleads_licenses');
+        if (cached) {
+          const cachedData = JSON.parse(cached) as LicenseItem[];
+          const filtered = statusFilter !== 'all' ? cachedData.filter(l => l.status === statusFilter) : cachedData;
+          setLicenses(filtered);
+          setError(null);
+        } else {
+          setError('Backend is starting up. Please wait a moment and click Retry.');
+        }
+      } catch {
+        setError('Backend is starting up. Please wait a moment and click Retry.');
+      }
     } finally {
       setLoading(false);
     }

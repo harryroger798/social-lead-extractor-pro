@@ -92,6 +92,33 @@ function findPython() {
       // Not found, try next
     }
   }
+
+  // On Windows, check common install paths directly
+  if (process.platform === 'win32') {
+    const home = process.env.LOCALAPPDATA || process.env.USERPROFILE || '';
+    const commonPaths = [
+      path.join(home, 'Programs', 'Python', 'Python312', 'python.exe'),
+      path.join(home, 'Programs', 'Python', 'Python311', 'python.exe'),
+      path.join(home, 'Programs', 'Python', 'Python310', 'python.exe'),
+      'C:\\Python312\\python.exe',
+      'C:\\Python311\\python.exe',
+      'C:\\Python310\\python.exe',
+      path.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Python312', 'python.exe'),
+      path.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Python311', 'python.exe'),
+    ];
+    for (const p of commonPaths) {
+      try {
+        if (fs.existsSync(p)) {
+          const version = execSync(`"${p}" --version`, { encoding: 'utf-8', timeout: 5000 }).trim();
+          console.log(`[Backend] Found Python at ${p}: ${version}`);
+          return `"${p}"`;
+        }
+      } catch {
+        // Not working, try next
+      }
+    }
+  }
+
   return null;
 }
 
@@ -180,18 +207,35 @@ function installBackendDeps(pythonCmd, backendDir) {
 }
 
 function getBundledBackendPath() {
-  const backendDir = path.join(__dirname, '..', 'backend', 'dist');
   const binaryName = process.platform === 'win32' ? 'snapleads-backend.exe' : 'snapleads-backend';
-  const binaryPath = path.join(backendDir, binaryName);
-  if (fs.existsSync(binaryPath)) {
-    return binaryPath;
+
+  // In packaged mode, asarUnpack extracts files to app.asar.unpacked/
+  if (app.isPackaged) {
+    const unpackedPath = path.join(process.resourcesPath, 'app.asar.unpacked', 'backend', 'dist', binaryName);
+    console.log(`[Backend] Checking unpacked binary: ${unpackedPath}`);
+    if (fs.existsSync(unpackedPath)) {
+      return unpackedPath;
+    }
+    // Also check resources/backend/dist (some electron-builder configs)
+    const resourcePath = path.join(process.resourcesPath, 'backend', 'dist', binaryName);
+    console.log(`[Backend] Checking resource binary: ${resourcePath}`);
+    if (fs.existsSync(resourcePath)) {
+      return resourcePath;
+    }
+  }
+
+  // Development or fallback: check relative path
+  const devPath = path.join(__dirname, '..', 'backend', 'dist', binaryName);
+  if (fs.existsSync(devPath)) {
+    return devPath;
   }
   return null;
 }
 
 function startBackend() {
-  const backendDir = path.join(__dirname, '..', 'backend');
   const isPackaged = app.isPackaged;
+  const userDataDir = app.getPath('userData');
+  const dbPath = path.join(userDataDir, 'leads.db');
 
   try {
     if (isPackaged) {
@@ -200,13 +244,21 @@ function startBackend() {
 
       if (bundledBinary) {
         console.log(`[Backend] Using bundled binary: ${bundledBinary}`);
+        // Make sure the binary is executable on Unix
+        if (process.platform !== 'win32') {
+          try { fs.chmodSync(bundledBinary, 0o755); } catch { /* ignore */ }
+        }
         backendProcess = spawn(bundledBinary, [], {
-          cwd: backendDir,
-          env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+          cwd: userDataDir,
+          env: { ...process.env, DATABASE_PATH: dbPath },
         });
       } else {
         // Fallback: find system Python
+        console.log('[Backend] No bundled binary found, trying system Python...');
         const pythonCmd = findPython();
+        const backendDir = path.join(process.resourcesPath, 'app.asar.unpacked', 'backend');
+        const backendDirFallback = path.join(__dirname, '..', 'backend');
+        const actualBackendDir = fs.existsSync(backendDir) ? backendDir : backendDirFallback;
 
         if (!pythonCmd) {
           console.error('[Backend] Python not found on this system');
@@ -222,18 +274,20 @@ function startBackend() {
         }
 
         // Auto-install dependencies if needed
-        const depsOk = installBackendDeps(pythonCmd, backendDir);
+        const depsOk = installBackendDeps(pythonCmd, actualBackendDir);
         if (!depsOk) {
           console.error('[Backend] Could not install dependencies. Extraction features will be unavailable.');
         }
 
         backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
-          cwd: backendDir,
-          env: { ...process.env, DATABASE_PATH: path.join(app.getPath('userData'), 'leads.db') },
+          cwd: actualBackendDir,
+          env: { ...process.env, DATABASE_PATH: dbPath },
+          shell: process.platform === 'win32',
         });
       }
     } else {
       // In development, use poetry
+      const backendDir = path.join(__dirname, '..', 'backend');
       backendProcess = spawn('poetry', ['run', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'], {
         cwd: backendDir,
         env: { ...process.env },
@@ -246,6 +300,10 @@ function startBackend() {
       if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
         backendReady = true;
         console.log('[Backend] Server is ready');
+        // Notify renderer that backend is ready
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('backend-ready');
+        }
       }
     });
 
@@ -255,14 +313,19 @@ function startBackend() {
       if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
         backendReady = true;
         console.log('[Backend] Server is ready');
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('backend-ready');
+        }
       }
     });
 
     backendProcess.on('error', (err) => {
       console.error(`[Backend] Failed to start: ${err.message}`);
       backendProcess = null;
-      // Show Python required dialog
-      setTimeout(showPythonRequiredDialog, 1000);
+      // Only show Python dialog if no bundled binary was found
+      if (!getBundledBackendPath()) {
+        setTimeout(showPythonRequiredDialog, 1000);
+      }
     });
 
     backendProcess.on('close', (code) => {

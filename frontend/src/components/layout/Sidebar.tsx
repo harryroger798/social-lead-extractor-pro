@@ -147,7 +147,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         {!collapsed && license && (
           <div className="px-3.5 py-3 rounded-xl bg-white/[0.04] border border-[#3f3f46]">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-text-muted font-medium">Version 1.0.0</p>
+              <p className="text-[11px] text-text-muted font-medium">Version 1.0.3</p>
               <button
                 onClick={deactivate}
                 className="text-text-muted hover:text-error transition-colors"
