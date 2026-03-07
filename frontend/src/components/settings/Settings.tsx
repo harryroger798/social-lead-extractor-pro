@@ -70,17 +70,8 @@ export default function Settings() {
       setError(null);
       const data = await fetchSettings();
       setSettings(prev => ({ ...prev, ...data }));
-      // Save to localStorage as cache
-      try { localStorage.setItem('snapleads_settings', JSON.stringify(data)); } catch { /* ignore */ }
-    } catch {
-      // Backend unavailable — load from localStorage cache or use defaults
-      try {
-        const cached = localStorage.getItem('snapleads_settings');
-        if (cached) {
-          setSettings(prev => ({ ...prev, ...JSON.parse(cached) }));
-        }
-      } catch { /* use defaults */ }
-      // Don't show error — just use defaults/cached settings silently
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load settings');
     } finally {
       setLoading(false);
     }
@@ -182,17 +173,8 @@ export default function Settings() {
       await Promise.all(promises);
       setDirty(false);
       toast('success', 'Settings saved successfully');
-      // Also cache to localStorage
-      try { localStorage.setItem('snapleads_settings', JSON.stringify(settings)); } catch { /* ignore */ }
     } catch {
-      // Backend unavailable — save to localStorage only
-      try {
-        localStorage.setItem('snapleads_settings', JSON.stringify(settings));
-        setDirty(false);
-        toast('success', 'Settings saved locally');
-      } catch {
-        toast('error', 'Failed to save settings');
-      }
+      toast('error', 'Failed to save settings');
     } finally {
       setSaving(false);
     }
