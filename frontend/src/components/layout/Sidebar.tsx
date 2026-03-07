@@ -82,9 +82,9 @@ const navGroups: NavGroup[] = [
   },
   {
     label: 'Business',
-    minRoles: ['admin', 'master_reseller', 'reseller'],
+    minRoles: ['admin', 'reseller'],
     items: [
-      { id: 'reseller' as Section, label: 'Reseller Panel', icon: Crown, minRoles: ['admin', 'master_reseller', 'reseller'] },
+      { id: 'reseller' as Section, label: 'Reseller Panel', icon: Crown, minRoles: ['admin', 'reseller'] },
     ],
   },
 ];
@@ -113,7 +113,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
           <div className="overflow-hidden">
             <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">SnapLeads</h1>
             <p className={cn('text-[11px] font-semibold tracking-wide', isPro ? 'text-amber-400' : 'text-accent')}>
-              {role === 'admin' ? 'ADMIN' : role === 'master_reseller' ? 'MASTER RESELLER' : role === 'reseller' ? 'RESELLER' : isPro ? 'PRO EDITION' : 'STARTER EDITION'}
+              {role === 'admin' ? 'ADMIN' : role === 'reseller' ? 'RESELLER' : isPro ? 'PRO EDITION' : 'STARTER EDITION'}
             </p>
           </div>
         )}
@@ -184,7 +184,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                 <Shield className="w-3.5 h-3.5 text-accent" />
               )}
               <p className={cn('text-[11px] font-semibold', isPro ? 'text-amber-400' : 'text-accent')}>
-                {role === 'admin' ? 'Admin' : role === 'master_reseller' ? 'Master Reseller' : role === 'reseller' ? 'Reseller' : license.tier === 'pro' ? 'Pro' : 'Starter'} — {license.cycle}
+                {role === 'admin' ? 'Admin' : role === 'reseller' ? 'Reseller' : license.tier === 'pro' ? 'Pro' : 'Starter'} — {license.cycle}
               </p>
             </div>
           </div>

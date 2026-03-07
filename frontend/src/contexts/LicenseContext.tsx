@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 export type LicenseTier = 'starter' | 'pro';
 export type LicenseCycle = 'monthly' | 'yearly' | 'lifetime';
-export type UserRole = 'admin' | 'master_reseller' | 'reseller' | 'user';
+export type UserRole = 'admin' | 'reseller' | 'user';
 
 export interface LicenseData {
   key: string;
@@ -23,7 +23,6 @@ export interface LicenseContextType {
   isLoading: boolean;
   role: UserRole;
   isAdmin: boolean;
-  isMasterReseller: boolean;
   isReseller: boolean;
   activate: (key: string) => Promise<{ success: boolean; error?: string }>;
   deactivate: () => Promise<void>;
@@ -134,8 +133,7 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
     const deriveRole = (k: string): UserRole => {
       const upper = k.toUpperCase();
       if (upper.includes('-ADMIN-')) return 'admin';
-      if (upper.includes('-MR-') || upper.includes('-MASTER-')) return 'master_reseller';
-      if (upper.includes('-RES-') || upper.includes('-RESELLER-')) return 'reseller';
+      if (upper.includes('-MR-') || upper.includes('-MASTER-') || upper.includes('-RES-') || upper.includes('-RESELLER-')) return 'reseller';
       return 'user';
     };
     const mockLicense: LicenseData = {
@@ -173,7 +171,6 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
   const isPro = license !== null && license.tier === 'pro' && !isLicenseExpired(license);
   const role: UserRole = license?.role || 'user';
   const isAdmin = role === 'admin';
-  const isMasterReseller = role === 'master_reseller';
   const isReseller = role === 'reseller';
 
   return (
@@ -185,7 +182,6 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
       isLoading,
       role,
       isAdmin,
-      isMasterReseller,
       isReseller,
       activate,
       deactivate,
