@@ -1,0 +1,73 @@
+{
+  "name": "snapleads",
+  "version": "1.0.3",
+  "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:electron": "NODE_ENV=development electron .",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.snapleads.app",
+    "productName": "SnapLeads",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "!backend/.venv/**",
+      "!backend/venv/**",
+      "!backend/__pycache__/**",
+      "!backend/build/**",
+      "!backend/*.spec",
+      "!backend/run_server.py",
+          "!**/node_modules/**"
+        ],
+        "asarUnpack": [
+          "backend/dist/**"
+        ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SnapLeads"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "electron/assets/icon.ico"
+    },
+        "mac": {
+          "target": ["zip"],
+          "icon": "electron/assets/icon.png",
+          "category": "public.app-category.business"
+        },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "electron/assets/icon.png",
+      "category": "Office"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "concurrently": "^9.0.0"
+  },
+  "author": { "name": "SnapLeads", "email": "support@getsnapleads.store" },
+  "license": "MIT"
+}
