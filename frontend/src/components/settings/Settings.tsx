@@ -32,6 +32,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   use_direct_scraping: 'false',
   browser_headless: 'true',
   firecrawl_api_key: '',
+  serper_api_key: '',
   proxy_enabled: 'false',
   proxy_rotation: 'round-robin',
   max_concurrent_sessions: '3',
@@ -549,6 +550,7 @@ export default function Settings() {
               <p className="text-xs text-text-muted pb-6">Manage third-party service integrations</p>
               <div className="divide-y divide-[#3f3f46]">
                 {renderInput('firecrawl_api_key', 'Firecrawl API Key', 'password', undefined, 'Used for website enrichment — scrapes business websites to find additional contact info')}
+                {renderInput('serper_api_key', 'Serper API Key (Optional Fallback)', 'password', undefined, 'Google search API fallback — only used if Patchright browser engine is unavailable. Free tier: 2,500 searches/month at serper.dev')}
               </div>
               <div className="flex items-center gap-3 pt-4">
                 <button onClick={handleCheckCredits} disabled={checkingCredits}
@@ -562,6 +564,9 @@ export default function Settings() {
               </div>
               <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46] mt-4">
                 <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
+              </div>
+              <div className="pt-3 p-4 bg-green-500/5 rounded-xl border border-green-500/20 mt-3">
+                <p className="text-xs text-green-400 font-medium">v2.0 Engine: Patchright browser is the primary extraction method (FREE, no API key needed). Serper is only used as a fallback if Patchright encounters issues.</p>
               </div>
             </div>
           )}
