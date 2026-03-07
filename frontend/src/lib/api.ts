@@ -201,6 +201,14 @@ export function checkFirecrawlCredits() {
   });
 }
 
+// ─── Clean Results (Pro-only) ───────────────────────────────────────────────
+
+export function cleanAllResults() {
+  return request<{ status: string; leads_deleted: number }>('/api/results/clean', {
+    method: 'POST',
+  });
+}
+
 // ─── Export ─────────────────────────────────────────────────────────────────
 
 export function exportResults(params: {

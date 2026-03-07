@@ -3,10 +3,12 @@ import {
   Search, Trash2, Download, ChevronLeft, ChevronRight,
   Loader2, AlertCircle, Database, Mail, Phone, ExternalLink,
   CheckCircle, XCircle, Filter, Info, ChevronDown, ArrowUp, ArrowDown, ArrowUpDown,
+  Sparkles,
 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
-import { fetchResults, deleteLead, exportResults } from '@/lib/api';
+import { fetchResults, deleteLead, exportResults, cleanAllResults } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
+import { useLicense } from '@/contexts/LicenseContext';
 import type { LeadItem } from '@/lib/api';
 
 const PLATFORMS = ['all','linkedin','facebook','instagram','twitter','tiktok','youtube','pinterest','tumblr','reddit','google_maps','telegram','whatsapp'];
@@ -27,7 +29,10 @@ export default function ResultsView() {
   const [showGuide, setShowGuide] = useState(false);
   const [sortBy, setSortBy] = useState<SortColumn>('extracted_at');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [showCleanConfirm, setShowCleanConfirm] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
   const { toast } = useToast();
+  const { isPro } = useLicense();
 
   const loadResults = useCallback(async () => {
     try {
@@ -72,6 +77,24 @@ export default function ResultsView() {
       setSelected(new Set(selected));
       toast('success', 'Lead deleted');
     } catch { toast('error', 'Failed to delete lead'); }
+  };
+
+  const handleCleanResults = async () => {
+    try {
+      setCleaning(true);
+      const result = await cleanAllResults();
+      setLeads([]);
+      setTotal(0);
+      setTotalPages(1);
+      setPage(1);
+      setSelected(new Set());
+      setShowCleanConfirm(false);
+      toast('success', `Cleaned ${result.leads_deleted.toLocaleString()} leads`);
+    } catch {
+      toast('error', 'Failed to clean results');
+    } finally {
+      setCleaning(false);
+    }
   };
 
   const handleExport = async (format: string) => {
@@ -130,16 +153,50 @@ export default function ResultsView() {
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Results</h1>
             <p className="text-sm text-text-secondary pt-1">{total.toLocaleString()} leads extracted</p>
           </div>
-          <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
-            <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
-            <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
-            {['csv', 'xlsx', 'json'].map(fmt => (
-              <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-800/40 border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
-              >
-                {fmt.toUpperCase()}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            {isPro && total > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowCleanConfirm(!showCleanConfirm)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-error/10 border border-error/20 text-error hover:bg-error/20 hover:border-error/30 transition-all"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Clean Results
+                </button>
+                {showCleanConfirm && (
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-bg-card border border-[#3f3f46] rounded-xl shadow-2xl p-4 z-50">
+                    <p className="text-sm font-semibold text-text-primary mb-1">Clean all results?</p>
+                    <p className="text-xs text-text-muted mb-4">This will permanently delete all {total.toLocaleString()} leads and extraction history. This action cannot be undone.</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleCleanResults}
+                        disabled={cleaning}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-error hover:bg-red-600 text-white transition-all disabled:opacity-50"
+                      >
+                        {cleaning ? 'Cleaning...' : 'Yes, Clean All'}
+                      </button>
+                      <button
+                        onClick={() => setShowCleanConfirm(false)}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 border border-[#3f3f46] text-text-secondary hover:text-text-primary transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5">
+              <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
+              <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
+              {['csv', 'xlsx', 'json'].map(fmt => (
+                <button key={fmt} onClick={() => handleExport(fmt)}
+                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-800/40 border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
+                >
+                  {fmt.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
