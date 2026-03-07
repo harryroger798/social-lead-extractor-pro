@@ -1,12 +1,18 @@
-"""Google Maps scraper using Patchright anti-detection browser.
+"""Google Maps scraper — extracts business listings from Google Maps.
 
-Replaces Selenium with Patchright for better anti-detection and reliability.
+Supports two browser engines with automatic fallback:
+  1. **Selenium + ChromeDriver** (PRIMARY): Reliable, well-tested, works in .exe builds.
+     Uses headless Chrome with ChromeDriver bundled or from system PATH.
+  2. **Patchright** (OPTIONAL FALLBACK): Anti-detection browser, used only if
+     Selenium is unavailable AND Patchright is installed.
+
 No API key or user account needed — scrapes Google Maps directly.
 """
 
 import asyncio
 import re
 import logging
+import time
 from typing import Optional
 
 from app.services.extractor import extract_emails, extract_phones
@@ -33,21 +39,210 @@ def _clean_phone(raw: str) -> str:
     return cleaned if len(re.sub(r'[^\d]', '', cleaned)) >= 7 else ''
 
 
-async def scrape_google_maps(
+def _get_chromedriver_path() -> str:
+    """Find ChromeDriver — check bundled location first, then system PATH."""
+    import os
+    import shutil
+
+    # Check bundled locations (for .exe builds)
+    bundled_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "..", "chromedriver"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "chromedriver.exe"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "chromedriver"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "chromedriver.exe"),
+    ]
+    for path in bundled_paths:
+        if os.path.exists(path):
+            return os.path.abspath(path)
+
+    # Check system PATH
+    system_driver = shutil.which("chromedriver")
+    if system_driver:
+        return system_driver
+
+    return ""
+
+
+# ─── Method 1: Selenium + ChromeDriver (PRIMARY) ────────────────────────────
+
+async def _scrape_gmaps_selenium(
+    query: str,
+    max_results: int = 50,
+    delay: float = 3.0,
+) -> list[dict]:
+    """Scrape Google Maps using Selenium + ChromeDriver (headless).
+
+    This is the PRIMARY method — reliable, works in .exe builds.
+    """
+    try:
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+    except ImportError:
+        logger.warning("Selenium not installed, cannot use Selenium Google Maps scraper")
+        return []
+
+    results: list[dict] = []
+    driver = None
+
+    try:
+        options = Options()
+        options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument(
+            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        )
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
+        # Try to find ChromeDriver
+        chromedriver_path = _get_chromedriver_path()
+        if chromedriver_path:
+            service = Service(executable_path=chromedriver_path)
+            driver = webdriver.Chrome(service=service, options=options)
+        else:
+            # Let Selenium find it automatically
+            driver = webdriver.Chrome(options=options)
+
+        driver.set_page_load_timeout(30)
+
+        # Navigate to Google Maps search
+        maps_url = f"https://www.google.com/maps/search/{query.replace(' ', '+')}"
+        driver.get(maps_url)
+        time.sleep(delay + 2)
+
+        # Scroll through results to load more
+        max_scrolls = max(3, max_results // 8)
+        for _ in range(max_scrolls):
+            try:
+                driver.execute_script("""
+                    const feed = document.querySelector('div[role="feed"]');
+                    if (feed) feed.scrollTop = feed.scrollHeight;
+                """)
+            except Exception:
+                pass
+            time.sleep(delay)
+
+            # Check count
+            try:
+                items = driver.find_elements(By.CSS_SELECTOR, SELECTORS["result_item"])
+                if len(items) >= max_results:
+                    break
+            except Exception:
+                break
+
+        # Get all listing elements
+        try:
+            listings = driver.find_elements(By.CSS_SELECTOR, SELECTORS["result_item"])
+        except Exception:
+            listings = []
+
+        for i in range(min(len(listings), max_results)):
+            try:
+                # Re-fetch in case DOM changed
+                listings = driver.find_elements(By.CSS_SELECTOR, SELECTORS["result_item"])
+                if i >= len(listings):
+                    break
+
+                listings[i].click()
+                time.sleep(delay)
+
+                # Extract business details
+                business = {
+                    "name": "", "phone": "", "website": "", "address": "",
+                    "rating": "", "review_count": "", "category": "",
+                    "source": "google_maps",
+                }
+
+                try:
+                    name_el = driver.find_element(By.CSS_SELECTOR, "h1.DUwDvf")
+                    business["name"] = name_el.text.strip()
+                except Exception:
+                    pass
+
+                try:
+                    phone_el = driver.find_element(By.CSS_SELECTOR, 'button[data-item-id^="phone"]')
+                    raw = phone_el.get_attribute("aria-label") or phone_el.text or ""
+                    business["phone"] = re.sub(r'Phone:|phone:', '', raw).strip()
+                except Exception:
+                    pass
+
+                try:
+                    web_el = driver.find_element(By.CSS_SELECTOR, 'a[data-item-id="authority"]')
+                    business["website"] = web_el.get_attribute("href") or ""
+                except Exception:
+                    pass
+
+                try:
+                    addr_el = driver.find_element(By.CSS_SELECTOR, 'button[data-item-id="address"]')
+                    raw = addr_el.get_attribute("aria-label") or addr_el.text or ""
+                    business["address"] = re.sub(r'Address:|address:', '', raw).strip()
+                except Exception:
+                    pass
+
+                try:
+                    rating_el = driver.find_element(By.CSS_SELECTOR, "span.MW4etd")
+                    business["rating"] = rating_el.text.strip()
+                except Exception:
+                    pass
+
+                try:
+                    review_el = driver.find_element(By.CSS_SELECTOR, "span.UY7F9")
+                    business["review_count"] = re.sub(r'[^\d]', '', review_el.text)
+                except Exception:
+                    pass
+
+                try:
+                    cat_el = driver.find_element(By.CSS_SELECTOR, "button.DkEaL")
+                    business["category"] = cat_el.text.strip()
+                except Exception:
+                    pass
+
+                if business.get("name"):
+                    business["phone"] = _clean_phone(business.get("phone", ""))
+                    business["query"] = query
+                    results.append(business)
+
+            except Exception as e:
+                logger.warning("Selenium: Error processing listing %d: %s", i, e)
+                continue
+
+    except Exception as e:
+        logger.error("Selenium Google Maps scrape error: %s", e)
+    finally:
+        if driver:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+
+    return results
+
+
+# ─── Method 2: Patchright (OPTIONAL FALLBACK) ───────────────────────────────
+
+async def _scrape_gmaps_patchright(
     query: str,
     max_results: int = 50,
     delay: float = 3.0,
     use_proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """Scrape Google Maps for business listings using Patchright.
+    """Scrape Google Maps using Patchright (anti-detection browser).
 
-    No API key or user account needed. Uses Patchright anti-detection browser
-    to scrape Google Maps directly.
-
-    Returns:
-        List of dicts with: name, phone, website, address, rating, category, etc.
+    OPTIONAL fallback — only used if Selenium is not available.
     """
-    from app.services.patchright_engine import new_page, safe_goto, random_delay
+    try:
+        from app.services.patchright_engine import new_page, safe_goto, random_delay
+    except ImportError:
+        logger.info("Patchright not available for Google Maps fallback")
+        return []
 
     results: list[dict] = []
     page = None
@@ -68,10 +263,9 @@ async def scrape_google_maps(
         maps_url = f"https://www.google.com/maps/search/{query.replace(' ', '+')}"
         success = await safe_goto(page, maps_url, timeout=30000)
         if not success:
-            logger.error("Failed to load Google Maps")
+            logger.error("Patchright: Failed to load Google Maps")
             return results
 
-        # Wait for results to load
         await random_delay(delay, delay + 2)
 
         # Scroll through results to load more
@@ -84,77 +278,54 @@ async def scrape_google_maps(
                 }""")
             except Exception:
                 pass
-
             await random_delay(delay * 0.8, delay * 1.2)
-
-            # Check count
             count = await page.evaluate(f"""() => {{
                 return document.querySelectorAll('{SELECTORS["result_item"]}').length;
             }}""")
             if count >= max_results:
                 break
 
-        # Get all listing elements and click each to extract details
         listing_count = await page.evaluate(f"""() => {{
             return document.querySelectorAll('{SELECTORS["result_item"]}').length;
         }}""")
 
         for i in range(min(listing_count, max_results)):
             try:
-                # Click the listing
                 clicked = await page.evaluate(f"""(idx) => {{
                     const items = document.querySelectorAll('{SELECTORS["result_item"]}');
                     if (items[idx]) {{ items[idx].click(); return true; }}
                     return false;
                 }}""", i)
-
                 if not clicked:
                     continue
-
                 await random_delay(delay * 0.8, delay * 1.2)
 
-                # Extract business details from the detail panel
                 business = await page.evaluate("""() => {
                     const biz = {
                         name: '', phone: '', website: '', address: '',
                         rating: '', review_count: '', category: '',
                         source: 'google_maps',
                     };
-
-                    // Name
                     const nameEl = document.querySelector('h1.DUwDvf');
                     if (nameEl) biz.name = nameEl.innerText.trim();
-
-                    // Phone
                     const phoneEl = document.querySelector('button[data-item-id^="phone"]');
                     if (phoneEl) {
                         const raw = phoneEl.getAttribute('aria-label') || phoneEl.innerText || '';
                         biz.phone = raw.replace(/Phone:|phone:/g, '').trim();
                     }
-
-                    // Website
                     const webEl = document.querySelector('a[data-item-id="authority"]');
                     if (webEl) biz.website = webEl.href || '';
-
-                    // Address
                     const addrEl = document.querySelector('button[data-item-id="address"]');
                     if (addrEl) {
                         const raw = addrEl.getAttribute('aria-label') || addrEl.innerText || '';
                         biz.address = raw.replace(/Address:|address:/g, '').trim();
                     }
-
-                    // Rating
                     const ratingEl = document.querySelector('span.MW4etd');
                     if (ratingEl) biz.rating = ratingEl.innerText.trim();
-
-                    // Review count
                     const reviewEl = document.querySelector('span.UY7F9');
                     if (reviewEl) biz.review_count = reviewEl.innerText.replace(/[^\d]/g, '');
-
-                    // Category
                     const catEl = document.querySelector('button.DkEaL');
                     if (catEl) biz.category = catEl.innerText.trim();
-
                     return biz;
                 }""")
 
@@ -164,11 +335,11 @@ async def scrape_google_maps(
                     results.append(business)
 
             except Exception as e:
-                logger.warning("Error processing listing %d: %s", i, e)
+                logger.warning("Patchright: Error processing listing %d: %s", i, e)
                 continue
 
     except Exception as e:
-        logger.error("Google Maps scrape error: %s", e)
+        logger.error("Patchright Google Maps scrape error: %s", e)
     finally:
         if page:
             try:
@@ -177,6 +348,44 @@ async def scrape_google_maps(
                 pass
 
     return results
+
+
+# ─── Public API ──────────────────────────────────────────────────────────────
+
+async def scrape_google_maps(
+    query: str,
+    max_results: int = 50,
+    delay: float = 3.0,
+    use_proxy: Optional[dict] = None,
+) -> list[dict]:
+    """Scrape Google Maps for business listings.
+
+    Automatic fallback chain:
+      1. Selenium + ChromeDriver (primary, reliable, works in .exe)
+      2. Patchright (optional fallback if Selenium unavailable)
+      3. Returns empty list with error log if both fail
+
+    No API key or user account needed.
+
+    Returns:
+        List of dicts with: name, phone, website, address, rating, category, etc.
+    """
+    # Method 1: Selenium (PRIMARY)
+    logger.info("Google Maps: Trying Selenium + ChromeDriver...")
+    results = await _scrape_gmaps_selenium(query, max_results, delay)
+    if results:
+        logger.info("Google Maps: Selenium returned %d results", len(results))
+        return results
+
+    # Method 2: Patchright (FALLBACK)
+    logger.info("Google Maps: Selenium returned no results, trying Patchright fallback...")
+    results = await _scrape_gmaps_patchright(query, max_results, delay, use_proxy)
+    if results:
+        logger.info("Google Maps: Patchright returned %d results", len(results))
+        return results
+
+    logger.warning("Google Maps: Both Selenium and Patchright returned no results for query: %s", query)
+    return []
 
 
 async def enrich_gmaps_with_emails(
