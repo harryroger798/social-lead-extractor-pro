@@ -1,4 +1,4 @@
-"""WhatsApp group member scraper using Selenium headless.
+"""WhatsApp group member scraper using Patchright anti-detection browser.
 
 CRITICAL BAN/SAFETY NOTES FOR USERS:
 ======================================
@@ -39,9 +39,9 @@ TERMS OF SERVICE WARNING:
 - Use at your own risk
 - We recommend using this for your OWN groups only
 """
+
 import asyncio
 import logging
-import time
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -53,17 +53,15 @@ async def scrape_whatsapp_group(
     delay: float = 8.0,
     session_data_dir: str = "/tmp/whatsapp_session",
 ) -> dict:
-    """
-    Scrape WhatsApp group members using Selenium headless.
+    """Scrape WhatsApp group members using Patchright.
+
     User must have already authenticated via QR code.
+    Uses Patchright (anti-detection Playwright) instead of Selenium
+    for better reliability and anti-detection.
 
     Returns dict with members list and metadata.
     """
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
+    from app.services.patchright_engine import random_delay
 
     result = {
         "group_name": group_name,
@@ -73,161 +71,150 @@ async def scrape_whatsapp_group(
         "error": None,
     }
 
-    options = Options()
-    options.add_argument('--headless=new')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36')
-    options.add_argument(f'--user-data-dir={session_data_dir}')
-
-    driver = None
     try:
-        driver = await asyncio.get_event_loop().run_in_executor(
-            None, lambda: webdriver.Chrome(options=options)
-        )
+        from patchright.async_api import async_playwright
 
+        pw = await async_playwright().start()
+        browser = await pw.chromium.launch_persistent_context(
+            user_data_dir=session_data_dir,
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--window-size=1920,1080",
+            ],
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1920, "height": 1080},
+        )
+        page = await browser.new_page()
+
+    except ImportError:
+        result["error"] = "Patchright not installed. Run: pip install patchright && python -m patchright install chromium"
+        return result
+    except Exception as e:
+        result["error"] = f"Browser launch failed: {e}"
+        return result
+
+    try:
         # Navigate to WhatsApp Web
-        await asyncio.get_event_loop().run_in_executor(
-            None, lambda: driver.get("https://web.whatsapp.com")
-        )
-
-        # Wait for page load
+        await page.goto("https://web.whatsapp.com", timeout=30000, wait_until="domcontentloaded")
         await asyncio.sleep(10)
 
         # Check if QR code is showing (not authenticated)
-        def _check_qr():
-            try:
-                qr_elements = driver.find_elements(By.CSS_SELECTOR, 'canvas[aria-label="Scan this QR code to link a device!"]')
-                if qr_elements:
-                    return True
-                # Also check for the QR code container
-                qr_containers = driver.find_elements(By.CSS_SELECTOR, '[data-testid="qrcode"]')
-                return len(qr_containers) > 0
-            except Exception:
-                return False
+        has_qr = await page.evaluate("""() => {
+            const qr = document.querySelector('canvas[aria-label*="Scan"]') ||
+                       document.querySelector('[data-testid="qrcode"]');
+            return !!qr;
+        }""")
 
-        has_qr = await asyncio.get_event_loop().run_in_executor(None, _check_qr)
         if has_qr:
             result["requires_qr"] = True
             result["error"] = "QR code scan required. Please scan the QR code in WhatsApp Web first."
             return result
 
         # Wait for chats to load
-        await asyncio.sleep(delay)
+        await random_delay(delay, delay + 3)
 
         # Search for the group
-        def _search_group():
-            try:
-                search_box = driver.find_element(By.CSS_SELECTOR, '[data-testid="chat-list-search"]')
-                search_box.clear()
-                search_box.click()
-                time.sleep(1)
-                search_box.send_keys(group_name)
-                time.sleep(3)
+        found = await page.evaluate("""(groupName) => {
+            const searchBox = document.querySelector('[data-testid="chat-list-search"]');
+            if (!searchBox) return false;
+            searchBox.click();
+            searchBox.value = '';
+            return true;
+        }""", group_name)
 
-                # Click on the group result
-                results = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cell-frame-container"]')
-                for r in results:
-                    if group_name.lower() in r.text.lower():
-                        r.click()
-                        return True
-                return False
-            except Exception as e:
-                logger.error(f"Error searching group: {e}")
-                return False
+        if found:
+            search_input = page.locator('[data-testid="chat-list-search"]')
+            await search_input.fill(group_name)
+            await random_delay(2, 4)
 
-        found = await asyncio.get_event_loop().run_in_executor(None, _search_group)
-        if not found:
-            result["error"] = f"Group '{group_name}' not found"
+            # Click on matching group
+            cells = page.locator('[data-testid="cell-frame-container"]')
+            cell_count = await cells.count()
+            group_found = False
+            for ci in range(cell_count):
+                cell_text = await cells.nth(ci).inner_text()
+                if group_name.lower() in cell_text.lower():
+                    await cells.nth(ci).click()
+                    group_found = True
+                    break
+
+            if not group_found:
+                result["error"] = f"Group '{group_name}' not found"
+                return result
+        else:
+            result["error"] = "Could not find WhatsApp search box"
             return result
 
-        await asyncio.sleep(delay)
+        await random_delay(delay, delay + 2)
 
         # Click on group header to see members
-        def _open_group_info():
-            try:
-                header = driver.find_element(By.CSS_SELECTOR, '[data-testid="conversation-info-header"]')
-                header.click()
-                time.sleep(3)
-                return True
-            except Exception:
-                try:
-                    # Alternative: click the group name in the header
-                    headers = driver.find_elements(By.CSS_SELECTOR, 'header span[title]')
-                    for h in headers:
-                        if group_name.lower() in (h.get_attribute("title") or "").lower():
-                            h.click()
-                            time.sleep(3)
-                            return True
-                except Exception:
-                    pass
-                return False
-
-        opened = await asyncio.get_event_loop().run_in_executor(None, _open_group_info)
-        if not opened:
+        try:
+            header = page.locator('[data-testid="conversation-info-header"]')
+            if await header.count() > 0:
+                await header.click()
+            else:
+                header_spans = page.locator('header span[title]')
+                header_count = await header_spans.count()
+                for hi in range(header_count):
+                    title = await header_spans.nth(hi).get_attribute("title") or ""
+                    if group_name.lower() in title.lower():
+                        await header_spans.nth(hi).click()
+                        break
+        except Exception:
             result["error"] = "Could not open group info panel"
             return result
 
-        await asyncio.sleep(delay)
+        await random_delay(delay, delay + 2)
 
         # Extract members
-        def _extract_members():
-            members = []
+        member_cells = page.locator('[data-testid="cell-frame-container"]')
+        member_count = await member_cells.count()
+
+        members = []
+        for mi in range(min(member_count, max_members)):
             try:
-                # Look for participant elements
-                member_elements = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cell-frame-container"]')
-                for el in member_elements[:max_members]:
-                    try:
-                        name = ""
-                        phone = ""
+                cell = member_cells.nth(mi)
+                title_span = cell.locator('span[title]').first
+                text = await title_span.get_attribute("title") or ""
 
-                        # Get name/phone from the element
-                        title_el = el.find_elements(By.CSS_SELECTOR, 'span[title]')
-                        if title_el:
-                            text = title_el[0].get_attribute("title") or ""
-                            # Check if it's a phone number
-                            if text.startswith("+") or text.replace(" ", "").replace("-", "").isdigit():
-                                phone = text
-                            else:
-                                name = text
+                name = ""
+                phone = ""
+                cleaned = text.replace(" ", "").replace("-", "")
+                if text.startswith("+") or cleaned.isdigit():
+                    phone = text
+                else:
+                    name = text
 
-                        # Check for phone in subtitle
-                        subtitle_els = el.find_elements(By.CSS_SELECTOR, 'span[class*="subtitle"]')
-                        for sub in subtitle_els:
-                            sub_text = sub.text
-                            if sub_text.startswith("+") or (sub_text.replace(" ", "").replace("-", "").replace("+", "").isdigit() and len(sub_text) > 7):
-                                phone = sub_text
+                if name or phone:
+                    members.append({
+                        "name": name,
+                        "phone": phone,
+                        "platform": "whatsapp",
+                        "source": f"WhatsApp Group: {group_name}",
+                    })
+            except Exception:
+                continue
 
-                        if name or phone:
-                            members.append({
-                                "name": name,
-                                "phone": phone,
-                                "platform": "whatsapp",
-                                "source": f"WhatsApp Group: {group_name}",
-                            })
-
-                    except Exception:
-                        continue
-
-            except Exception as e:
-                logger.error(f"Error extracting members: {e}")
-
-            return members
-
-        members = await asyncio.get_event_loop().run_in_executor(None, _extract_members)
         result["members"] = members
         result["total_found"] = len(members)
 
     except Exception as e:
         result["error"] = str(e)
-        logger.error(f"WhatsApp scrape error: {e}")
+        logger.error("WhatsApp scrape error: %s", e)
     finally:
-        if driver:
-            try:
-                await asyncio.get_event_loop().run_in_executor(None, driver.quit)
-            except Exception:
-                pass
+        try:
+            await page.close()
+            await browser.close()
+            await pw.stop()
+        except Exception:
+            pass
 
     return result
 

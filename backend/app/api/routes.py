@@ -168,7 +168,17 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await _load_proxy_pool()
             proxy_manager.set_strategy(config.proxy_rotation)
 
+        # Load Serper API key from DB settings (fallback for Patchright CAPTCHA)
+        serper_api_key = ""
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT value FROM settings WHERE key = 'serper_api_key'"
+            )
+            row = await cursor.fetchone()
+            serper_api_key = row[0] if row else ""
+
         # Google dorking for non-Reddit platforms
+        # Method 1: Patchright (FREE, primary) → Method 2: Serper API (fallback)
         if config.use_google_dorking:
             non_reddit = [p for p in config.platforms if p != "reddit"]
             if non_reddit:
@@ -176,6 +186,9 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     config.keywords, non_reddit,
                     pages=config.pages_per_keyword,
                     delay=config.delay_between_requests,
+                    serper_api_key=serper_api_key,
+                    use_patchright=True,
+                    headless=True,
                 )
                 for result in results:
                     for email in result.get("emails", []):
@@ -198,6 +211,23 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                             "keyword": result["keyword"],
                         }
                         all_leads.append(lead)
+
+        # Direct platform scraping (optional, uses Patchright)
+        if config.use_direct_scraping:
+            try:
+                from app.services.platform_scrapers import scrape_all_platforms_direct
+                non_reddit = [p for p in config.platforms if p != "reddit"]
+                if non_reddit:
+                    direct_leads = await scrape_all_platforms_direct(
+                        config.keywords, non_reddit,
+                        max_results_per=config.pages_per_keyword * 5,
+                        delay=config.delay_between_requests,
+                        headless=True,
+                    )
+                    all_leads.extend(direct_leads)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("Direct scraping failed: %s", e)
 
         # Reddit extraction
         if "reddit" in config.platforms:
@@ -1630,3 +1660,42 @@ async def get_platform_safety_guide() -> dict:
             "Keep extraction sessions under 30 minutes",
         ],
     }
+
+
+# ─── Extraction Engine Status ────────────────────────────────────────────────
+
+@router.get("/extraction-engine/status")
+async def extraction_engine_status() -> dict:
+    """Return status of extraction engines (Patchright, Whisper, Serper)."""
+    status = {
+        "patchright": {"installed": False, "browser_available": False},
+        "whisper": {"installed": False, "model_loaded": False},
+        "serper": {"configured": False},
+    }
+
+    # Check Patchright
+    try:
+        from app.services.patchright_engine import check_patchright_available
+        available = await check_patchright_available()
+        status["patchright"]["installed"] = True
+        status["patchright"]["browser_available"] = available
+    except ImportError:
+        pass
+
+    # Check Whisper
+    try:
+        from app.services.captcha_solver import is_whisper_available
+        status["whisper"]["installed"] = is_whisper_available()
+        status["whisper"]["model_loaded"] = status["whisper"]["installed"]
+    except ImportError:
+        pass
+
+    # Check Serper API key
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT value FROM settings WHERE key = 'serper_api_key'"
+        )
+        row = await cursor.fetchone()
+        status["serper"]["configured"] = bool(row and row[0])
+
+    return status
