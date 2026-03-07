@@ -1,12 +1,17 @@
-"""Patchright browser engine — anti-detection Playwright fork for web scraping.
+"""Patchright browser engine — OPTIONAL anti-detection browser for web scraping.
 
 Patchright is an MIT-licensed fork of Playwright that patches Chromium to pass
 all major bot-detection frameworks (Cloudflare, DataDome, PerimeterX, etc.)
 while running in headless mode.
 
+IMPORTANT: Patchright is OPTIONAL. All scrapers have Selenium+ChromeDriver as
+their primary engine and only fall back to Patchright if Selenium is unavailable.
+If Patchright is not installed, the app works fine with Selenium alone.
+
 Usage on user's machine (Electron desktop app):
   - First launch: ``python -m patchright install chromium``
   - Or use system Chrome: ``channel="chrome"``
+  - If neither works, the app falls back to Selenium automatically
 """
 
 import asyncio
@@ -18,6 +23,36 @@ logger = logging.getLogger(__name__)
 # Singleton browser context
 _browser = None
 _playwright = None
+_install_attempted = False
+
+
+async def _try_auto_install() -> bool:
+    """Try to auto-install Patchright Chromium (max 2 attempts)."""
+    global _install_attempted
+    if _install_attempted:
+        return False
+
+    _install_attempted = True
+    try:
+        import subprocess
+        import sys
+
+        logger.info("Attempting to auto-install Patchright Chromium...")
+        proc = subprocess.run(
+            [sys.executable, "-m", "patchright", "install", "chromium"],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if proc.returncode == 0:
+            logger.info("Patchright Chromium auto-installed successfully")
+            return True
+        else:
+            logger.warning("Patchright Chromium auto-install failed: %s", proc.stderr[:200])
+            return False
+    except Exception as e:
+        logger.warning("Patchright Chromium auto-install error: %s", e)
+        return False
 
 
 async def get_browser(
@@ -27,13 +62,20 @@ async def get_browser(
 ):
     """Get or create a Patchright browser instance.
 
+    Fallback chain:
+      1. Bundled Patchright Chromium
+      2. System Chrome (channel="chrome")
+      3. System Chromium (channel="chromium")
+      4. Auto-install Patchright Chromium + retry
+      5. Return None (caller should handle gracefully)
+
     Args:
         headless: Run in headless mode (True for server, False for desktop).
-        proxy: Optional proxy config ``{"server": "http://host:port", "username": ..., "password": ...}``.
-        slow_mo: Milliseconds to slow down each operation (human-like).
+        proxy: Optional proxy config.
+        slow_mo: Milliseconds to slow down each operation.
 
     Returns:
-        A Patchright Browser instance.
+        A Patchright Browser instance, or None if Patchright is not available.
     """
     global _browser, _playwright
 
@@ -42,7 +84,14 @@ async def get_browser(
 
     try:
         from patchright.async_api import async_playwright
+    except ImportError:
+        logger.info(
+            "Patchright not installed — this is OK, Selenium is the primary engine. "
+            "To enable Patchright: pip install patchright && python -m patchright install chromium"
+        )
+        return None
 
+    try:
         _playwright = await async_playwright().start()
 
         launch_kwargs: dict = {
@@ -60,31 +109,62 @@ async def get_browser(
         if proxy:
             launch_kwargs["proxy"] = proxy
 
-        # Try bundled Patchright Chromium first, then system Chrome
+        # Step 1: Try bundled Patchright Chromium
         try:
             _browser = await _playwright.chromium.launch(**launch_kwargs)
-        except Exception:
-            logger.info("Patchright Chromium not found, trying system Chrome...")
+            logger.info("Patchright browser launched with bundled Chromium (headless=%s)", headless)
+            return _browser
+        except Exception as e:
+            logger.info("Patchright bundled Chromium not found: %s", str(e)[:100])
+
+        # Step 2: Try system Chrome
+        try:
+            _browser = await _playwright.chromium.launch(channel="chrome", **launch_kwargs)
+            logger.info("Patchright browser launched with system Chrome (headless=%s)", headless)
+            return _browser
+        except Exception as e:
+            logger.info("System Chrome not available for Patchright: %s", str(e)[:100])
+
+        # Step 3: Try system Chromium
+        try:
+            _browser = await _playwright.chromium.launch(channel="chromium", **launch_kwargs)
+            logger.info("Patchright browser launched with system Chromium (headless=%s)", headless)
+            return _browser
+        except Exception as e:
+            logger.info("System Chromium not available for Patchright: %s", str(e)[:100])
+
+        # Step 4: Try auto-install + retry
+        installed = await _try_auto_install()
+        if installed:
             try:
-                _browser = await _playwright.chromium.launch(
-                    channel="chrome", **launch_kwargs
-                )
+                _browser = await _playwright.chromium.launch(**launch_kwargs)
+                logger.info("Patchright browser launched after auto-install (headless=%s)", headless)
+                return _browser
+            except Exception as e:
+                logger.warning("Patchright still failed after auto-install: %s", str(e)[:100])
+
+        # Step 5: All attempts failed — return None gracefully
+        logger.warning(
+            "Patchright: No browser available. This is OK — Selenium is the primary engine. "
+            "To enable Patchright: python -m patchright install chromium"
+        )
+        if _playwright:
+            try:
+                await _playwright.stop()
             except Exception:
-                logger.info("System Chrome not found, trying Chromium channel...")
-                _browser = await _playwright.chromium.launch(
-                    channel="chromium", **launch_kwargs
-                )
+                pass
+            _playwright = None
+        return None
 
-        logger.info("Patchright browser launched (headless=%s)", headless)
-        return _browser
-
-    except ImportError:
-        logger.error(
-            "Patchright not installed. Install with: pip install patchright && python -m patchright install chromium"
-        )
-        raise RuntimeError(
-            "Patchright not installed. Run: pip install patchright && python -m patchright install chromium"
-        )
+    except Exception as e:
+        logger.warning("Patchright engine error: %s — falling back to Selenium", e)
+        if _playwright:
+            try:
+                await _playwright.stop()
+            except Exception:
+                pass
+            _playwright = None
+        return None
 
 
 async def new_page(
@@ -95,9 +175,12 @@ async def new_page(
     """Create a new page with anti-detection settings.
 
     Returns:
-        A Patchright Page instance.
+        A Patchright Page instance, or None if no browser available.
     """
     browser = await get_browser(headless=headless, proxy=proxy)
+    if browser is None:
+        logger.info("Patchright browser not available — cannot create new page")
+        return None
 
     context_kwargs: dict = {
         "viewport": {"width": 1920, "height": 1080},

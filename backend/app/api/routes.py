@@ -168,7 +168,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await _load_proxy_pool()
             proxy_manager.set_strategy(config.proxy_rotation)
 
-        # Load Serper API key from DB settings (fallback for Patchright CAPTCHA)
+        # Load Serper API key from DB settings (PRIMARY search method)
         serper_api_key = ""
         async with get_db() as db:
             cursor = await db.execute(
@@ -178,7 +178,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             serper_api_key = row[0] if row else ""
 
         # Google dorking for non-Reddit platforms
-        # Method 1: Patchright (FREE, primary) → Method 2: Serper API (fallback)
+        # Method 1: Serper API (PRIMARY, reliable) → Method 2: Patchright (optional fallback)
         if config.use_google_dorking:
             non_reddit = [p for p in config.platforms if p != "reddit"]
             if non_reddit:
