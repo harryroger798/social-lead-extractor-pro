@@ -461,6 +461,21 @@ async def delete_leads(lead_ids: list[str]) -> dict:
     return {"status": "deleted", "count": len(lead_ids)}
 
 
+@router.post("/results/clean")
+async def clean_all_results() -> dict:
+    """Delete ALL leads and their associated sessions. Pro-only feature."""
+    async with get_db() as db:
+        cursor = await db.execute("SELECT COUNT(*) FROM leads")
+        row = await cursor.fetchone()
+        total_deleted = row[0] if row else 0
+
+        await db.execute("DELETE FROM leads")
+        await db.execute("DELETE FROM sessions")
+        await db.commit()
+
+    return {"status": "cleaned", "leads_deleted": total_deleted}
+
+
 # ─── History / Sessions ───────────────────────────────────────────────────────
 
 @router.get("/history")
