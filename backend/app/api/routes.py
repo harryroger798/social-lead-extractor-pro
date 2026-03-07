@@ -390,6 +390,8 @@ async def get_results(
     search: Optional[str] = None,
     page: int = 1,
     page_size: int = 50,
+    sort_by: Optional[str] = None,
+    sort_dir: Optional[str] = None,
 ) -> dict:
     async with get_db() as db:
         conditions = []
@@ -412,10 +414,15 @@ async def get_results(
         row = await cursor.fetchone()
         total = row[0] if row else 0
 
+        # Sorting — whitelist allowed columns to prevent SQL injection
+        allowed_sort_columns = {'email', 'phone', 'platform', 'quality_score', 'extracted_at', 'name', 'keyword', 'verified'}
+        order_col = sort_by if sort_by in allowed_sort_columns else 'extracted_at'
+        order_dir = 'ASC' if sort_dir == 'asc' else 'DESC'
+
         # Fetch page
         offset = (page - 1) * page_size
         cursor = await db.execute(
-            f"SELECT * FROM leads {where} ORDER BY extracted_at DESC LIMIT ? OFFSET ?",
+            f"SELECT * FROM leads {where} ORDER BY {order_col} {order_dir} LIMIT ? OFFSET ?",
             [*params, page_size, offset],
         )
         rows = await cursor.fetchall()

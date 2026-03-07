@@ -100,7 +100,7 @@ export default function History() {
       <div className="min-h-full flex flex-col gap-5">
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent" />
             <span className="text-sm font-semibold text-text-primary">How to Use History</span>
@@ -149,7 +149,7 @@ export default function History() {
               key={f} onClick={() => setStatusFilter(f)}
               className={cn(
                                 'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-zinc-700/30'
               )}
             >{f}</button>
           ))}

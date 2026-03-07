@@ -73,7 +73,7 @@ export default function ScheduledExtractions() {
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-text-primary">How to Use Scheduled Extractions</span>
@@ -187,7 +187,7 @@ export default function ScheduledExtractions() {
                     {s.last_run && <p className="text-xs text-text-muted mt-0.5">Last run: {new Date(s.last_run).toLocaleString()}</p>}
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleToggle(s.id, s.status)} className="p-2 rounded-lg hover:bg-white/5 text-text-muted hover:text-text-primary transition-colors" title={s.status === 'active' ? 'Pause' : 'Resume'}>
+                    <button onClick={() => handleToggle(s.id, s.status)} className="p-2 rounded-lg hover:bg-zinc-700/40 text-text-muted hover:text-text-primary transition-colors" title={s.status === 'active' ? 'Pause' : 'Resume'}>
                       {s.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                     </button>
                     <button onClick={() => handleDelete(s.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 transition-colors">

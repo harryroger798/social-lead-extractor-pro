@@ -137,7 +137,7 @@ export default function ResellerPanel() {
       <div className="min-h-full flex flex-col gap-5">
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent" />
             <span className="text-sm font-semibold text-text-primary">How to Use Reseller Panel</span>
@@ -266,7 +266,7 @@ export default function ResellerPanel() {
           <Key className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {['all', 'active', 'expired', 'revoked'].map(f => (
             <button key={f} onClick={() => setStatusFilter(f)}
-              className={cn('px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap', statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]')}
+              className={cn('px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap', statusFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-zinc-700/30')}
             >{f}</button>
           ))}
         </div>
@@ -295,13 +295,13 @@ export default function ResellerPanel() {
             </thead>
             <tbody>
               {filtered.map(license => (
-                <tr key={license.id} className="border-b border-[#3f3f46]/40 hover:bg-white/[0.02] transition-colors">
+                <tr key={license.id} className="border-b border-[#3f3f46]/40 hover:bg-zinc-800/50 transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <code className="text-xs font-mono text-text-primary bg-white/[0.04] px-3 py-2 rounded-lg">
+                      <code className="text-xs font-mono text-text-primary bg-zinc-800/40 px-3 py-2 rounded-lg">
                         {showKeys ? license.key : license.key.substring(0, 8) + '...' + license.key.slice(-4)}
                       </code>
-                      <button onClick={() => copyKey(license.key)} className="p-1.5 rounded-lg hover:bg-white/[0.04] text-text-muted hover:text-accent transition-all">
+                      <button onClick={() => copyKey(license.key)} className="p-1.5 rounded-lg hover:bg-zinc-700/30 text-text-muted hover:text-accent transition-all">
                         <Copy className="w-3.5 h-3.5" />
                       </button>
                     </div>

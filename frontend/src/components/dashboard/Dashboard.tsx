@@ -146,7 +146,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       <div className="flex flex-col gap-7">
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-text-primary">How to Use the Dashboard</span>
@@ -191,7 +191,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <div className="lg:col-span-2 card">
             <div className="px-6 py-5 border-b border-[#3f3f46] flex items-center justify-between">
               <h3 className="text-sm font-bold text-text-primary">Leads by Platform</h3>
-              <span className="text-[11px] text-text-muted px-3.5 py-1.5 rounded-lg bg-white/[0.04] font-medium">All Time</span>
+              <span className="text-[11px] text-text-muted px-3.5 py-1.5 rounded-lg bg-zinc-800/40 font-medium">All Time</span>
             </div>
             <div className="p-6">
           {stats.platform_breakdown.length > 0 ? (
