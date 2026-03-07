@@ -1,13 +1,15 @@
 """Google dorking engine — extracts emails/phones from Google search results.
 
 Supports two methods:
-  1. **Patchright** (PRIMARY, FREE): Scrapes Google search results directly
-     using Patchright anti-detection browser. Zero API cost.
-  2. **Serper.dev API** (FALLBACK): Uses Serper.dev REST API. Free tier
-     gives 2,500 searches/month. API key loaded from DB settings.
+  1. **Serper.dev API** (PRIMARY, RELIABLE): Uses Serper.dev REST API. Free tier
+     gives 2,500 searches/month. API key loaded from DB settings first,
+     falls back to SERPER_API_KEY environment variable.
+  2. **Patchright** (OPTIONAL, FREE): Scrapes Google search results directly
+     using Patchright anti-detection browser. Zero API cost but requires
+     Chromium installed. Used only if available and Serper has no results.
 
 Extraction flow:
-  Patchright scrape Google -> if CAPTCHA -> try Whisper solver -> if fail -> Serper API fallback
+  Serper API (primary) -> if no key or no results -> try Patchright (if installed) -> if CAPTCHA -> skip
 """
 
 import os
@@ -52,19 +54,22 @@ async def _search_google_patchright(
 ) -> list[dict]:
     """Search Google directly using Patchright (anti-detection browser).
 
-    This is the PRIMARY extraction method — completely free, no API key needed.
+    OPTIONAL fallback — only used if Serper API returns no results.
     Scrapes Google search results directly and extracts emails/phones from snippets.
+    Returns empty list if Patchright is not available (graceful degradation).
     """
     try:
         from app.services.patchright_engine import new_page, safe_goto, random_delay
-        from app.services.captcha_solver import detect_captcha, solve_recaptcha
     except ImportError:
-        logger.warning("Patchright not available, skipping browser-based dorking")
+        logger.info("Patchright not available, skipping browser-based dorking")
         return []
 
     page = None
     try:
         page = await new_page(headless=headless, proxy=proxy)
+        if page is None:
+            logger.info("Patchright page creation returned None — skipping")
+            return []
         from urllib.parse import quote_plus
 
         url = f"https://www.google.com/search?q={quote_plus(query)}&num={num_results}"
@@ -74,15 +79,11 @@ async def _search_google_patchright(
 
         await random_delay(1.5, 3.0)
 
-        # Check for CAPTCHA
-        has_captcha = await detect_captcha(page)
+        # Check for CAPTCHA — if detected, skip immediately (no Whisper needed)
+        has_captcha = await _check_google_captcha(page)
         if has_captcha:
-            logger.info("Google CAPTCHA detected, attempting Whisper solve...")
-            solved = await solve_recaptcha(page)
-            if not solved:
-                logger.warning("CAPTCHA not solved, falling back to Serper API")
-                return []
-            await random_delay(1.0, 2.0)
+            logger.warning("Google CAPTCHA detected — skipping to Serper API")
+            return []
 
         # Extract search results from Google page
         results = await page.evaluate("""() => {
@@ -158,6 +159,24 @@ def _search_serper_with_key(query: str, num_results: int, api_key: str) -> list[
     return []
 
 
+async def _check_google_captcha(page) -> bool:
+    """Check if Google is showing a CAPTCHA page."""
+    try:
+        html = await page.content()
+        html_lower = html.lower()
+        captcha_indicators = [
+            "g-recaptcha",
+            "recaptcha",
+            "captcha-form",
+            "unusual traffic",
+            "not a robot",
+            "verify you are human",
+        ]
+        return any(indicator in html_lower for indicator in captcha_indicators)
+    except Exception:
+        return False
+
+
 # ─── Combined Dorking Search ─────────────────────────────────────────────────
 
 async def dorking_search(
@@ -171,7 +190,10 @@ async def dorking_search(
 ) -> dict:
     """Perform Google dorking search for a keyword on a platform.
 
-    Tries Patchright first (free), falls back to Serper API if needed.
+    Strategy:
+      1. Try Serper API first (reliable, fast, no browser needed)
+      2. If Serper fails/no key -> try Patchright (if installed)
+      3. If both fail -> return empty results
 
     Returns:
         Dict with emails, phones, sources, query, platform, keyword, method.
@@ -184,13 +206,15 @@ async def dorking_search(
 
     num_results = pages * 10
 
-    # Method 1: Patchright (FREE)
-    if use_patchright:
-        results = await _search_google_patchright(
-            query, num_results, headless=headless, proxy=proxy
+    # Method 1: Serper API (PRIMARY — reliable, no browser dependency)
+    api_key = serper_api_key or SERPER_API_KEY
+    if api_key:
+        loop = asyncio.get_event_loop()
+        results = await loop.run_in_executor(
+            None, _search_serper_with_key, query, num_results, api_key
         )
         if results:
-            method_used = "patchright"
+            method_used = "serper"
             for result in results:
                 text = f"{result.get('title', '')} {result.get('snippet', '')}"
                 all_emails.extend(extract_emails(text))
@@ -199,23 +223,20 @@ async def dorking_search(
                 if link:
                     all_sources.append(link)
 
-    # Method 2: Serper API (FALLBACK) — only if Patchright found nothing
-    if not all_emails and not all_phones:
-        api_key = serper_api_key or SERPER_API_KEY
-        if api_key:
-            loop = asyncio.get_event_loop()
-            results = await loop.run_in_executor(
-                None, _search_serper_with_key, query, num_results, api_key
-            )
-            if results:
-                method_used = "serper" if method_used == "none" else f"{method_used}+serper"
-                for result in results:
-                    text = f"{result.get('title', '')} {result.get('snippet', '')}"
-                    all_emails.extend(extract_emails(text))
-                    all_phones.extend(extract_phones(text))
-                    link = result.get("link", "")
-                    if link:
-                        all_sources.append(link)
+    # Method 2: Patchright (OPTIONAL — only if Serper found nothing)
+    if not all_emails and not all_phones and use_patchright:
+        results = await _search_google_patchright(
+            query, num_results, headless=headless, proxy=proxy
+        )
+        if results:
+            method_used = "patchright" if method_used == "none" else f"{method_used}+patchright"
+            for result in results:
+                text = f"{result.get('title', '')} {result.get('snippet', '')}"
+                all_emails.extend(extract_emails(text))
+                all_phones.extend(extract_phones(text))
+                link = result.get("link", "")
+                if link:
+                    all_sources.append(link)
 
     # Deduplicate
     seen_emails: set[str] = set()
@@ -257,7 +278,7 @@ async def dorking_search_multi(
 ) -> list[dict]:
     """Search multiple keywords across multiple platforms.
 
-    Tries Patchright first (free), falls back to Serper API.
+    Tries Serper API first (reliable), falls back to Patchright if installed.
     """
     all_results = []
     for keyword in keywords:
