@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
-import { useLicense, PRO_ONLY_FEATURES } from '@/contexts/LicenseContext';
+import { useLicense, PRO_ONLY_FEATURES, type UserRole } from '@/contexts/LicenseContext';
 
 interface SidebarProps {
   activeSection: Section;
@@ -30,7 +30,22 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-const navGroups = [
+interface NavItem {
+  id: Section;
+  label: string;
+  icon: typeof LayoutDashboard;
+  /** Minimum roles that can see this item. If omitted, all roles can see it. */
+  minRoles?: UserRole[];
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+  /** Minimum roles that can see this entire group. If omitted, all roles can see it. */
+  minRoles?: UserRole[];
+}
+
+const navGroups: NavGroup[] = [
   {
     label: 'Extraction',
     items: [
@@ -67,15 +82,21 @@ const navGroups = [
   },
   {
     label: 'Business',
+    minRoles: ['admin', 'reseller'],
     items: [
-      { id: 'reseller' as Section, label: 'Reseller Panel', icon: Crown },
+      { id: 'reseller' as Section, label: 'Reseller Panel', icon: Crown, minRoles: ['admin', 'reseller'] },
     ],
   },
 ];
 
 export default function Sidebar({ activeSection, onSectionChange, collapsed, onToggleCollapse }: SidebarProps) {
-  const { license, isPro, deactivate } = useLicense();
+  const { license, isPro, role, deactivate } = useLicense();
   const proOnlySet = new Set<string>(PRO_ONLY_FEATURES as unknown as string[]);
+
+  const canSeeRole = (minRoles?: UserRole[]): boolean => {
+    if (!minRoles || minRoles.length === 0) return true;
+    return minRoles.includes(role);
+  };
 
   return (
     <aside
@@ -92,7 +113,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
           <div className="overflow-hidden">
             <h1 className="text-[15px] font-bold text-text-primary tracking-tight leading-tight">SnapLeads</h1>
             <p className={cn('text-[11px] font-semibold tracking-wide', isPro ? 'text-amber-400' : 'text-accent')}>
-              {isPro ? 'PRO EDITION' : 'STARTER EDITION'}
+              {role === 'admin' ? 'ADMIN' : role === 'reseller' ? 'RESELLER' : isPro ? 'PRO EDITION' : 'STARTER EDITION'}
             </p>
           </div>
         )}
@@ -100,7 +121,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
 
       {/* Navigation */}
       <nav className="flex-1 py-5 px-3.5 overflow-y-auto">
-        {navGroups.map((group, gi) => (
+        {navGroups.filter(group => canSeeRole(group.minRoles)).map((group, gi) => (
           <div key={group.label} className={cn(gi > 0 && 'pt-7')}>
             {!collapsed && (
               <p className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.15em] px-3 pb-3 select-none">
@@ -109,7 +130,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
             )}
             {collapsed && gi > 0 && <div className="h-px bg-border mx-3 pb-3 pt-2" />}
             <div className="flex flex-col gap-1">
-              {group.items.map((item) => {
+              {group.items.filter(item => canSeeRole(item.minRoles)).map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
                 const isProOnly = proOnlySet.has(item.id) && !isPro;
@@ -122,7 +143,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                       collapsed ? 'justify-center px-0 py-2.5' : 'px-3.5 py-2.5',
                       isActive
                         ? 'bg-accent/12 text-accent shadow-sm shadow-accent/10 border border-accent/25'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04] border border-transparent',
+                        : 'text-text-secondary hover:text-text-primary hover:bg-zinc-700/30 border border-transparent',
                       isProOnly && 'opacity-60'
                     )}
                     title={collapsed ? item.label : undefined}
@@ -145,9 +166,9 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
       {/* Footer */}
       <div className="border-t border-[#3f3f46] px-3.5 py-4 flex flex-col gap-3">
         {!collapsed && license && (
-          <div className="px-3.5 py-3 rounded-xl bg-white/[0.04] border border-[#3f3f46]">
+          <div className="px-3.5 py-3 rounded-xl bg-zinc-800/40 border border-[#3f3f46]">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-text-muted font-medium">Version 1.0.3</p>
+              <p className="text-[11px] text-text-muted font-medium">Version 2.2.0</p>
               <button
                 onClick={deactivate}
                 className="text-text-muted hover:text-error transition-colors"
@@ -163,14 +184,14 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
                 <Shield className="w-3.5 h-3.5 text-accent" />
               )}
               <p className={cn('text-[11px] font-semibold', isPro ? 'text-amber-400' : 'text-accent')}>
-                {license.tier === 'pro' ? 'Pro' : 'Starter'} — {license.cycle}
+                {role === 'admin' ? 'Admin' : role === 'reseller' ? 'Reseller' : license.tier === 'pro' ? 'Pro' : 'Starter'} — {license.cycle}
               </p>
             </div>
           </div>
         )}
         <button
           onClick={onToggleCollapse}
-          className="w-full flex items-center justify-center gap-2 py-2.5 text-text-muted hover:text-text-secondary transition-colors rounded-xl hover:bg-white/[0.03]"
+          className="w-full flex items-center justify-center gap-2 py-2.5 text-text-muted hover:text-text-secondary transition-colors rounded-xl hover:bg-zinc-800/40"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           {!collapsed && <span className="text-xs font-medium">Collapse</span>}

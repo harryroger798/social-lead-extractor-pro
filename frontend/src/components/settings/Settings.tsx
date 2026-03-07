@@ -277,7 +277,7 @@ export default function Settings() {
 
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent" />
             <span className="text-sm font-semibold text-text-primary">How to Use Settings</span>
@@ -409,7 +409,7 @@ export default function Settings() {
 
               {/* Add Single Proxy Form */}
               {showAddProxy && (
-                <div className="p-5 bg-white/[0.03] rounded-xl border border-[#3f3f46] mb-5">
+                <div className="p-5 bg-zinc-800/30 rounded-xl border border-[#3f3f46] mb-5">
                   <div className="flex items-center justify-between pb-4">
                     <p className="text-sm font-medium text-text-primary">Add Single Proxy</p>
                     <button onClick={() => setShowAddProxy(false)} className="text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
@@ -461,7 +461,7 @@ export default function Settings() {
 
               {/* Bulk Import Form */}
               {showBulkImport && (
-                <div className="p-5 bg-white/[0.03] rounded-xl border border-[#3f3f46] mb-5">
+                <div className="p-5 bg-zinc-800/30 rounded-xl border border-[#3f3f46] mb-5">
                   <div className="flex items-center justify-between pb-4">
                     <div>
                       <p className="text-sm font-medium text-text-primary">Bulk Import Proxies</p>
@@ -500,7 +500,7 @@ export default function Settings() {
                     {proxies.length} prox{proxies.length === 1 ? 'y' : 'ies'} · {proxies.filter(p => p.status === 'active').length} active
                   </div>
                   {proxies.map(proxy => (
-                    <div key={proxy.id} className="flex items-center gap-3 p-3.5 bg-white/[0.02] rounded-lg border border-[#3f3f46] hover:border-[#52525b] transition-all">
+                    <div key={proxy.id} className="flex items-center gap-3 p-3.5 bg-zinc-800/20 rounded-lg border border-[#3f3f46] hover:border-[#52525b] transition-all">
                       <div className="flex-shrink-0">
                         {proxy.status === 'active' ? (
                           <CheckCircle className="w-4.5 h-4.5 text-success" />
@@ -538,7 +538,7 @@ export default function Settings() {
                 </div>
               )}
 
-              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46] mt-5">
+              <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46] mt-5">
                 <p className="text-xs text-text-muted">Proxies route your extraction requests through different IP addresses to avoid rate limiting. Works with any provider: Massive, BrightData, Oxylabs, SmartProxy, etc.</p>
               </div>
             </div>
@@ -562,7 +562,7 @@ export default function Settings() {
                   <span className="text-xs text-success font-medium">{firecrawlCredits.toLocaleString()} credits remaining</span>
                 )}
               </div>
-              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46] mt-4">
+              <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46] mt-4">
                 <p className="text-xs text-text-muted">API keys are stored locally and encrypted. They are never sent to external servers except the respective API provider.</p>
               </div>
               <div className="pt-3 p-4 bg-green-500/5 rounded-xl border border-green-500/20 mt-3">
@@ -579,7 +579,7 @@ export default function Settings() {
                 {renderInput('desktop_notifications', 'Desktop Notifications', 'toggle')}
                 {renderInput('email_notifications', 'Email Notifications', 'toggle')}
               </div>
-              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+              <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Notifications are sent when extractions complete, fail, or when new leads match your criteria.</p>
               </div>
             </div>
@@ -611,7 +611,7 @@ export default function Settings() {
                 {renderInput('proxy_enabled', 'Enable Proxy Rotation', 'toggle', undefined, 'Route extraction requests through your configured proxies')}
                 {renderInput('proxy_rotation', 'Rotation Strategy', 'select', ['round-robin', 'random', 'fastest'], 'How proxy servers are selected for each request')}
               </div>
-              <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+              <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during extraction. Configure your proxies in the Proxies tab. Google Dorking does not require proxies.</p>
               </div>
             </div>

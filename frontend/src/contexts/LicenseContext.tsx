@@ -2,11 +2,13 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 export type LicenseTier = 'starter' | 'pro';
 export type LicenseCycle = 'monthly' | 'yearly' | 'lifetime';
+export type UserRole = 'admin' | 'reseller' | 'user';
 
 export interface LicenseData {
   key: string;
   tier: LicenseTier;
   cycle: LicenseCycle;
+  role: UserRole;
   activated_at: string;
   expires_at: string | null;
   device_id: string;
@@ -19,6 +21,9 @@ export interface LicenseContextType {
   isExpired: boolean;
   isPro: boolean;
   isLoading: boolean;
+  role: UserRole;
+  isAdmin: boolean;
+  isReseller: boolean;
   activate: (key: string) => Promise<{ success: boolean; error?: string }>;
   deactivate: () => Promise<void>;
   checkExpiry: () => boolean;
@@ -124,10 +129,18 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
       return { success: false, error: result.error || 'Activation failed' };
     }
     // Browser dev mode fallback: simulate activation
+    // Derive role from key prefix: SNPL-ADMIN-, SNPL-MR-, SNPL-RES-, or default user
+    const deriveRole = (k: string): UserRole => {
+      const upper = k.toUpperCase();
+      if (upper.includes('-ADMIN-')) return 'admin';
+      if (upper.includes('-MR-') || upper.includes('-MASTER-') || upper.includes('-RES-') || upper.includes('-RESELLER-')) return 'reseller';
+      return 'user';
+    };
     const mockLicense: LicenseData = {
       key,
       tier: key.includes('-PRO-') ? 'pro' : 'starter',
       cycle: key.includes('-L-') ? 'lifetime' : key.includes('-Y-') ? 'yearly' : 'monthly',
+      role: deriveRole(key),
       activated_at: new Date().toISOString(),
       expires_at: key.includes('-L-') ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       device_id: 'dev-browser',
@@ -156,6 +169,9 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
   const isActivated = license !== null;
   const isExpired = license !== null && isLicenseExpired(license);
   const isPro = license !== null && license.tier === 'pro' && !isLicenseExpired(license);
+  const role: UserRole = license?.role || 'user';
+  const isAdmin = role === 'admin';
+  const isReseller = role === 'reseller';
 
   return (
     <LicenseContext.Provider value={{
@@ -164,6 +180,9 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
       isExpired,
       isPro,
       isLoading,
+      role,
+      isAdmin,
+      isReseller,
       activate,
       deactivate,
       checkExpiry,

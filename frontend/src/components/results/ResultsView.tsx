@@ -2,14 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Search, Trash2, Download, ChevronLeft, ChevronRight,
   Loader2, AlertCircle, Database, Mail, Phone, ExternalLink,
-  CheckCircle, XCircle, Filter, Info, ChevronDown,
+  CheckCircle, XCircle, Filter, Info, ChevronDown, ArrowUp, ArrowDown, ArrowUpDown,
 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
 import { fetchResults, deleteLead, exportResults } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
 import type { LeadItem } from '@/lib/api';
 
-const PLATFORMS = ['all','linkedin','facebook','instagram','twitter','tiktok','youtube','pinterest','tumblr','reddit'];
+const PLATFORMS = ['all','linkedin','facebook','instagram','twitter','tiktok','youtube','pinterest','tumblr','reddit','google_maps','telegram','whatsapp'];
+
+type SortColumn = 'email' | 'phone' | 'platform' | 'quality_score' | 'extracted_at';
+type SortDir = 'asc' | 'desc';
 
 export default function ResultsView() {
   const [leads, setLeads] = useState<LeadItem[]>([]);
@@ -22,13 +25,15 @@ export default function ResultsView() {
   const [platform, setPlatform] = useState('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showGuide, setShowGuide] = useState(false);
+  const [sortBy, setSortBy] = useState<SortColumn>('extracted_at');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
   const { toast } = useToast();
 
   const loadResults = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchResults({ page, page_size: 50, search: search || undefined, platform: platform !== 'all' ? platform : undefined });
+      const data = await fetchResults({ page, page_size: 50, search: search || undefined, platform: platform !== 'all' ? platform : undefined, sort_by: sortBy, sort_dir: sortDir });
       setLeads(data.leads);
       setTotalPages(data.total_pages);
       setTotal(data.total);
@@ -37,12 +42,26 @@ export default function ResultsView() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, platform]);
+  }, [page, search, platform, sortBy, sortDir]);
 
   useEffect(() => { loadResults(); }, [loadResults]);
 
   const handleSearch = (val: string) => { setSearch(val); setPage(1); };
   const handlePlatformChange = (val: string) => { setPlatform(val); setPage(1); };
+  const handleSort = (col: SortColumn) => {
+    if (sortBy === col) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(col);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
+
+  const SortIcon = ({ col }: { col: SortColumn }) => {
+    if (sortBy !== col) return <ArrowUpDown className="w-3 h-3 text-text-muted/40 ml-1" />;
+    return sortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-accent ml-1" /> : <ArrowDown className="w-3 h-3 text-accent ml-1" />;
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -116,7 +135,7 @@ export default function ResultsView() {
             <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
             {['csv', 'xlsx', 'json'].map(fmt => (
               <button key={fmt} onClick={() => handleExport(fmt)}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-white/[0.04] border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-800/40 border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
               >
                 {fmt.toUpperCase()}
               </button>
@@ -130,7 +149,7 @@ export default function ResultsView() {
       <div className="min-h-full flex flex-col gap-5">
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent" />
             <span className="text-sm font-semibold text-text-primary">How to Use Results</span>
@@ -180,7 +199,7 @@ export default function ResultsView() {
             <button key={p} onClick={() => handlePlatformChange(p)}
               className={cn(
                                 'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                platform === p ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-zinc-700/30'
               )}
             >{p}</button>
           ))}
@@ -202,18 +221,26 @@ export default function ResultsView() {
                         className="w-4 h-4 rounded border-[#3f3f46] bg-bg-primary text-accent focus:ring-accent/20"
                       />
                     </th>
-                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Contact</th>
-                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Platform</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest cursor-pointer select-none hover:text-text-secondary transition-colors" onClick={() => handleSort('email')}>
+                      <span className="inline-flex items-center">Contact <SortIcon col="email" /></span>
+                    </th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest cursor-pointer select-none hover:text-text-secondary transition-colors" onClick={() => handleSort('platform')}>
+                      <span className="inline-flex items-center">Platform <SortIcon col="platform" /></span>
+                    </th>
                     <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Keyword</th>
-                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Quality</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest cursor-pointer select-none hover:text-text-secondary transition-colors" onClick={() => handleSort('quality_score')}>
+                      <span className="inline-flex items-center">Quality <SortIcon col="quality_score" /></span>
+                    </th>
                     <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Verified</th>
-                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest">Date</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-text-muted uppercase tracking-widest cursor-pointer select-none hover:text-text-secondary transition-colors" onClick={() => handleSort('extracted_at')}>
+                      <span className="inline-flex items-center">Date <SortIcon col="extracted_at" /></span>
+                    </th>
                     <th className="px-5 py-4"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {leads.map(lead => (
-                    <tr key={lead.id} className="border-b border-[#3f3f46]/40 hover:bg-white/[0.02] transition-colors">
+                    <tr key={lead.id} className="border-b border-[#3f3f46]/40 hover:bg-zinc-800/50 transition-colors">
                       <td className="px-5 py-4">
                         <input type="checkbox" checked={selected.has(lead.id)}
                           onChange={() => toggleSelect(lead.id)}
@@ -238,7 +265,7 @@ export default function ResultsView() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{lead.platform}</span>
+                        <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-zinc-800/40 text-text-secondary capitalize">{lead.platform}</span>
                       </td>
                       <td className="px-5 py-4 text-sm text-text-secondary">{lead.keyword}</td>
                       <td className="px-5 py-4">

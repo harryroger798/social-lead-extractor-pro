@@ -53,7 +53,7 @@ export default function SafetyGuide() {
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+          <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-text-primary">How to Use the Safety Guide</span>
@@ -112,7 +112,7 @@ export default function SafetyGuide() {
             <div key={platform} className="rounded-xl bg-bg-card border border-border overflow-hidden">
               <button
                 onClick={() => setExpanded(isExpanded ? null : platform)}
-                className="w-full p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                className="w-full p-5 flex items-center justify-between hover:bg-zinc-800/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-text-primary capitalize">{platform}</span>

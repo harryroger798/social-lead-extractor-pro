@@ -114,7 +114,7 @@ export default function BlacklistManager() {
 
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
-        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+        <button onClick={() => setShowGuide(!showGuide)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent" />
             <span className="text-sm font-semibold text-text-primary">How to Use Blacklist Manager</span>
@@ -152,7 +152,7 @@ export default function BlacklistManager() {
         <div className="card">
           <div className="px-6 py-5 border-b border-[#3f3f46] flex items-center justify-between">
             <h3 className="text-sm font-bold text-text-primary">Add Blacklist Entry</h3>
-            <button onClick={() => setShowAdd(false)} className="p-1.5 rounded-lg hover:bg-white/[0.04] text-text-muted"><X className="w-4 h-4" /></button>
+            <button onClick={() => setShowAdd(false)} className="p-1.5 rounded-lg hover:bg-zinc-700/30 text-text-muted"><X className="w-4 h-4" /></button>
           </div>
           <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -212,7 +212,7 @@ export default function BlacklistManager() {
               key={f} onClick={() => setTypeFilter(f)}
               className={cn(
                                 'px-4 py-2 rounded-lg text-xs font-medium transition-all capitalize whitespace-nowrap',
-                                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
+                                typeFilter === f ? 'bg-accent text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-zinc-700/30'
               )}
             >{f}</button>
           ))}
@@ -228,13 +228,13 @@ export default function BlacklistManager() {
             return (
               <div key={entry.id} className="flex items-center justify-between p-5 card-elevated hover:border-[#71717a] transition-all duration-200">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800/40 flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4.5 h-4.5 text-text-muted" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-text-primary truncate">{entry.value}</p>
                     <div className="flex items-center gap-2 pt-1">
-                      <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.04] text-text-secondary capitalize">{entry.type}</span>
+                      <span className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold bg-zinc-800/40 text-text-secondary capitalize">{entry.type}</span>
                       {entry.reason && <span className="text-xs text-text-muted truncate">{entry.reason}</span>}
                       <span className="text-xs text-text-muted">{formatDate(entry.added_at)}</span>
                     </div>

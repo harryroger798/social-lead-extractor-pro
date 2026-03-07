@@ -366,11 +366,19 @@ async def get_extraction_status(session_id: str) -> dict:
         row = await cursor.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Session not found")
-        return {
+        result = {
             "id": row[0], "name": row[1], "status": row[2],
             "total_leads": row[5], "emails_found": row[6],
             "phones_found": row[7], "progress": row[11],
         }
+        # Include error_message if column exists
+        try:
+            keys = row.keys()
+            if "error_message" in keys:
+                result["error_message"] = row["error_message"] or ""
+        except Exception:
+            pass
+        return result
 
 
 # ─── Results / Leads ─────────────────────────────────────────────────────────
@@ -382,6 +390,8 @@ async def get_results(
     search: Optional[str] = None,
     page: int = 1,
     page_size: int = 50,
+    sort_by: Optional[str] = None,
+    sort_dir: Optional[str] = None,
 ) -> dict:
     async with get_db() as db:
         conditions = []
@@ -404,10 +414,15 @@ async def get_results(
         row = await cursor.fetchone()
         total = row[0] if row else 0
 
+        # Sorting — whitelist allowed columns to prevent SQL injection
+        allowed_sort_columns = {'email', 'phone', 'platform', 'quality_score', 'extracted_at', 'name', 'keyword', 'verified'}
+        order_col = sort_by if sort_by in allowed_sort_columns else 'extracted_at'
+        order_dir = 'ASC' if sort_dir == 'asc' else 'DESC'
+
         # Fetch page
         offset = (page - 1) * page_size
         cursor = await db.execute(
-            f"SELECT * FROM leads {where} ORDER BY extracted_at DESC LIMIT ? OFFSET ?",
+            f"SELECT * FROM leads {where} ORDER BY {order_col} {order_dir} LIMIT ? OFFSET ?",
             [*params, page_size, offset],
         )
         rows = await cursor.fetchall()
@@ -922,12 +937,20 @@ async def _run_gmaps_extraction(session_id: str, req: GoogleMapsSearchRequest) -
             )
             await db.commit()
 
-    except Exception:
+    except Exception as exc:
+        error_msg = str(exc)[:500] if str(exc) else "Unknown extraction error"
+        logger.error("Google Maps extraction failed for session %s: %s", session_id, error_msg)
         async with get_db() as db:
-            await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
-            )
+            try:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=?, error_message=? WHERE id=?",
+                    (datetime.now().isoformat(), error_msg, session_id),
+                )
+            except Exception:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
             await db.commit()
 
 

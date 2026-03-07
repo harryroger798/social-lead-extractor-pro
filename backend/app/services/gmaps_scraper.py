@@ -40,7 +40,7 @@ def _clean_phone(raw: str) -> str:
 
 
 def _get_chromedriver_path() -> str:
-    """Find ChromeDriver — check bundled location first, then system PATH."""
+    """Find ChromeDriver — check bundled location first, then webdriver-manager, then system PATH."""
     import os
     import shutil
 
@@ -59,6 +59,15 @@ def _get_chromedriver_path() -> str:
     system_driver = shutil.which("chromedriver")
     if system_driver:
         return system_driver
+
+    # Use webdriver-manager to auto-download matching ChromeDriver
+    try:
+        from webdriver_manager.chrome import ChromeDriverManager
+        driver_path = ChromeDriverManager().install()
+        logger.info("webdriver-manager installed ChromeDriver at: %s", driver_path)
+        return driver_path
+    except Exception as e:
+        logger.warning("webdriver-manager could not install ChromeDriver: %s", e)
 
     return ""
 
@@ -82,8 +91,8 @@ async def _scrape_gmaps_selenium(
         from selenium.webdriver.support.ui import WebDriverWait
         from selenium.webdriver.support import expected_conditions as EC
     except ImportError:
-        logger.warning("Selenium not installed, cannot use Selenium Google Maps scraper")
-        return []
+        logger.warning("Selenium not installed — cannot use Selenium Google Maps scraper")
+        raise RuntimeError("Selenium is not installed. Please reinstall the application or install selenium via pip.")
 
     results: list[dict] = []
     driver = None
@@ -102,13 +111,15 @@ async def _scrape_gmaps_selenium(
         )
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
-        # Try to find ChromeDriver
+        # Try to find ChromeDriver (bundled → webdriver-manager → system)
         chromedriver_path = _get_chromedriver_path()
         if chromedriver_path:
+            logger.info("Using ChromeDriver at: %s", chromedriver_path)
             service = Service(executable_path=chromedriver_path)
             driver = webdriver.Chrome(service=service, options=options)
         else:
-            # Let Selenium find it automatically
+            # Let Selenium find it automatically as last resort
+            logger.info("No ChromeDriver found, letting Selenium auto-detect...")
             driver = webdriver.Chrome(options=options)
 
         driver.set_page_load_timeout(30)

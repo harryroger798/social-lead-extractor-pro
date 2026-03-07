@@ -58,6 +58,8 @@ export function fetchResults(params: {
   search?: string;
   page?: number;
   page_size?: number;
+  sort_by?: string;
+  sort_dir?: string;
 }) {
   const q = new URLSearchParams();
   if (params.session_id) q.set('session_id', params.session_id);
@@ -65,6 +67,8 @@ export function fetchResults(params: {
   if (params.search) q.set('search', params.search);
   if (params.page) q.set('page', String(params.page));
   if (params.page_size) q.set('page_size', String(params.page_size));
+  if (params.sort_by) q.set('sort_by', params.sort_by);
+  if (params.sort_dir) q.set('sort_dir', params.sort_dir);
   return request<ResultsResponse>(`/api/results?${q.toString()}`);
 }
 
