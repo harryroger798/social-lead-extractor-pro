@@ -366,11 +366,19 @@ async def get_extraction_status(session_id: str) -> dict:
         row = await cursor.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Session not found")
-        return {
+        result = {
             "id": row[0], "name": row[1], "status": row[2],
             "total_leads": row[5], "emails_found": row[6],
             "phones_found": row[7], "progress": row[11],
         }
+        # Include error_message if column exists
+        try:
+            keys = row.keys()
+            if "error_message" in keys:
+                result["error_message"] = row["error_message"] or ""
+        except Exception:
+            pass
+        return result
 
 
 # ─── Results / Leads ─────────────────────────────────────────────────────────
@@ -922,12 +930,20 @@ async def _run_gmaps_extraction(session_id: str, req: GoogleMapsSearchRequest) -
             )
             await db.commit()
 
-    except Exception:
+    except Exception as exc:
+        error_msg = str(exc)[:500] if str(exc) else "Unknown extraction error"
+        logger.error("Google Maps extraction failed for session %s: %s", session_id, error_msg)
         async with get_db() as db:
-            await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
-            )
+            try:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=?, error_message=? WHERE id=?",
+                    (datetime.now().isoformat(), error_msg, session_id),
+                )
+            except Exception:
+                await db.execute(
+                    "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                    (datetime.now().isoformat(), session_id),
+                )
             await db.commit()
 
 

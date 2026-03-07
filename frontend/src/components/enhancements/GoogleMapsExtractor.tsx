@@ -10,12 +10,14 @@ export default function GoogleMapsExtractor() {
   const [status, setStatus] = useState<string | null>(null);
   const [result, setResult] = useState<{ total_leads: number; emails_found: number; phones_found: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
     setLoading(true);
     setStatus('running');
     setResult(null);
+    setErrorMessage(null);
     try {
       const res = await searchGoogleMaps({ query, max_results: maxResults, delay });
       // Poll for completion
@@ -26,17 +28,22 @@ export default function GoogleMapsExtractor() {
             clearInterval(poll);
             setStatus(s.status);
             setResult({ total_leads: s.total_leads, emails_found: s.emails_found, phones_found: s.phones_found });
+            if (s.status === 'failed') {
+              setErrorMessage((s as any).error_message || 'Extraction failed. Make sure Google Chrome is installed and try again.');
+            }
             setLoading(false);
           }
         } catch {
           clearInterval(poll);
           setLoading(false);
           setStatus('failed');
+          setErrorMessage('Connection to backend lost. Please try again.');
         }
       }, 3000);
-    } catch {
+    } catch (err: any) {
       setLoading(false);
       setStatus('failed');
+      setErrorMessage(err?.message || 'Failed to start extraction. Is the backend running?');
     }
   };
 
@@ -198,7 +205,7 @@ export default function GoogleMapsExtractor() {
 
         {status === 'failed' && !loading && (
           <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-4">
-            <p className="text-sm text-red-400">Extraction failed. Make sure ChromeDriver is installed and try again.</p>
+            <p className="text-sm text-red-400">{errorMessage || 'Extraction failed. Make sure Google Chrome is installed and try again.'}</p>
           </div>
         )}
 
