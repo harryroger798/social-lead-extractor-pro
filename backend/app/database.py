@@ -125,7 +125,7 @@ async def init_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_outreach_campaign ON outreach_logs(campaign_id);
         """)
 
-        # Add new columns to leads table (safe migration - ignore if already exists)
+        # Add new columns (safe migration - ignore if already exists)
         for col_sql in [
             "ALTER TABLE leads ADD COLUMN lead_hash TEXT DEFAULT ''",
             "ALTER TABLE leads ADD COLUMN lead_score INTEGER DEFAULT 0",
@@ -135,6 +135,7 @@ async def init_db() -> None:
             "ALTER TABLE leads ADD COLUMN address TEXT DEFAULT ''",
             "ALTER TABLE leads ADD COLUMN rating TEXT DEFAULT ''",
             "ALTER TABLE leads ADD COLUMN category TEXT DEFAULT ''",
+            "ALTER TABLE sessions ADD COLUMN error_message TEXT DEFAULT ''",
         ]:
             try:
                 await db.execute(col_sql)

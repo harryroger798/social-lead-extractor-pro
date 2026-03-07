@@ -1,23 +1,30 @@
 """Google Maps scraper — extracts business listings from Google Maps.
 
-Supports two browser engines with automatic fallback:
-  1. **Selenium + ChromeDriver** (PRIMARY): Reliable, well-tested, works in .exe builds.
-     Uses headless Chrome with ChromeDriver bundled or from system PATH.
-  2. **Patchright** (OPTIONAL FALLBACK): Anti-detection browser, used only if
+Supports three methods with automatic fallback:
+  1. **Serper API Maps** (PRIMARY): Uses Serper.dev /maps endpoint. Fast,
+     reliable, no browser needed. Requires API key in DB settings.
+  2. **Selenium + ChromeDriver** (FALLBACK): Headless Chrome scraping.
+     Requires Chrome installed on the user's machine.
+  3. **Patchright** (OPTIONAL FALLBACK): Anti-detection browser, used only if
      Selenium is unavailable AND Patchright is installed.
 
-No API key or user account needed — scrapes Google Maps directly.
+Fallback chain: Serper API → Selenium → Patchright → empty list with error.
 """
 
 import asyncio
+import os
 import re
 import logging
 import time
 from typing import Optional
 
+import requests
+
 from app.services.extractor import extract_emails, extract_phones
 
 logger = logging.getLogger(__name__)
+
+SERPER_API_KEY = os.environ.get("SERPER_API_KEY", "")
 
 # Selectors for Google Maps
 SELECTORS = {
@@ -31,6 +38,57 @@ SELECTORS = {
     "phone": 'button[data-item-id^="phone"]',
     "website": 'a[data-item-id="authority"]',
 }
+
+
+# ─── Method 0: Serper API Maps (PRIMARY — no browser needed) ─────────────────
+
+async def _scrape_gmaps_serper(
+    query: str,
+    max_results: int = 50,
+    api_key: str = "",
+) -> list[dict]:
+    """Scrape Google Maps using Serper.dev Maps API (PRIMARY).
+
+    No browser needed — fast, reliable, works in .exe without Chrome.
+    Requires a Serper API key (from DB settings or env var).
+    """
+    key = api_key or SERPER_API_KEY
+    if not key:
+        logger.info("Serper API key not configured — skipping Serper Maps")
+        return []
+
+    results: list[dict] = []
+    try:
+        resp = requests.post(
+            "https://google.serper.dev/maps",
+            headers={"X-API-KEY": key, "Content-Type": "application/json"},
+            json={"q": query, "num": min(max_results, 100)},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        places = data.get("places", [])
+        for place in places[:max_results]:
+            business = {
+                "name": place.get("title", ""),
+                "phone": _clean_phone(place.get("phoneNumber", "") or ""),
+                "website": place.get("website", "") or "",
+                "address": place.get("address", "") or "",
+                "rating": str(place.get("rating", "")) if place.get("rating") else "",
+                "review_count": str(place.get("ratingCount", "")) if place.get("ratingCount") else "",
+                "category": place.get("category", "") or "",
+                "source": "google_maps",
+                "query": query,
+            }
+            if business["name"]:
+                results.append(business)
+
+        logger.info("Serper Maps API returned %d results for: %s", len(results), query)
+    except Exception as e:
+        logger.warning("Serper Maps API error: %s", e)
+
+    return results
 
 
 def _clean_phone(raw: str) -> str:
@@ -357,34 +415,41 @@ async def scrape_google_maps(
     max_results: int = 50,
     delay: float = 3.0,
     use_proxy: Optional[dict] = None,
+    serper_api_key: str = "",
 ) -> list[dict]:
     """Scrape Google Maps for business listings.
 
     Automatic fallback chain:
-      1. Selenium + ChromeDriver (primary, reliable, works in .exe)
-      2. Patchright (optional fallback if Selenium unavailable)
-      3. Returns empty list with error log if both fail
-
-    No API key or user account needed.
+      1. Serper API Maps (PRIMARY — no browser needed, fast, reliable)
+      2. Selenium + ChromeDriver (fallback, needs Chrome on user machine)
+      3. Patchright (optional fallback if Selenium unavailable)
+      4. Returns empty list with error log if all fail
 
     Returns:
         List of dicts with: name, phone, website, address, rating, category, etc.
     """
-    # Method 1: Selenium (PRIMARY)
-    logger.info("Google Maps: Trying Selenium + ChromeDriver...")
+    # Method 1: Serper API Maps (PRIMARY — no browser needed)
+    logger.info("Google Maps: Trying Serper API Maps (primary)...")
+    results = await _scrape_gmaps_serper(query, max_results, serper_api_key)
+    if results:
+        logger.info("Google Maps: Serper API returned %d results", len(results))
+        return results
+
+    # Method 2: Selenium (FALLBACK)
+    logger.info("Google Maps: Serper returned no results, trying Selenium...")
     results = await _scrape_gmaps_selenium(query, max_results, delay)
     if results:
         logger.info("Google Maps: Selenium returned %d results", len(results))
         return results
 
-    # Method 2: Patchright (FALLBACK)
-    logger.info("Google Maps: Selenium returned no results, trying Patchright fallback...")
+    # Method 3: Patchright (OPTIONAL FALLBACK)
+    logger.info("Google Maps: Selenium returned no results, trying Patchright...")
     results = await _scrape_gmaps_patchright(query, max_results, delay, use_proxy)
     if results:
         logger.info("Google Maps: Patchright returned %d results", len(results))
         return results
 
-    logger.warning("Google Maps: Both Selenium and Patchright returned no results for query: %s", query)
+    logger.warning("Google Maps: All methods returned no results for query: %s", query)
     return []
 
 
