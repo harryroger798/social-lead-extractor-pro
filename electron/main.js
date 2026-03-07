@@ -9,8 +9,32 @@ const { spawn, execSync } = require('child_process');
 let mainWindow;
 let backendProcess;
 let backendReady = false;
+let isQuitting = false;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+
+// Handle NSIS installer lifecycle — quit immediately during install/uninstall/update
+if (process.platform === 'win32') {
+  const args = process.argv.slice(1);
+  if (args.includes('--squirrel-install') || args.includes('--squirrel-updated') ||
+      args.includes('--squirrel-uninstall') || args.includes('--squirrel-obsolete')) {
+    app.quit();
+  }
+}
+
+// Allow only a single instance — if a second instance launches (e.g. installer), quit the first one gracefully
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    // The installer or another instance launched — focus existing window
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -253,8 +277,16 @@ function startBackend() {
 
 function stopBackend() {
   if (backendProcess) {
-    backendProcess.kill();
+    try {
+      backendProcess.kill('SIGTERM');
+      // Force kill after 3 seconds if still running
+      const proc = backendProcess;
+      setTimeout(() => {
+        try { proc.kill('SIGKILL'); } catch { /* already dead */ }
+      }, 3000);
+    } catch { /* already dead */ }
     backendProcess = null;
+    backendReady = false;
   }
 }
 
@@ -271,6 +303,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  isQuitting = true;
   stopBackend();
   if (process.platform !== 'darwin') {
     app.quit();
@@ -278,6 +311,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  isQuitting = true;
   stopBackend();
 });
 

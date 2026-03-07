@@ -35,6 +35,16 @@
       "!backend/run_server.py",
       "!**/node_modules/**"
     ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SnapLeads"
+    },
     "win": {
       "target": ["nsis"],
       "icon": "electron/assets/icon.ico"
