@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -84,7 +87,7 @@ jobs:
         run: npm run build:frontend
 
       - name: Build Electron installer
-        run: npm run ${{ matrix.electron_cmd }}
+        run: npx electron-builder --${{ matrix.platform }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
