@@ -20,6 +20,31 @@ _browser = None
 _playwright = None
 
 
+async def _auto_install_chromium():
+    """Auto-install Patchright Chromium browser if not present."""
+    import subprocess
+    import sys
+
+    logger.info("Auto-installing Patchright Chromium browser...")
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, "-m", "patchright", "install", "chromium",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+        if proc.returncode == 0:
+            logger.info("Patchright Chromium installed successfully")
+        else:
+            logger.warning("Patchright install returned code %d: %s", proc.returncode, stderr.decode())
+    except asyncio.TimeoutError:
+        logger.error("Patchright Chromium install timed out after 120s")
+        raise RuntimeError("Browser install timed out")
+    except Exception as e:
+        logger.error("Failed to auto-install Patchright Chromium: %s", e)
+        raise
+
+
 async def get_browser(
     headless: bool = True,
     proxy: Optional[dict] = None,
@@ -63,17 +88,24 @@ async def get_browser(
         # Try bundled Patchright Chromium first, then system Chrome
         try:
             _browser = await _playwright.chromium.launch(**launch_kwargs)
-        except Exception:
-            logger.info("Patchright Chromium not found, trying system Chrome...")
+        except Exception as e1:
+            logger.info("Patchright Chromium not found (%s), trying system Chrome...", e1)
             try:
                 _browser = await _playwright.chromium.launch(
                     channel="chrome", **launch_kwargs
                 )
-            except Exception:
-                logger.info("System Chrome not found, trying Chromium channel...")
-                _browser = await _playwright.chromium.launch(
-                    channel="chromium", **launch_kwargs
-                )
+            except Exception as e2:
+                logger.info("System Chrome not found (%s), auto-installing Patchright Chromium...", e2)
+                # Auto-install Patchright Chromium browser
+                try:
+                    await _auto_install_chromium()
+                    # Retry after install
+                    _browser = await _playwright.chromium.launch(**launch_kwargs)
+                except Exception as e3:
+                    logger.info("Auto-install failed (%s), trying chromium channel...", e3)
+                    _browser = await _playwright.chromium.launch(
+                        channel="chromium", **launch_kwargs
+                    )
 
         logger.info("Patchright browser launched (headless=%s)", headless)
         return _browser

@@ -3,12 +3,13 @@ import {
   Settings as SettingsIcon, Save, Loader2, AlertCircle,
   Key, Globe, Shield, Bell, Database, RefreshCw,
   Wifi, Plus, Trash2, Play, Upload, X, CheckCircle, XCircle,
-  Info, ChevronDown, ChevronRight,
+  Info, ChevronDown, ChevronRight, Crown, LogOut, AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { fetchSettings, updateSetting, fetchProxies, addProxy, bulkImportProxies, testProxy, testAllProxies, deleteProxy, deleteAllProxies, checkFirecrawlCredits } from '@/lib/api';
 import type { ProxyItem } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
+import { useLicense } from '@/contexts/LicenseContext';
 
 const TABS = [
   { id: 'general', label: 'General', icon: SettingsIcon },
@@ -18,6 +19,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'storage', label: 'Storage', icon: Database },
   { id: 'security', label: 'Security', icon: Shield },
+  { id: 'license', label: 'License', icon: Crown },
 ];
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -51,6 +53,9 @@ export default function Settings() {
   const [dirty, setDirty] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const { toast } = useToast();
+  const { license, isPro, deactivate, isActivated } = useLicense();
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [removingLicense, setRemovingLicense] = useState(false);
 
   // Proxy state
   const [proxies, setProxies] = useState<ProxyItem[]>([]);
@@ -614,6 +619,113 @@ export default function Settings() {
               <div className="pt-6 p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during extraction. Configure your proxies in the Proxies tab. Google Dorking does not require proxies.</p>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'license' && (
+            <div>
+              <h3 className="text-base font-semibold text-text-primary pb-2">License Management</h3>
+              <p className="text-xs text-text-muted pb-6">View, remove, or change your license</p>
+
+              {/* Current License Info */}
+              {isActivated && license ? (
+                <div className="space-y-6">
+                  <div className="rounded-xl bg-bg-card border border-[#3f3f46] p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', isPro ? 'bg-amber-400/10 border border-amber-400/20' : 'bg-accent/10 border border-accent/20')}>
+                        <Crown className={cn('w-6 h-6', isPro ? 'text-amber-400' : 'text-accent')} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">{isPro ? 'Pro Edition' : 'Starter Edition'}</p>
+                        <p className={cn('text-xs font-medium', isPro ? 'text-amber-400' : 'text-accent')}>{license.cycle} license</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 rounded-lg bg-white/[0.03] border border-[#3f3f46]">
+                        <p className="text-[10px] uppercase tracking-wider text-text-muted font-semibold pb-1">License Key</p>
+                        <p className="text-sm text-text-primary font-mono">{license.key}</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-white/[0.03] border border-[#3f3f46]">
+                        <p className="text-[10px] uppercase tracking-wider text-text-muted font-semibold pb-1">Activated</p>
+                        <p className="text-sm text-text-primary">{new Date(license.activated_at).toLocaleDateString()}</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-white/[0.03] border border-[#3f3f46]">
+                        <p className="text-[10px] uppercase tracking-wider text-text-muted font-semibold pb-1">Tier</p>
+                        <p className="text-sm text-text-primary capitalize">{license.tier}</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-white/[0.03] border border-[#3f3f46]">
+                        <p className="text-[10px] uppercase tracking-wider text-text-muted font-semibold pb-1">Expires</p>
+                        <p className="text-sm text-text-primary">{license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'Never (Lifetime)'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Remove License */}
+                  <div className="rounded-xl border border-error/20 bg-error/5 p-6 space-y-4">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">Remove License</p>
+                        <p className="text-xs text-text-muted pt-1">This will deactivate your current license and return the app to the license activation screen. You can re-enter the same or a different license key afterward.</p>
+                      </div>
+                    </div>
+
+                    {!showRemoveConfirm ? (
+                      <button
+                        onClick={() => setShowRemoveConfirm(true)}
+                        className="flex items-center gap-2 px-5 py-3 bg-error/10 hover:bg-error/20 border border-error/30 text-error rounded-xl text-sm font-medium transition-all"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Remove License
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={async () => {
+                            setRemovingLicense(true);
+                            try {
+                              await deactivate();
+                              toast('success', 'License removed. You can now enter a new license key.');
+                            } catch {
+                              toast('error', 'Failed to remove license');
+                            } finally {
+                              setRemovingLicense(false);
+                              setShowRemoveConfirm(false);
+                            }
+                          }}
+                          disabled={removingLicense}
+                          className="flex items-center gap-2 px-5 py-3 bg-error hover:bg-red-600 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-error/25"
+                        >
+                          {removingLicense ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                          {removingLicense ? 'Removing...' : 'Yes, Remove License'}
+                        </button>
+                        <button
+                          onClick={() => setShowRemoveConfirm(false)}
+                          className="px-5 py-3 bg-bg-input border border-[#3f3f46] text-text-secondary rounded-xl text-sm font-medium hover:text-text-primary transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 bg-white/[0.03] rounded-xl border border-[#3f3f46]">
+                    <p className="text-xs text-text-muted">After removing your license, you'll be taken to the activation screen where you can enter a new license key. Your extraction data and settings will be preserved.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-bg-card border border-[#3f3f46] p-8 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto">
+                    <Key className="w-8 h-8 text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold text-text-primary">No License Active</p>
+                    <p className="text-sm text-text-muted pt-1">Enter a license key to unlock all features</p>
+                  </div>
+                  <p className="text-xs text-text-muted">The activation screen will appear when you restart the application.</p>
+                </div>
+              )}
             </div>
           )}
           </div>
