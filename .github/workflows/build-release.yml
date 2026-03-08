@@ -47,12 +47,6 @@ jobs:
           pip install pyinstaller
           pip install "fastapi[standard]" uvicorn psycopg[binary] dnspython "requests[socks]" openpyxl python-multipart aiosqlite pydantic-settings python-dotenv aiohttp-socks patchright openai-whisper selenium webdriver-manager
 
-      - name: Download ChromeDriver for bundling
-        run: |
-          pip install webdriver-manager
-          python -c "import os, shutil, sys; from webdriver_manager.chrome import ChromeDriverManager; path = ChromeDriverManager().install(); print(f'ChromeDriver at: {path}'); driver_dir = os.path.dirname(path); [shutil.copy2(os.path.join(driver_dir, f), os.path.join('backend', f)) or print(f'Copied {f}') for f in os.listdir(driver_dir) if f.startswith('chromedriver')]"
-        shell: bash
-
       - name: Build PyInstaller backend binary
         working-directory: backend
         run: |
@@ -74,13 +68,13 @@ jobs:
             --hidden-import=selenium.webdriver.support --hidden-import=selenium.webdriver.support.ui \
             --hidden-import=selenium.webdriver.support.expected_conditions \
             --hidden-import=webdriver_manager --hidden-import=webdriver_manager.chrome \
+            --collect-all webdriver_manager \
             --hidden-import=app.services.patchright_engine \
             --hidden-import=app.services.captcha_solver \
             --hidden-import=app.services.platform_scrapers \
             --collect-all fastapi --collect-all uvicorn \
             --collect-all aiosqlite --collect-all pydantic_settings \
             --add-data "app:app" \
-            --add-binary "chromedriver*:." \
             run_server.py
         shell: bash
 

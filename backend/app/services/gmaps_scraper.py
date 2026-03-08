@@ -42,22 +42,42 @@ def _clean_phone(raw: str) -> str:
 
 
 def _get_chromedriver_path() -> str:
-    """Find ChromeDriver — check bundled location first, then webdriver-manager, then system PATH."""
+    """Get ChromeDriver path — webdriver-manager first (auto-downloads correct version),
+    then bundled, then system PATH.
+
+    webdriver-manager is prioritized because it downloads the ChromeDriver version
+    matching the user's installed Chrome, avoiding version mismatch errors.
+    """
     import os
     import sys
     import shutil
 
-    # Check bundled locations (for .exe / PyInstaller builds)
+    # Method 1: webdriver-manager (auto-downloads correct ChromeDriver for user's Chrome)
+    # This is the BEST method because it matches the user's actual Chrome version
+    try:
+        from webdriver_manager.chrome import ChromeDriverManager
+        driver_path = ChromeDriverManager().install()
+        logger.info("webdriver-manager installed/found ChromeDriver at: %s", driver_path)
+        return driver_path
+    except Exception as e:
+        logger.warning("webdriver-manager failed: %s", e)
+
+    # Method 2: Check system PATH
+    system_driver = shutil.which("chromedriver")
+    if system_driver:
+        logger.info("Found ChromeDriver in system PATH: %s", system_driver)
+        return system_driver
+
+    # Method 3: Check bundled locations (PyInstaller builds) — last resort
+    # Note: bundled ChromeDriver may not match user's Chrome version
     base_dirs = [
         os.path.dirname(__file__),
         os.path.join(os.path.dirname(__file__), "..", ".."),
         os.path.join(os.path.dirname(__file__), "..", "..", ".."),
     ]
-    # Also check PyInstaller _MEIPASS directory
     if hasattr(sys, '_MEIPASS'):
         base_dirs.insert(0, sys._MEIPASS)
         base_dirs.insert(1, os.path.join(sys._MEIPASS, 'chromedriver'))
-    # Check next to the executable itself
     if getattr(sys, 'frozen', False):
         base_dirs.insert(0, os.path.dirname(sys.executable))
 
@@ -67,21 +87,6 @@ def _get_chromedriver_path() -> str:
             if os.path.exists(path):
                 logger.info("Found bundled ChromeDriver at: %s", path)
                 return os.path.abspath(path)
-
-    # Check system PATH
-    system_driver = shutil.which("chromedriver")
-    if system_driver:
-        logger.info("Found ChromeDriver in system PATH: %s", system_driver)
-        return system_driver
-
-    # Use webdriver-manager to auto-download matching ChromeDriver
-    try:
-        from webdriver_manager.chrome import ChromeDriverManager
-        driver_path = ChromeDriverManager().install()
-        logger.info("webdriver-manager installed ChromeDriver at: %s", driver_path)
-        return driver_path
-    except Exception as e:
-        logger.warning("webdriver-manager could not install ChromeDriver: %s", e)
 
     return ""
 
@@ -180,17 +185,44 @@ async def _scrape_gmaps_selenium(
         if chrome_binary:
             options.binary_location = chrome_binary
             logger.info("Using Chrome binary at: %s", chrome_binary)
-
-        # Try to find ChromeDriver (bundled → webdriver-manager → system)
-        chromedriver_path = _get_chromedriver_path()
-        if chromedriver_path:
-            logger.info("Using ChromeDriver at: %s", chromedriver_path)
-            service = Service(executable_path=chromedriver_path)
-            driver = webdriver.Chrome(service=service, options=options)
         else:
-            # Let Selenium find it automatically as last resort
-            logger.info("No ChromeDriver found, letting Selenium auto-detect...")
-            driver = webdriver.Chrome(options=options)
+            logger.warning("Chrome/Chromium binary not found on this system")
+
+        # Strategy: Try webdriver-manager first (downloads correct ChromeDriver),
+        # then Selenium auto-detect, then bundled ChromeDriver as last resort.
+        driver = None
+        last_error = None
+
+        # Attempt 1: webdriver-manager (auto-downloads matching ChromeDriver)
+        try:
+            chromedriver_path = _get_chromedriver_path()
+            if chromedriver_path:
+                logger.info("Using ChromeDriver at: %s", chromedriver_path)
+                service = Service(executable_path=chromedriver_path)
+                driver = webdriver.Chrome(service=service, options=options)
+                logger.info("Selenium: ChromeDriver started successfully")
+        except Exception as e:
+            last_error = e
+            logger.warning("ChromeDriver from webdriver-manager failed: %s", e)
+            driver = None
+
+        # Attempt 2: Let Selenium auto-detect (uses built-in selenium-manager)
+        if driver is None:
+            try:
+                logger.info("Trying Selenium auto-detect (selenium-manager)...")
+                driver = webdriver.Chrome(options=options)
+                logger.info("Selenium: auto-detect started successfully")
+            except Exception as e:
+                last_error = e
+                logger.warning("Selenium auto-detect failed: %s", e)
+                driver = None
+
+        if driver is None:
+            error_msg = str(last_error) if last_error else "Could not start Chrome"
+            raise RuntimeError(
+                f"Failed to start Chrome/ChromeDriver: {error_msg}. "
+                f"Make sure Google Chrome is installed on your system."
+            )
 
         driver.set_page_load_timeout(30)
 
@@ -451,6 +483,8 @@ async def scrape_google_maps(
     Returns:
         List of dicts with: name, phone, website, address, rating, category, etc.
     """
+    errors: list[str] = []
+
     # Method 1: Selenium (PRIMARY)
     logger.info("Google Maps: Trying Selenium + ChromeDriver...")
     try:
@@ -458,7 +492,9 @@ async def scrape_google_maps(
         if results:
             logger.info("Google Maps: Selenium returned %d results", len(results))
             return results
+        errors.append("Selenium returned 0 results")
     except Exception as e:
+        errors.append(f"Selenium: {e}")
         logger.warning("Google Maps: Selenium failed: %s", e)
 
     # Method 2: Patchright (FALLBACK)
@@ -468,7 +504,9 @@ async def scrape_google_maps(
         if results:
             logger.info("Google Maps: Patchright returned %d results", len(results))
             return results
+        errors.append("Patchright returned 0 results")
     except Exception as e:
+        errors.append(f"Patchright: {e}")
         logger.warning("Google Maps: Patchright failed: %s", e)
 
     # Method 3: httpx (BACKUP — lightweight, no browser needed)
@@ -478,11 +516,14 @@ async def scrape_google_maps(
         if results:
             logger.info("Google Maps: httpx returned %d results", len(results))
             return results
+        errors.append("httpx returned 0 results")
     except Exception as e:
+        errors.append(f"httpx: {e}")
         logger.warning("Google Maps: httpx failed: %s", e)
 
-    logger.warning("Google Maps: All methods failed for query: %s", query)
-    return []
+    # All methods failed — raise exception with details so frontend shows real error
+    error_detail = " | ".join(errors) if errors else "Unknown error"
+    raise RuntimeError(f"All Google Maps extraction methods failed: {error_detail}")
 
 
 # ─── Method 3: httpx (BACKUP — no browser needed) ────────────────────────────

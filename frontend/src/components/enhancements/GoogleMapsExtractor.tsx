@@ -29,7 +29,7 @@ export default function GoogleMapsExtractor() {
             setStatus(s.status);
             setResult({ total_leads: s.total_leads, emails_found: s.emails_found, phones_found: s.phones_found });
             if (s.status === 'failed') {
-              setErrorMessage((s as any).error_message || 'Extraction failed. The app will auto-download ChromeDriver on first use. If the issue persists, make sure Google Chrome or Chromium is installed on your system.');
+              setErrorMessage((s as any).error_message || 'Extraction failed. Make sure Google Chrome is installed on your system. The app will auto-download the correct ChromeDriver on first use.');
             }
             setLoading(false);
           }
@@ -205,7 +205,7 @@ export default function GoogleMapsExtractor() {
 
         {status === 'failed' && !loading && (
           <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-4">
-            <p className="text-sm text-red-400">{errorMessage || 'Extraction failed. The app will auto-download ChromeDriver on first use. If the issue persists, make sure Google Chrome or Chromium is installed on your system.'}</p>
+            <p className="text-sm text-red-400">{errorMessage || 'Extraction failed. Make sure Google Chrome is installed on your system. The app will auto-download the correct ChromeDriver on first use.'}</p>
           </div>
         )}
 
