@@ -26,6 +26,7 @@ import type { Section } from '@/types';
 function AppContent() {
   const [activeSection, setActiveSection] = useState<Section>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [resultsSessionFilter, setResultsSessionFilter] = useState<string | undefined>(undefined);
   const { isActivated, isExpired, isLoading } = useLicense();
 
   // Show loading while checking license
@@ -57,9 +58,9 @@ function AppContent() {
       case 'extraction':
         return <NewExtraction />;
       case 'results':
-        return <ResultsView />;
+        return <ResultsView initialSessionId={resultsSessionFilter} onClearSessionFilter={() => setResultsSessionFilter(undefined)} />;
       case 'history':
-        return <History />;
+        return <History onViewSessionResults={(sessionId: string) => { setResultsSessionFilter(sessionId); setActiveSection('results'); }} />;
       case 'blacklist':
         return <BlacklistManager />;
       case 'settings':

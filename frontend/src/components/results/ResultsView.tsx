@@ -6,17 +6,17 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
-import { fetchResults, deleteLead, exportResults, cleanAllResults } from '@/lib/api';
+import { fetchResults, deleteLead, exportResults, cleanAllResults, fetchHistory } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
 import { useLicense } from '@/contexts/LicenseContext';
-import type { LeadItem, CleanResultsResponse } from '@/lib/api';
+import type { LeadItem, CleanResultsResponse, SessionItem } from '@/lib/api';
 
 const PLATFORMS = ['all','linkedin','facebook','instagram','twitter','tiktok','youtube','pinterest','tumblr','reddit','google_maps','telegram','whatsapp'];
 
 type SortColumn = 'email' | 'phone' | 'platform' | 'quality_score' | 'extracted_at';
 type SortDir = 'asc' | 'desc';
 
-export default function ResultsView() {
+export default function ResultsView({ initialSessionId, onClearSessionFilter }: { initialSessionId?: string; onClearSessionFilter?: () => void }) {
   const [leads, setLeads] = useState<LeadItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,14 +32,29 @@ export default function ResultsView() {
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
   const [cleaning, setCleaning] = useState(false);
   const [cleanResult, setCleanResult] = useState<CleanResultsResponse | null>(null);
+  const [sessionId, setSessionId] = useState<string | undefined>(initialSessionId);
+  const [sessions, setSessions] = useState<SessionItem[]>([]);
   const { toast } = useToast();
   const { isPro } = useLicense();
+
+  // Load sessions for the dropdown filter
+  useEffect(() => {
+    fetchHistory().then(setSessions).catch(() => {});
+  }, []);
+
+  // Sync with initialSessionId prop
+  useEffect(() => {
+    if (initialSessionId) {
+      setSessionId(initialSessionId);
+      setPage(1);
+    }
+  }, [initialSessionId]);
 
   const loadResults = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchResults({ page, page_size: 50, search: search || undefined, platform: platform !== 'all' ? platform : undefined, sort_by: sortBy, sort_dir: sortDir });
+      const data = await fetchResults({ page, page_size: 50, search: search || undefined, platform: platform !== 'all' ? platform : undefined, sort_by: sortBy, sort_dir: sortDir, session_id: sessionId });
       setLeads(data.leads);
       setTotalPages(data.total_pages);
       setTotal(data.total);
@@ -48,7 +63,7 @@ export default function ResultsView() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, platform, sortBy, sortDir]);
+  }, [page, search, platform, sortBy, sortDir, sessionId]);
 
   useEffect(() => { loadResults(); }, [loadResults]);
 
@@ -270,6 +285,22 @@ export default function ResultsView() {
         )}
       </div>
 
+      {/* Session Filter Banner */}
+      {sessionId && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent/10 border border-accent/20">
+          <Filter className="w-4 h-4 text-accent flex-shrink-0" />
+          <span className="text-sm text-text-primary">
+            Showing results from: <strong className="text-accent">{sessions.find(s => s.id === sessionId)?.name || 'Selected session'}</strong>
+          </span>
+          <button
+            onClick={() => { setSessionId(undefined); onClearSessionFilter?.(); setPage(1); }}
+            className="ml-auto px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 border border-[#3f3f46] text-text-secondary hover:text-text-primary transition-all"
+          >
+            Show All Results
+          </button>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
@@ -280,6 +311,21 @@ export default function ResultsView() {
             className="w-full pl-11 pr-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
           />
         </div>
+
+        {/* Session Dropdown */}
+        {!sessionId && sessions.length > 0 && (
+          <select
+            value=""
+            onChange={e => { if (e.target.value) { setSessionId(e.target.value); setPage(1); } }}
+            className="px-4 py-3 bg-bg-input border border-[#3f3f46] rounded-xl text-sm text-text-primary focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all appearance-none cursor-pointer"
+          >
+            <option value="">All Sessions</option>
+            {sessions.filter(s => s.total_leads > 0).map(s => (
+              <option key={s.id} value={s.id}>{s.name} ({s.total_leads} leads)</option>
+            ))}
+          </select>
+        )}
+
         <div className="flex items-center gap-1 bg-bg-card rounded-xl border border-[#3f3f46] p-1.5 overflow-x-auto">
           <Filter className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
           {PLATFORMS.map(p => (
