@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
@@ -26,15 +26,21 @@
     "files": [
       "electron/**/*",
       "frontend/dist/**/*",
-      "backend/**/*",
+      "backend/dist/**/*",
+      "backend/app/**/*",
       "!backend/.venv/**",
       "!backend/venv/**",
       "!backend/__pycache__/**",
+      "!backend/**/__pycache__/**",
       "!backend/build/**",
       "!backend/*.spec",
       "!backend/run_server.py",
-          "!**/node_modules/**"
-        ],
+      "!backend/*.json",
+      "!backend/*test*",
+      "!backend/*test*/**",
+      "!backend/.github/**",
+      "!**/node_modules/**"
+    ],
         "asarUnpack": [
           "backend/dist/**"
         ],
@@ -47,7 +53,8 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "SnapLeads",
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "include": "electron/installer.nsh"
     },
     "win": {
       "target": ["nsis"],

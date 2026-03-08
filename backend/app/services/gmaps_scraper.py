@@ -13,7 +13,9 @@ import asyncio
 import re
 import logging
 import time
+import json
 from typing import Optional
+from urllib.parse import quote_plus
 
 from app.services.extractor import extract_emails, extract_phones
 
@@ -442,7 +444,7 @@ async def scrape_google_maps(
     Automatic fallback chain:
       1. Selenium + ChromeDriver (primary, reliable, works in .exe)
       2. Patchright (optional fallback if Selenium unavailable)
-      3. Returns empty list with error log if both fail
+      3. httpx (lightweight HTTP backup — no browser needed)
 
     No API key or user account needed.
 
@@ -451,20 +453,166 @@ async def scrape_google_maps(
     """
     # Method 1: Selenium (PRIMARY)
     logger.info("Google Maps: Trying Selenium + ChromeDriver...")
-    results = await _scrape_gmaps_selenium(query, max_results, delay)
-    if results:
-        logger.info("Google Maps: Selenium returned %d results", len(results))
-        return results
+    try:
+        results = await _scrape_gmaps_selenium(query, max_results, delay)
+        if results:
+            logger.info("Google Maps: Selenium returned %d results", len(results))
+            return results
+    except Exception as e:
+        logger.warning("Google Maps: Selenium failed: %s", e)
 
     # Method 2: Patchright (FALLBACK)
     logger.info("Google Maps: Selenium returned no results, trying Patchright fallback...")
-    results = await _scrape_gmaps_patchright(query, max_results, delay, use_proxy)
-    if results:
-        logger.info("Google Maps: Patchright returned %d results", len(results))
-        return results
+    try:
+        results = await _scrape_gmaps_patchright(query, max_results, delay, use_proxy)
+        if results:
+            logger.info("Google Maps: Patchright returned %d results", len(results))
+            return results
+    except Exception as e:
+        logger.warning("Google Maps: Patchright failed: %s", e)
 
-    logger.warning("Google Maps: Both Selenium and Patchright returned no results for query: %s", query)
+    # Method 3: httpx (BACKUP — lightweight, no browser needed)
+    logger.info("Google Maps: Browser methods failed, trying httpx backup...")
+    try:
+        results = await _scrape_gmaps_httpx(query, max_results)
+        if results:
+            logger.info("Google Maps: httpx returned %d results", len(results))
+            return results
+    except Exception as e:
+        logger.warning("Google Maps: httpx failed: %s", e)
+
+    logger.warning("Google Maps: All methods failed for query: %s", query)
     return []
+
+
+# ─── Method 3: httpx (BACKUP — no browser needed) ────────────────────────────
+
+async def _scrape_gmaps_httpx(
+    query: str,
+    max_results: int = 50,
+) -> list[dict]:
+    """Scrape Google Maps using httpx + regex parsing (lightweight backup).
+
+    This is the BACKUP method — used only when both Selenium and Patchright fail.
+    It searches Google for Google Maps listings and parses the HTML response.
+    Less accurate than browser methods but works without Chrome/ChromeDriver.
+    """
+    try:
+        import httpx
+    except ImportError:
+        try:
+            import requests as httpx  # type: ignore[no-redef]
+        except ImportError:
+            logger.warning("Neither httpx nor requests installed — cannot use httpx backup")
+            return []
+
+    results: list[dict] = []
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+
+    try:
+        # Search Google for Google Maps business listings
+        search_url = f"https://www.google.com/search?q={quote_plus(query + ' site:google.com/maps')}&num={min(max_results, 20)}"
+
+        if hasattr(httpx, 'AsyncClient'):
+            async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+                resp = await client.get(search_url, headers=headers)
+                html = resp.text
+        else:
+            resp = httpx.get(search_url, headers=headers, timeout=20)  # type: ignore[union-attr]
+            html = resp.text
+
+        # Also try the Google Maps search directly
+        maps_search_url = f"https://www.google.com/maps/search/{quote_plus(query)}"
+        if hasattr(httpx, 'AsyncClient'):
+            async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+                maps_resp = await client.get(maps_search_url, headers=headers)
+                maps_html = maps_resp.text
+        else:
+            maps_resp = httpx.get(maps_search_url, headers=headers, timeout=20)  # type: ignore[union-attr]
+            maps_html = maps_resp.text
+
+        # Parse business names and phone numbers from the response
+        # Look for structured data in Google search results
+        phone_pattern = re.compile(r'[\(\+]?\d{1,3}[\s\-\.]?\(?\d{2,4}\)?[\s\-\.]?\d{3,4}[\s\-\.]?\d{3,4}')
+        name_pattern = re.compile(r'class="[^"]*"[^>]*>([^<]{3,60})</(?:h3|span|div|a)')
+
+        all_html = html + maps_html
+
+        # Extract phone numbers
+        phones_found = phone_pattern.findall(all_html)
+        phones_found = list(set(phones_found))[:max_results]
+
+        # Try to extract business info from JSON-LD or structured data
+        json_ld_pattern = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL)
+        json_blocks = json_ld_pattern.findall(all_html)
+
+        for block in json_blocks:
+            try:
+                data = json.loads(block)
+                if isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, dict) and item.get('name'):
+                            biz = {
+                                'name': item.get('name', ''),
+                                'phone': item.get('telephone', ''),
+                                'website': item.get('url', ''),
+                                'address': '',
+                                'rating': str(item.get('aggregateRating', {}).get('ratingValue', '')) if isinstance(item.get('aggregateRating'), dict) else '',
+                                'review_count': str(item.get('aggregateRating', {}).get('reviewCount', '')) if isinstance(item.get('aggregateRating'), dict) else '',
+                                'category': item.get('@type', ''),
+                                'source': 'google_maps_httpx',
+                                'query': query,
+                            }
+                            addr = item.get('address', {})
+                            if isinstance(addr, dict):
+                                biz['address'] = f"{addr.get('streetAddress', '')} {addr.get('addressLocality', '')} {addr.get('addressRegion', '')}".strip()
+                            if biz['name']:
+                                results.append(biz)
+                elif isinstance(data, dict) and data.get('name'):
+                    biz = {
+                        'name': data.get('name', ''),
+                        'phone': data.get('telephone', ''),
+                        'website': data.get('url', ''),
+                        'address': '',
+                        'rating': str(data.get('aggregateRating', {}).get('ratingValue', '')) if isinstance(data.get('aggregateRating'), dict) else '',
+                        'review_count': str(data.get('aggregateRating', {}).get('reviewCount', '')) if isinstance(data.get('aggregateRating'), dict) else '',
+                        'category': data.get('@type', ''),
+                        'source': 'google_maps_httpx',
+                        'query': query,
+                    }
+                    addr = data.get('address', {})
+                    if isinstance(addr, dict):
+                        biz['address'] = f"{addr.get('streetAddress', '')} {addr.get('addressLocality', '')} {addr.get('addressRegion', '')}".strip()
+                    if biz['name']:
+                        results.append(biz)
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+        # If no structured data, create basic entries from phone numbers found
+        if not results and phones_found:
+            for phone in phones_found[:max_results]:
+                cleaned = _clean_phone(phone)
+                if cleaned:
+                    results.append({
+                        'name': f'Business near {query}',
+                        'phone': cleaned,
+                        'website': '',
+                        'address': '',
+                        'rating': '',
+                        'review_count': '',
+                        'category': '',
+                        'source': 'google_maps_httpx',
+                        'query': query,
+                    })
+
+    except Exception as e:
+        logger.error("httpx Google Maps scrape error: %s", e)
+
+    return results[:max_results]
 
 
 async def enrich_gmaps_with_emails(
