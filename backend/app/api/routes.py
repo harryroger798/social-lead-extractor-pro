@@ -465,9 +465,12 @@ async def delete_leads(lead_ids: list[str]) -> dict:
 async def clean_all_results() -> dict:
     """Clean and verify all leads: validate emails/phones, remove duplicates and invalid entries, rescore. Pro-only feature."""
     import re
+    import logging
     from app.services.duplicate_detector import compute_lead_hash
     from app.services.extractor import classify_email, EMAIL_PATTERN, EMAIL_BLACKLIST_COMPILED
     from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    log = logging.getLogger("clean_results")
 
     stats = {
         "status": "cleaned",
@@ -487,6 +490,7 @@ async def clean_all_results() -> dict:
         cursor = await db.execute("SELECT COUNT(*) FROM leads")
         row = await cursor.fetchone()
         stats["total_before"] = row[0] if row else 0
+        log.info("Clean started: %d leads total", stats["total_before"])
 
         if stats["total_before"] == 0:
             return stats
@@ -496,17 +500,24 @@ async def clean_all_results() -> dict:
             "SELECT id, email FROM leads WHERE email != '' AND verified = 0"
         )
         unverified_rows = await cursor.fetchall()
+        log.info("Step 1: %d unverified emails to check", len(unverified_rows))
 
         for r in unverified_rows:
             lead_id, email = r[0], r[1]
-            is_valid = await verify_email(email)
-            if is_valid:
-                await db.execute(
-                    "UPDATE leads SET verified = 1 WHERE id = ?", (lead_id,)
-                )
-                stats["emails_verified"] += 1
-            else:
+            try:
+                is_valid = await verify_email(email)
+                if is_valid:
+                    await db.execute(
+                        "UPDATE leads SET verified = 1 WHERE id = ?", (lead_id,)
+                    )
+                    stats["emails_verified"] += 1
+                else:
+                    stats["emails_failed_verification"] += 1
+            except Exception as e:
+                log.warning("MX check failed for %s: %s", email, e)
                 stats["emails_failed_verification"] += 1
+
+        log.info("Step 1 done: %d verified, %d failed", stats["emails_verified"], stats["emails_failed_verification"])
 
         # ── Step 2: Validate email formats ──
         cursor = await db.execute("SELECT id, email FROM leads WHERE email != ''")
@@ -530,6 +541,7 @@ async def clean_all_results() -> dict:
                 f"UPDATE leads SET email = '', email_type = 'unknown', verified = 0 WHERE id IN ({placeholders})",
                 invalid_email_ids,
             )
+        log.info("Step 2: %d invalid emails cleared (of %d checked)", len(invalid_email_ids), len(email_rows))
 
         # ── Step 3: Validate phone numbers ──
         cursor = await db.execute("SELECT id, phone FROM leads WHERE phone != ''")
@@ -547,22 +559,34 @@ async def clean_all_results() -> dict:
                 )
                 stats["phones_invalid"] += 1
 
+        log.info("Step 3: %d phones valid, %d invalid (of %d checked)", stats["phones_validated"], stats["phones_invalid"], len(phone_rows))
+
         # ── Step 4: Remove leads with NO useful info at all ──
-        # Keep leads that have at least a name/username, email, or phone
+        # Only remove leads that have ALL fields empty: no email, no phone, AND no name
+        # Also check source_url and keyword as fallback identifiers
         cursor = await db.execute(
-            "SELECT id FROM leads WHERE "
+            "SELECT id, email, phone, name, source_url, keyword, platform FROM leads WHERE "
             "(email = '' OR email IS NULL) AND "
             "(phone = '' OR phone IS NULL) AND "
             "(name = '' OR name IS NULL)"
         )
         no_contact_rows = await cursor.fetchall()
         no_contact_ids = [r[0] for r in no_contact_rows]
-        if no_contact_ids:
+        log.info("Step 4: %d leads have no email/phone/name", len(no_contact_ids))
+
+        # SAFETY: Do NOT delete more than 80% of leads — something is wrong if so
+        max_safe_delete = int(stats["total_before"] * 0.8)
+        if len(no_contact_ids) > max_safe_delete:
+            log.warning("Step 4 ABORTED: would delete %d/%d leads (>80%%) — skipping deletion",
+                        len(no_contact_ids), stats["total_before"])
+            stats["invalid_removed"] = 0
+        elif no_contact_ids:
             placeholders = ",".join("?" for _ in no_contact_ids)
             await db.execute(
                 f"DELETE FROM leads WHERE id IN ({placeholders})", no_contact_ids
             )
             stats["invalid_removed"] = len(no_contact_ids)
+            log.info("Step 4: deleted %d leads with no contact info", len(no_contact_ids))
 
         # ── Step 5: Remove duplicates (keep first occurrence) ──
         cursor = await db.execute(
@@ -579,12 +603,21 @@ async def clean_all_results() -> dict:
             else:
                 seen_hashes.add(h)
 
-        if dup_ids:
+        log.info("Step 5: %d duplicates found (of %d remaining)", len(dup_ids), len(all_rows))
+
+        # SAFETY: Do NOT remove more than 80% as duplicates
+        remaining_count = len(all_rows)
+        max_safe_dedup = int(remaining_count * 0.8)
+        if len(dup_ids) > max_safe_dedup and remaining_count > 10:
+            log.warning("Step 5 ABORTED: would remove %d/%d as duplicates (>80%%) — skipping",
+                        len(dup_ids), remaining_count)
+        elif dup_ids:
             placeholders = ",".join("?" for _ in dup_ids)
             await db.execute(
                 f"DELETE FROM leads WHERE id IN ({placeholders})", dup_ids
             )
             stats["duplicates_removed"] = len(dup_ids)
+            log.info("Step 5: removed %d duplicates", len(dup_ids))
 
         # ── Step 6: Re-score all remaining leads ──
         cursor = await db.execute(
@@ -593,10 +626,16 @@ async def clean_all_results() -> dict:
         remaining_rows = await cursor.fetchall()
 
         for r in remaining_rows:
-            email_type = classify_email(r[1]) if r[1] else (r[5] or "unknown")
+            email_val = r[1] if r[1] else ""
+            phone_val = r[2] if r[2] else ""
+            name_val = r[3] if r[3] else ""
+            verified_val = bool(r[4]) if r[4] else False
+            email_type_val = r[5] if r[5] else "unknown"
+
+            email_type = classify_email(email_val) if email_val else email_type_val
             new_score = calculate_lead_score(
-                email=r[1], phone=r[2], name=r[3],
-                verified=bool(r[4]), email_type=email_type,
+                email=email_val, phone=phone_val, name=name_val,
+                verified=verified_val, email_type=email_type,
             )
             category = get_score_label(new_score)
             await db.execute(
@@ -605,12 +644,16 @@ async def clean_all_results() -> dict:
             )
             stats["leads_rescored"] += 1
 
+        log.info("Step 6: rescored %d leads", stats["leads_rescored"])
+
         await db.commit()
 
         # Count total leads after cleaning
         cursor = await db.execute("SELECT COUNT(*) FROM leads")
         row = await cursor.fetchone()
         stats["total_after"] = row[0] if row else 0
+
+        log.info("Clean complete: %d → %d leads", stats["total_before"], stats["total_after"])
 
     return stats
 
