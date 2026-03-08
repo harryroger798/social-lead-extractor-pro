@@ -547,9 +547,13 @@ async def clean_all_results() -> dict:
                 )
                 stats["phones_invalid"] += 1
 
-        # ── Step 4: Remove leads with NO valid contact info ──
+        # ── Step 4: Remove leads with NO useful info at all ──
+        # Keep leads that have at least a name/username, email, or phone
         cursor = await db.execute(
-            "SELECT id FROM leads WHERE (email = '' OR email IS NULL) AND (phone = '' OR phone IS NULL)"
+            "SELECT id FROM leads WHERE "
+            "(email = '' OR email IS NULL) AND "
+            "(phone = '' OR phone IS NULL) AND "
+            "(name = '' OR name IS NULL)"
         )
         no_contact_rows = await cursor.fetchall()
         no_contact_ids = [r[0] for r in no_contact_rows]
