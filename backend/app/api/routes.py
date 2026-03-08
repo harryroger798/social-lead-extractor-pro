@@ -158,11 +158,50 @@ async def _load_proxy_pool() -> None:
             })
 
 
+async def _update_progress(
+    session_id: str, progress: int, status_message: str,
+    current_platform: str = "", leads_so_far: int = 0,
+    emails_so_far: int = 0, phones_so_far: int = 0,
+) -> None:
+    """Update extraction progress in real-time."""
+    async with get_db() as db:
+        await db.execute(
+            """UPDATE sessions SET progress=?, status_message=?, current_platform=?,
+               total_leads=?, emails_found=?, phones_found=?
+            WHERE id=?""",
+            (progress, status_message, current_platform,
+             leads_so_far, emails_so_far, phones_so_far, session_id),
+        )
+        await db.commit()
+
+
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     """Background task to run extraction."""
     all_leads: list[dict] = []
 
     try:
+        # Calculate total steps for progress tracking
+        non_reddit_platforms = [p for p in config.platforms if p != "reddit"]
+        has_reddit = "reddit" in config.platforms
+        enabled_methods = sum([
+            config.use_google_dorking and len(non_reddit_platforms) > 0,
+            config.use_direct_scraping and len(non_reddit_platforms) > 0,
+            has_reddit,
+            config.use_firecrawl_enrichment,
+        ])
+        total_steps = max(enabled_methods, 1)
+        current_step = 0
+
+        def _calc_progress() -> int:
+            return min(int((current_step / total_steps) * 95), 95)  # Reserve 5% for DB save
+
+        def _count_leads() -> tuple[int, int, int]:
+            emails = sum(1 for ld in all_leads if ld.get("email"))
+            phones = sum(1 for ld in all_leads if ld.get("phone"))
+            return len(all_leads), emails, phones
+
+        await _update_progress(session_id, 2, "Initializing extraction...", "", 0, 0, 0)
+
         # Load proxy pool if proxies are enabled
         if config.use_proxies:
             await _load_proxy_pool()
@@ -177,13 +216,38 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             row = await cursor.fetchone()
             serper_api_key = row[0] if row else ""
 
-        # Google dorking for non-Reddit platforms
-        # Method 1: Serper API (PRIMARY, reliable) → Method 2: Patchright (optional fallback)
-        if config.use_google_dorking:
-            non_reddit = [p for p in config.platforms if p != "reddit"]
-            if non_reddit:
+        # ── Reddit extraction (fast, runs first) ─────────────────────────
+        if has_reddit:
+            await _update_progress(session_id, _calc_progress(),
+                "Searching Reddit via RSS...", "reddit", *_count_leads())
+            for keyword in config.keywords:
+                result = await reddit_search(keyword)
+                for email in result.get("emails", []):
+                    all_leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "reddit",
+                        "source_url": result["sources"][0] if result.get("sources") else "",
+                        "keyword": keyword,
+                    })
+                for phone in result.get("phones", []):
+                    all_leads.append({
+                        "email": "", "phone": phone, "name": "",
+                        "platform": "reddit",
+                        "source_url": result["sources"][0] if result.get("sources") else "",
+                        "keyword": keyword,
+                    })
+            current_step += 1
+            await _update_progress(session_id, _calc_progress(),
+                f"Reddit done — {_count_leads()[0]} leads so far", "reddit", *_count_leads())
+
+        # ── Google Dorking for non-Reddit platforms ───────────────────────
+        if config.use_google_dorking and non_reddit_platforms:
+            for idx, platform in enumerate(non_reddit_platforms):
+                await _update_progress(session_id, _calc_progress(),
+                    f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
+                    platform, *_count_leads())
                 results = await dorking_search_multi(
-                    config.keywords, non_reddit,
+                    config.keywords, [platform],
                     pages=config.pages_per_keyword,
                     delay=config.delay_between_requests,
                     serper_api_key=serper_api_key,
@@ -192,70 +256,54 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 )
                 for result in results:
                     for email in result.get("emails", []):
-                        lead = {
-                            "email": email,
-                            "phone": "",
-                            "name": "",
+                        all_leads.append({
+                            "email": email, "phone": "", "name": "",
                             "platform": result["platform"],
                             "source_url": result["sources"][0] if result.get("sources") else "",
                             "keyword": result["keyword"],
-                        }
-                        all_leads.append(lead)
+                        })
                     for phone in result.get("phones", []):
-                        lead = {
-                            "email": "",
-                            "phone": phone,
-                            "name": "",
+                        all_leads.append({
+                            "email": "", "phone": phone, "name": "",
                             "platform": result["platform"],
                             "source_url": result["sources"][0] if result.get("sources") else "",
                             "keyword": result["keyword"],
-                        }
-                        all_leads.append(lead)
+                        })
+                # Update after each platform
+                await _update_progress(session_id, _calc_progress(),
+                    f"Google Dorking: {platform} done — {_count_leads()[0]} leads",
+                    platform, *_count_leads())
+            current_step += 1
 
-        # Direct platform scraping (optional, uses Patchright)
-        if config.use_direct_scraping:
+        # ── Direct platform scraping (Patchright) ────────────────────────
+        if config.use_direct_scraping and non_reddit_platforms:
             try:
                 from app.services.platform_scrapers import scrape_all_platforms_direct
-                non_reddit = [p for p in config.platforms if p != "reddit"]
-                if non_reddit:
+                for idx, platform in enumerate(non_reddit_platforms):
+                    await _update_progress(session_id, _calc_progress(),
+                        f"Direct Scraping: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
+                        platform, *_count_leads())
                     direct_leads = await scrape_all_platforms_direct(
-                        config.keywords, non_reddit,
+                        config.keywords, [platform],
                         max_results_per=config.pages_per_keyword * 5,
                         delay=config.delay_between_requests,
                         headless=True,
                     )
                     all_leads.extend(direct_leads)
+                    await _update_progress(session_id, _calc_progress(),
+                        f"Direct Scraping: {platform} done — {_count_leads()[0]} leads",
+                        platform, *_count_leads())
             except Exception as e:
                 import logging
                 logging.getLogger(__name__).warning("Direct scraping failed: %s", e)
+                await _update_progress(session_id, _calc_progress(),
+                    f"Direct Scraping failed: {e}", "", *_count_leads())
+            current_step += 1
 
-        # Reddit extraction
-        if "reddit" in config.platforms:
-            for keyword in config.keywords:
-                result = await reddit_search(keyword)
-                for email in result.get("emails", []):
-                    lead = {
-                        "email": email,
-                        "phone": "",
-                        "name": "",
-                        "platform": "reddit",
-                        "source_url": result["sources"][0] if result.get("sources") else "",
-                        "keyword": keyword,
-                    }
-                    all_leads.append(lead)
-                for phone in result.get("phones", []):
-                    lead = {
-                        "email": "",
-                        "phone": phone,
-                        "name": "",
-                        "platform": "reddit",
-                        "source_url": result["sources"][0] if result.get("sources") else "",
-                        "keyword": keyword,
-                    }
-                    all_leads.append(lead)
-
-        # Firecrawl enrichment — scrape business websites for additional contacts
+        # ── Firecrawl enrichment ──────────────────────────────────────────
         if config.use_firecrawl_enrichment:
+            await _update_progress(session_id, _calc_progress(),
+                "Running Firecrawl enrichment...", "firecrawl", *_count_leads())
             async with get_db() as db:
                 cursor = await db.execute(
                     "SELECT value FROM settings WHERE key = 'firecrawl_api_key'"
@@ -268,6 +316,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     all_leads, firecrawl_key, max_urls=50
                 )
                 all_leads.extend(enriched)
+            current_step += 1
+            await _update_progress(session_id, _calc_progress(),
+                f"Firecrawl done — {_count_leads()[0]} leads total", "", *_count_leads())
+
+        await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
 
         # Process leads: classify, score, verify, and store
         async with get_db() as db:
@@ -319,19 +372,22 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await db.execute(
                 """UPDATE sessions SET
                     status='completed', total_leads=?, emails_found=?, phones_found=?,
-                    completed_at=?, duration=?, progress=100
+                    completed_at=?, duration=?, progress=100,
+                    status_message=?, current_platform=''
                 WHERE id=?""",
                 (total, emails_found, phones_found,
                  datetime.now().isoformat(),
-                 0, session_id),
+                 0, f"Extraction complete — {total} leads found", session_id),
             )
             await db.commit()
 
     except Exception as e:
         async with get_db() as db:
             await db.execute(
-                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
-                (datetime.now().isoformat(), session_id),
+                """UPDATE sessions SET status='failed', completed_at=?,
+                   status_message=?, current_platform=''
+                WHERE id=?""",
+                (datetime.now().isoformat(), f"Extraction failed: {e}", session_id),
             )
             await db.commit()
 
@@ -371,11 +427,15 @@ async def get_extraction_status(session_id: str) -> dict:
             "total_leads": row[5], "emails_found": row[6],
             "phones_found": row[7], "progress": row[11],
         }
-        # Include error_message if column exists
+        # Include extra columns if they exist
         try:
             keys = row.keys()
             if "error_message" in keys:
                 result["error_message"] = row["error_message"] or ""
+            if "current_platform" in keys:
+                result["current_platform"] = row["current_platform"] or ""
+            if "status_message" in keys:
+                result["status_message"] = row["status_message"] or ""
         except Exception:
             pass
         return result

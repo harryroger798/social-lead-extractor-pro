@@ -164,6 +164,17 @@ export default function NewExtraction() {
                   style={{ width: `${status.progress}%` }}
                 />
               </div>
+              {/* Live status message */}
+              {status.status_message && (
+                <div className="flex items-center gap-3 pt-4 mt-4 border-t border-border">
+                  {status.current_platform && (
+                    <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-accent/15 text-accent uppercase tracking-wide">
+                      {status.current_platform}
+                    </span>
+                  )}
+                  <p className="text-sm text-text-secondary flex-1">{status.status_message}</p>
+                </div>
+              )}
             </div>
 
             {/* Stats */}
