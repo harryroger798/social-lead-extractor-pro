@@ -111,25 +111,25 @@ export default function LicenseActivation() {
         </div>
 
         {/* Plans Info */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="card p-5 space-y-3">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-text-primary">Starter</span>
+        <div className="grid grid-cols-2 gap-5">
+          <div className="card p-6 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <Zap className="w-5 h-5 text-accent" />
+              <span className="text-sm font-bold text-text-primary">Starter</span>
             </div>
-            <ul className="space-y-1.5 text-xs text-text-secondary">
+            <ul className="space-y-2.5 text-[13px] leading-relaxed text-text-secondary">
               <li>5 social platforms</li>
               <li>Google Dorking extraction</li>
               <li>CSV/Excel export</li>
               <li>Email verification</li>
             </ul>
           </div>
-          <div className="card p-5 space-y-3 border-accent/30">
-            <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-400" />
-              <span className="text-sm font-semibold text-text-primary">Pro</span>
+          <div className="card p-6 space-y-4 border-amber-500/30">
+            <div className="flex items-center gap-2.5">
+              <Crown className="w-5 h-5 text-amber-400" />
+              <span className="text-sm font-bold text-text-primary">Pro</span>
             </div>
-            <ul className="space-y-1.5 text-xs text-text-secondary">
+            <ul className="space-y-2.5 text-[13px] leading-relaxed text-text-secondary">
               <li>12 platforms + Google Maps</li>
               <li>Scheduled extractions</li>
               <li>Email outreach + CRM</li>

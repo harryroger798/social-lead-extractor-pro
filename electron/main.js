@@ -17,7 +17,8 @@ const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 if (process.platform === 'win32') {
   const args = process.argv.slice(1);
   if (args.includes('--squirrel-install') || args.includes('--squirrel-updated') ||
-      args.includes('--squirrel-uninstall') || args.includes('--squirrel-obsolete')) {
+      args.includes('--squirrel-uninstall') || args.includes('--squirrel-obsolete') ||
+      args.includes('--updated') || args.includes('--install')) {
     app.quit();
   }
 }
@@ -25,10 +26,23 @@ if (process.platform === 'win32') {
 // Allow only a single instance — if a second instance launches (e.g. installer), quit the first one gracefully
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
+  // Another instance is running — this may be the installer trying to launch.
+  // Quit this instance so the installer can proceed without the "Retry" dialog.
   app.quit();
 } else {
-  app.on('second-instance', () => {
-    // The installer or another instance launched — focus existing window
+  app.on('second-instance', (_event, commandLine) => {
+    // The installer or another instance launched
+    // If it looks like an installer/updater, quit gracefully so installation can proceed
+    const isInstaller = commandLine.some(arg =>
+      arg.includes('--squirrel') || arg.includes('--updated') ||
+      arg.includes('--install') || arg.includes('Temp') ||
+      arg.includes('nsis') || arg.includes('Setup')
+    );
+    if (isInstaller) {
+      app.quit();
+      return;
+    }
+    // Otherwise just focus existing window
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();

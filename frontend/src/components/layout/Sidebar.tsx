@@ -22,6 +22,7 @@ import {
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
 import { useLicense, PRO_ONLY_FEATURES, type UserRole } from '@/contexts/LicenseContext';
+import { APP_VERSION } from '@/lib/version';
 
 interface SidebarProps {
   activeSection: Section;
@@ -168,7 +169,7 @@ export default function Sidebar({ activeSection, onSectionChange, collapsed, onT
         {!collapsed && license && (
           <div className="px-3.5 py-3 rounded-xl bg-zinc-800/40 border border-[#3f3f46]">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-text-muted font-medium">Version 2.2.0</p>
+              <p className="text-[11px] text-text-muted font-medium">Version {APP_VERSION}</p>
               <button
                 onClick={deactivate}
                 className="text-text-muted hover:text-error transition-colors"
