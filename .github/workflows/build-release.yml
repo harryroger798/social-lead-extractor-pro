@@ -50,20 +50,7 @@ jobs:
       - name: Download ChromeDriver for bundling
         run: |
           pip install webdriver-manager
-          python -c "
-import os, shutil, sys
-from webdriver_manager.chrome import ChromeDriverManager
-path = ChromeDriverManager().install()
-print(f'ChromeDriver downloaded to: {path}')
-# Copy chromedriver binary to backend/ for bundling
-driver_dir = os.path.dirname(path)
-for f in os.listdir(driver_dir):
-    if f.startswith('chromedriver'):
-        src = os.path.join(driver_dir, f)
-        dst = os.path.join('backend', f)
-        shutil.copy2(src, dst)
-        print(f'Copied {src} -> {dst}')
-"
+          python -c "import os, shutil, sys; from webdriver_manager.chrome import ChromeDriverManager; path = ChromeDriverManager().install(); print(f'ChromeDriver at: {path}'); driver_dir = os.path.dirname(path); [shutil.copy2(os.path.join(driver_dir, f), os.path.join('backend', f)) or print(f'Copied {f}') for f in os.listdir(driver_dir) if f.startswith('chromedriver')]"
         shell: bash
 
       - name: Build PyInstaller backend binary
