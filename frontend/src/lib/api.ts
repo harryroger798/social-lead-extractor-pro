@@ -203,8 +203,21 @@ export function checkFirecrawlCredits() {
 
 // ─── Clean Results (Pro-only) ───────────────────────────────────────────────
 
+export interface CleanResultsResponse {
+  status: string;
+  total_before: number;
+  total_after: number;
+  emails_verified: number;
+  emails_failed_verification: number;
+  phones_validated: number;
+  phones_invalid: number;
+  duplicates_removed: number;
+  invalid_removed: number;
+  leads_rescored: number;
+}
+
 export function cleanAllResults() {
-  return request<{ status: string; leads_deleted: number }>('/api/results/clean', {
+  return request<CleanResultsResponse>('/api/results/clean', {
     method: 'POST',
   });
 }

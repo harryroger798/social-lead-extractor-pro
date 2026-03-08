@@ -463,17 +463,152 @@ async def delete_leads(lead_ids: list[str]) -> dict:
 
 @router.post("/results/clean")
 async def clean_all_results() -> dict:
-    """Delete ALL leads and their associated sessions. Pro-only feature."""
+    """Clean and verify all leads: validate emails/phones, remove duplicates and invalid entries, rescore. Pro-only feature."""
+    import re
+    from app.services.duplicate_detector import compute_lead_hash
+    from app.services.extractor import classify_email, EMAIL_PATTERN, EMAIL_BLACKLIST_COMPILED
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    stats = {
+        "status": "cleaned",
+        "total_before": 0,
+        "total_after": 0,
+        "emails_verified": 0,
+        "emails_failed_verification": 0,
+        "phones_validated": 0,
+        "phones_invalid": 0,
+        "duplicates_removed": 0,
+        "invalid_removed": 0,
+        "leads_rescored": 0,
+    }
+
     async with get_db() as db:
+        # Count total leads before cleaning
         cursor = await db.execute("SELECT COUNT(*) FROM leads")
         row = await cursor.fetchone()
-        total_deleted = row[0] if row else 0
+        stats["total_before"] = row[0] if row else 0
 
-        await db.execute("DELETE FROM leads")
-        await db.execute("DELETE FROM sessions")
+        if stats["total_before"] == 0:
+            return stats
+
+        # ── Step 1: Verify all unverified emails via MX records ──
+        cursor = await db.execute(
+            "SELECT id, email FROM leads WHERE email != '' AND verified = 0"
+        )
+        unverified_rows = await cursor.fetchall()
+
+        for r in unverified_rows:
+            lead_id, email = r[0], r[1]
+            is_valid = await verify_email(email)
+            if is_valid:
+                await db.execute(
+                    "UPDATE leads SET verified = 1 WHERE id = ?", (lead_id,)
+                )
+                stats["emails_verified"] += 1
+            else:
+                stats["emails_failed_verification"] += 1
+
+        # ── Step 2: Validate email formats ──
+        cursor = await db.execute("SELECT id, email FROM leads WHERE email != ''")
+        email_rows = await cursor.fetchall()
+        invalid_email_ids: list[str] = []
+
+        for r in email_rows:
+            lead_id, email = r[0], r[1]
+            # Check basic format
+            if not EMAIL_PATTERN.fullmatch(email):
+                invalid_email_ids.append(lead_id)
+                continue
+            # Check against blacklist patterns (noreply, file extensions, etc.)
+            if any(bp.match(email.lower()) for bp in EMAIL_BLACKLIST_COMPILED):
+                invalid_email_ids.append(lead_id)
+
+        # Clear invalid emails (set to empty, don't delete lead yet — phone may be valid)
+        if invalid_email_ids:
+            placeholders = ",".join("?" for _ in invalid_email_ids)
+            await db.execute(
+                f"UPDATE leads SET email = '', email_type = 'unknown', verified = 0 WHERE id IN ({placeholders})",
+                invalid_email_ids,
+            )
+
+        # ── Step 3: Validate phone numbers ──
+        cursor = await db.execute("SELECT id, phone FROM leads WHERE phone != ''")
+        phone_rows = await cursor.fetchall()
+
+        for r in phone_rows:
+            lead_id, phone = r[0], r[1]
+            digits = re.sub(r'[^\d]', '', phone)
+            if 7 <= len(digits) <= 15:
+                stats["phones_validated"] += 1
+            else:
+                # Invalid phone — clear it
+                await db.execute(
+                    "UPDATE leads SET phone = '' WHERE id = ?", (lead_id,)
+                )
+                stats["phones_invalid"] += 1
+
+        # ── Step 4: Remove leads with NO valid contact info ──
+        cursor = await db.execute(
+            "SELECT id FROM leads WHERE (email = '' OR email IS NULL) AND (phone = '' OR phone IS NULL)"
+        )
+        no_contact_rows = await cursor.fetchall()
+        no_contact_ids = [r[0] for r in no_contact_rows]
+        if no_contact_ids:
+            placeholders = ",".join("?" for _ in no_contact_ids)
+            await db.execute(
+                f"DELETE FROM leads WHERE id IN ({placeholders})", no_contact_ids
+            )
+            stats["invalid_removed"] = len(no_contact_ids)
+
+        # ── Step 5: Remove duplicates (keep first occurrence) ──
+        cursor = await db.execute(
+            "SELECT id, email, phone, name FROM leads ORDER BY extracted_at ASC"
+        )
+        all_rows = await cursor.fetchall()
+        seen_hashes: set[str] = set()
+        dup_ids: list[str] = []
+
+        for r in all_rows:
+            h = compute_lead_hash(r[1], r[2], r[3])
+            if h in seen_hashes:
+                dup_ids.append(r[0])
+            else:
+                seen_hashes.add(h)
+
+        if dup_ids:
+            placeholders = ",".join("?" for _ in dup_ids)
+            await db.execute(
+                f"DELETE FROM leads WHERE id IN ({placeholders})", dup_ids
+            )
+            stats["duplicates_removed"] = len(dup_ids)
+
+        # ── Step 6: Re-score all remaining leads ──
+        cursor = await db.execute(
+            "SELECT id, email, phone, name, verified, email_type FROM leads"
+        )
+        remaining_rows = await cursor.fetchall()
+
+        for r in remaining_rows:
+            email_type = classify_email(r[1]) if r[1] else (r[5] or "unknown")
+            new_score = calculate_lead_score(
+                email=r[1], phone=r[2], name=r[3],
+                verified=bool(r[4]), email_type=email_type,
+            )
+            category = get_score_label(new_score)
+            await db.execute(
+                "UPDATE leads SET quality_score=?, email_type=? WHERE id=?",
+                (new_score, email_type, r[0]),
+            )
+            stats["leads_rescored"] += 1
+
         await db.commit()
 
-    return {"status": "cleaned", "leads_deleted": total_deleted}
+        # Count total leads after cleaning
+        cursor = await db.execute("SELECT COUNT(*) FROM leads")
+        row = await cursor.fetchone()
+        stats["total_after"] = row[0] if row else 0
+
+    return stats
 
 
 # ─── History / Sessions ───────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ import { cn, formatDate } from '@/lib/utils';
 import { fetchResults, deleteLead, exportResults, cleanAllResults } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
 import { useLicense } from '@/contexts/LicenseContext';
-import type { LeadItem } from '@/lib/api';
+import type { LeadItem, CleanResultsResponse } from '@/lib/api';
 
 const PLATFORMS = ['all','linkedin','facebook','instagram','twitter','tiktok','youtube','pinterest','tumblr','reddit','google_maps','telegram','whatsapp'];
 
@@ -31,6 +31,7 @@ export default function ResultsView() {
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [cleanResult, setCleanResult] = useState<CleanResultsResponse | null>(null);
   const { toast } = useToast();
   const { isPro } = useLicense();
 
@@ -82,14 +83,14 @@ export default function ResultsView() {
   const handleCleanResults = async () => {
     try {
       setCleaning(true);
+      setCleanResult(null);
       const result = await cleanAllResults();
-      setLeads([]);
-      setTotal(0);
-      setTotalPages(1);
-      setPage(1);
-      setSelected(new Set());
+      setCleanResult(result);
       setShowCleanConfirm(false);
-      toast('success', `Cleaned ${result.leads_deleted.toLocaleString()} leads`);
+      // Reload results to show cleaned data
+      await loadResults();
+      const removed = result.duplicates_removed + result.invalid_removed;
+      toast('success', `Verified ${result.emails_verified} emails, removed ${removed} bad leads, rescored ${result.leads_rescored} leads`);
     } catch {
       toast('error', 'Failed to clean results');
     } finally {
@@ -157,23 +158,31 @@ export default function ResultsView() {
             {isPro && total > 0 && (
               <div className="relative">
                 <button
-                  onClick={() => setShowCleanConfirm(!showCleanConfirm)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-error/10 border border-error/20 text-error hover:bg-error/20 hover:border-error/30 transition-all"
+                  onClick={() => { setShowCleanConfirm(!showCleanConfirm); setCleanResult(null); }}
+                  disabled={cleaning}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 hover:border-accent/30 transition-all disabled:opacity-50"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  Clean Results
+                  {cleaning ? 'Cleaning...' : 'Clean Results'}
                 </button>
-                {showCleanConfirm && (
-                  <div className="absolute right-0 top-full mt-2 w-72 bg-bg-card border border-[#3f3f46] rounded-xl shadow-2xl p-4 z-50">
-                    <p className="text-sm font-semibold text-text-primary mb-1">Clean all results?</p>
-                    <p className="text-xs text-text-muted mb-4">This will permanently delete all {total.toLocaleString()} leads and extraction history. This action cannot be undone.</p>
+                {showCleanConfirm && !cleaning && (
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-bg-card border border-[#3f3f46] rounded-xl shadow-2xl p-4 z-50">
+                    <p className="text-sm font-semibold text-text-primary mb-1">Clean & verify results?</p>
+                    <p className="text-xs text-text-muted mb-3">This will verify and clean your {total.toLocaleString()} leads:</p>
+                    <ul className="text-xs text-text-muted mb-4 space-y-1.5">
+                      <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-success flex-shrink-0" />Verify emails (MX record check)</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-success flex-shrink-0" />Validate phone number formats</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-success flex-shrink-0" />Remove duplicates</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-success flex-shrink-0" />Remove invalid/fake contacts</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-success flex-shrink-0" />Re-score lead quality</li>
+                    </ul>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleCleanResults}
                         disabled={cleaning}
-                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-error hover:bg-red-600 text-white transition-all disabled:opacity-50"
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-accent hover:bg-accent-hover text-white transition-all disabled:opacity-50"
                       >
-                        {cleaning ? 'Cleaning...' : 'Yes, Clean All'}
+                        {cleaning ? 'Cleaning...' : 'Yes, Clean & Verify'}
                       </button>
                       <button
                         onClick={() => setShowCleanConfirm(false)}
@@ -181,6 +190,27 @@ export default function ResultsView() {
                       >
                         Cancel
                       </button>
+                    </div>
+                  </div>
+                )}
+                {cleanResult && (
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-bg-card border border-accent/30 rounded-xl shadow-2xl p-4 z-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-semibold text-text-primary">Cleaning Complete</p>
+                      <button onClick={() => setCleanResult(null)} className="text-text-muted hover:text-text-primary"><XCircle className="w-4 h-4" /></button>
+                    </div>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between"><span className="text-text-muted">Emails verified</span><span className="text-success font-semibold">{cleanResult.emails_verified}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Emails failed verification</span><span className="text-warning font-semibold">{cleanResult.emails_failed_verification}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Phones validated</span><span className="text-success font-semibold">{cleanResult.phones_validated}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Invalid phones removed</span><span className="text-error font-semibold">{cleanResult.phones_invalid}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Duplicates removed</span><span className="text-error font-semibold">{cleanResult.duplicates_removed}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Invalid leads removed</span><span className="text-error font-semibold">{cleanResult.invalid_removed}</span></div>
+                      <div className="flex justify-between"><span className="text-text-muted">Leads rescored</span><span className="text-accent font-semibold">{cleanResult.leads_rescored}</span></div>
+                      <div className="border-t border-[#3f3f46] pt-2 mt-2 flex justify-between">
+                        <span className="text-text-secondary font-medium">Before / After</span>
+                        <span className="text-text-primary font-bold">{cleanResult.total_before} → {cleanResult.total_after}</span>
+                      </div>
                     </div>
                   </div>
                 )}
