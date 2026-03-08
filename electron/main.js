@@ -494,6 +494,7 @@ ipcMain.handle('license-activate-online', async (_event, licenseKey) => {
               key: licenseKey,
               tier: tier,
               cycle: cycle,
+              role: result.role || 'user',
               activated_at: new Date().toISOString(),
               expires_at: result.expires_at || null,
               device_id: deviceId,
