@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
@@ -46,7 +46,8 @@
       "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "SnapLeads"
+      "shortcutName": "SnapLeads",
+      "runAfterFinish": true
     },
     "win": {
       "target": ["nsis"],
