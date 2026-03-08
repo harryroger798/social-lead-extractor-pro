@@ -200,7 +200,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
                 <XAxis dataKey="platform" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} wrapperStyle={{ outline: 'none' }} cursor={{ fill: 'rgba(255,255,255,0.04)' }} animationDuration={150} />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                   {stats.platform_breakdown.map((_e, i) => (
                     <Cell key={i} fill={PLATFORM_COLORS[i % PLATFORM_COLORS.length]} />
@@ -235,7 +235,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   <Pie data={emailPhoneData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={4} dataKey="value" stroke="none">
                     {emailPhoneData.map((_e, i) => <Cell key={i} fill={PIE_COLORS[i]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} wrapperStyle={{ outline: 'none' }} animationDuration={150} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex justify-center gap-6 pt-3">
@@ -275,7 +275,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
             <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
+            <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '10px', color: '#fafafa', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} wrapperStyle={{ outline: 'none' }} cursor={{ stroke: 'rgba(255,255,255,0.1)' }} animationDuration={150} />
             <Line type="monotone" dataKey="emails" stroke="#3B82F6" strokeWidth={2.5} dot={{ fill: '#3B82F6', r: 3, strokeWidth: 0 }} />
             <Line type="monotone" dataKey="phones" stroke="#10B981" strokeWidth={2.5} dot={{ fill: '#10B981', r: 3, strokeWidth: 0 }} />
           </LineChart>

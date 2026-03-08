@@ -107,8 +107,8 @@ export default function CRMExport() {
         </div>
 
         {/* CRM Type */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary">Select CRM</h3>
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary mb-6">Select CRM</h3>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setCrmType('hubspot')} className={`p-4 rounded-xl border text-left transition-all ${crmType === 'hubspot' ? 'border-orange-500/50 bg-orange-500/5' : 'border-border bg-bg-primary hover:border-border/80'}`}>
               <p className="text-sm font-semibold text-text-primary">HubSpot</p>
@@ -122,8 +122,9 @@ export default function CRMExport() {
         </div>
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary">API Credentials</h3>
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary mb-6">API Credentials</h3>
+          <div className="space-y-6">
           {crmType === 'hubspot' ? (
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-3">HubSpot API Key (or Private App Token)</label>
@@ -157,6 +158,7 @@ export default function CRMExport() {
               {testResult.message}
             </div>
           )}
+          </div>
         </div>
 
         {/* Export Button */}
