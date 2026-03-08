@@ -101,70 +101,204 @@ def search_brave(
     return []
 
 
-# ─── DuckDuckGo HTML Search (no API key needed) ────────────────────────────
+# ─── DuckDuckGo Search (no API key needed) ─────────────────────────────────
+
+
+def _get_ddg_vqd(query: str, session: requests.Session) -> str:
+    """Get a DuckDuckGo vqd token required for search API calls."""
+    try:
+        resp = session.post(
+            "https://duckduckgo.com",
+            data={"q": query},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            import re as _re
+            match = _re.search(r'vqd=["\']([^"\']+)', resp.text)
+            if match:
+                return match.group(1)
+            # Also check for vqd in script tags
+            match2 = _re.search(r'vqd=([\d-]+)', resp.text)
+            if match2:
+                return match2.group(1)
+    except Exception as e:
+        logger.debug("DDG vqd token fetch failed: %s", e)
+    return ""
+
+
+def _simplify_query_for_ddg(query: str) -> str:
+    """Convert Google dorking queries to DDG-friendly natural language.
+
+    DDG's internal API doesn't handle site: operator well. Convert
+    'site:linkedin.com "keyword" "email"' to 'keyword linkedin email contact'.
+    """
+    import re as _re
+
+    # Extract site domain if present
+    site_match = _re.search(r'site:(\S+)', query)
+    domain = ""
+    if site_match:
+        domain = site_match.group(1)
+        # Extract just the domain name (e.g., linkedin from linkedin.com/in)
+        domain_parts = domain.replace("/", " ").split(".")
+        domain = domain_parts[0] if domain_parts else domain
+
+    # Remove site: operators and OR keywords
+    cleaned = _re.sub(r'site:\S+', '', query)
+    cleaned = _re.sub(r'\bOR\b', '', cleaned, flags=_re.IGNORECASE)
+    # Remove quotes but keep the content
+    cleaned = cleaned.replace('"', '').replace("'", '')
+    # Collapse whitespace
+    cleaned = _re.sub(r'\s+', ' ', cleaned).strip()
+
+    # Rebuild as natural language query with domain name
+    if domain and domain.lower() not in cleaned.lower():
+        cleaned = f"{cleaned} {domain}"
+
+    # Add "email contact" if not already present (helps find lead data)
+    has_contact_terms = any(
+        t in cleaned.lower() for t in ["email", "contact", "@gmail", "@yahoo", "@outlook"]
+    )
+    if not has_contact_terms:
+        cleaned += " email contact"
+
+    return cleaned
+
 
 def search_duckduckgo(
     query: str,
     num_results: int = 10,
 ) -> list[dict]:
-    """Search DuckDuckGo via HTML endpoint (free, no API key needed).
+    """Search DuckDuckGo via internal API (free, no API key needed).
 
-    DuckDuckGo uses Bing's index but may surface different results.
-    Returns fewer structured results but requires zero setup.
+    Uses DDG's internal links.duckduckgo.com/d.js endpoint which returns
+    JSON results. This bypasses the HTML captcha/JS challenge that blocks
+    the old html.duckduckgo.com/html/ approach.
+
+    Automatically converts Google dorking queries (with site: operator) to
+    DDG-friendly natural language format.
+
+    Falls back to the HTML lite endpoint if the API approach fails.
     """
     import re as _re
+    from urllib.parse import unquote
 
+    results: list[dict] = []
+
+    # Convert dorking queries to DDG-friendly format
+    ddg_query = _simplify_query_for_ddg(query) if "site:" in query else query
+
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                       "AppleWebKit/537.36 (KHTML, like Gecko) "
+                       "Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://duckduckgo.com/",
+    })
+
+    # Method 1: DDG internal JSON API (most reliable)
     try:
-        response = requests.get(
+        vqd = _get_ddg_vqd(ddg_query, session)
+        if vqd:
+            api_resp = session.get(
+                "https://links.duckduckgo.com/d.js",
+                params={
+                    "q": ddg_query,
+                    "vqd": vqd,
+                    "kl": "wt-wt",
+                    "l": "wt-wt",
+                    "dl": "en",
+                    "ct": "US",
+                    "ss_mkt": "us",
+                    "df": "",
+                    "ex": "-1",
+                    "sp": "0",
+                    "s": "0",
+                    "o": "json",
+                },
+                timeout=15,
+            )
+            if api_resp.status_code == 200:
+                import json
+                # Response is JSONP-like; extract the JSON array
+                text = api_resp.text.strip()
+                # Try to parse as JSON directly
+                try:
+                    data = json.loads(text)
+                except json.JSONDecodeError:
+                    # Try extracting JSON from JSONP wrapper
+                    json_match = _re.search(r'\[.*\]', text, _re.DOTALL)
+                    data = json.loads(json_match.group(0)) if json_match else []
+
+                if isinstance(data, dict):
+                    data = data.get("results", [])
+
+                for item in data:
+                    if not isinstance(item, dict):
+                        continue
+                    url = item.get("u", item.get("c", ""))
+                    title = item.get("t", "")
+                    snippet = item.get("a", "")
+                    if url and url.startswith("http"):
+                        # Strip HTML tags from title and snippet
+                        title = _re.sub(r'<[^>]+>', '', title).strip()
+                        snippet = _re.sub(r'<[^>]+>', '', snippet).strip()
+                        results.append({
+                            "title": title,
+                            "snippet": snippet,
+                            "link": url,
+                        })
+                    if len(results) >= num_results:
+                        break
+
+                if results:
+                    logger.info("DDG API: %d results for query", len(results))
+                    return results
+    except Exception as e:
+        logger.debug("DDG API search failed: %s", e)
+
+    # Method 2: DDG HTML endpoint (fallback, may hit captcha)
+    try:
+        response = session.get(
             "https://html.duckduckgo.com/html/",
-            params={"q": query},
-            headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            },
+            params={"q": ddg_query},
             timeout=15,
         )
-        if response.status_code != 200:
-            return []
+        if response.status_code in (200, 202):
+            html = response.text
+            # Try the standard result pattern
+            result_pattern = _re.compile(
+                r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>.*?'
+                r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>',
+                _re.DOTALL,
+            )
+            for match in result_pattern.finditer(html):
+                url = match.group(1)
+                title = _re.sub(r'<[^>]+>', '', match.group(2)).strip()
+                snippet = _re.sub(r'<[^>]+>', '', match.group(3)).strip()
 
-        html = response.text
-        results = []
+                if "uddg=" in url:
+                    from urllib.parse import urlparse, parse_qs
+                    parsed = urlparse(url)
+                    params = parse_qs(parsed.query)
+                    url = unquote(params.get("uddg", [url])[0])
 
-        # Extract result blocks from DuckDuckGo HTML
-        # Each result has class "result" with a link and snippet
-        result_pattern = _re.compile(
-            r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>.*?'
-            r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>',
-            _re.DOTALL,
-        )
-
-        for match in result_pattern.finditer(html):
-            url = match.group(1)
-            title = _re.sub(r'<[^>]+>', '', match.group(2)).strip()
-            snippet = _re.sub(r'<[^>]+>', '', match.group(3)).strip()
-
-            # DuckDuckGo wraps URLs in a redirect; extract actual URL
-            if "uddg=" in url:
-                from urllib.parse import unquote, urlparse, parse_qs
-                parsed = urlparse(url)
-                params = parse_qs(parsed.query)
-                actual_url = unquote(params.get("uddg", [url])[0])
-                url = actual_url
-
-            if url.startswith("http"):
-                results.append({
-                    "title": title,
-                    "snippet": snippet,
-                    "link": url,
-                })
-
-            if len(results) >= num_results:
-                break
-
-        return results
+                if url.startswith("http"):
+                    results.append({
+                        "title": title,
+                        "snippet": snippet,
+                        "link": url,
+                    })
+                if len(results) >= num_results:
+                    break
 
     except Exception as e:
-        logger.error("DuckDuckGo search error: %s", e)
-        return []
+        logger.debug("DDG HTML search failed: %s", e)
+
+    if results:
+        logger.info("DDG HTML: %d results for query", len(results))
+
+    return results
 
 
 # ─── Multi-Engine Search Dispatcher ─────────────────────────────────────────
