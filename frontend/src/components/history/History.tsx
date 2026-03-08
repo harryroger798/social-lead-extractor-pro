@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Clock, Trash2, Search, Filter, Loader2, AlertCircle,
   FolderOpen, Mail, Phone, CheckCircle, XCircle, Pause, Play, Zap,
-  Info, ChevronDown, ChevronRight,
+  Info, ChevronDown, ChevronRight, Eye,
 } from 'lucide-react';
 import { cn, formatDate, formatDuration } from '@/lib/utils';
 import { fetchHistory, deleteSession } from '@/lib/api';
@@ -11,7 +11,7 @@ import type { SessionItem } from '@/lib/api';
 
 const STATUS_FILTERS = ['all', 'completed', 'running', 'failed', 'paused'];
 
-export default function History() {
+export default function History({ onViewSessionResults }: { onViewSessionResults?: (sessionId: string) => void }) {
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -209,13 +209,24 @@ export default function History() {
                   )}
                 </div>
 
-                <button
-                  onClick={() => handleDelete(s.id)}
-                  className="p-2 rounded-lg hover:bg-error/10 text-text-muted hover:text-error transition-all"
-                  title="Delete session"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1">
+                  {s.status === 'completed' && s.total_leads > 0 && onViewSessionResults && (
+                    <button
+                      onClick={() => onViewSessionResults(s.id)}
+                      className="p-2 rounded-lg hover:bg-accent/10 text-text-muted hover:text-accent transition-all"
+                      title="View results for this session"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="p-2 rounded-lg hover:bg-error/10 text-text-muted hover:text-error transition-all"
+                    title="Delete session"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
