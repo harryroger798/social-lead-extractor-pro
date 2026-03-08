@@ -121,8 +121,8 @@ export default function GoogleMapsExtractor() {
         </div>
 
         {/* Search Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
             <Search className="w-4 h-4 text-accent" />
             Search Query
           </h3>
