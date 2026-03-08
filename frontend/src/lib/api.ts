@@ -457,6 +457,8 @@ export interface ExtractionStatusResponse {
   emails_found: number;
   phones_found: number;
   progress: number;
+  current_platform?: string;
+  status_message?: string;
 }
 
 export interface SessionItem {

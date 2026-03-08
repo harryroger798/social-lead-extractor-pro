@@ -136,6 +136,8 @@ async def init_db() -> None:
             "ALTER TABLE leads ADD COLUMN rating TEXT DEFAULT ''",
             "ALTER TABLE leads ADD COLUMN category TEXT DEFAULT ''",
             "ALTER TABLE sessions ADD COLUMN error_message TEXT DEFAULT ''",
+            "ALTER TABLE sessions ADD COLUMN current_platform TEXT DEFAULT ''",
+            "ALTER TABLE sessions ADD COLUMN status_message TEXT DEFAULT ''",
         ]:
             try:
                 await db.execute(col_sql)
