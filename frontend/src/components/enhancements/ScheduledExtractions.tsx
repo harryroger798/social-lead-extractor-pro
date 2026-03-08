@@ -118,8 +118,8 @@ export default function ScheduledExtractions() {
         </div>
 
         {showCreate && (
-          <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-            <h3 className="text-sm font-semibold text-text-primary">Create Schedule</h3>
+          <div className="rounded-xl bg-bg-card border border-border p-8">
+            <h3 className="text-sm font-semibold text-text-primary mb-6">Create Schedule</h3>
             <div className="space-y-6">
               <div>
                 <label className="block text-[13px] font-medium text-text-secondary mb-3">Schedule Name</label>

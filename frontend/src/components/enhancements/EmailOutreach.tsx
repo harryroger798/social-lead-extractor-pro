@@ -100,8 +100,9 @@ export default function EmailOutreach() {
         </div>
 
         {/* SMTP Settings */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary">SMTP Settings</h3>
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary mb-6">SMTP Settings</h3>
+          <div className="space-y-6">
           <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-3">SMTP Host</label>
@@ -132,13 +133,15 @@ export default function EmailOutreach() {
               <input type="number" value={form.delay_seconds} onChange={e => setForm({...form, delay_seconds: Number(e.target.value)})} min={10} max={120} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
+          </div>
         </div>
 
         {/* Templates */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-6">
             <FileText className="w-4 h-4 text-accent" /> Email Templates
           </h3>
+          <div className="space-y-6">
           <div className="flex gap-2 flex-wrap">
             {templates.map(t => (
               <button key={t.id} onClick={() => applyTemplate(t)} className="px-3 py-1.5 rounded-lg bg-bg-primary border border-border text-xs text-text-secondary hover:text-text-primary hover:border-accent/40 transition-colors">
@@ -154,10 +157,11 @@ export default function EmailOutreach() {
             <label className="block text-[13px] font-medium text-text-secondary mb-3">Body (HTML supported)</label>
             <textarea value={form.body_template} onChange={e => setForm({...form, body_template: e.target.value})} rows={6} placeholder="<p>Hi {{name}},</p><p>I wanted to reach out...</p>" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none" />
           </div>
+          </div>
         </div>
 
         {/* Send */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-text-secondary">{totalLeads} leads with email addresses selected</p>
             <div className="flex items-center gap-2 text-xs text-text-muted">

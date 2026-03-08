@@ -42,22 +42,34 @@ def _clean_phone(raw: str) -> str:
 def _get_chromedriver_path() -> str:
     """Find ChromeDriver — check bundled location first, then webdriver-manager, then system PATH."""
     import os
+    import sys
     import shutil
 
-    # Check bundled locations (for .exe builds)
-    bundled_paths = [
-        os.path.join(os.path.dirname(__file__), "..", "..", "chromedriver"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "chromedriver.exe"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "chromedriver"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "chromedriver.exe"),
+    # Check bundled locations (for .exe / PyInstaller builds)
+    base_dirs = [
+        os.path.dirname(__file__),
+        os.path.join(os.path.dirname(__file__), "..", ".."),
+        os.path.join(os.path.dirname(__file__), "..", "..", ".."),
     ]
-    for path in bundled_paths:
-        if os.path.exists(path):
-            return os.path.abspath(path)
+    # Also check PyInstaller _MEIPASS directory
+    if hasattr(sys, '_MEIPASS'):
+        base_dirs.insert(0, sys._MEIPASS)
+        base_dirs.insert(1, os.path.join(sys._MEIPASS, 'chromedriver'))
+    # Check next to the executable itself
+    if getattr(sys, 'frozen', False):
+        base_dirs.insert(0, os.path.dirname(sys.executable))
+
+    for base in base_dirs:
+        for name in ['chromedriver', 'chromedriver.exe']:
+            path = os.path.join(base, name)
+            if os.path.exists(path):
+                logger.info("Found bundled ChromeDriver at: %s", path)
+                return os.path.abspath(path)
 
     # Check system PATH
     system_driver = shutil.which("chromedriver")
     if system_driver:
+        logger.info("Found ChromeDriver in system PATH: %s", system_driver)
         return system_driver
 
     # Use webdriver-manager to auto-download matching ChromeDriver
@@ -68,6 +80,56 @@ def _get_chromedriver_path() -> str:
         return driver_path
     except Exception as e:
         logger.warning("webdriver-manager could not install ChromeDriver: %s", e)
+
+    return ""
+
+
+def _find_chrome_binary() -> str:
+    """Find Google Chrome or Chromium binary path on any OS."""
+    import os
+    import sys
+    import shutil
+
+    # Common Chrome/Chromium binary names
+    binary_names = [
+        'google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser',
+        'chrome', 'chrome.exe',
+    ]
+
+    # Check system PATH first
+    for name in binary_names:
+        found = shutil.which(name)
+        if found:
+            return found
+
+    # Check common installation paths (Windows, macOS, Linux)
+    common_paths = [
+        # Windows
+        os.path.expandvars(r'%PROGRAMFILES%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe'),
+        # macOS
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        # Linux
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/snap/bin/chromium',
+    ]
+
+    # PyInstaller bundled location
+    if hasattr(sys, '_MEIPASS'):
+        common_paths.insert(0, os.path.join(sys._MEIPASS, 'chrome', 'chrome.exe'))
+        common_paths.insert(1, os.path.join(sys._MEIPASS, 'chrome', 'chrome'))
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(sys.executable)
+        common_paths.insert(0, os.path.join(exe_dir, 'chrome', 'chrome.exe'))
+        common_paths.insert(1, os.path.join(exe_dir, 'chrome', 'chrome'))
+
+    for path in common_paths:
+        if os.path.exists(path):
+            return path
 
     return ""
 
@@ -92,7 +154,7 @@ async def _scrape_gmaps_selenium(
         from selenium.webdriver.support import expected_conditions as EC
     except ImportError:
         logger.warning("Selenium not installed — cannot use Selenium Google Maps scraper")
-        raise RuntimeError("Selenium is not installed. Please reinstall the application or install selenium via pip.")
+        raise RuntimeError("Selenium is not installed. Please reinstall the application or run: pip install selenium webdriver-manager")
 
     results: list[dict] = []
     driver = None
@@ -110,6 +172,12 @@ async def _scrape_gmaps_selenium(
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
         )
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
+        # Try to find Chrome binary
+        chrome_binary = _find_chrome_binary()
+        if chrome_binary:
+            options.binary_location = chrome_binary
+            logger.info("Using Chrome binary at: %s", chrome_binary)
 
         # Try to find ChromeDriver (bundled → webdriver-manager → system)
         chromedriver_path = _get_chromedriver_path()

@@ -94,10 +94,11 @@ export default function EmailFinder() {
         </div>
 
         {/* Search */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-6">
             <Search className="w-4 h-4 text-accent" /> Crawl Website
           </h3>
+          <div className="space-y-6">
           <div>
             <label className="block text-[13px] font-medium text-text-secondary mb-3">Website URL</label>
             <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -110,6 +111,7 @@ export default function EmailFinder() {
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
             {loading ? 'Crawling...' : 'Find Emails & Phones'}
           </button>
+          </div>
         </div>
 
         {error && (

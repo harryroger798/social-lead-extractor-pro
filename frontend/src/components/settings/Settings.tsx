@@ -3,15 +3,17 @@ import {
   Settings as SettingsIcon, Save, Loader2, AlertCircle,
   Key, Globe, Shield, Bell, Database, RefreshCw,
   Wifi, Plus, Trash2, Play, Upload, X, CheckCircle, XCircle,
-  Info, ChevronDown, ChevronRight,
+  Info, ChevronDown, ChevronRight, LogOut, Crown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { fetchSettings, updateSetting, fetchProxies, addProxy, bulkImportProxies, testProxy, testAllProxies, deleteProxy, deleteAllProxies, checkFirecrawlCredits } from '@/lib/api';
 import type { ProxyItem } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
+import { useLicense } from '@/contexts/LicenseContext';
 
 const TABS = [
   { id: 'general', label: 'General', icon: SettingsIcon },
+  { id: 'license', label: 'License', icon: Crown },
   { id: 'extraction', label: 'Extraction', icon: Globe },
   { id: 'proxies', label: 'Proxies', icon: Wifi },
   { id: 'api', label: 'API Keys', icon: Key },
@@ -50,7 +52,9 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('general');
   const [dirty, setDirty] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
   const { toast } = useToast();
+  const { license, isPro, role, deactivate } = useLicense();
 
   // Proxy state
   const [proxies, setProxies] = useState<ProxyItem[]>([]);
@@ -342,11 +346,74 @@ export default function Settings() {
               <h3 className="text-base font-semibold text-text-primary pb-2">General Settings</h3>
               <p className="text-xs text-text-muted pb-6">Manage your application preferences</p>
               <div className="divide-y divide-[#3f3f46]">
-                {renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
+                {(role === 'admin' || role === 'reseller') && renderInput('app_name', 'Application Name', 'text', undefined, 'The name displayed in the app header')}
                 {renderInput('theme', 'Theme', 'select', ['dark', 'light', 'system'], 'Choose your preferred color scheme')}
                 {renderInput('language', 'Language', 'select', ['en', 'es', 'fr', 'de', 'pt'], 'Interface language')}
                 {renderInput('default_export_format', 'Default Export Format', 'select', ['csv', 'xlsx', 'json', 'html'], 'Format used when exporting leads')}
               </div>
+            </div>
+          )}
+
+          {activeTab === 'license' && (
+            <div>
+              <h3 className="text-base font-semibold text-text-primary pb-2">License Key</h3>
+              <p className="text-xs text-text-muted pb-6">View and manage your current license</p>
+              {license ? (
+                <div className="space-y-6">
+                  <div className="rounded-xl bg-zinc-800/30 border border-[#3f3f46] p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      {isPro ? <Crown className="w-5 h-5 text-amber-400" /> : <Key className="w-5 h-5 text-accent" />}
+                      <span className={cn('text-sm font-bold', isPro ? 'text-amber-400' : 'text-accent')}>
+                        {role === 'admin' ? 'Admin License' : role === 'reseller' ? 'Reseller License' : isPro ? 'Pro License' : 'Starter License'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-text-muted">License Key</p>
+                        <p className="text-sm text-text-primary font-mono mt-1">{license.key.substring(0, 8)}...{license.key.slice(-4)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-text-muted">Tier</p>
+                        <p className="text-sm text-text-primary capitalize mt-1">{license.tier}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-text-muted">Billing Cycle</p>
+                        <p className="text-sm text-text-primary capitalize mt-1">{license.cycle}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-text-muted">Role</p>
+                        <p className="text-sm text-text-primary capitalize mt-1">{role}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      onClick={async () => {
+                        setDeactivating(true);
+                        try {
+                          await deactivate();
+                          toast('success', 'License deactivated successfully');
+                        } catch {
+                          toast('error', 'Failed to deactivate license');
+                        } finally {
+                          setDeactivating(false);
+                        }
+                      }}
+                      disabled={deactivating}
+                      className="flex items-center gap-2 px-5 py-3 bg-error/10 border border-error/20 rounded-xl text-sm font-medium text-error hover:bg-error/20 transition-all disabled:opacity-50"
+                    >
+                      {deactivating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+                      Deactivate License
+                    </button>
+                    <p className="text-xs text-text-muted mt-3">Deactivating will log you out and require a new license key to use the app.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-zinc-800/30 border border-[#3f3f46] p-8 text-center">
+                  <Key className="w-10 h-10 text-text-muted mx-auto mb-3 opacity-40" />
+                  <p className="text-sm text-text-muted">No license activated</p>
+                </div>
+              )}
             </div>
           )}
 

@@ -124,9 +124,10 @@ export default function TelegramScraper() {
         )}
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary">Telegram API Credentials</h3>
-          <p className="text-[13px] text-text-muted">Get these from <a href="https://my.telegram.org" target="_blank" rel="noopener" className="text-accent underline">my.telegram.org</a> &gt; API development tools</p>
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary mb-3">Telegram API Credentials</h3>
+          <p className="text-[13px] text-text-muted mb-6">Get these from <a href="https://my.telegram.org" target="_blank" rel="noopener" className="text-accent underline">my.telegram.org</a> &gt; API development tools</p>
+          <div className="space-y-6">
           <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-3">API ID</label>
@@ -141,13 +142,15 @@ export default function TelegramScraper() {
             <label className="block text-[13px] font-medium text-text-secondary mb-3">Phone Number (with country code)</label>
             <input type="text" value={form.phone_number} onChange={e => setForm({...form, phone_number: e.target.value})} placeholder="+1234567890" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
+          </div>
         </div>
 
         {/* Group */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-7">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+        <div className="rounded-xl bg-bg-card border border-border p-8">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-6">
             <Users className="w-4 h-4 text-accent" /> Target Group
           </h3>
+          <div className="space-y-6">
           <div>
             <label className="block text-[13px] font-medium text-text-secondary mb-3">Group Username or Link</label>
             <input type="text" value={form.group_username} onChange={e => setForm({...form, group_username: e.target.value})} placeholder="python_developers or t.me/python_developers" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -166,6 +169,7 @@ export default function TelegramScraper() {
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
             {loading ? 'Extracting...' : 'Extract Members'}
           </button>
+          </div>
         </div>
 
         {result && (
