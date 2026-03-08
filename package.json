@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
@@ -63,7 +63,10 @@
         "mac": {
           "target": ["zip"],
           "icon": "electron/assets/icon.png",
-          "category": "public.app-category.business"
+          "category": "public.app-category.business",
+          "identity": null,
+          "hardenedRuntime": false,
+          "gatekeeperAssess": false
         },
     "linux": {
       "target": ["AppImage", "deb"],

@@ -149,15 +149,15 @@ export default function WhatsAppScraper() {
 
         {/* Extract Form */}
         <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-6">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
             <Users className="w-4 h-4 text-accent" /> Group Details
           </h3>
-          <div className="space-y-6">
+          <div className="space-y-7">
           <div>
             <label className="block text-[13px] font-medium text-text-secondary mb-3">Group Name (exact match in your chats)</label>
             <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Members</label>
               <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
