@@ -122,12 +122,12 @@ export default function GoogleMapsExtractor() {
 
         {/* Search Form */}
         <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-8">
             <Search className="w-4 h-4 text-accent" />
             Search Query
           </h3>
 
-          <div className="space-y-6">
+          <div className="space-y-7">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-3">Search Term</label>
               <input
@@ -139,7 +139,7 @@ export default function GoogleMapsExtractor() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Results</label>
                 <input
@@ -210,18 +210,18 @@ export default function GoogleMapsExtractor() {
         )}
 
         {/* What you get */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-5">
+        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-6">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-400" />
             What You Get
           </h3>
-          <div className="grid grid-cols-2 gap-3 text-[13px] leading-relaxed text-text-secondary">
-            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Name</div>
-            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Phone Number</div>
-            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Website URL</div>
-            <div className="flex items-center gap-3 py-2 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Address</div>
-            <div className="flex items-center gap-3 py-2"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Rating & Reviews</div>
-            <div className="flex items-center gap-3 py-2"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Category</div>
+          <div className="grid grid-cols-2 gap-4 text-[13px] leading-relaxed text-text-secondary">
+            <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Name</div>
+            <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Phone Number</div>
+            <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Website URL</div>
+            <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Address</div>
+            <div className="flex items-center gap-3 py-2.5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Rating & Reviews</div>
+            <div className="flex items-center gap-3 py-2.5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Category</div>
           </div>
         </div>
       </div>

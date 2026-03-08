@@ -119,8 +119,8 @@ export default function ScheduledExtractions() {
 
         {showCreate && (
           <div className="rounded-xl bg-bg-card border border-border p-8">
-            <h3 className="text-sm font-semibold text-text-primary mb-6">Create Schedule</h3>
-            <div className="space-y-6">
+            <h3 className="text-sm font-semibold text-text-primary mb-7">Create Schedule</h3>
+            <div className="space-y-7">
               <div>
                 <label className="block text-[13px] font-medium text-text-secondary mb-3">Schedule Name</label>
                 <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Weekly Lead Scrape" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -133,7 +133,7 @@ export default function ScheduledExtractions() {
                 <label className="block text-[13px] font-medium text-text-secondary mb-3">Platforms (comma-separated)</label>
                 <input type="text" value={form.platforms} onChange={e => setForm({...form, platforms: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-[13px] font-medium text-text-secondary mb-3">Frequency</label>
                   <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40">
