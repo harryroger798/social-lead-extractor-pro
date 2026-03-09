@@ -82,6 +82,10 @@ jobs:
             --hidden-import=app.services.service_suggestion \
             --hidden-import=app.services.smtp_checker \
             --hidden-import=app.services.yellowpages_scraper \
+            --hidden-import=app.services.fxtwitter_api \
+            --hidden-import=app.services.pinterest_rss \
+            --hidden-import=app.services.bio_link_follower \
+            --hidden-import=app.services.verifier \
             --hidden-import=fpdf --collect-all fpdf2 \
             --collect-all fastapi --collect-all uvicorn \
             --collect-all aiosqlite --collect-all pydantic_settings \
