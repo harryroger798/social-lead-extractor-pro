@@ -12,14 +12,17 @@ import { PLATFORM_ICONS } from '@/components/icons/PlatformIcons';
 
 const PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2' },
-  { id: 'facebook', name: 'Facebook', color: '#1877F2' },
-  { id: 'instagram', name: 'Instagram', color: '#E4405F' },
-  { id: 'twitter', name: 'Twitter/X', color: '#1DA1F2' },
-  { id: 'youtube', name: 'YouTube', color: '#FF0000' },
+  { id: 'google_maps', name: 'Google Maps', color: '#4285F4' },
   { id: 'reddit', name: 'Reddit', color: '#FF4500' },
-  { id: 'tiktok', name: 'TikTok', color: '#6366F1' },
+  { id: 'telegram', name: 'Telegram', color: '#26A5E4' },
+  { id: 'instagram', name: 'Instagram', color: '#E4405F' },
+  { id: 'facebook', name: 'Facebook', color: '#1877F2' },
+  { id: 'twitter', name: 'Twitter/X', color: '#1DA1F2' },
+  { id: 'whatsapp', name: 'WhatsApp', color: '#25D366' },
+  { id: 'tiktok', name: 'TikTok', color: '#000000' },
+  { id: 'youtube', name: 'YouTube', color: '#FF0000' },
   { id: 'pinterest', name: 'Pinterest', color: '#E60023' },
-  { id: 'tumblr', name: 'Tumblr', color: '#36465D' },
+  { id: 'email', name: 'Email', color: '#6366F1' },
 ];
 
 type Step = 'config' | 'running' | 'complete';
@@ -309,23 +312,27 @@ export default function NewExtraction() {
           Platforms
           <span className="text-[11px] text-text-muted font-normal ml-auto">{selectedPlatforms.length} selected</span>
         </h3>
-        <div className="grid grid-cols-3 gap-4">
-          {PLATFORMS.map(p => (
+        <div className="grid grid-cols-6 gap-3">
+          {PLATFORMS.map(p => {
+            const Icon = PLATFORM_ICONS[p.id];
+            const isSelected = selectedPlatforms.includes(p.id);
+            return (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
               className={cn(
-                  'flex items-center gap-3 p-4 rounded-xl border transition-all duration-200',
-                  selectedPlatforms.includes(p.id)
+                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px]',
+                  isSelected
                     ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
                     : 'border-[#3f3f46] bg-bg-card hover:border-[#52525b] hover:bg-bg-tertiary/30'
               )}
             >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
-                {(() => { const Icon = PLATFORM_ICONS[p.id]; return Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />; })()}
+              {isSelected && <CheckCircle className="absolute top-2 right-2 w-3.5 h-3.5 text-accent" />}
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: p.color, color: '#FFFFFF' }}>
+                {Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
               </div>
-              <span className={cn('text-sm font-medium', selectedPlatforms.includes(p.id) ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
-              {selectedPlatforms.includes(p.id) && <CheckCircle className="w-4 h-4 text-accent ml-auto flex-shrink-0" />}
+              <span className={cn('text-[11px] font-semibold uppercase tracking-wide text-center leading-tight', isSelected ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
 
