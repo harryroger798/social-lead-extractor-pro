@@ -63,8 +63,8 @@ export default function CRMExport() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Export leads to HubSpot (free tier) or Salesforce</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -110,8 +110,8 @@ export default function CRMExport() {
         </div>
 
         {/* CRM Type */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary mb-7">Select CRM</h3>
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary mb-10">Select CRM</h3>
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => setCrmType('hubspot')} className={`p-4 rounded-xl border text-left transition-all ${crmType === 'hubspot' ? 'border-orange-500/50 bg-orange-500/5' : 'border-border bg-bg-primary hover:border-border/80'}`}>
               <p className="text-sm font-semibold text-text-primary">HubSpot</p>
@@ -125,9 +125,9 @@ export default function CRMExport() {
         </div>
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary mb-7">API Credentials</h3>
-          <div className="space-y-7">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary mb-10">API Credentials</h3>
+          <div className="space-y-8">
           {crmType === 'hubspot' ? (
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">HubSpot API Key (or Private App Token)</label>

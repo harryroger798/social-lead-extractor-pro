@@ -41,8 +41,8 @@ export default function WhatsAppScraper() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract phone numbers and names from WhatsApp groups via WhatsApp Web</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* CRITICAL Ban Warning */}
         <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-5">
@@ -151,16 +151,16 @@ export default function WhatsAppScraper() {
         )}
 
         {/* Extract Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
             <Users className="w-4 h-4 text-accent" /> Group Details
           </h3>
-          <div className="space-y-7">
+          <div className="space-y-8">
           <div>
             <label className="block text-[13px] font-medium text-text-secondary mb-4">Group Name (exact match in your chats)</label>
             <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-8">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Members</label>
               <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />

@@ -55,8 +55,8 @@ export default function EmailOutreach() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Send personalized emails to your leads via SMTP (free, built-in Python)</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -103,10 +103,10 @@ export default function EmailOutreach() {
         </div>
 
         {/* SMTP Settings */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary mb-7">SMTP Settings</h3>
-          <div className="space-y-7">
-          <div className="grid grid-cols-2 gap-6">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary mb-10">SMTP Settings</h3>
+          <div className="space-y-8">
+          <div className="grid grid-cols-2 gap-8">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">SMTP Host</label>
               <input type="text" value={form.smtp_host} onChange={e => setForm({...form, smtp_host: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -116,7 +116,7 @@ export default function EmailOutreach() {
               <input type="number" value={form.smtp_port} onChange={e => setForm({...form, smtp_port: Number(e.target.value)})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-8">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">Email / Username</label>
               <input type="email" value={form.smtp_username} onChange={e => setForm({...form, smtp_username: e.target.value})} placeholder="you@gmail.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -126,7 +126,7 @@ export default function EmailOutreach() {
               <input type="password" value={form.smtp_password} onChange={e => setForm({...form, smtp_password: e.target.value})} placeholder="App-specific password" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-8">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">From Name</label>
               <input type="text" value={form.from_name} onChange={e => setForm({...form, from_name: e.target.value})} placeholder="Your Name" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -140,11 +140,11 @@ export default function EmailOutreach() {
         </div>
 
         {/* Templates */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
             <FileText className="w-4 h-4 text-accent" /> Email Templates
           </h3>
-          <div className="space-y-7">
+          <div className="space-y-8">
           <div className="flex gap-2 flex-wrap">
             {templates.map(t => (
               <button key={t.id} onClick={() => applyTemplate(t)} className="px-3 py-1.5 rounded-lg bg-bg-primary border border-border text-xs text-text-secondary hover:text-text-primary hover:border-accent/40 transition-colors">
@@ -164,7 +164,7 @@ export default function EmailOutreach() {
         </div>
 
         {/* Send */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-6">
+        <div className="rounded-xl bg-bg-card border border-border p-10 space-y-8">
           <div className="flex items-center justify-between">
             <p className="text-sm text-text-secondary">{totalLeads} leads with email addresses selected</p>
             <div className="flex items-center gap-2 text-xs text-text-muted">
