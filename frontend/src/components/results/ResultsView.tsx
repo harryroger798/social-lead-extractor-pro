@@ -27,7 +27,7 @@ export default function ResultsView({ initialSessionId, onClearSessionFilter }: 
   const [platform, setPlatform] = useState('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showGuide, setShowGuide] = useState(false);
-  const [sortBy, setSortBy] = useState<SortColumn>('extracted_at');
+  const [sortBy, setSortBy] = useState<SortColumn>('quality_score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
   const [cleaning, setCleaning] = useState(false);

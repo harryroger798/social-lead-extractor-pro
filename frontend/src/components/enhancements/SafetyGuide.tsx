@@ -50,7 +50,7 @@ export default function SafetyGuide() {
         </div>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="max-w-[840px] space-y-8">
+      <div className="space-y-8">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">

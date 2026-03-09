@@ -42,7 +42,7 @@ export default function WhatsAppScraper() {
         </div>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="max-w-[840px] space-y-8">
+      <div className="space-y-8">
 
         {/* CRITICAL Ban Warning */}
         <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-5">
