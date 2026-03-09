@@ -37,7 +37,7 @@ export default function EmailFinder() {
         </div>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="max-w-[840px] space-y-8">
+      <div className="space-y-8">
 
         {/* Info */}
         <div className="rounded-xl bg-teal-500/5 border border-teal-500/20 p-4">
