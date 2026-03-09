@@ -48,20 +48,20 @@ export default function GoogleMapsExtractor() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        {/* Header */}
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
               <MapPin className="w-5 h-5 text-green-400" />
             </div>
             Google Maps Extractor
-          </h2>
-          <p className="text-sm text-text-muted mt-2">
-            Extract business listings from Google Maps — phones, websites, addresses, ratings
-          </p>
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract business listings from Google Maps — phones, websites, addresses, ratings</p>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* Safety Note */}
         <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/20 p-4">
@@ -129,7 +129,7 @@ export default function GoogleMapsExtractor() {
 
           <div className="space-y-7">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">Search Term</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">Search Term</label>
               <input
                 type="text"
                 value={query}
@@ -141,7 +141,7 @@ export default function GoogleMapsExtractor() {
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Results</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Results</label>
                 <input
                   type="number"
                   value={maxResults}
@@ -152,7 +152,7 @@ export default function GoogleMapsExtractor() {
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Delay (seconds)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
                 <input
                   type="number"
                   value={delay}
@@ -224,6 +224,7 @@ export default function GoogleMapsExtractor() {
             <div className="flex items-center gap-3 py-2.5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Category</div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

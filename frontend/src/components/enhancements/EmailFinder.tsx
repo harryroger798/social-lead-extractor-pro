@@ -24,19 +24,20 @@ export default function EmailFinder() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
               <Globe className="w-5 h-5 text-teal-400" />
             </div>
             Website Email Finder
-          </h2>
-          <p className="text-sm text-text-muted mt-2">
-            Crawl any website to extract email addresses and phone numbers. Checks /contact, /about, /team pages automatically.
-          </p>
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Crawl any website to extract email addresses and phone numbers. Checks /contact, /about, /team pages automatically.</p>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* Info */}
         <div className="rounded-xl bg-teal-500/5 border border-teal-500/20 p-4">
@@ -100,11 +101,11 @@ export default function EmailFinder() {
           </h3>
           <div className="space-y-7">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-3">Website URL</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-4">Website URL</label>
             <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Pages to Crawl</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Pages to Crawl</label>
             <input type="number" value={maxPages} onChange={e => setMaxPages(Number(e.target.value))} min={1} max={50} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <button onClick={handleCrawl} disabled={loading || !url.trim()} className="w-full py-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2">
@@ -167,6 +168,7 @@ export default function EmailFinder() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

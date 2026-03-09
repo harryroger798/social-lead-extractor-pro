@@ -51,17 +51,20 @@ export default function CRMExport() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
               <Database className="w-5 h-5 text-orange-400" />
             </div>
             CRM Export
-          </h2>
-          <p className="text-sm text-text-muted mt-2">Export leads to HubSpot (free tier) or Salesforce</p>
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Export leads to HubSpot (free tier) or Salesforce</p>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -127,22 +130,22 @@ export default function CRMExport() {
           <div className="space-y-7">
           {crmType === 'hubspot' ? (
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">HubSpot API Key (or Private App Token)</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">HubSpot API Key (or Private App Token)</label>
               <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="pat-na1-..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               <p className="text-xs text-text-muted mt-2">Get it from HubSpot &gt; Settings &gt; Integrations &gt; Private Apps</p>
             </div>
           ) : (
             <div className="space-y-6">
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Username</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Username</label>
                 <input type="text" value={sfUsername} onChange={e => setSfUsername(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Password</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Password</label>
                 <input type="password" value={sfPassword} onChange={e => setSfPassword(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Security Token</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Security Token</label>
                 <input type="text" value={sfToken} onChange={e => setSfToken(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
             </div>
@@ -179,6 +182,7 @@ export default function CRMExport() {
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

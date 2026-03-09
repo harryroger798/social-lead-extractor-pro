@@ -29,17 +29,20 @@ export default function WhatsAppScraper() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <Smartphone className="w-5 h-5 text-emerald-400" />
             </div>
             WhatsApp Group Scraper
-          </h2>
-          <p className="text-sm text-text-muted mt-2">Extract phone numbers and names from WhatsApp groups via WhatsApp Web</p>
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract phone numbers and names from WhatsApp groups via WhatsApp Web</p>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* CRITICAL Ban Warning */}
         <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-5">
@@ -154,16 +157,16 @@ export default function WhatsAppScraper() {
           </h3>
           <div className="space-y-7">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-3">Group Name (exact match in your chats)</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-4">Group Name (exact match in your chats)</label>
             <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Members</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Members</label>
               <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">Delay (seconds)</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
               <input type="number" value={delay} onChange={e => setDelay(Number(e.target.value))} min={5} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
@@ -182,6 +185,7 @@ export default function WhatsAppScraper() {
             <p className="text-sm">{result}</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

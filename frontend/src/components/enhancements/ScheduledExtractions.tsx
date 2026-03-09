@@ -54,22 +54,25 @@ export default function ScheduledExtractions() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+            <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
                 <Clock className="w-5 h-5 text-purple-400" />
               </div>
               Scheduled Extractions
-            </h2>
-            <p className="text-sm text-text-muted mt-2">Automate recurring lead extractions</p>
+            </h1>
+            <p className="text-sm text-text-secondary pt-1 ml-[52px]">Automate recurring lead extractions</p>
           </div>
           <button onClick={() => setShowCreate(!showCreate)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent/80 text-white text-sm font-semibold transition-colors">
             <Plus className="w-4 h-4" /> New Schedule
           </button>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -122,20 +125,20 @@ export default function ScheduledExtractions() {
             <h3 className="text-sm font-semibold text-text-primary mb-7">Create Schedule</h3>
             <div className="space-y-7">
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Schedule Name</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Schedule Name</label>
                 <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Weekly Lead Scrape" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Keywords (comma-separated)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Keywords (comma-separated)</label>
                 <input type="text" value={form.keywords} onChange={e => setForm({...form, keywords: e.target.value})} placeholder="web developer, react developer" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-3">Platforms (comma-separated)</label>
+                <label className="block text-[13px] font-medium text-text-secondary mb-4">Platforms (comma-separated)</label>
                 <input type="text" value={form.platforms} onChange={e => setForm({...form, platforms: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Frequency</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-4">Frequency</label>
                   <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40">
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -144,13 +147,13 @@ export default function ScheduledExtractions() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Pages per Keyword</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-4">Pages per Keyword</label>
                   <input type="number" value={form.pages_per_keyword} onChange={e => setForm({...form, pages_per_keyword: Number(e.target.value)})} min={1} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               </div>
               {form.frequency === 'custom' && (
                 <div>
-                  <label className="block text-[13px] font-medium text-text-secondary mb-3">Cron Expression</label>
+                  <label className="block text-[13px] font-medium text-text-secondary mb-4">Cron Expression</label>
                   <input type="text" value={form.cron_expression} onChange={e => setForm({...form, cron_expression: e.target.value})} placeholder="0 9 * * MON" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
                 </div>
               )}
@@ -199,6 +202,7 @@ export default function ScheduledExtractions() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

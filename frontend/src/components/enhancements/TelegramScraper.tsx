@@ -34,17 +34,20 @@ export default function TelegramScraper() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <div className="max-w-[720px] mx-auto space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
               <MessageCircle className="w-5 h-5 text-sky-400" />
             </div>
             Telegram Group Scraper
-          </h2>
-          <p className="text-sm text-text-muted mt-2">Extract members from Telegram groups using Telethon (MTProto API)</p>
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract members from Telegram groups using Telethon (MTProto API)</p>
         </div>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="max-w-[840px] space-y-8">
 
         {/* Ban Risk */}
         <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/20 p-4">
@@ -130,16 +133,16 @@ export default function TelegramScraper() {
           <div className="space-y-7">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">API ID</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">API ID</label>
               <input type="text" value={form.api_id} onChange={e => setForm({...form, api_id: e.target.value})} placeholder="12345678" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">API Hash</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">API Hash</label>
               <input type="password" value={form.api_hash} onChange={e => setForm({...form, api_hash: e.target.value})} placeholder="abc123..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-3">Phone Number (with country code)</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-4">Phone Number (with country code)</label>
             <input type="text" value={form.phone_number} onChange={e => setForm({...form, phone_number: e.target.value})} placeholder="+1234567890" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           </div>
@@ -152,16 +155,16 @@ export default function TelegramScraper() {
           </h3>
           <div className="space-y-7">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-3">Group Username or Link</label>
+            <label className="block text-[13px] font-medium text-text-secondary mb-4">Group Username or Link</label>
             <input type="text" value={form.group_username} onChange={e => setForm({...form, group_username: e.target.value})} placeholder="python_developers or t.me/python_developers" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
           </div>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">Max Members</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Members</label>
               <input type="number" value={form.max_members} onChange={e => setForm({...form, max_members: Number(e.target.value)})} min={10} max={5000} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-3">Delay (seconds)</label>
+              <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
               <input type="number" value={form.delay} onChange={e => setForm({...form, delay: Number(e.target.value)})} min={3} max={15} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
@@ -177,6 +180,7 @@ export default function TelegramScraper() {
             <p className="text-sm">{result}</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
