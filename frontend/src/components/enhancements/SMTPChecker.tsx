@@ -47,26 +47,30 @@ export default function SMTPChecker() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-          <MailCheck className="w-6 h-6 text-indigo-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">SMTP Deliverability Checker</h2>
-          <p className="text-sm text-text-muted">Check SPF, DKIM, and DMARC records for any domain</p>
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+              <MailCheck className="w-5 h-5 text-indigo-400" />
+            </div>
+            SMTP Deliverability Checker
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Check SPF, DKIM, and DMARC records for any domain</p>
         </div>
       </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-5">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Domain or Email</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Domain or Email</label>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               placeholder="e.g., gmail.com or user@company.com"
               onKeyDown={(e) => e.key === 'Enter' && handleCheck()}
             />
@@ -84,7 +88,7 @@ export default function SMTPChecker() {
             )}
           </button>
 
-          <div className="bg-accent/5 border border-accent/10 rounded-lg p-4">
+          <div className="bg-accent/5 border border-accent/10 rounded-xl p-5">
             <h4 className="text-xs font-semibold text-text-primary mb-2">What We Check</h4>
             <div className="space-y-2 text-xs text-text-muted">
               <div className="flex items-center gap-2">
@@ -104,7 +108,7 @@ export default function SMTPChecker() {
         </div>
 
         {/* Result */}
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-4">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">Deliverability Report</h3>
           {result ? (
             <div className="space-y-4">
@@ -178,6 +182,8 @@ export default function SMTPChecker() {
             </div>
           )}
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );

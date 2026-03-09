@@ -39,18 +39,22 @@ export default function LeadEnrichmentTool() {
     : [];
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-          <Wand2 className="w-6 h-6 text-cyan-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">Lead Enrichment</h2>
-          <p className="text-sm text-text-muted">Auto-fill missing data by cross-referencing your existing leads</p>
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+              <Wand2 className="w-5 h-5 text-cyan-400" />
+            </div>
+            Lead Enrichment
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Auto-fill missing data by cross-referencing your existing leads</p>
         </div>
       </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
-      <div className="bg-bg-card rounded-xl border border-border p-5 space-y-5">
+      <div className="bg-bg-card rounded-xl border border-border p-7 space-y-6">
         <div className="bg-accent/5 border border-accent/10 rounded-lg p-4">
           <h3 className="text-sm font-semibold text-text-primary mb-2">How it works</h3>
           <ul className="text-xs text-text-muted space-y-1.5">
@@ -76,11 +80,11 @@ export default function LeadEnrichmentTool() {
       </div>
 
       {result && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="bg-bg-card rounded-xl border border-border p-4">
+              <div key={stat.label} className="bg-bg-card rounded-xl border border-border p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon className={`w-4 h-4 ${stat.color}`} />
                   <p className="text-xs text-text-muted">{stat.label}</p>
@@ -91,6 +95,8 @@ export default function LeadEnrichmentTool() {
           })}
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 }

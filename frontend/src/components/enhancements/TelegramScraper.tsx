@@ -46,8 +46,8 @@ export default function TelegramScraper() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract members from Telegram groups using Telethon (MTProto API)</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
-      <div className="space-y-10">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
         {/* Ban Risk */}
         <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/20 p-4">
@@ -127,45 +127,45 @@ export default function TelegramScraper() {
         )}
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary mb-6">Telegram API Credentials</h3>
-          <p className="text-[13px] text-text-muted mb-10">Get these from <a href="https://my.telegram.org" target="_blank" rel="noopener" className="text-accent underline">my.telegram.org</a> &gt; API development tools</p>
-          <div className="space-y-8">
-          <div className="grid grid-cols-2 gap-8">
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary pb-4">Telegram API Credentials</h3>
+          <p className="text-[13px] text-text-muted pb-6">Get these from <a href="https://my.telegram.org" target="_blank" rel="noopener" className="text-accent underline">my.telegram.org</a> &gt; API development tools</p>
+          <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">API ID</label>
-              <input type="text" value={form.api_id} onChange={e => setForm({...form, api_id: e.target.value})} placeholder="12345678" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">API ID</label>
+              <input type="text" value={form.api_id} onChange={e => setForm({...form, api_id: e.target.value})} placeholder="12345678" className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">API Hash</label>
-              <input type="password" value={form.api_hash} onChange={e => setForm({...form, api_hash: e.target.value})} placeholder="abc123..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">API Hash</label>
+              <input type="password" value={form.api_hash} onChange={e => setForm({...form, api_hash: e.target.value})} placeholder="abc123..." className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-4">Phone Number (with country code)</label>
-            <input type="text" value={form.phone_number} onChange={e => setForm({...form, phone_number: e.target.value})} placeholder="+1234567890" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            <label className="block text-sm font-medium text-text-primary pb-3">Phone Number (with country code)</label>
+            <input type="text" value={form.phone_number} onChange={e => setForm({...form, phone_number: e.target.value})} placeholder="+1234567890" className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           </div>
         </div>
 
         {/* Group */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 pb-6">
             <Users className="w-4 h-4 text-accent" /> Target Group
           </h3>
-          <div className="space-y-8">
+          <div className="space-y-6">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-4">Group Username or Link</label>
-            <input type="text" value={form.group_username} onChange={e => setForm({...form, group_username: e.target.value})} placeholder="python_developers or t.me/python_developers" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            <label className="block text-sm font-medium text-text-primary pb-3">Group Username or Link</label>
+            <input type="text" value={form.group_username} onChange={e => setForm({...form, group_username: e.target.value})} placeholder="python_developers or t.me/python_developers" className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Members</label>
-              <input type="number" value={form.max_members} onChange={e => setForm({...form, max_members: Number(e.target.value)})} min={10} max={5000} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">Max Members</label>
+              <input type="number" value={form.max_members} onChange={e => setForm({...form, max_members: Number(e.target.value)})} min={10} max={5000} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
-              <input type="number" value={form.delay} onChange={e => setForm({...form, delay: Number(e.target.value)})} min={3} max={15} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">Delay (seconds)</label>
+              <input type="number" value={form.delay} onChange={e => setForm({...form, delay: Number(e.target.value)})} min={3} max={15} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
           </div>
           <button onClick={handleExtract} disabled={loading} className="w-full py-3 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2">

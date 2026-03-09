@@ -41,8 +41,8 @@ export default function WhatsAppScraper() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract phone numbers and names from WhatsApp groups via WhatsApp Web</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
-      <div className="space-y-10">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
         {/* CRITICAL Ban Warning */}
         <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-5">
@@ -151,23 +151,23 @@ export default function WhatsAppScraper() {
         )}
 
         {/* Extract Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 pb-6">
             <Users className="w-4 h-4 text-accent" /> Group Details
           </h3>
-          <div className="space-y-8">
+          <div className="space-y-6">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-4">Group Name (exact match in your chats)</label>
-            <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            <label className="block text-sm font-medium text-text-primary pb-3">Group Name (exact match in your chats)</label>
+            <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="My Business Group" className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Members</label>
-              <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">Max Members</label>
+              <input type="number" value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} min={10} max={500} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
-              <input type="number" value={delay} onChange={e => setDelay(Number(e.target.value))} min={5} max={20} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">Delay (seconds)</label>
+              <input type="number" value={delay} onChange={e => setDelay(Number(e.target.value))} min={5} max={20} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
           </div>
           <p className="text-[13px] text-text-muted leading-relaxed">

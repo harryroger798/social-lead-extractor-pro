@@ -60,8 +60,8 @@ export default function GoogleMapsExtractor() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract business listings from Google Maps — phones, websites, addresses, ratings</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
-      <div className="space-y-10">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
         {/* Safety Note */}
         <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/20 p-4">
@@ -121,38 +121,38 @@ export default function GoogleMapsExtractor() {
         </div>
 
         {/* Search Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 pb-6">
             <Search className="w-4 h-4 text-accent" />
             Search Query
           </h3>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">Search Term</label>
+              <label className="block text-sm font-medium text-text-primary pb-3">Search Term</label>
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g., restaurants in New York, dentists near Miami FL"
-                className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Results</label>
+                <label className="block text-sm font-medium text-text-primary pb-3">Max Results</label>
                 <input
                   type="number"
                   value={maxResults}
                   onChange={(e) => setMaxResults(Number(e.target.value))}
                   min={5}
                   max={200}
-                  className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-4">Delay (seconds)</label>
+                <label className="block text-sm font-medium text-text-primary pb-3">Delay (seconds)</label>
                 <input
                   type="number"
                   value={delay}
@@ -160,7 +160,7 @@ export default function GoogleMapsExtractor() {
                   min={1}
                   max={15}
                   step={0.5}
-                  className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 />
               </div>
             </div>
@@ -210,12 +210,12 @@ export default function GoogleMapsExtractor() {
         )}
 
         {/* What you get */}
-        <div className="rounded-xl bg-bg-card border border-border p-10 space-y-8">
+        <div className="rounded-xl bg-bg-card border border-border p-7 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-400" />
             What You Get
           </h3>
-          <div className="grid grid-cols-2 gap-6 text-[13px] leading-relaxed text-text-secondary">
+          <div className="grid grid-cols-2 gap-4 text-[13px] leading-relaxed text-text-secondary">
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Name</div>
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Phone Number</div>
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Website URL</div>

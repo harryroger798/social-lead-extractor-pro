@@ -277,7 +277,7 @@ export default function Settings() {
 
       {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-6">
 
       {/* How to Use */}
       <div className="rounded-xl bg-bg-card border border-border overflow-hidden">

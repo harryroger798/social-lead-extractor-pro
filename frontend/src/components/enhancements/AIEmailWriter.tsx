@@ -38,33 +38,37 @@ export default function AIEmailWriter() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
-          <Sparkles className="w-6 h-6 text-purple-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">AI Email Writer</h2>
-          <p className="text-sm text-text-muted">Generate personalized cold emails — 100% free, no API needed</p>
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+            </div>
+            AI Email Writer
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Generate personalized cold emails — 100% free, no API needed</p>
         </div>
       </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Controls */}
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-5">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Your Name</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Your Name</label>
             <input
               type="text"
               value={fromName}
               onChange={(e) => setFromName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               placeholder="John Smith"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Email Tone</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Email Tone</label>
             <div className="grid grid-cols-2 gap-2">
               {(tones.length > 0 ? tones : [
                 { id: 'professional', name: 'Professional', description: '' },
@@ -90,11 +94,11 @@ export default function AIEmailWriter() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Industry</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Industry</label>
             <select
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             >
               <option value="default">Auto-detect</option>
               {industries.map((ind) => (
@@ -106,12 +110,12 @@ export default function AIEmailWriter() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Service to Pitch (optional)</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Service to Pitch (optional)</label>
             <input
               type="text"
               value={service}
               onChange={(e) => setService(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               placeholder="e.g., SEO, Web Design, Social Media..."
             />
           </div>
@@ -130,7 +134,7 @@ export default function AIEmailWriter() {
         </div>
 
         {/* Result */}
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-4">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-text-primary">Generated Email</h3>
             {result && (
@@ -164,6 +168,8 @@ export default function AIEmailWriter() {
             </div>
           )}
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );
