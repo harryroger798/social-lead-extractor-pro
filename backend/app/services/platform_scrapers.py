@@ -24,6 +24,7 @@ from typing import Optional
 
 from app.services.extractor import extract_emails, extract_phones
 from app.services.patchright_engine import new_page, safe_goto, extract_page_text, random_delay
+from app.services.bio_link_follower import follow_bio_links, extract_from_bio_link
 
 logger = logging.getLogger(__name__)
 
@@ -165,8 +166,13 @@ async def scrape_instagram_profiles(
     headless: bool = True,
     proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """Scrape Instagram public profiles via Google dorking."""
+    """Scrape Instagram public profiles via Google dorking.
+
+    Enhanced: Follows bio links (Linktree, Beacons, etc.) found in snippets
+    to extract emails/phones from linked pages.
+    """
     results = []
+    bio_urls_to_follow: list[str] = []
     page = None
     try:
         page = await new_page(headless=headless, proxy=proxy)
@@ -197,6 +203,11 @@ async def scrape_instagram_profiles(
                     "keyword": keyword,
                 })
 
+            # Collect bio links from snippets for following
+            url_pattern = re.compile(r'https?://[^\s"<>]+', re.IGNORECASE)
+            snippet_urls = url_pattern.findall(sr.get("snippet", ""))
+            bio_urls_to_follow.extend(snippet_urls)
+
     except Exception as e:
         logger.error("Instagram scraper error: %s", e)
     finally:
@@ -205,6 +216,33 @@ async def scrape_instagram_profiles(
                 await page.context.close()
             except Exception:
                 pass
+
+    # Enhancement 2: Follow bio links to extract more emails/phones
+    if bio_urls_to_follow:
+        try:
+            loop = asyncio.get_event_loop()
+            bio_results = await loop.run_in_executor(
+                None, follow_bio_links, bio_urls_to_follow, 10, True
+            )
+            for email in bio_results.get("emails", []):
+                results.append({
+                    "email": email, "phone": "", "name": "",
+                    "platform": "instagram",
+                    "source_url": "bio_link",
+                    "keyword": keyword,
+                })
+            for phone in bio_results.get("phones", []):
+                results.append({
+                    "email": "", "phone": phone, "name": "",
+                    "platform": "instagram",
+                    "source_url": "bio_link",
+                    "keyword": keyword,
+                })
+            logger.info("Instagram bio links: found %d emails, %d phones from %d URLs",
+                        len(bio_results.get('emails', [])), len(bio_results.get('phones', [])),
+                        bio_results.get('urls_processed', 0))
+        except Exception as e:
+            logger.debug("Instagram bio link following failed: %s", e)
 
     return results
 
@@ -321,8 +359,13 @@ async def scrape_tiktok_profiles(
     headless: bool = True,
     proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """Scrape TikTok profiles via Google dorking."""
+    """Scrape TikTok profiles via Google dorking.
+
+    Enhanced: Follows bio links (Linktree, Beacons, etc.) found in snippets
+    to extract emails/phones from linked pages.
+    """
     results = []
+    bio_urls_to_follow: list[str] = []
     page = None
     try:
         page = await new_page(headless=headless, proxy=proxy)
@@ -353,6 +396,11 @@ async def scrape_tiktok_profiles(
                     "keyword": keyword,
                 })
 
+            # Collect bio links from snippets for following
+            url_pattern = re.compile(r'https?://[^\s"<>]+', re.IGNORECASE)
+            snippet_urls = url_pattern.findall(sr.get("snippet", ""))
+            bio_urls_to_follow.extend(snippet_urls)
+
     except Exception as e:
         logger.error("TikTok scraper error: %s", e)
     finally:
@@ -361,6 +409,33 @@ async def scrape_tiktok_profiles(
                 await page.context.close()
             except Exception:
                 pass
+
+    # Enhancement 2: Follow bio links to extract more emails/phones
+    if bio_urls_to_follow:
+        try:
+            loop = asyncio.get_event_loop()
+            bio_results = await loop.run_in_executor(
+                None, follow_bio_links, bio_urls_to_follow, 10, True
+            )
+            for email in bio_results.get("emails", []):
+                results.append({
+                    "email": email, "phone": "", "name": "",
+                    "platform": "tiktok",
+                    "source_url": "bio_link",
+                    "keyword": keyword,
+                })
+            for phone in bio_results.get("phones", []):
+                results.append({
+                    "email": "", "phone": phone, "name": "",
+                    "platform": "tiktok",
+                    "source_url": "bio_link",
+                    "keyword": keyword,
+                })
+            logger.info("TikTok bio links: found %d emails, %d phones from %d URLs",
+                        len(bio_results.get('emails', [])), len(bio_results.get('phones', [])),
+                        bio_results.get('urls_processed', 0))
+        except Exception as e:
+            logger.debug("TikTok bio link following failed: %s", e)
 
     return results
 

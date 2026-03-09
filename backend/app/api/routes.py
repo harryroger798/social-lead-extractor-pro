@@ -37,6 +37,11 @@ from app.services.reddit_extractor import reddit_search
 from app.services.proxy_manager import proxy_manager, test_proxy, parse_proxy_line
 from app.services.firecrawl_service import enrich_leads_with_firecrawl, check_firecrawl_credits
 from app.services.export_service import export_leads_bytes
+# v3.1.0 Enhancement imports
+from app.services.yellowpages_scraper import scrape_yellowpages, scrape_yelp, scrape_directories
+from app.services.fxtwitter_api import extract_twitter_profiles, enrich_twitter_leads_with_fxtwitter
+from app.services.pinterest_rss import extract_pinterest_rss, enrich_pinterest_leads_with_rss
+from app.services.bio_link_follower import follow_bio_links
 from app.services.license_service import (
     generate_license_key,
     validate_key_format,
@@ -299,6 +304,126 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 await _update_progress(session_id, _calc_progress(),
                     f"Direct Scraping failed: {e}", "", *_count_leads())
             current_step += 1
+
+        # ── v3.1.0: YellowPages Direct + Yelp Fusion ──────────────────────
+        has_yellowpages = "yellowpages" in config.platforms
+        has_yelp = "yelp" in config.platforms
+        if has_yellowpages or has_yelp:
+            try:
+                # Load yelp API key from settings (optional)
+                yelp_api_key = ""
+                async with get_db() as db:
+                    cursor = await db.execute(
+                        "SELECT value FROM settings WHERE key = 'yelp_api_key'"
+                    )
+                    row = await cursor.fetchone()
+                    yelp_api_key = row[0] if row else ""
+
+                for keyword in config.keywords:
+                    if has_yellowpages:
+                        await _update_progress(session_id, _calc_progress(),
+                            f"YellowPages Direct: {keyword}...", "yellowpages", *_count_leads())
+                        yp_leads = await scrape_yellowpages(keyword, max_results=30)
+                        all_leads.extend(yp_leads)
+
+                    if has_yelp:
+                        await _update_progress(session_id, _calc_progress(),
+                            f"Yelp {'Fusion API' if yelp_api_key else 'Dorking'}: {keyword}...",
+                            "yelp", *_count_leads())
+                        yelp_leads = await scrape_yelp(
+                            keyword, max_results=30, api_key=yelp_api_key
+                        )
+                        all_leads.extend(yelp_leads)
+
+                await _update_progress(session_id, _calc_progress(),
+                    f"Directories done — {_count_leads()[0]} leads", "", *_count_leads())
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("Directory scraping failed: %s", e)
+
+        # ── v3.1.0: fxtwitter API for Twitter/X bios ──────────────────────
+        has_twitter = "twitter" in config.platforms
+        if has_twitter:
+            try:
+                await _update_progress(session_id, _calc_progress(),
+                    "fxtwitter: extracting Twitter bios...", "twitter", *_count_leads())
+                for keyword in config.keywords:
+                    fx_leads = await extract_twitter_profiles(keyword, max_profiles=15)
+                    all_leads.extend(fx_leads)
+
+                # Also enrich any Twitter URLs found via dorking
+                twitter_urls = [
+                    ld.get("source_url", "") for ld in all_leads
+                    if ld.get("platform") == "twitter" and ld.get("source_url", "").startswith("http")
+                ]
+                if twitter_urls:
+                    enriched = await enrich_twitter_leads_with_fxtwitter(twitter_urls)
+                    all_leads.extend(enriched)
+
+                await _update_progress(session_id, _calc_progress(),
+                    f"fxtwitter done — {_count_leads()[0]} leads", "twitter", *_count_leads())
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("fxtwitter extraction failed: %s", e)
+
+        # ── v3.1.0: Pinterest RSS feed extraction ─────────────────────────
+        has_pinterest = "pinterest" in config.platforms
+        if has_pinterest:
+            try:
+                await _update_progress(session_id, _calc_progress(),
+                    "Pinterest RSS: extracting feeds...", "pinterest", *_count_leads())
+                for keyword in config.keywords:
+                    pin_leads = await extract_pinterest_rss(keyword, max_results=25)
+                    all_leads.extend(pin_leads)
+
+                # Enrich Pinterest URLs found via dorking
+                pinterest_urls = [
+                    ld.get("source_url", "") for ld in all_leads
+                    if ld.get("platform") == "pinterest" and ld.get("source_url", "").startswith("http")
+                ]
+                if pinterest_urls:
+                    enriched = await enrich_pinterest_leads_with_rss(pinterest_urls)
+                    all_leads.extend(enriched)
+
+                await _update_progress(session_id, _calc_progress(),
+                    f"Pinterest RSS done — {_count_leads()[0]} leads", "pinterest", *_count_leads())
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("Pinterest RSS extraction failed: %s", e)
+
+        # ── v3.1.0: Bio Link Follower for all leads with bio_link field ──
+        bio_link_urls = [
+            ld.get("bio_link", "") for ld in all_leads
+            if ld.get("bio_link", "").startswith("http")
+        ]
+        if bio_link_urls:
+            try:
+                await _update_progress(session_id, _calc_progress(),
+                    f"Following {len(bio_link_urls)} bio links...", "bio_links", *_count_leads())
+                import asyncio as _asyncio
+                loop = _asyncio.get_event_loop()
+                bio_results = await loop.run_in_executor(
+                    None, follow_bio_links, bio_link_urls, 20, True
+                )
+                for email in bio_results.get("emails", []):
+                    all_leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "bio_link",
+                        "source_url": "bio_link",
+                        "keyword": "",
+                    })
+                for phone in bio_results.get("phones", []):
+                    all_leads.append({
+                        "email": "", "phone": phone, "name": "",
+                        "platform": "bio_link",
+                        "source_url": "bio_link",
+                        "keyword": "",
+                    })
+                await _update_progress(session_id, _calc_progress(),
+                    f"Bio links done — {_count_leads()[0]} leads", "", *_count_leads())
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("Bio link following failed: %s", e)
 
         # ── Firecrawl enrichment ──────────────────────────────────────────
         if config.use_firecrawl_enrichment:
