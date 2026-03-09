@@ -44,18 +44,22 @@ export default function ServiceSuggestions() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          <Lightbulb className="w-6 h-6 text-amber-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">Service Suggestions</h2>
-          <p className="text-sm text-text-muted">12 services you can pitch to your leads with pricing</p>
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <Lightbulb className="w-5 h-5 text-amber-400" />
+            </div>
+            Service Suggestions
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">12 services you can pitch to your leads with pricing</p>
         </div>
       </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
-      <div className="bg-bg-card rounded-xl border border-border p-4">
+      <div className="bg-bg-card rounded-xl border border-border p-5">
         <p className="text-xs text-text-muted">
           <Lightbulb className="w-3 h-3 inline mr-1 text-amber-400" />
           Use these service suggestions when reaching out to leads. Each service includes recommended pricing and difficulty level.
@@ -68,7 +72,7 @@ export default function ServiceSuggestions() {
           <Loader2 className="w-6 h-6 animate-spin text-accent" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {catalog.map((service) => (
             <div key={service.id} className="bg-bg-card rounded-xl border border-border p-5 space-y-3 hover:border-accent/30 transition-colors">
               <div className="flex items-start justify-between">
@@ -90,6 +94,8 @@ export default function ServiceSuggestions() {
           ))}
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 }

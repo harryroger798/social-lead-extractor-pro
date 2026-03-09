@@ -57,33 +57,37 @@ export default function GBPDetector() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-          <MapPinned className="w-6 h-6 text-emerald-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">GBP Detection</h2>
-          <p className="text-sm text-text-muted">Detect if a Google Business Profile is claimed or unclaimed</p>
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="shrink-0 page-header">
+        <div className="px-10 py-6">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <MapPinned className="w-5 h-5 text-emerald-400" />
+            </div>
+            GBP Detection
+          </h1>
+          <p className="text-sm text-text-secondary pt-1 ml-[52px]">Detect if a Google Business Profile is claimed or unclaimed</p>
         </div>
       </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-5">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-2">Business Name</label>
+            <label className="block text-sm font-medium text-text-primary pb-3">Business Name</label>
             <input
               type="text"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               placeholder="e.g., Joe's Pizza"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-text-muted mb-3">Business Signals</label>
-            <div className="grid grid-cols-2 gap-3">
+            <label className="block text-sm font-medium text-text-primary pb-3">Business Signals</label>
+            <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Has Website', value: hasWebsite, set: setHasWebsite },
                 { label: 'Has Phone', value: hasPhone, set: setHasPhone },
@@ -107,13 +111,13 @@ export default function GBPDetector() {
 
           {hasReviews && (
             <div>
-              <label className="block text-xs font-medium text-text-muted mb-2">Review Count</label>
+              <label className="block text-sm font-medium text-text-primary pb-3">Review Count</label>
               <input
                 type="number"
                 value={reviewCount}
                 onChange={(e) => setReviewCount(Number(e.target.value))}
                 min={0}
-                className="w-32 px-3.5 py-2.5 rounded-lg bg-bg-input border border-border text-sm text-text-primary focus:border-accent focus:outline-none"
+                className="w-32 px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               />
             </div>
           )}
@@ -132,7 +136,7 @@ export default function GBPDetector() {
         </div>
 
         {/* Result */}
-        <div className="bg-bg-card rounded-xl border border-border p-5 space-y-4">
+        <div className="bg-bg-card rounded-xl border border-border p-7 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">Detection Result</h3>
           {result ? (
             <div className="space-y-4">
@@ -178,6 +182,8 @@ export default function GBPDetector() {
             </div>
           )}
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );

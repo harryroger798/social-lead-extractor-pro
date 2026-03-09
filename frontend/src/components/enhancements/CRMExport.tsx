@@ -63,8 +63,8 @@ export default function CRMExport() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Export leads to HubSpot (free tier) or Salesforce</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
-      <div className="space-y-10">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
+      <div className="flex flex-col gap-6">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -110,8 +110,8 @@ export default function CRMExport() {
         </div>
 
         {/* CRM Type */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary mb-10">Select CRM</h3>
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary pb-6">Select CRM</h3>
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => setCrmType('hubspot')} className={`p-4 rounded-xl border text-left transition-all ${crmType === 'hubspot' ? 'border-orange-500/50 bg-orange-500/5' : 'border-border bg-bg-primary hover:border-border/80'}`}>
               <p className="text-sm font-semibold text-text-primary">HubSpot</p>
@@ -125,28 +125,28 @@ export default function CRMExport() {
         </div>
 
         {/* Credentials */}
-        <div className="rounded-xl bg-bg-card border border-border p-10">
-          <h3 className="text-sm font-semibold text-text-primary mb-10">API Credentials</h3>
-          <div className="space-y-8">
+        <div className="rounded-xl bg-bg-card border border-border p-7">
+          <h3 className="text-sm font-semibold text-text-primary pb-6">API Credentials</h3>
+          <div className="space-y-6">
           {crmType === 'hubspot' ? (
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-4">HubSpot API Key (or Private App Token)</label>
-              <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="pat-na1-..." className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
+              <label className="block text-sm font-medium text-text-primary pb-3">HubSpot API Key (or Private App Token)</label>
+              <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="pat-na1-..." className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
               <p className="text-xs text-text-muted mt-2">Get it from HubSpot &gt; Settings &gt; Integrations &gt; Private Apps</p>
             </div>
           ) : (
             <div className="space-y-6">
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-4">Username</label>
-                <input type="text" value={sfUsername} onChange={e => setSfUsername(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+                <label className="block text-sm font-medium text-text-primary pb-3">Username</label>
+                <input type="text" value={sfUsername} onChange={e => setSfUsername(e.target.value)} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-4">Password</label>
-                <input type="password" value={sfPassword} onChange={e => setSfPassword(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+                <label className="block text-sm font-medium text-text-primary pb-3">Password</label>
+                <input type="password" value={sfPassword} onChange={e => setSfPassword(e.target.value)} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-text-secondary mb-4">Security Token</label>
-                <input type="text" value={sfToken} onChange={e => setSfToken(e.target.value)} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40" />
+                <label className="block text-sm font-medium text-text-primary pb-3">Security Token</label>
+                <input type="text" value={sfToken} onChange={e => setSfToken(e.target.value)} className="w-full bg-bg-input border border-[#3f3f46] rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
               </div>
             </div>
           )}
