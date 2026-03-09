@@ -417,6 +417,227 @@ export function fetchLinkedInGuide() {
   return request<Record<string, unknown>>('/api/linkedin/ban-bypass-guide');
 }
 
+// ─── PDF Reports ────────────────────────────────────────────────────────
+
+export function generatePDFReport(params: {
+  session_id?: string;
+  title?: string;
+  company_name?: string;
+  primary_color?: string;
+  secondary_color?: string;
+}) {
+  const q = new URLSearchParams();
+  if (params.session_id) q.set('session_id', params.session_id);
+  if (params.title) q.set('title', params.title);
+  if (params.company_name) q.set('company_name', params.company_name);
+  if (params.primary_color) q.set('primary_color', params.primary_color);
+  if (params.secondary_color) q.set('secondary_color', params.secondary_color);
+  return requestBlob(`/api/reports/pdf?${q.toString()}`, { method: 'POST' });
+}
+
+// ─── Directory Scraper (YellowPages/Yelp) ───────────────────────────────
+
+export function searchDirectories(params: {
+  query: string;
+  location?: string;
+  sources?: string;
+  max_results?: number;
+}) {
+  const q = new URLSearchParams();
+  q.set('query', params.query);
+  if (params.location) q.set('location', params.location);
+  if (params.sources) q.set('sources', params.sources);
+  if (params.max_results) q.set('max_results', String(params.max_results));
+  return request<{ session_id: string; status: string }>(`/api/directories/search?${q.toString()}`, {
+    method: 'POST',
+  });
+}
+
+// ─── AI Email Writer ────────────────────────────────────────────────────
+
+export function generateAIEmail(params: {
+  lead_id?: string;
+  tone?: string;
+  service?: string;
+  industry?: string;
+  from_name?: string;
+}) {
+  const q = new URLSearchParams();
+  if (params.lead_id) q.set('lead_id', params.lead_id);
+  if (params.tone) q.set('tone', params.tone);
+  if (params.service) q.set('service', params.service);
+  if (params.industry) q.set('industry', params.industry);
+  if (params.from_name) q.set('from_name', params.from_name);
+  return request<{ subject: string; body: string; tone: string; industry: string }>(`/api/ai-email/generate?${q.toString()}`, {
+    method: 'POST',
+  });
+}
+
+export function fetchEmailTones() {
+  return request<{ id: string; name: string; description: string }[]>('/api/ai-email/tones');
+}
+
+export function fetchEmailIndustries() {
+  return request<string[]>('/api/ai-email/industries');
+}
+
+// ─── Lead Enrichment ────────────────────────────────────────────────────
+
+export function enrichLeads() {
+  return request<{
+    status: string;
+    total_leads: number;
+    enriched: number;
+    names_filled: number;
+    phones_filled: number;
+    emails_filled: number;
+    companies_detected: number;
+    websites_detected: number;
+  }>('/api/leads/enrich', { method: 'POST' });
+}
+
+// ─── GBP Detection ─────────────────────────────────────────────────────
+
+export function detectGBPStatus(businessData: Record<string, unknown>) {
+  return request<{
+    score: number;
+    status: string;
+    confidence: string;
+    breakdown: { signal: string; points: number; present: boolean }[];
+    opportunity: string;
+    pitch: string;
+  }>('/api/gbp/detect', {
+    method: 'POST',
+    body: JSON.stringify(businessData),
+  });
+}
+
+export function batchDetectGBP(businesses: Record<string, unknown>[]) {
+  return request<{
+    score: number;
+    status: string;
+    confidence: string;
+    breakdown: { signal: string; points: number; present: boolean }[];
+    opportunity: string;
+    pitch: string;
+  }[]>('/api/gbp/batch-detect', {
+    method: 'POST',
+    body: JSON.stringify(businesses),
+  });
+}
+
+// ─── Internationalization ───────────────────────────────────────────────
+
+export function fetchTranslations(lang: string) {
+  return request<Record<string, string>>(`/api/i18n/translations?lang=${lang}`);
+}
+
+export function fetchSupportedLanguages() {
+  return request<{ code: string; name: string; native_name: string; rtl: boolean }[]>('/api/i18n/languages');
+}
+
+// ─── Job Boards (Indeed/Glassdoor/Craigslist/OLX) ───────────────────────
+
+export function searchJobBoards(params: {
+  query: string;
+  location?: string;
+  sources?: string;
+  max_results?: number;
+}) {
+  const q = new URLSearchParams();
+  q.set('query', params.query);
+  if (params.location) q.set('location', params.location);
+  if (params.sources) q.set('sources', params.sources);
+  if (params.max_results) q.set('max_results', String(params.max_results));
+  return request<{ session_id: string; status: string }>(`/api/jobs/search?${q.toString()}`, {
+    method: 'POST',
+  });
+}
+
+// ─── Citation Checker ───────────────────────────────────────────────────
+
+export function checkCitations(params: {
+  business_name: string;
+  location?: string;
+  phone?: string;
+  max_sources?: number;
+}) {
+  const q = new URLSearchParams();
+  q.set('business_name', params.business_name);
+  if (params.location) q.set('location', params.location);
+  if (params.phone) q.set('phone', params.phone);
+  if (params.max_sources) q.set('max_sources', String(params.max_sources));
+  return request<{
+    found: { source: string; url: string }[];
+    not_found: string[];
+    score: number;
+    grade: string;
+    recommendations: string[];
+  }>(`/api/citations/check?${q.toString()}`, { method: 'POST' });
+}
+
+export function fetchCitationSources() {
+  return request<{ name: string; category: string; url: string }[]>('/api/citations/sources');
+}
+
+// ─── Service Suggestions ────────────────────────────────────────────────
+
+export function suggestServices(leadId: string) {
+  const q = new URLSearchParams();
+  q.set('lead_id', leadId);
+  return request<{
+    lead_id: string;
+    suggestions: {
+      service: string;
+      name: string;
+      relevance_score: number;
+      pitch: string;
+      price_range: string;
+      difficulty: string;
+    }[];
+  }>(`/api/services/suggest?${q.toString()}`, { method: 'POST' });
+}
+
+export function fetchServiceCatalog() {
+  return request<{
+    id: string;
+    name: string;
+    description: string;
+    price_range: string;
+    difficulty: string;
+  }[]>('/api/services/catalog');
+}
+
+// ─── SMTP Deliverability Checker ────────────────────────────────────────
+
+export function checkSMTPDeliverability(params: { domain?: string; email?: string }) {
+  const q = new URLSearchParams();
+  if (params.domain) q.set('domain', params.domain);
+  if (params.email) q.set('email', params.email);
+  return request<{
+    score: number;
+    rating: string;
+    summary: string;
+    issues: string[];
+    recommendations: string[];
+    spf?: { found: boolean; record: string };
+    dkim?: { found: boolean };
+    dmarc?: { found: boolean; record: string };
+  }>(`/api/smtp/check-deliverability?${q.toString()}`, { method: 'POST' });
+}
+
+// ─── Extended Email Templates ───────────────────────────────────────────
+
+export function fetchExtendedTemplates() {
+  return request<{
+    id: string;
+    name: string;
+    category: string;
+    subject: string;
+    body: string;
+  }[]>('/api/outreach/templates-extended');
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface DashboardStatsResponse {

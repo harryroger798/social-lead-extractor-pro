@@ -18,6 +18,15 @@ import {
   Shield,
   Lock,
   LogOut,
+  FileText,
+  BookOpen,
+  Sparkles,
+  Wand2,
+  MapPinned,
+  Briefcase,
+  CheckSquare,
+  Lightbulb,
+  MailCheck,
 } from 'lucide-react';
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
@@ -63,6 +72,8 @@ const navGroups: NavGroup[] = [
       { id: 'telegram' as Section, label: 'Telegram', icon: MessageCircle },
       { id: 'whatsapp' as Section, label: 'WhatsApp', icon: Smartphone },
       { id: 'email_finder' as Section, label: 'Email Finder', icon: Globe },
+      { id: 'directories' as Section, label: 'Directories', icon: BookOpen },
+      { id: 'job_boards' as Section, label: 'Job Boards', icon: Briefcase },
     ],
   },
   {
@@ -70,7 +81,19 @@ const navGroups: NavGroup[] = [
     items: [
       { id: 'schedules' as Section, label: 'Schedules', icon: Clock },
       { id: 'outreach' as Section, label: 'Email Outreach', icon: Mail },
+      { id: 'ai_email' as Section, label: 'AI Email Writer', icon: Sparkles },
       { id: 'crm' as Section, label: 'CRM Export', icon: Database },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { id: 'lead_enrichment' as Section, label: 'Lead Enrichment', icon: Wand2 },
+      { id: 'citation_checker' as Section, label: 'Citation Checker', icon: CheckSquare },
+      { id: 'gbp_detection' as Section, label: 'GBP Detection', icon: MapPinned },
+      { id: 'service_suggestions' as Section, label: 'Service Suggest', icon: Lightbulb },
+      { id: 'smtp_checker' as Section, label: 'SMTP Checker', icon: MailCheck },
+      { id: 'pdf_reports' as Section, label: 'PDF Reports', icon: FileText },
     ],
   },
   {
