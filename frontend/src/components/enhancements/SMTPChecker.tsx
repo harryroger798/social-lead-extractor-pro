@@ -135,8 +135,8 @@ export default function SMTPChecker() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-text-primary">{check.name}</p>
-                      {check.data && 'record' in check.data && check.data.record && (
-                        <p className="text-[10px] text-text-muted truncate">{check.data.record}</p>
+                      {check.data && 'record' in check.data && (check.data as { record?: string }).record && (
+                        <p className="text-[10px] text-text-muted truncate">{String((check.data as { record?: string }).record)}</p>
                       )}
                     </div>
                     <span className={`text-xs font-medium ${check.data?.found ? 'text-emerald-400' : 'text-red-400'}`}>
