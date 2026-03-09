@@ -71,8 +71,8 @@ export default function ScheduledExtractions() {
           </button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -121,9 +121,9 @@ export default function ScheduledExtractions() {
         </div>
 
         {showCreate && (
-          <div className="rounded-xl bg-bg-card border border-border p-8">
-            <h3 className="text-sm font-semibold text-text-primary mb-7">Create Schedule</h3>
-            <div className="space-y-7">
+          <div className="rounded-xl bg-bg-card border border-border p-10">
+            <h3 className="text-sm font-semibold text-text-primary mb-10">Create Schedule</h3>
+            <div className="space-y-8">
               <div>
                 <label className="block text-[13px] font-medium text-text-secondary mb-4">Schedule Name</label>
                 <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Weekly Lead Scrape" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
@@ -136,7 +136,7 @@ export default function ScheduledExtractions() {
                 <label className="block text-[13px] font-medium text-text-secondary mb-4">Platforms (comma-separated)</label>
                 <input type="text" value={form.platforms} onChange={e => setForm({...form, platforms: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-8">
                 <div>
                   <label className="block text-[13px] font-medium text-text-secondary mb-4">Frequency</label>
                   <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40">

@@ -60,8 +60,8 @@ export default function GoogleMapsExtractor() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Extract business listings from Google Maps — phones, websites, addresses, ratings</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* Safety Note */}
         <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/20 p-4">
@@ -121,13 +121,13 @@ export default function GoogleMapsExtractor() {
         </div>
 
         {/* Search Form */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-8">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
             <Search className="w-4 h-4 text-accent" />
             Search Query
           </h3>
 
-          <div className="space-y-7">
+          <div className="space-y-8">
             <div>
               <label className="block text-[13px] font-medium text-text-secondary mb-4">Search Term</label>
               <input
@@ -139,7 +139,7 @@ export default function GoogleMapsExtractor() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-8">
               <div>
                 <label className="block text-[13px] font-medium text-text-secondary mb-4">Max Results</label>
                 <input
@@ -210,12 +210,12 @@ export default function GoogleMapsExtractor() {
         )}
 
         {/* What you get */}
-        <div className="rounded-xl bg-bg-card border border-border p-8 space-y-6">
+        <div className="rounded-xl bg-bg-card border border-border p-10 space-y-8">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-400" />
             What You Get
           </h3>
-          <div className="grid grid-cols-2 gap-4 text-[13px] leading-relaxed text-text-secondary">
+          <div className="grid grid-cols-2 gap-6 text-[13px] leading-relaxed text-text-secondary">
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Business Name</div>
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Phone Number</div>
             <div className="flex items-center gap-3 py-2.5 border-b border-white/5"><span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" /> Website URL</div>

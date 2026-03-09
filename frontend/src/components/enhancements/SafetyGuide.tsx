@@ -49,8 +49,8 @@ export default function SafetyGuide() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Comprehensive ban prevention techniques and risk assessment for all platforms</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* How to Use */}
         <div className="rounded-xl bg-bg-card border border-border overflow-hidden">
@@ -90,7 +90,7 @@ export default function SafetyGuide() {
 
         {/* General Tips */}
         {guide?.general_tips && (
-          <div className="rounded-xl bg-bg-card border border-border p-8 space-y-5">
+          <div className="rounded-xl bg-bg-card border border-border p-10 space-y-8">
             <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" /> General Safety Tips
             </h3>
@@ -176,7 +176,7 @@ export default function SafetyGuide() {
 
         {/* LinkedIn Guide */}
         {linkedinGuide && (
-          <div className="rounded-xl bg-bg-card border border-border p-8 space-y-5">
+          <div className="rounded-xl bg-bg-card border border-border p-10 space-y-8">
             <h3 className="text-sm font-semibold text-text-primary">LinkedIn Specific Guide</h3>
             <p className="text-xs text-text-muted">
               Primary method: Google Dorking (zero ban risk). Direct scraping is HIGH risk.

@@ -36,8 +36,8 @@ export default function EmailFinder() {
           <p className="text-sm text-text-secondary pt-1 ml-[52px]">Crawl any website to extract email addresses and phone numbers. Checks /contact, /about, /team pages automatically.</p>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
-      <div className="space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-10 py-10">
+      <div className="space-y-10">
 
         {/* Info */}
         <div className="rounded-xl bg-teal-500/5 border border-teal-500/20 p-4">
@@ -95,11 +95,11 @@ export default function EmailFinder() {
         </div>
 
         {/* Search */}
-        <div className="rounded-xl bg-bg-card border border-border p-8">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-7">
+        <div className="rounded-xl bg-bg-card border border-border p-10">
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 mb-10">
             <Search className="w-4 h-4 text-accent" /> Crawl Website
           </h3>
-          <div className="space-y-7">
+          <div className="space-y-8">
           <div>
             <label className="block text-[13px] font-medium text-text-secondary mb-4">Website URL</label>
             <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" className="w-full bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40" />
