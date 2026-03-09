@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { startExtraction, getExtractionStatus } from '@/lib/api';
 import { useToast } from '@/components/ui/useToast';
 import type { ExtractionStatusResponse } from '@/lib/api';
+import { PLATFORM_ICONS } from '@/components/icons/PlatformIcons';
 
 const PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2' },
@@ -319,7 +320,7 @@ export default function NewExtraction() {
               )}
             >
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: p.color + '15', color: p.color }}>
-                <Globe className="w-5 h-5" />
+                {(() => { const Icon = PLATFORM_ICONS[p.id]; return Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />; })()}
               </div>
               <span className={cn('text-sm font-medium', selectedPlatforms.includes(p.id) ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
               {selectedPlatforms.includes(p.id) && <CheckCircle className="w-4 h-4 text-accent ml-auto flex-shrink-0" />}
