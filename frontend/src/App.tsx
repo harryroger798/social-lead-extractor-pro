@@ -20,6 +20,15 @@ import TelegramScraper from '@/components/enhancements/TelegramScraper';
 import WhatsAppScraper from '@/components/enhancements/WhatsAppScraper';
 import EmailFinder from '@/components/enhancements/EmailFinder';
 import SafetyGuide from '@/components/enhancements/SafetyGuide';
+import PDFReportGenerator from '@/components/enhancements/PDFReportGenerator';
+import DirectoryScraper from '@/components/enhancements/DirectoryScraper';
+import AIEmailWriter from '@/components/enhancements/AIEmailWriter';
+import LeadEnrichmentTool from '@/components/enhancements/LeadEnrichmentTool';
+import GBPDetector from '@/components/enhancements/GBPDetector';
+import CitationChecker from '@/components/enhancements/CitationChecker';
+import ServiceSuggestions from '@/components/enhancements/ServiceSuggestions';
+import SMTPChecker from '@/components/enhancements/SMTPChecker';
+import JobBoardScraper from '@/components/enhancements/JobBoardScraper';
 import { Loader2 } from 'lucide-react';
 import type { Section } from '@/types';
 
@@ -83,6 +92,24 @@ function AppContent() {
         return <ProGate featureName="Website Email Finder"><EmailFinder /></ProGate>;
       case 'safety_guide':
         return <SafetyGuide />;
+      case 'pdf_reports':
+        return <ProGate featureName="PDF Reports"><PDFReportGenerator /></ProGate>;
+      case 'directories':
+        return <ProGate featureName="Directory Scraper"><DirectoryScraper /></ProGate>;
+      case 'ai_email':
+        return <ProGate featureName="AI Email Writer"><AIEmailWriter /></ProGate>;
+      case 'lead_enrichment':
+        return <ProGate featureName="Lead Enrichment"><LeadEnrichmentTool /></ProGate>;
+      case 'gbp_detection':
+        return <ProGate featureName="GBP Detection"><GBPDetector /></ProGate>;
+      case 'citation_checker':
+        return <ProGate featureName="Citation Checker"><CitationChecker /></ProGate>;
+      case 'service_suggestions':
+        return <ProGate featureName="Service Suggestions"><ServiceSuggestions /></ProGate>;
+      case 'smtp_checker':
+        return <ProGate featureName="SMTP Checker"><SMTPChecker /></ProGate>;
+      case 'job_boards':
+        return <ProGate featureName="Job Board Scraper"><JobBoardScraper /></ProGate>;
       default:
         return <Dashboard onNavigate={setActiveSection} />;
     }

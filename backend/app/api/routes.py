@@ -1979,3 +1979,476 @@ async def extraction_engine_status() -> dict:
         status["serper"]["configured"] = bool(row and row[0])
 
     return status
+
+
+# ─── Enhancement: PDF Report Generation ─────────────────────────────────────
+
+@router.post("/reports/pdf")
+async def generate_pdf_report(
+    session_id: Optional[str] = None,
+    title: str = "SnapLeads Report",
+    company_name: str = "SnapLeads",
+    primary_color: str = "#6366f1",
+    secondary_color: str = "#a855f7",
+) -> Response:
+    """Generate a branded PDF report of leads."""
+    from app.services.pdf_report import generate_lead_report
+
+    async with get_db() as db:
+        if session_id:
+            cursor = await db.execute(
+                "SELECT id, email, phone, name, platform, source_url, keyword, "
+                "email_type, verified, quality_score, extracted_at, session_id "
+                "FROM leads WHERE session_id = ? ORDER BY quality_score DESC",
+                (session_id,),
+            )
+        else:
+            cursor = await db.execute(
+                "SELECT id, email, phone, name, platform, source_url, keyword, "
+                "email_type, verified, quality_score, extracted_at, session_id "
+                "FROM leads ORDER BY quality_score DESC LIMIT 1000"
+            )
+        rows = await cursor.fetchall()
+
+    leads = [
+        {
+            "id": r[0], "email": r[1], "phone": r[2], "name": r[3],
+            "platform": r[4], "source_url": r[5], "keyword": r[6],
+            "email_type": r[7], "verified": bool(r[8]),
+            "quality_score": r[9], "extracted_at": r[10],
+        }
+        for r in rows
+    ]
+
+    branding = {
+        "company_name": company_name,
+        "primary_color": primary_color,
+        "secondary_color": secondary_color,
+    }
+
+    pdf_bytes = generate_lead_report(leads, title=title, branding=branding)
+    if not pdf_bytes:
+        raise HTTPException(status_code=500, detail="PDF generation failed — fpdf2 may not be installed")
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="snapleads-report.pdf"'},
+    )
+
+
+# ─── Enhancement: YellowPages + Yelp Directory Scraper ──────────────────────
+
+@router.post("/directories/search")
+async def search_directories(
+    query: str,
+    location: str = "",
+    sources: str = "yellowpages,yelp",
+    max_results: int = 50,
+    background_tasks: BackgroundTasks = None,
+) -> dict:
+    """Search YellowPages, Yelp, and other business directories."""
+    session_id = str(uuid.uuid4())
+    source_list = [s.strip() for s in sources.split(",")]
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"Directory: {query}",
+             json.dumps(source_list), json.dumps([query]),
+             datetime.now().isoformat(), json.dumps({"query": query, "location": location})),
+        )
+        await db.commit()
+
+    background_tasks.add_task(
+        _run_directory_extraction, session_id, query, location, source_list, max_results
+    )
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_directory_extraction(
+    session_id: str, query: str, location: str, sources: list[str], max_results: int
+) -> None:
+    """Background task for directory extraction."""
+    from app.services.yellowpages_scraper import scrape_directories
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    try:
+        leads = await scrape_directories(query, location, sources, max_results)
+
+        async with get_db() as db:
+            total = 0
+            emails_found = 0
+            phones_found = 0
+
+            for lead_data in leads:
+                lead_id = str(uuid.uuid4())
+                email = lead_data.get("email", "")
+                phone = lead_data.get("phone", "")
+                quality = calculate_lead_score(email=email, phone=phone)
+                category = get_score_label(quality)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, email, phone, lead_data.get("name", ""),
+                         lead_data.get("platform", "yellowpages"),
+                         lead_data.get("source_url", ""), query, "",
+                         "unknown", 0, quality,
+                         datetime.now().isoformat(), session_id),
+                    )
+                    total += 1
+                    if email:
+                        emails_found += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, emails_found=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, emails_found, phones_found,
+                 datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+    except Exception as e:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+
+# ─── Enhancement: AI Cold Email Writer ───────────────────────────────────────
+
+@router.post("/ai-email/generate")
+async def generate_ai_email(
+    lead_id: Optional[str] = None,
+    tone: str = "professional",
+    service: str = "",
+    industry: str = "default",
+    from_name: str = "",
+) -> dict:
+    """Generate a personalized cold email for a lead."""
+    from app.services.ai_email_writer import generate_cold_email
+
+    lead = {}
+    if lead_id:
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT id, email, phone, name, platform, company, website FROM leads WHERE id = ?",
+                (lead_id,),
+            )
+            row = await cursor.fetchone()
+            if row:
+                lead = {
+                    "id": row[0], "email": row[1], "phone": row[2],
+                    "name": row[3], "platform": row[4],
+                    "company": row[5] or "", "website": row[6] or "",
+                }
+
+    result = generate_cold_email(
+        lead=lead, tone=tone, service=service,
+        industry=industry, from_name=from_name,
+    )
+    return result
+
+
+@router.get("/ai-email/tones")
+async def get_email_tones() -> list[dict]:
+    """Get available email tones."""
+    from app.services.ai_email_writer import get_available_tones
+    return get_available_tones()
+
+
+@router.get("/ai-email/industries")
+async def get_email_industries() -> list[str]:
+    """Get available industries for email personalization."""
+    from app.services.ai_email_writer import get_available_industries
+    return get_available_industries()
+
+
+# ─── Enhancement: Lead Enrichment ────────────────────────────────────────────
+
+@router.post("/leads/enrich")
+async def enrich_leads() -> dict:
+    """Auto-enrich leads by cross-referencing existing data."""
+    from app.services.lead_enrichment import enrich_leads_from_database
+
+    async with get_db() as db:
+        stats = await enrich_leads_from_database(db)
+
+    return {"status": "completed", **stats}
+
+
+# ─── Enhancement: GBP Claimed/Unclaimed Detection ───────────────────────────
+
+@router.post("/gbp/detect")
+async def detect_gbp_status(business_data: dict) -> dict:
+    """Detect if a Google Business Profile is claimed or unclaimed."""
+    from app.services.gbp_detection import detect_claimed_status
+    return detect_claimed_status(business_data)
+
+
+@router.post("/gbp/batch-detect")
+async def batch_detect_gbp(businesses: list[dict]) -> list[dict]:
+    """Batch detect claimed/unclaimed status for multiple businesses."""
+    from app.services.gbp_detection import batch_detect
+    return batch_detect(businesses)
+
+
+# ─── Enhancement: Multi-Language UI ──────────────────────────────────────────
+
+@router.get("/i18n/translations")
+async def get_translations(lang: str = "en") -> dict:
+    """Get UI translations for a language."""
+    from app.services.i18n import get_translations
+    return get_translations(lang)
+
+
+@router.get("/i18n/languages")
+async def get_supported_languages() -> list[dict]:
+    """Get list of supported languages."""
+    from app.services.i18n import get_supported_languages
+    return get_supported_languages()
+
+
+# ─── Enhancement: Craigslist + OLX + Indeed + Glassdoor Scraping ─────────────
+
+@router.post("/jobs/search")
+async def search_job_boards(
+    query: str,
+    location: str = "",
+    sources: str = "indeed,glassdoor",
+    max_results: int = 50,
+    background_tasks: BackgroundTasks = None,
+) -> dict:
+    """Search Indeed, Glassdoor, Craigslist, OLX for leads."""
+    session_id = str(uuid.uuid4())
+    source_list = [s.strip() for s in sources.split(",")]
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"Jobs: {query}",
+             json.dumps(source_list), json.dumps([query]),
+             datetime.now().isoformat(), json.dumps({"query": query, "location": location})),
+        )
+        await db.commit()
+
+    background_tasks.add_task(
+        _run_job_extraction, session_id, query, location, source_list, max_results
+    )
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_job_extraction(
+    session_id: str, query: str, location: str, sources: list[str], max_results: int
+) -> None:
+    """Background task for job board extraction."""
+    from app.services.indeed_scraper import scrape_job_boards
+    from app.services.lead_scorer import calculate_lead_score, get_score_label
+
+    try:
+        leads = await scrape_job_boards(query, location, sources, max_results)
+
+        async with get_db() as db:
+            total = 0
+            emails_found = 0
+            phones_found = 0
+
+            for lead_data in leads:
+                lead_id = str(uuid.uuid4())
+                email = lead_data.get("email", "")
+                phone = lead_data.get("phone", "")
+                quality = calculate_lead_score(email=email, phone=phone)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, email, phone, lead_data.get("name", ""),
+                         lead_data.get("platform", "indeed"),
+                         lead_data.get("source_url", ""), query, "",
+                         "unknown", 0, quality,
+                         datetime.now().isoformat(), session_id),
+                    )
+                    total += 1
+                    if email:
+                        emails_found += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, emails_found=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, emails_found, phones_found,
+                 datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+    except Exception as e:
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+
+# ─── Enhancement: Citation Checker ───────────────────────────────────────────
+
+@router.post("/citations/check")
+async def check_business_citations(
+    business_name: str,
+    location: str = "",
+    phone: str = "",
+    max_sources: int = 30,
+) -> dict:
+    """Check business citations across 30 directories."""
+    from app.services.citation_checker import check_citations
+    return await check_citations(business_name, location, phone, max_sources)
+
+
+@router.get("/citations/sources")
+async def get_citation_sources() -> list[dict]:
+    """Get list of citation sources we check."""
+    from app.services.citation_checker import get_citation_sources
+    return get_citation_sources()
+
+
+# ─── Enhancement: AI Service Suggestion ──────────────────────────────────────
+
+@router.post("/services/suggest")
+async def suggest_services_for_lead(lead_id: str) -> dict:
+    """Suggest services to pitch to a specific lead."""
+    from app.services.service_suggestion import suggest_services
+
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT id, email, phone, name, platform, email_type, verified, "
+            "quality_score, company, website, category FROM leads WHERE id = ?",
+            (lead_id,),
+        )
+        row = await cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Lead not found")
+
+        lead = {
+            "id": row[0], "email": row[1], "phone": row[2], "name": row[3],
+            "platform": row[4], "email_type": row[5], "verified": bool(row[6]),
+            "quality_score": row[7], "company": row[8] or "",
+            "website": row[9] or "", "category": row[10] or "",
+        }
+
+    suggestions = suggest_services(lead)
+    return {"lead_id": lead_id, "suggestions": suggestions}
+
+
+@router.get("/services/catalog")
+async def get_service_catalog_endpoint() -> list[dict]:
+    """Get the full service catalog."""
+    from app.services.service_suggestion import get_service_catalog
+    return get_service_catalog()
+
+
+# ─── Enhancement: SMTP Deliverability Checker ────────────────────────────────
+
+@router.post("/smtp/check-deliverability")
+async def check_smtp_deliverability(domain: str = "", email: str = "") -> dict:
+    """Check email deliverability (SPF/DKIM/DMARC) for a domain or email."""
+    from app.services.smtp_checker import check_email_deliverability, check_sender_domain
+
+    if email:
+        return await check_sender_domain(email)
+    elif domain:
+        return await check_email_deliverability(domain)
+    else:
+        raise HTTPException(status_code=400, detail="Provide either 'domain' or 'email' parameter")
+
+
+# ─── Enhancement: Extended Email Templates ───────────────────────────────────
+
+@router.get("/outreach/templates-extended")
+async def get_extended_templates() -> list[dict]:
+    """Get extended library of 20 email templates."""
+    return [
+        {"id": "introduction", "name": "Introduction", "category": "First Contact",
+         "subject": "Quick intro — {{from_name}} from {{company}}",
+         "body": "Hi {{name}},\n\nI came across {{company}} and was impressed by your work.\n\nI help businesses like yours grow their online presence and generate more leads. Would you be open to a quick chat?\n\nBest,\n{{from_name}}"},
+        {"id": "follow_up", "name": "Follow Up", "category": "Follow Up",
+         "subject": "Following up — {{from_name}}",
+         "body": "Hi {{name}},\n\nI wanted to follow up on my previous message. I understand you're busy — just wanted to make sure my email didn't get lost.\n\nI'd love to discuss how I can help {{company}} achieve its goals.\n\nBest,\n{{from_name}}"},
+        {"id": "partnership", "name": "Partnership Proposal", "category": "Partnership",
+         "subject": "Partnership opportunity with {{company}}",
+         "body": "Hi {{name}},\n\nI've been researching companies in your space and {{company}} stands out. I believe there's a strong opportunity for us to collaborate.\n\nWould you be interested in exploring a partnership?\n\nRegards,\n{{from_name}}"},
+        {"id": "value_offer", "name": "Free Value Offer", "category": "First Contact",
+         "subject": "Free growth audit for {{company}}",
+         "body": "Hi {{name}},\n\nI took a quick look at {{company}}'s online presence and found a few areas with quick-win potential.\n\nI'd be happy to share my findings for free — no strings attached. Just reply to this email and I'll send them over.\n\nBest,\n{{from_name}}"},
+        {"id": "referral", "name": "Referral Approach", "category": "First Contact",
+         "subject": "Referred to {{company}}",
+         "body": "Hi {{name}},\n\nI was researching top companies in your industry and {{company}} was recommended. I can see why — impressive work!\n\nI specialize in helping businesses like yours scale. Would you be open to a brief conversation?\n\nCheers,\n{{from_name}}"},
+        {"id": "case_study", "name": "Case Study Share", "category": "Nurture",
+         "subject": "How we helped a company like {{company}}",
+         "body": "Hi {{name}},\n\nI recently helped a business similar to {{company}} increase their leads by 47% in just 3 months.\n\nI thought you might find the case study interesting. Would you like me to send it over?\n\nBest,\n{{from_name}}"},
+        {"id": "question", "name": "Question-Based", "category": "First Contact",
+         "subject": "Quick question about {{company}}",
+         "body": "Hi {{name}},\n\nI have a quick question about {{company}}'s current marketing strategy. Are you the right person to discuss this with?\n\nI have some ideas that could significantly boost your results.\n\nThanks,\n{{from_name}}"},
+        {"id": "congratulations", "name": "Congratulations", "category": "First Contact",
+         "subject": "Congrats on {{company}}'s growth!",
+         "body": "Hi {{name}},\n\nCongratulations on the recent growth at {{company}}! It's clear you're doing something right.\n\nI help growing businesses optimize their lead generation to sustain that momentum. Would you like to chat?\n\nBest,\n{{from_name}}"},
+        {"id": "pain_point", "name": "Pain Point", "category": "First Contact",
+         "subject": "Struggling with lead generation? You're not alone",
+         "body": "Hi {{name}},\n\nMany businesses like {{company}} tell me their biggest challenge is generating consistent, quality leads.\n\nI've developed a system that solves this. Would you be interested in learning more?\n\nBest,\n{{from_name}}"},
+        {"id": "social_proof", "name": "Social Proof", "category": "Nurture",
+         "subject": "500+ businesses trust this approach",
+         "body": "Hi {{name}},\n\nOver 500 businesses have used our approach to grow their customer base. The average ROI is 3-5x within the first 6 months.\n\nI think {{company}} could see similar results. Can I show you how?\n\nBest,\n{{from_name}}"},
+        {"id": "breakup", "name": "Breakup Email", "category": "Follow Up",
+         "subject": "Should I close your file?",
+         "body": "Hi {{name}},\n\nI've reached out a few times but haven't heard back. No worries — I understand you're busy.\n\nI'll assume the timing isn't right and close your file for now. If things change, I'm just an email away.\n\nAll the best,\n{{from_name}}"},
+        {"id": "seasonal", "name": "Seasonal Offer", "category": "Promotion",
+         "subject": "Special offer for {{company}} this season",
+         "body": "Hi {{name}},\n\nAs the new season approaches, many businesses are planning their growth strategy. We're offering a special package to help {{company}} get ahead.\n\nWould you like to hear the details?\n\nBest,\n{{from_name}}"},
+        {"id": "local_seo", "name": "Local SEO Pitch", "category": "Service Pitch",
+         "subject": "Is {{company}} showing up in local searches?",
+         "body": "Hi {{name}},\n\nI searched for businesses like {{company}} in your area and noticed some optimization opportunities.\n\nA few simple changes could help you rank higher in Google Maps and local search results. Would you like a free audit?\n\nBest,\n{{from_name}}"},
+        {"id": "website_review", "name": "Website Review", "category": "Service Pitch",
+         "subject": "3 quick improvements for {{company}}'s website",
+         "body": "Hi {{name}},\n\nI took a quick look at your website and spotted 3 areas that could significantly improve your conversion rate:\n\n1. Mobile responsiveness\n2. Page load speed\n3. Call-to-action placement\n\nWould you like a detailed breakdown? It's on the house.\n\nBest,\n{{from_name}}"},
+        {"id": "social_media", "name": "Social Media Growth", "category": "Service Pitch",
+         "subject": "Grow {{company}}'s social media presence",
+         "body": "Hi {{name}},\n\nI noticed {{company}} has a social media presence but it could be doing so much more for your business.\n\nI help companies turn their social followers into paying customers. Want to see how?\n\nBest,\n{{from_name}}"},
+        {"id": "review_management", "name": "Review Management", "category": "Service Pitch",
+         "subject": "Boost {{company}}'s online reviews",
+         "body": "Hi {{name}},\n\n93% of consumers say online reviews impact their buying decisions. I noticed {{company}} could benefit from a review management strategy.\n\nWould you like to learn how to get more 5-star reviews consistently?\n\nBest,\n{{from_name}}"},
+        {"id": "competitor_analysis", "name": "Competitor Analysis", "category": "Nurture",
+         "subject": "Your competitors are doing this — are you?",
+         "body": "Hi {{name}},\n\nI've been researching {{company}}'s market and noticed your competitors are investing in strategies you might be missing.\n\nI'd love to share my findings. Can we schedule a quick call?\n\nBest,\n{{from_name}}"},
+        {"id": "retargeting", "name": "Re-engagement", "category": "Follow Up",
+         "subject": "It's been a while — update from {{from_name}}",
+         "body": "Hi {{name}},\n\nIt's been a while since we last connected. A lot has changed in the industry since then.\n\nI have some new insights that could benefit {{company}}. Would you like to reconnect?\n\nBest,\n{{from_name}}"},
+        {"id": "event_invite", "name": "Event Invitation", "category": "Nurture",
+         "subject": "You're invited — exclusive webinar for businesses like {{company}}",
+         "body": "Hi {{name}},\n\nWe're hosting a free webinar on strategies to grow your business in the current market.\n\nI think {{company}} would find it valuable. Would you like me to save you a spot?\n\nBest,\n{{from_name}}"},
+        {"id": "quick_win", "name": "Quick Win", "category": "First Contact",
+         "subject": "One thing that could double {{company}}'s leads",
+         "body": "Hi {{name}},\n\nThere's one simple change that could potentially double the leads {{company}} generates from its website.\n\nI've seen it work for dozens of businesses in your industry. Want me to share the strategy?\n\nBest,\n{{from_name}}"},
+    ]

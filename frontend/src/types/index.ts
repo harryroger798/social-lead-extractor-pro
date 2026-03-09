@@ -127,4 +127,13 @@ export type Section =
   | 'telegram'
   | 'whatsapp'
   | 'email_finder'
-  | 'safety_guide';
+  | 'safety_guide'
+  | 'pdf_reports'
+  | 'directories'
+  | 'ai_email'
+  | 'lead_enrichment'
+  | 'gbp_detection'
+  | 'citation_checker'
+  | 'service_suggestions'
+  | 'smtp_checker'
+  | 'job_boards';
