@@ -37,6 +37,7 @@ from app.services.reddit_extractor import reddit_search
 from app.services.proxy_manager import proxy_manager, test_proxy, parse_proxy_line
 from app.services.firecrawl_service import enrich_leads_with_firecrawl, check_firecrawl_credits
 from app.services.export_service import export_leads_bytes
+from app.services.keyword_enhancer import enhance_keywords
 # v3.1.0 Enhancement imports
 from app.services.yellowpages_scraper import scrape_yellowpages, scrape_yelp, scrape_directories
 from app.services.fxtwitter_api import extract_twitter_profiles, enrich_twitter_leads_with_fxtwitter
@@ -207,6 +208,21 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         await _update_progress(session_id, 2, "Initializing extraction...", "", 0, 0, 0)
 
+        # ── Smart Keyword Enhancement ──────────────────────────────────
+        # Expand user keywords with synonyms and industry-specific terms
+        enhanced_kws = enhance_keywords(
+            config.keywords,
+            platforms=config.platforms,
+            max_expanded=8,
+        )
+        # Use enhanced keywords for all downstream scrapers
+        effective_keywords = enhanced_kws if len(enhanced_kws) > len(config.keywords) else config.keywords
+        await _update_progress(
+            session_id, 3,
+            f"Keywords expanded: {len(config.keywords)} → {len(effective_keywords)}",
+            "", 0, 0, 0,
+        )
+
         # Load proxy pool if proxies are enabled
         if config.use_proxies:
             await _load_proxy_pool()
@@ -225,7 +241,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         if has_reddit:
             await _update_progress(session_id, _calc_progress(),
                 "Searching Reddit via RSS...", "reddit", *_count_leads())
-            for keyword in config.keywords:
+            for keyword in effective_keywords:
                 result = await reddit_search(keyword)
                 for email in result.get("emails", []):
                     all_leads.append({
@@ -252,7 +268,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                     platform, *_count_leads())
                 results = await dorking_search_multi(
-                    config.keywords, [platform],
+                    effective_keywords, [platform],
                     pages=config.pages_per_keyword,
                     delay=config.delay_between_requests,
                     serper_api_key=serper_api_key,
@@ -289,7 +305,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         f"Direct Scraping: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                         platform, *_count_leads())
                     direct_leads = await scrape_all_platforms_direct_v2(
-                        config.keywords, [platform],
+                        effective_keywords, [platform],
                         max_results_per=config.pages_per_keyword * 5,
                         delay=config.delay_between_requests,
                     )
@@ -318,7 +334,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     row = await cursor.fetchone()
                     yelp_api_key = row[0] if row else ""
 
-                for keyword in config.keywords:
+                for keyword in effective_keywords:
                     if has_yellowpages:
                         await _update_progress(session_id, _calc_progress(),
                             f"YellowPages Direct: {keyword}...", "yellowpages", *_count_leads())
@@ -346,7 +362,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             try:
                 await _update_progress(session_id, _calc_progress(),
                     "fxtwitter: extracting Twitter bios...", "twitter", *_count_leads())
-                for keyword in config.keywords:
+                for keyword in effective_keywords:
                     fx_leads = await extract_twitter_profiles(keyword, max_profiles=15)
                     all_leads.extend(fx_leads)
 
@@ -371,7 +387,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             try:
                 await _update_progress(session_id, _calc_progress(),
                     "Pinterest RSS: extracting feeds...", "pinterest", *_count_leads())
-                for keyword in config.keywords:
+                for keyword in effective_keywords:
                     pin_leads = await extract_pinterest_rss(keyword, max_results=25)
                     all_leads.extend(pin_leads)
 
