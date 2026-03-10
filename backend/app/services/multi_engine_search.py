@@ -110,7 +110,7 @@ def _get_ddg_vqd(query: str, session: requests.Session) -> str:
         resp = session.post(
             "https://duckduckgo.com",
             data={"q": query},
-            timeout=10,
+            timeout=3,
         )
         if resp.status_code == 200:
             import re as _re
@@ -216,7 +216,7 @@ def search_duckduckgo(
                     "s": "0",
                     "o": "json",
                 },
-                timeout=15,
+                timeout=5,
             )
             if api_resp.status_code == 200:
                 import json
@@ -262,7 +262,7 @@ def search_duckduckgo(
         response = session.get(
             "https://html.duckduckgo.com/html/",
             params={"q": ddg_query},
-            timeout=15,
+            timeout=5,
         )
         if response.status_code in (200, 202):
             html = response.text
@@ -297,6 +297,79 @@ def search_duckduckgo(
 
     if results:
         logger.info("DDG HTML: %d results for query", len(results))
+
+    return results
+
+
+# ─── Bing Free HTML Search (no API key) ─────────────────────────────────────
+
+def search_bing_free(
+    query: str,
+    num_results: int = 10,
+) -> list[dict]:
+    """Search Bing directly via HTTP (free, no API key needed).
+
+    Scrapes Bing search results HTML to extract titles, snippets, and links.
+    Used as fallback when DDG is unreachable and no Bing API key is set.
+    """
+    import re as _re
+
+    results: list[dict] = []
+    try:
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+
+        response = session.get(
+            "https://www.bing.com/search",
+            params={"q": query, "count": min(num_results, 30)},
+            timeout=10,
+        )
+        if response.status_code != 200:
+            logger.debug("Bing free search returned %d", response.status_code)
+            return []
+
+        html = response.text
+
+        # Extract Bing search result blocks: <li class="b_algo">
+        blocks = _re.findall(
+            r'<li\s+class="b_algo">(.*?)</li>',
+            html, _re.DOTALL,
+        )
+
+        for block in blocks:
+            # Title + link
+            link_match = _re.search(r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>', block, _re.DOTALL)
+            if not link_match:
+                continue
+            link = link_match.group(1)
+            title = _re.sub(r'<[^>]+>', '', link_match.group(2)).strip()
+
+            # Snippet
+            snippet_match = _re.search(r'<p[^>]*>(.*?)</p>', block, _re.DOTALL)
+            snippet = ""
+            if snippet_match:
+                snippet = _re.sub(r'<[^>]+>', '', snippet_match.group(1)).strip()
+
+            if link.startswith("http"):
+                results.append({
+                    "title": title,
+                    "snippet": snippet,
+                    "link": link,
+                })
+            if len(results) >= num_results:
+                break
+
+        if results:
+            logger.info("Bing free: %d results for query", len(results))
+
+    except Exception as e:
+        logger.debug("Bing free search failed: %s", e)
 
     return results
 
@@ -369,6 +442,17 @@ def multi_engine_search(
             all_sources.extend(sources)
             engines_used.append("duckduckgo")
             logger.info("DuckDuckGo: %d results, %d emails, %d phones", len(results), len(emails), len(phones))
+
+    # Bing free HTML (always available, no API key needed)
+    if not all_emails and not all_phones:
+        results = search_bing_free(query, num_results)
+        if results:
+            emails, phones, sources = extract_leads_from_results(results)
+            all_emails.extend(emails)
+            all_phones.extend(phones)
+            all_sources.extend(sources)
+            engines_used.append("google")
+            logger.info("Google: %d results, %d emails, %d phones", len(results), len(emails), len(phones))
 
     # Deduplicate
     seen_emails: set[str] = set()
