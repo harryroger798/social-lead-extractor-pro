@@ -1,10 +1,15 @@
 """Google Business Profile Claimed/Unclaimed Detection.
 
-Searches Google for a business and analyzes the real listing data
-to determine if the profile is claimed or unclaimed.
-No manual checkboxes - auto-detects signals from Google search results.
+Multi-source approach that works 100% without API keys:
+1. Bing Search (PRIMARY - less aggressive blocking than Google)
+2. DuckDuckGo Instant Answer API (SECONDARY - structured data)
+3. Google Search + Maps (TERTIARY - may be blocked on server IPs)
+4. Serper.dev API (OPTIONAL enhancement if user provides key)
+
+No manual checkboxes - auto-detects signals from real data.
 """
 import logging
+import os
 import re
 import json
 from urllib.parse import quote_plus
@@ -44,84 +49,116 @@ _HEADERS = {
 }
 
 
-def _search_google_for_business(business_name: str, location: str = "") -> dict:
-    """Search Google for a business and extract real GBP data.
+def _is_valid_phone(candidate: str) -> bool:
+    """Validate that a string looks like a real phone number, not a date/ID."""
+    if not candidate:
+        return False
+    digits = re.sub(r'[^\d]', '', candidate)
+    if len(digits) < 7 or len(digits) > 15:
+        return False
+    # Reject dates like 20260305
+    if re.match(r'^20\d{6}$', digits):
+        return False
+    # Reject floats like 20260305.0
+    if re.match(r'^\d+\.\d+$', candidate.strip()):
+        return False
+    # Plain digit string needs at least 10 digits
+    if not re.search(r'[+\-() ]', candidate) and not candidate.startswith('+'):
+        if len(digits) < 10:
+            return False
+    return True
 
-    Uses Google search to find the Knowledge Panel / business info
-    that appears when searching for a specific business name.
-    Returns extracted business signals from the search results.
-    """
-    query = business_name
-    if location:
-        query = f"{business_name} {location}"
 
-    data: dict = {
-        "name": business_name,
-        "found": False,
-        "website": "",
-        "phone": "",
-        "hours": "",
-        "description": "",
-        "photos_count": 0,
-        "review_count": 0,
-        "rating": 0.0,
-        "has_reviews": False,
-        "address": "",
-        "category": "",
+def _empty_data(business_name: str) -> dict:
+    """Return an empty data template."""
+    return {
+        "name": business_name, "found": False, "website": "", "phone": "",
+        "hours": "", "description": "", "photos_count": 0, "review_count": 0,
+        "rating": 0.0, "has_reviews": False, "address": "", "category": "",
     }
 
-    # Strategy 1: Google search for Knowledge Panel data
+
+def _merge_data(target: dict, source: dict) -> None:
+    """Merge non-empty source fields into target (only fills gaps)."""
+    if source.get("found"):
+        target["found"] = True
+    for key in ("website", "phone", "hours", "description", "address", "category"):
+        if not target.get(key) and source.get(key):
+            target[key] = source[key]
+    for key in ("rating", "review_count", "photos_count"):
+        if not target.get(key) and source.get(key):
+            target[key] = source[key]
+    if source.get("has_reviews") and not target.get("has_reviews"):
+        target["has_reviews"] = True
+
+
+# ─── Source 1: Bing Search (PRIMARY - no API key, reliable) ──────────────────
+
+def _search_via_bing(business_name: str, location: str = "") -> dict:
+    """Search Bing for business data. Bing is much less aggressive about
+    blocking automated requests compared to Google."""
+    data = _empty_data(business_name)
+    query = f"{business_name} {location}".strip() if location else business_name
+
     try:
-        search_url = f"https://www.google.com/search?q={quote_plus(query)}"
-        resp = requests.get(search_url, headers=_HEADERS, timeout=15)
+        resp = requests.get(
+            f"https://www.bing.com/search?q={quote_plus(query)}",
+            headers=_HEADERS, timeout=15,
+        )
         html = resp.text
 
-        # Phone number
-        phone_patterns = [
-            re.compile(r'data-phone-number="([^"]+)"'),
+        # Phone number from Bing's Knowledge Panel
+        phone_pats = [
+            re.compile(r'Phone[^<]*<[^>]*>\s*([+\d()\s\-]{7,20})', re.IGNORECASE),
             re.compile(r'"telephone"\s*:\s*"([^"]+)"'),
-            re.compile(r'aria-label="[Cc]all[^"]*"[^>]*>([+\d\s\-().]{7,20})<'),
+            re.compile(r'data-phone="([^"]+)"'),
+            re.compile(r'tel:\s*([+\d()\s\-]{7,20})'),
+            re.compile(r'>\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\s*<'),
         ]
-        for pat in phone_patterns:
+        for pat in phone_pats:
             m = pat.search(html)
-            if m:
+            if m and _is_valid_phone(m.group(1).strip()):
                 data["phone"] = m.group(1).strip()
                 break
 
         # Website
-        website_patterns = [
-            re.compile(r'"url"\s*:\s*"(https?://(?!www\.google)[^"]+)"'),
-            re.compile(r'data-url="(https?://(?!www\.google)[^"]+)"'),
+        website_pats = [
+            re.compile(r'"url"\s*:\s*"(https?://(?!www\.bing)[^"]+)"'),
+            re.compile(r'<a[^>]*href="(https?://(?!www\.bing|www\.microsoft|bing\.com)[^"]+)"[^>]*>\s*(?:Website|Official|Visit)', re.IGNORECASE),
         ]
-        for pat in website_patterns:
+        for pat in website_pats:
             m = pat.search(html)
             if m:
-                url_found = m.group(1)
-                if "google.com" not in url_found and "gstatic.com" not in url_found:
-                    data["website"] = url_found
+                url = m.group(1)
+                skip = ("bing.com", "microsoft.com", "wikipedia.org", "yelp.com",
+                        "facebook.com", "yellowpages.com")
+                if not any(s in url for s in skip):
+                    data["website"] = url
                     break
 
         # Rating
-        rating_patterns = [
+        rating_pats = [
             re.compile(r'"ratingValue"\s*:\s*"?([\d.]+)"?'),
+            re.compile(r'(\d\.\d)\s*/\s*5', re.IGNORECASE),
             re.compile(r'(\d\.\d)\s*stars?', re.IGNORECASE),
         ]
-        for pat in rating_patterns:
+        for pat in rating_pats:
             m = pat.search(html)
             if m:
                 try:
-                    data["rating"] = float(m.group(1))
+                    val = float(m.group(1))
+                    if 1.0 <= val <= 5.0:
+                        data["rating"] = val
                 except ValueError:
                     pass
                 break
 
         # Review count
-        review_patterns = [
+        review_pats = [
             re.compile(r'"reviewCount"\s*:\s*"?(\d+)"?'),
-            re.compile(r'(\d[\d,]*)\s*(?:Google\s+)?reviews?', re.IGNORECASE),
-            re.compile(r'(\d[\d,]*)\s*ratings?', re.IGNORECASE),
+            re.compile(r'(\d[\d,]*)\s*(?:reviews?|ratings?)', re.IGNORECASE),
         ]
-        for pat in review_patterns:
+        for pat in review_pats:
             m = pat.search(html)
             if m:
                 try:
@@ -131,37 +168,45 @@ def _search_google_for_business(business_name: str, location: str = "") -> dict:
                     pass
                 break
 
-        # Hours detection
-        hours_pat = re.compile(r'(?:Open|Closed|Hours|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s*[:\s]')
-        if hours_pat.search(html):
+        # Hours
+        if re.search(r'(?:Open|Closed|Hours|Monday|Tuesday|Wednesday|Thursday|Friday)\s*[:\s·]', html, re.IGNORECASE):
             data["hours"] = "detected"
 
-        # Description
-        desc_pat = re.compile(r'"description"\s*:\s*"([^"]{20,})"')
-        m = desc_pat.search(html)
-        if m:
-            data["description"] = m.group(1)[:200]
+        # Description from Bing
+        desc_pats = [
+            re.compile(r'"description"\s*:\s*"([^"]{20,200})"'),
+            re.compile(r'class="b_snippet"[^>]*>([^<]{20,200})<', re.IGNORECASE),
+        ]
+        for pat in desc_pats:
+            m = pat.search(html)
+            if m:
+                data["description"] = m.group(1)[:200]
+                break
+
+        # Address
+        addr_pats = [
+            re.compile(r'"streetAddress"\s*:\s*"([^"]+)"'),
+            re.compile(r'Address[^<]*<[^>]*>\s*([^<]{5,100})', re.IGNORECASE),
+        ]
+        for pat in addr_pats:
+            m = pat.search(html)
+            if m:
+                data["address"] = m.group(1).strip()
+                break
 
         # Category
-        cat_patterns = [
+        cat_pats = [
             re.compile(r'"@type"\s*:\s*"(\w+Business[^"]*)"'),
             re.compile(r'"category"\s*:\s*"([^"]+)"'),
         ]
-        for pat in cat_patterns:
+        for pat in cat_pats:
             m = pat.search(html)
             if m:
                 data["category"] = m.group(1)
                 break
 
-        if any([data["phone"], data["website"], data["rating"],
-                data["review_count"], data["hours"], data["description"]]):
-            data["found"] = True
-
-        # JSON-LD structured data
-        json_ld_pat = re.compile(
-            r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL
-        )
-        for block in json_ld_pat.findall(html):
+        # JSON-LD structured data from Bing
+        for block in re.findall(r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', html, re.DOTALL):
             try:
                 ld = json.loads(block)
                 items = ld if isinstance(ld, list) else [ld]
@@ -169,19 +214,16 @@ def _search_google_for_business(business_name: str, location: str = "") -> dict:
                     if not isinstance(item, dict):
                         continue
                     item_type = str(item.get("@type", ""))
-                    biz_types = (
-                        "LocalBusiness", "Restaurant", "Store",
-                        "Organization", "Place", "ProfessionalService",
-                        "MedicalBusiness",
-                    )
-                    if item_type in biz_types or "Business" in item_type:
+                    if "Business" in item_type or item_type in ("Restaurant", "Store", "Organization", "Place"):
                         data["found"] = True
                         if not data["phone"] and item.get("telephone"):
-                            data["phone"] = str(item["telephone"])
+                            ph = str(item["telephone"])
+                            if _is_valid_phone(ph):
+                                data["phone"] = ph
                         if not data["website"] and item.get("url"):
-                            item_url = str(item["url"])
-                            if "google.com" not in item_url:
-                                data["website"] = item_url
+                            u = str(item["url"])
+                            if "bing.com" not in u and "microsoft.com" not in u:
+                                data["website"] = u
                         if not data["description"] and item.get("description"):
                             data["description"] = str(item["description"])[:200]
                         agg = item.get("aggregateRating")
@@ -199,19 +241,203 @@ def _search_google_for_business(business_name: str, location: str = "") -> dict:
                                     pass
                         addr = item.get("address", {})
                         if isinstance(addr, dict) and not data["address"]:
-                            parts = [
-                                addr.get("streetAddress", ""),
-                                addr.get("addressLocality", ""),
-                                addr.get("addressRegion", ""),
-                            ]
+                            parts = [addr.get("streetAddress", ""), addr.get("addressLocality", ""), addr.get("addressRegion", "")]
+                            data["address"] = ", ".join(p for p in parts if p)
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+        if any([data["phone"], data["website"], data["rating"], data["review_count"], data["hours"]]):
+            data["found"] = True
+
+    except Exception as e:
+        logger.warning("Bing search for GBP data failed: %s", e)
+
+    return data
+
+
+# ─── Source 2: DuckDuckGo Instant Answer (no API key) ────────────────────────
+
+def _search_via_duckduckgo(business_name: str, location: str = "") -> dict:
+    """Use DuckDuckGo's Instant Answer API for business data."""
+    data = _empty_data(business_name)
+    query = f"{business_name} {location}".strip() if location else business_name
+
+    try:
+        resp = requests.get(
+            "https://api.duckduckgo.com/",
+            params={"q": query, "format": "json", "no_redirect": "1"},
+            headers=_HEADERS, timeout=10,
+        )
+        result = resp.json()
+
+        abstract = result.get("Abstract", "")
+        abstract_url = result.get("AbstractURL", "")
+        infobox = result.get("Infobox", {})
+
+        if abstract:
+            data["found"] = True
+            data["description"] = abstract[:200]
+
+        if abstract_url and "wikipedia" not in abstract_url.lower():
+            data["website"] = abstract_url
+
+        # Parse Infobox for structured business data
+        if isinstance(infobox, dict):
+            for item in infobox.get("content", []):
+                label = str(item.get("label", "")).lower()
+                value = str(item.get("value", ""))
+                if "phone" in label and _is_valid_phone(value):
+                    data["phone"] = value
+                elif "website" in label or "url" in label:
+                    if value.startswith("http"):
+                        data["website"] = value
+                elif "address" in label or "location" in label:
+                    data["address"] = value
+                elif "type" in label or "category" in label:
+                    data["category"] = value
+
+        # Parse related topics for additional signals
+        for topic in result.get("RelatedTopics", []):
+            text = topic.get("Text", "")
+            if not data["phone"]:
+                pm = re.search(r'(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})', text)
+                if pm and _is_valid_phone(pm.group(1)):
+                    data["phone"] = pm.group(1)
+
+        if any([data["phone"], data["website"], data["description"]]):
+            data["found"] = True
+
+    except Exception as e:
+        logger.warning("DuckDuckGo search failed: %s", e)
+
+    return data
+
+
+# ─── Source 3: Google Search + Maps (may be blocked on some IPs) ─────────────
+
+def _search_via_google(business_name: str, location: str = "") -> dict:
+    """Search Google for Knowledge Panel data. Works well from residential IPs
+    (Electron app users) but may be blocked on server/datacenter IPs."""
+    data = _empty_data(business_name)
+    query = f"{business_name} {location}".strip() if location else business_name
+
+    try:
+        search_url = f"https://www.google.com/search?q={quote_plus(query)}"
+        resp = requests.get(search_url, headers=_HEADERS, timeout=15)
+        html = resp.text
+
+        # Phone number
+        phone_pats = [
+            re.compile(r'data-phone-number="([^"]+)"'),
+            re.compile(r'"telephone"\s*:\s*"([^"]+)"'),
+            re.compile(r'aria-label="[Cc]all[^"]*"[^>]*>([+\d\s\-().]{7,20})<'),
+        ]
+        for pat in phone_pats:
+            m = pat.search(html)
+            if m and _is_valid_phone(m.group(1).strip()):
+                data["phone"] = m.group(1).strip()
+                break
+
+        # Website
+        website_pats = [
+            re.compile(r'"url"\s*:\s*"(https?://(?!www\.google)[^"]+)"'),
+            re.compile(r'data-url="(https?://(?!www\.google)[^"]+)"'),
+        ]
+        for pat in website_pats:
+            m = pat.search(html)
+            if m:
+                url = m.group(1)
+                if "google.com" not in url and "gstatic.com" not in url:
+                    data["website"] = url
+                    break
+
+        # Rating
+        for pat in [re.compile(r'"ratingValue"\s*:\s*"?([\d.]+)"?'), re.compile(r'(\d\.\d)\s*stars?', re.IGNORECASE)]:
+            m = pat.search(html)
+            if m:
+                try:
+                    val = float(m.group(1))
+                    if 1.0 <= val <= 5.0:
+                        data["rating"] = val
+                except ValueError:
+                    pass
+                break
+
+        # Review count
+        for pat in [re.compile(r'"reviewCount"\s*:\s*"?(\d+)"?'), re.compile(r'(\d[\d,]*)\s*(?:Google\s+)?reviews?', re.IGNORECASE)]:
+            m = pat.search(html)
+            if m:
+                try:
+                    data["review_count"] = int(m.group(1).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except ValueError:
+                    pass
+                break
+
+        # Hours
+        if re.search(r'(?:Open|Closed|Hours|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s*[:\s]', html):
+            data["hours"] = "detected"
+
+        # Description
+        m = re.search(r'"description"\s*:\s*"([^"]{20,})"', html)
+        if m:
+            data["description"] = m.group(1)[:200]
+
+        # Category
+        for pat in [re.compile(r'"@type"\s*:\s*"(\w+Business[^"]*)"'), re.compile(r'"category"\s*:\s*"([^"]+)"')]:
+            m = pat.search(html)
+            if m:
+                data["category"] = m.group(1)
+                break
+
+        if any([data["phone"], data["website"], data["rating"], data["review_count"], data["hours"], data["description"]]):
+            data["found"] = True
+
+        # JSON-LD structured data
+        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL):
+            try:
+                ld = json.loads(block)
+                items = ld if isinstance(ld, list) else [ld]
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_type = str(item.get("@type", ""))
+                    if "Business" in item_type or item_type in ("Restaurant", "Store", "Organization", "Place", "ProfessionalService"):
+                        data["found"] = True
+                        if not data["phone"] and item.get("telephone"):
+                            ph = str(item["telephone"])
+                            if _is_valid_phone(ph):
+                                data["phone"] = ph
+                        if not data["website"] and item.get("url"):
+                            u = str(item["url"])
+                            if "google.com" not in u:
+                                data["website"] = u
+                        if not data["description"] and item.get("description"):
+                            data["description"] = str(item["description"])[:200]
+                        agg = item.get("aggregateRating")
+                        if isinstance(agg, dict):
+                            if not data["rating"]:
+                                try:
+                                    data["rating"] = float(agg.get("ratingValue", 0))
+                                except (ValueError, TypeError):
+                                    pass
+                            if not data["review_count"]:
+                                try:
+                                    data["review_count"] = int(agg.get("reviewCount", 0))
+                                    data["has_reviews"] = data["review_count"] > 0
+                                except (ValueError, TypeError):
+                                    pass
+                        addr = item.get("address", {})
+                        if isinstance(addr, dict) and not data["address"]:
+                            parts = [addr.get("streetAddress", ""), addr.get("addressLocality", ""), addr.get("addressRegion", "")]
                             data["address"] = ", ".join(p for p in parts if p)
             except (json.JSONDecodeError, TypeError):
                 continue
 
     except Exception as e:
-        logger.error("Google search for GBP data failed: %s", e)
+        logger.warning("Google search for GBP data failed: %s", e)
 
-    # Strategy 2: Direct Google Maps search if nothing found
+    # Google Maps fallback
     if not data["found"]:
         try:
             maps_url = f"https://www.google.com/maps/search/{quote_plus(query)}"
@@ -221,18 +447,158 @@ def _search_google_for_business(business_name: str, location: str = "") -> dict:
                 data["found"] = True
             if not data["phone"]:
                 m = re.search(r'"(\+?\d[\d\s\-().]{6,18}\d)"', maps_html)
-                if m:
-                    candidate = m.group(1)
-                    digits = re.sub(r'[^\d]', '', candidate)
-                    if 7 <= len(digits) <= 15:
-                        data["phone"] = candidate
+                if m and _is_valid_phone(m.group(1)):
+                    data["phone"] = m.group(1)
         except Exception as e:
             logger.warning("Google Maps search failed: %s", e)
 
     return data
 
 
-def detect_claimed_status(business_data: dict) -> dict:
+# ─── Source 4: Serper API (OPTIONAL - requires API key) ──────────────────────
+
+def _search_via_serper(business_name: str, location: str = "",
+                       api_key: str = "") -> dict:
+    """Search using Serper.dev API (Knowledge Graph + Places). OPTIONAL."""
+    data = _empty_data(business_name)
+    if not api_key:
+        return data
+
+    query = f"{business_name} {location}".strip() if location else business_name
+    try:
+        response = requests.post(
+            "https://google.serper.dev/search",
+            json={"q": query, "num": 10},
+            headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
+            timeout=15,
+        )
+        if response.status_code != 200:
+            return data
+        result = response.json()
+
+        kg = result.get("knowledgeGraph", {})
+        if kg:
+            data["found"] = True
+            data["name"] = kg.get("title", business_name)
+            website = kg.get("website", "")
+            if website and "google.com" not in website:
+                data["website"] = website
+            phone = kg.get("phone", "")
+            if phone and _is_valid_phone(phone):
+                data["phone"] = phone
+            desc = kg.get("description", "")
+            if desc:
+                data["description"] = desc[:200]
+            cat = kg.get("type", "") or kg.get("category", "")
+            if cat:
+                data["category"] = cat
+            if kg.get("rating"):
+                try:
+                    data["rating"] = float(kg["rating"])
+                except (ValueError, TypeError):
+                    pass
+            rc = kg.get("ratingCount") or kg.get("reviewCount")
+            if rc:
+                try:
+                    data["review_count"] = int(str(rc).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except (ValueError, TypeError):
+                    pass
+            if kg.get("hours"):
+                data["hours"] = "detected"
+            if kg.get("address"):
+                data["address"] = kg["address"]
+            if kg.get("imageUrl") or kg.get("images"):
+                data["photos_count"] = max(len(kg.get("images", [])), 1)
+            attrs = kg.get("attributes", {})
+            if attrs and not data["hours"]:
+                if any(k.lower() in ("hours", "service options") for k in attrs):
+                    data["hours"] = "detected"
+
+        places = result.get("places", [])
+        if places:
+            place = places[0]
+            if not data["found"]:
+                data["found"] = True
+                data["name"] = place.get("title", business_name)
+            if not data["phone"]:
+                ph = place.get("phone", "")
+                if ph and _is_valid_phone(ph):
+                    data["phone"] = ph
+            if not data["address"]:
+                data["address"] = place.get("address", "")
+            if not data["rating"]:
+                try:
+                    data["rating"] = float(place.get("rating", 0))
+                except (ValueError, TypeError):
+                    pass
+            if not data["review_count"]:
+                try:
+                    rc = place.get("ratingCount", 0) or place.get("reviews", 0)
+                    data["review_count"] = int(str(rc).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except (ValueError, TypeError):
+                    pass
+            if not data["website"]:
+                data["website"] = place.get("website", "")
+            if not data["hours"] and place.get("hours"):
+                data["hours"] = "detected"
+
+    except Exception as e:
+        logger.warning("Serper API search failed: %s", e)
+    return data
+
+
+# ─── Main search orchestrator ────────────────────────────────────────────────
+
+def _search_google_for_business(business_name: str, location: str = "",
+                                serper_api_key: str = "") -> dict:
+    """Search for a business across multiple free sources.
+
+    Priority (all work without API keys):
+    1. Bing Search (PRIMARY - most reliable, least blocking)
+    2. DuckDuckGo Instant Answer API (SECONDARY - structured data)
+    3. Google Search + Maps (TERTIARY - works from residential IPs)
+    4. Serper.dev API (OPTIONAL - only if user provides API key)
+    """
+    combined = _empty_data(business_name)
+
+    # Source 1: Bing (PRIMARY - no API key needed)
+    try:
+        bing_data = _search_via_bing(business_name, location)
+        _merge_data(combined, bing_data)
+    except Exception as e:
+        logger.warning("Bing source failed: %s", e)
+
+    # Source 2: DuckDuckGo (SECONDARY - no API key needed)
+    try:
+        ddg_data = _search_via_duckduckgo(business_name, location)
+        _merge_data(combined, ddg_data)
+    except Exception as e:
+        logger.warning("DDG source failed: %s", e)
+
+    # Source 3: Google (TERTIARY - works from residential IPs)
+    if not combined["found"] or not combined["phone"]:
+        try:
+            google_data = _search_via_google(business_name, location)
+            _merge_data(combined, google_data)
+        except Exception as e:
+            logger.warning("Google source failed: %s", e)
+
+    # Source 4: Serper API (OPTIONAL enhancement - only if key provided)
+    api_key = serper_api_key or os.environ.get("SERPER_API_KEY", "")
+    if api_key:
+        try:
+            serper_data = _search_via_serper(business_name, location, api_key)
+            _merge_data(combined, serper_data)
+        except Exception as e:
+            logger.warning("Serper source failed: %s", e)
+
+    return combined
+
+
+def detect_claimed_status(business_data: dict,
+                          serper_api_key: str = "") -> dict:
     """Analyze a business to determine claimed/unclaimed status.
 
     Auto-detect mode: Pass {"name": "Business Name", "location": "City"}
@@ -253,7 +619,7 @@ def detect_claimed_status(business_data: dict) -> dict:
         }
 
     location = business_data.get("location", "")
-    search_data = _search_google_for_business(name, location)
+    search_data = _search_google_for_business(name, location, serper_api_key)
 
     if search_data["found"]:
         return _score_business(search_data)
@@ -390,11 +756,12 @@ def _generate_pitch(status: str, data: dict) -> str:
         )
 
 
-def batch_detect(businesses: list[dict]) -> list[dict]:
+def batch_detect(businesses: list[dict],
+                 serper_api_key: str = "") -> list[dict]:
     """Detect claimed status for multiple businesses."""
     results = []
     for biz in businesses:
-        detection = detect_claimed_status(biz)
+        detection = detect_claimed_status(biz, serper_api_key=serper_api_key)
         detection["business_name"] = biz.get("name", "")
         results.append(detection)
     return results
