@@ -18,15 +18,20 @@ from app.services.extractor import extract_emails, extract_phones
 logger = logging.getLogger(__name__)
 
 
-def _fetch_reddit_rss(subreddit: str, keyword: str) -> list[dict]:
-    """Fetch Reddit RSS feed for a subreddit search."""
+def _fetch_reddit_rss(subreddit: str, keyword: str) -> list[dict] | str:
+    """Fetch Reddit RSS feed for a subreddit search.
+
+    Returns list of entries, or _BLOCKED_SENTINEL if Reddit returns 403.
+    """
     url = f"https://www.reddit.com/r/{subreddit}/search.rss?q={keyword}&restrict_sr=1&sort=relevance&limit=25"
     try:
         response = requests.get(
             url,
             headers={"User-Agent": "Mozilla/5.0 (compatible; LeadExtractor/1.0)"},
-            timeout=15,
+            timeout=8,
         )
+        if response.status_code == 403:
+            return _BLOCKED_SENTINEL
         if response.status_code != 200:
             return []
         root = ET.fromstring(response.text)
@@ -194,7 +199,7 @@ async def reddit_search(
     use_pullpush: bool = True,
     use_json: bool = True,
     enrich_users: bool = False,
-    max_duration_seconds: int = 90,
+    max_duration_seconds: int = 45,
 ) -> dict:
     """
     Search Reddit for emails/phones using RSS, JSON endpoints, and PullPush.
@@ -233,7 +238,21 @@ async def reddit_search(
 
         entries: list[dict] = []
 
-        # Method 1: Reddit .json endpoint (richest structured data)
+        # Method 1: PullPush API (most reliable from server environments)
+        if use_pullpush and not pullpush_blocked:
+            pp_result = await loop.run_in_executor(
+                None, _fetch_pullpush, subreddit, keyword
+            )
+            if pp_result == _BLOCKED_SENTINEL:
+                pullpush_blocked = True
+                methods_blocked.append("pullpush")
+                logger.info("PullPush blocked/timeout — circuit breaker tripped")
+            elif pp_result:
+                entries.extend(pp_result)
+                if "pullpush" not in methods_used:
+                    methods_used.append("pullpush")
+
+        # Method 2: Reddit .json endpoint (richest structured data, may 403)
         if use_json and not json_blocked:
             json_result = await loop.run_in_executor(
                 None, _fetch_reddit_json, subreddit, keyword
@@ -251,29 +270,18 @@ async def reddit_search(
                     if author and author not in ("[deleted]", "AutoModerator"):
                         authors_found.add(author)
 
-        # Method 2: RSS feed
+        # Method 3: RSS feed (may 403 on server IPs)
         if use_rss and not rss_blocked:
             rss_entries = await loop.run_in_executor(
                 None, _fetch_reddit_rss, subreddit, keyword
             )
-            if rss_entries:
+            if isinstance(rss_entries, str) and rss_entries == _BLOCKED_SENTINEL:
+                rss_blocked = True
+                methods_blocked.append("rss")
+            elif rss_entries:
                 entries.extend(rss_entries)
                 if "rss" not in methods_used:
                     methods_used.append("rss")
-
-        # Method 3: PullPush API (archived content)
-        if use_pullpush and not pullpush_blocked:
-            pp_result = await loop.run_in_executor(
-                None, _fetch_pullpush, subreddit, keyword
-            )
-            if pp_result == _BLOCKED_SENTINEL:
-                pullpush_blocked = True
-                methods_blocked.append("pullpush")
-                logger.info("PullPush blocked/timeout — circuit breaker tripped")
-            elif pp_result:
-                entries.extend(pp_result)
-                if "pullpush" not in methods_used:
-                    methods_used.append("pullpush")
 
         for entry in entries:
             text = f"{entry.get('title', '')} {entry.get('content', '')}"
