@@ -458,7 +458,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
 
-        # Process leads: classify, score, verify, and store
+        # Process leads: classify, score, and store (verification is deferred to avoid blocking)
         async with get_db() as db:
             emails_found = 0
             phones_found = 0
@@ -479,9 +479,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         continue
 
                 email_type = classify_email(email) if email else "unknown"
+                # Skip SMTP verification during save to avoid blocking (user can verify later via Clean Results)
                 verified = False
-                if email and config.auto_verify:
-                    verified = await verify_email(email)
 
                 quality = score_lead(email, phone, name, verified)
 
