@@ -1,13 +1,19 @@
 """Google Business Profile Claimed/Unclaimed Detection.
-100% free — analyzes GBP data to determine if a listing is likely claimed or unclaimed.
+
+Searches Google for a business and analyzes the real listing data
+to determine if the profile is claimed or unclaimed.
+No manual checkboxes - auto-detects signals from Google search results.
 """
 import logging
 import re
-from typing import Optional
+import json
+from urllib.parse import quote_plus
+
+import requests
 
 logger = logging.getLogger(__name__)
 
-# Signals that indicate a GBP listing is CLAIMED
+# Signals and their point values
 CLAIMED_SIGNALS = {
     "has_website": 15,
     "has_phone": 10,
@@ -15,15 +21,10 @@ CLAIMED_SIGNALS = {
     "has_description": 10,
     "has_photos_5plus": 15,
     "has_photos_1to4": 8,
-    "has_reviews_responded": 20,
-    "has_recent_posts": 15,
-    "has_services_listed": 10,
-    "has_menu_or_products": 10,
+    "has_reviews": 20,
     "high_rating_4plus": 5,
-    "has_email": 10,
 }
 
-# Signals that indicate a GBP listing is UNCLAIMED
 UNCLAIMED_SIGNALS = {
     "no_website": -15,
     "no_phone": -10,
@@ -31,72 +32,284 @@ UNCLAIMED_SIGNALS = {
     "no_description": -10,
     "no_photos": -20,
     "no_reviews": -5,
-    "generic_description": -10,
-    "outdated_info": -10,
+}
+
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
 
+def _search_google_for_business(business_name: str, location: str = "") -> dict:
+    """Search Google for a business and extract real GBP data.
+
+    Uses Google search to find the Knowledge Panel / business info
+    that appears when searching for a specific business name.
+    Returns extracted business signals from the search results.
+    """
+    query = business_name
+    if location:
+        query = f"{business_name} {location}"
+
+    data: dict = {
+        "name": business_name,
+        "found": False,
+        "website": "",
+        "phone": "",
+        "hours": "",
+        "description": "",
+        "photos_count": 0,
+        "review_count": 0,
+        "rating": 0.0,
+        "has_reviews": False,
+        "address": "",
+        "category": "",
+    }
+
+    # Strategy 1: Google search for Knowledge Panel data
+    try:
+        search_url = f"https://www.google.com/search?q={quote_plus(query)}"
+        resp = requests.get(search_url, headers=_HEADERS, timeout=15)
+        html = resp.text
+
+        # Phone number
+        phone_patterns = [
+            re.compile(r'data-phone-number="([^"]+)"'),
+            re.compile(r'"telephone"\s*:\s*"([^"]+)"'),
+            re.compile(r'aria-label="[Cc]all[^"]*"[^>]*>([+\d\s\-().]{7,20})<'),
+        ]
+        for pat in phone_patterns:
+            m = pat.search(html)
+            if m:
+                data["phone"] = m.group(1).strip()
+                break
+
+        # Website
+        website_patterns = [
+            re.compile(r'"url"\s*:\s*"(https?://(?!www\.google)[^"]+)"'),
+            re.compile(r'data-url="(https?://(?!www\.google)[^"]+)"'),
+        ]
+        for pat in website_patterns:
+            m = pat.search(html)
+            if m:
+                url_found = m.group(1)
+                if "google.com" not in url_found and "gstatic.com" not in url_found:
+                    data["website"] = url_found
+                    break
+
+        # Rating
+        rating_patterns = [
+            re.compile(r'"ratingValue"\s*:\s*"?([\d.]+)"?'),
+            re.compile(r'(\d\.\d)\s*stars?', re.IGNORECASE),
+        ]
+        for pat in rating_patterns:
+            m = pat.search(html)
+            if m:
+                try:
+                    data["rating"] = float(m.group(1))
+                except ValueError:
+                    pass
+                break
+
+        # Review count
+        review_patterns = [
+            re.compile(r'"reviewCount"\s*:\s*"?(\d+)"?'),
+            re.compile(r'(\d[\d,]*)\s*(?:Google\s+)?reviews?', re.IGNORECASE),
+            re.compile(r'(\d[\d,]*)\s*ratings?', re.IGNORECASE),
+        ]
+        for pat in review_patterns:
+            m = pat.search(html)
+            if m:
+                try:
+                    data["review_count"] = int(m.group(1).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except ValueError:
+                    pass
+                break
+
+        # Hours detection
+        hours_pat = re.compile(r'(?:Open|Closed|Hours|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s*[:\s]')
+        if hours_pat.search(html):
+            data["hours"] = "detected"
+
+        # Description
+        desc_pat = re.compile(r'"description"\s*:\s*"([^"]{20,})"')
+        m = desc_pat.search(html)
+        if m:
+            data["description"] = m.group(1)[:200]
+
+        # Category
+        cat_patterns = [
+            re.compile(r'"@type"\s*:\s*"(\w+Business[^"]*)"'),
+            re.compile(r'"category"\s*:\s*"([^"]+)"'),
+        ]
+        for pat in cat_patterns:
+            m = pat.search(html)
+            if m:
+                data["category"] = m.group(1)
+                break
+
+        if any([data["phone"], data["website"], data["rating"],
+                data["review_count"], data["hours"], data["description"]]):
+            data["found"] = True
+
+        # JSON-LD structured data
+        json_ld_pat = re.compile(
+            r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL
+        )
+        for block in json_ld_pat.findall(html):
+            try:
+                ld = json.loads(block)
+                items = ld if isinstance(ld, list) else [ld]
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_type = str(item.get("@type", ""))
+                    biz_types = (
+                        "LocalBusiness", "Restaurant", "Store",
+                        "Organization", "Place", "ProfessionalService",
+                        "MedicalBusiness",
+                    )
+                    if item_type in biz_types or "Business" in item_type:
+                        data["found"] = True
+                        if not data["phone"] and item.get("telephone"):
+                            data["phone"] = str(item["telephone"])
+                        if not data["website"] and item.get("url"):
+                            item_url = str(item["url"])
+                            if "google.com" not in item_url:
+                                data["website"] = item_url
+                        if not data["description"] and item.get("description"):
+                            data["description"] = str(item["description"])[:200]
+                        agg = item.get("aggregateRating")
+                        if isinstance(agg, dict):
+                            if not data["rating"]:
+                                try:
+                                    data["rating"] = float(agg.get("ratingValue", 0))
+                                except (ValueError, TypeError):
+                                    pass
+                            if not data["review_count"]:
+                                try:
+                                    data["review_count"] = int(agg.get("reviewCount", 0))
+                                    data["has_reviews"] = data["review_count"] > 0
+                                except (ValueError, TypeError):
+                                    pass
+                        addr = item.get("address", {})
+                        if isinstance(addr, dict) and not data["address"]:
+                            parts = [
+                                addr.get("streetAddress", ""),
+                                addr.get("addressLocality", ""),
+                                addr.get("addressRegion", ""),
+                            ]
+                            data["address"] = ", ".join(p for p in parts if p)
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+    except Exception as e:
+        logger.error("Google search for GBP data failed: %s", e)
+
+    # Strategy 2: Direct Google Maps search if nothing found
+    if not data["found"]:
+        try:
+            maps_url = f"https://www.google.com/maps/search/{quote_plus(query)}"
+            resp = requests.get(maps_url, headers=_HEADERS, timeout=15)
+            maps_html = resp.text
+            if business_name.lower() in maps_html.lower():
+                data["found"] = True
+            if not data["phone"]:
+                m = re.search(r'"(\+?\d[\d\s\-().]{6,18}\d)"', maps_html)
+                if m:
+                    candidate = m.group(1)
+                    digits = re.sub(r'[^\d]', '', candidate)
+                    if 7 <= len(digits) <= 15:
+                        data["phone"] = candidate
+        except Exception as e:
+            logger.warning("Google Maps search failed: %s", e)
+
+    return data
+
+
 def detect_claimed_status(business_data: dict) -> dict:
+    """Analyze a business to determine claimed/unclaimed status.
+
+    Auto-detect mode: Pass {"name": "Business Name", "location": "City"}
+    and we search Google to find real signals automatically.
+    No more manual checkboxes -- signals are detected from real data.
     """
-    Analyze a business listing to determine claimed/unclaimed status.
-    
-    Accepts both formats:
-    - Direct values: website, phone, hours, description, photos_count, etc.
-    - Boolean flags: has_website, has_phone, has_hours, has_description, etc.
-      (sent by the frontend GBP Detector UI)
-    
-    Returns dict with score, status, confidence, and breakdown.
-    """
-    score = 50  # Start neutral
+    name = business_data.get("name", "").strip()
+    if not name:
+        return {
+            "score": 0,
+            "status": "error",
+            "confidence": "none",
+            "breakdown": [],
+            "opportunity": False,
+            "pitch": "Please enter a business name to detect.",
+            "auto_detected": False,
+            "search_data": {},
+        }
+
+    location = business_data.get("location", "")
+    search_data = _search_google_for_business(name, location)
+
+    if search_data["found"]:
+        return _score_business(search_data)
+
+    # Business not found on Google -- strong unclaimed signal
+    return {
+        "score": 15,
+        "status": "unclaimed",
+        "confidence": "medium",
+        "breakdown": [
+            {"signal": "Business not found on Google", "points": -35, "present": False},
+            {"signal": "No website detected", "points": -15, "present": False},
+            {"signal": "No phone number detected", "points": -10, "present": False},
+            {"signal": "No reviews found", "points": -5, "present": False},
+        ],
+        "opportunity": True,
+        "pitch": _generate_pitch("unclaimed", business_data),
+        "auto_detected": True,
+        "search_data": {"name": name, "found": False},
+    }
+
+
+def _score_business(data: dict) -> dict:
+    """Score a business based on real data found from Google search."""
+    score = 50
     breakdown: list[dict] = []
 
-    # Helper: check both "website" (value) and "has_website" (boolean flag)
-    def _has(value_key: str, flag_key: str) -> bool:
-        return bool(business_data.get(value_key)) or bool(business_data.get(flag_key))
-
-    # Check claimed signals
-    if _has("website", "has_website"):
+    if data.get("website"):
         score += CLAIMED_SIGNALS["has_website"]
         breakdown.append({"signal": "Has website", "points": CLAIMED_SIGNALS["has_website"], "present": True})
     else:
         score += UNCLAIMED_SIGNALS["no_website"]
-        breakdown.append({"signal": "No website", "points": UNCLAIMED_SIGNALS["no_website"], "present": False})
+        breakdown.append({"signal": "No website detected", "points": UNCLAIMED_SIGNALS["no_website"], "present": False})
 
-    if _has("phone", "has_phone"):
+    if data.get("phone"):
         score += CLAIMED_SIGNALS["has_phone"]
         breakdown.append({"signal": "Has phone number", "points": CLAIMED_SIGNALS["has_phone"], "present": True})
     else:
         score += UNCLAIMED_SIGNALS["no_phone"]
-        breakdown.append({"signal": "No phone number", "points": UNCLAIMED_SIGNALS["no_phone"], "present": False})
+        breakdown.append({"signal": "No phone number detected", "points": UNCLAIMED_SIGNALS["no_phone"], "present": False})
 
-    if _has("hours", "has_hours"):
+    if data.get("hours"):
         score += CLAIMED_SIGNALS["has_hours"]
         breakdown.append({"signal": "Has business hours", "points": CLAIMED_SIGNALS["has_hours"], "present": True})
     else:
         score += UNCLAIMED_SIGNALS["no_hours"]
-        breakdown.append({"signal": "No business hours", "points": UNCLAIMED_SIGNALS["no_hours"], "present": False})
+        breakdown.append({"signal": "No business hours detected", "points": UNCLAIMED_SIGNALS["no_hours"], "present": False})
 
-    if _has("description", "has_description"):
-        desc = business_data.get("description", "")
-        # If only a boolean flag was sent (no actual text), treat as having description
-        if isinstance(desc, str) and len(desc) > 50:
-            score += CLAIMED_SIGNALS["has_description"]
-            breakdown.append({"signal": "Has detailed description", "points": CLAIMED_SIGNALS["has_description"], "present": True})
-        elif business_data.get("has_description"):
-            # Boolean flag from frontend — assume description exists
-            score += CLAIMED_SIGNALS["has_description"]
-            breakdown.append({"signal": "Has description", "points": CLAIMED_SIGNALS["has_description"], "present": True})
-        else:
-            score += UNCLAIMED_SIGNALS["generic_description"]
-            breakdown.append({"signal": "Generic/short description", "points": UNCLAIMED_SIGNALS["generic_description"], "present": False})
+    if data.get("description"):
+        score += CLAIMED_SIGNALS["has_description"]
+        breakdown.append({"signal": "Has description", "points": CLAIMED_SIGNALS["has_description"], "present": True})
     else:
         score += UNCLAIMED_SIGNALS["no_description"]
-        breakdown.append({"signal": "No description", "points": UNCLAIMED_SIGNALS["no_description"], "present": False})
+        breakdown.append({"signal": "No description detected", "points": UNCLAIMED_SIGNALS["no_description"], "present": False})
 
-    # Photos: accept photos_count (int), photo_count (int), or has_photos (bool)
-    photos_count = business_data.get("photos_count", 0) or business_data.get("photo_count", 0)
-    if not photos_count and business_data.get("has_photos"):
-        photos_count = 5  # Frontend flag means 5+ photos
+    photos_count = data.get("photos_count", 0)
     if photos_count >= 5:
         score += CLAIMED_SIGNALS["has_photos_5plus"]
         breakdown.append({"signal": f"Has {photos_count}+ photos", "points": CLAIMED_SIGNALS["has_photos_5plus"], "present": True})
@@ -105,38 +318,23 @@ def detect_claimed_status(business_data: dict) -> dict:
         breakdown.append({"signal": f"Has {photos_count} photos", "points": CLAIMED_SIGNALS["has_photos_1to4"], "present": True})
     else:
         score += UNCLAIMED_SIGNALS["no_photos"]
-        breakdown.append({"signal": "No photos", "points": UNCLAIMED_SIGNALS["no_photos"], "present": False})
+        breakdown.append({"signal": "No photos detected", "points": UNCLAIMED_SIGNALS["no_photos"], "present": False})
 
-    # Reviews: accept has_reviews (bool) or reviews_responded
-    if _has("reviews_responded", "has_reviews"):
-        score += CLAIMED_SIGNALS["has_reviews_responded"]
-        breakdown.append({"signal": "Has reviews", "points": CLAIMED_SIGNALS["has_reviews_responded"], "present": True})
+    review_count = data.get("review_count", 0)
+    if review_count > 0:
+        score += CLAIMED_SIGNALS["has_reviews"]
+        breakdown.append({"signal": f"Has {review_count} reviews", "points": CLAIMED_SIGNALS["has_reviews"], "present": True})
+    else:
+        score += UNCLAIMED_SIGNALS["no_reviews"]
+        breakdown.append({"signal": "No reviews found", "points": UNCLAIMED_SIGNALS["no_reviews"], "present": False})
 
-    if business_data.get("recent_posts"):
-        score += CLAIMED_SIGNALS["has_recent_posts"]
-        breakdown.append({"signal": "Has recent Google posts", "points": CLAIMED_SIGNALS["has_recent_posts"], "present": True})
-
-    if business_data.get("services"):
-        score += CLAIMED_SIGNALS["has_services_listed"]
-        breakdown.append({"signal": "Has services listed", "points": CLAIMED_SIGNALS["has_services_listed"], "present": True})
-
-    if business_data.get("has_menu"):
-        score += CLAIMED_SIGNALS["has_menu_or_products"]
-        breakdown.append({"signal": "Has menu/products", "points": CLAIMED_SIGNALS["has_menu_or_products"], "present": True})
-
-    rating = business_data.get("rating", 0)
+    rating = data.get("rating", 0)
     if rating and float(rating) >= 4.0:
         score += CLAIMED_SIGNALS["high_rating_4plus"]
         breakdown.append({"signal": f"High rating ({rating})", "points": CLAIMED_SIGNALS["high_rating_4plus"], "present": True})
 
-    if _has("email", "has_email"):
-        score += CLAIMED_SIGNALS["has_email"]
-        breakdown.append({"signal": "Has email", "points": CLAIMED_SIGNALS["has_email"], "present": True})
-
-    # Clamp score
     score = max(0, min(100, score))
 
-    # Determine status
     if score >= 70:
         status = "claimed"
         confidence = "high" if score >= 85 else "medium"
@@ -153,7 +351,18 @@ def detect_claimed_status(business_data: dict) -> dict:
         "confidence": confidence,
         "breakdown": breakdown,
         "opportunity": status in ("unclaimed", "likely_claimed"),
-        "pitch": _generate_pitch(status, business_data),
+        "pitch": _generate_pitch(status, data),
+        "auto_detected": True,
+        "search_data": {
+            "name": data.get("name", ""),
+            "found": data.get("found", False),
+            "website": data.get("website", ""),
+            "phone": data.get("phone", ""),
+            "rating": data.get("rating", 0),
+            "review_count": data.get("review_count", 0),
+            "address": data.get("address", ""),
+            "category": data.get("category", ""),
+        },
     }
 
 
@@ -164,8 +373,8 @@ def _generate_pitch(status: str, data: dict) -> str:
     if status == "unclaimed":
         return (
             f"{name} has an unclaimed Google Business Profile. "
-            f"This means they're missing out on local customers searching for their services. "
-            f"You can offer to claim and optimize their listing — this is an easy sell."
+            f"This means they are missing out on local customers searching for their services. "
+            f"You can offer to claim and optimize their listing -- this is an easy sell."
         )
     elif status == "likely_claimed":
         return (
