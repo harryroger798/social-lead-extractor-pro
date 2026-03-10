@@ -18,6 +18,7 @@ All methods: 100% FREE | NO API keys | NO search engine dorking.
 import asyncio
 import json
 import logging
+import random
 import re
 import time
 from urllib.parse import quote_plus
@@ -29,15 +30,34 @@ from app.services.bio_link_follower import follow_bio_links
 
 logger = logging.getLogger(__name__)
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/131.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+# ─── Rotating User-Agent Pool ───────────────────────────────────────────────
+# 12 realistic browser UAs to avoid fingerprint-based blocking by DDG/LinkedIn
+_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0",
+]
+
+
+def _random_headers() -> dict[str, str]:
+    """Return headers with a randomly selected User-Agent."""
+    return {
+        "User-Agent": random.choice(_USER_AGENTS),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+
+
+HEADERS = _random_headers()  # backward compat for any direct references
 
 
 # ─── Helpers ────────────────────────────────────────────────────────────────
@@ -69,63 +89,266 @@ def _clean_snippet_email(email: str) -> str:
     return email
 
 
-# ─── Shared DDG HTML Discovery ──────────────────────────────────────────────
+# ─── Shared Web Search (Brave primary, DDG fallback) ────────────────────────
+
+# Global throttle for search requests (prevents rate limiting on any engine)
+_SEARCH_MIN_INTERVAL = 2.0  # seconds
+_search_last_request_time: float = 0.0
+_search_lock = asyncio.Lock()
+
+
+async def _search_throttle() -> None:
+    """Enforce minimum interval between search requests to avoid rate limiting."""
+    global _search_last_request_time
+    async with _search_lock:
+        now = time.monotonic()
+        elapsed = now - _search_last_request_time
+        if elapsed < _SEARCH_MIN_INTERVAL:
+            wait_time = _SEARCH_MIN_INTERVAL - elapsed + random.uniform(0.2, 0.8)
+            await asyncio.sleep(wait_time)
+        _search_last_request_time = time.monotonic()
+
+
+async def _brave_search(query: str, max_results: int = 30) -> list[dict]:
+    """Search via Brave Search HTML (works from cloud IPs, no API key needed).
+
+    Brave Search reliably returns results from cloud servers without
+    bot-detection challenges. Returns list of {url, title, snippet} dicts.
+    Includes retry with exponential backoff on 429 rate limits.
+    """
+    items: list[dict] = []
+    max_retries = 3
+
+    for attempt in range(max_retries):
+        try:
+            await _search_throttle()
+
+            headers = _random_headers()
+            async with httpx.AsyncClient(
+                follow_redirects=True, timeout=20, headers=headers, verify=False,
+            ) as client:
+                url = f"https://search.brave.com/search?q={quote_plus(query)}&count=20"
+                resp = await client.get(url)
+
+                if resp.status_code == 429:
+                    backoff = (2 ** attempt) * 3 + random.uniform(2.0, 5.0)
+                    logger.info("Brave 429 rate limited — retry in %.1fs (attempt %d/%d)",
+                                backoff, attempt + 1, max_retries)
+                    await asyncio.sleep(backoff)
+                    continue
+
+                if resp.status_code != 200:
+                    logger.debug("Brave returned %d for query '%s'", resp.status_code, query[:50])
+                    return items
+
+                html = resp.text
+
+            # Brave result structure:
+            # <div class="snippet" data-pos="N" data-type="web">
+            #   <a href="URL" ...>
+            #     <div class="title ...">TITLE</div>
+            #   </a>
+            #   <div class="snippet-description">DESCRIPTION</div>
+            # </div>
+
+            # Extract each result block by data-pos
+            result_blocks = re.findall(
+                r'<div[^>]*class="snippet[^"]*"[^>]*data-pos="\d+"[^>]*data-type="web"[^>]*>(.*?)</div>\s*</div>\s*</div>\s*</div>',
+                html, re.DOTALL,
+            )
+
+            if not result_blocks:
+                # Fallback: extract <a> tags with external URLs + nearby text
+                a_tags = re.findall(
+                    r'<a\s+href="(https?://(?!search\.brave\.com)[^"]+)"[^>]*target="_self"[^>]*class="[^"]*"[^>]*>(.*?)</a>',
+                    html, re.DOTALL,
+                )
+                seen_urls: set[str] = set()
+                for href, a_content in a_tags:
+                    clean_url = href.split("?")[0].rstrip("/")
+                    if clean_url in seen_urls:
+                        continue
+                    seen_urls.add(clean_url)
+
+                    # Extract title from link text
+                    title = re.sub(r"<[^>]+>", " ", a_content)
+                    title = re.sub(r"\s+", " ", title).strip()
+
+                    # Get snippet from surrounding context
+                    a_pos = html.find(f'href="{href}"')
+                    snippet = ""
+                    if a_pos >= 0:
+                        # Look ahead for description text
+                        after_a = html[a_pos:a_pos + 2000]
+                        desc_match = re.search(
+                            r'class="[^"]*snippet-description[^"]*"[^>]*>(.*?)</div>',
+                            after_a, re.DOTALL,
+                        )
+                        if desc_match:
+                            snippet = re.sub(r"<[^>]+>", " ", desc_match.group(1))
+                            snippet = re.sub(r"\s+", " ", snippet).strip()
+
+                    # Decode HTML entities
+                    from html import unescape
+                    title = unescape(title)
+                    snippet = unescape(snippet)
+
+                    items.append({
+                        "url": href,
+                        "title": title[:120],
+                        "snippet": snippet[:300],
+                    })
+            else:
+                for block in result_blocks:
+                    # Extract URL
+                    url_match = re.search(r'href="(https?://[^"]+)"', block)
+                    if not url_match:
+                        continue
+
+                    result_url = url_match.group(1)
+
+                    # Extract title
+                    title_match = re.search(
+                        r'class="[^"]*title[^"]*"[^>]*>(.*?)</div>', block, re.DOTALL,
+                    )
+                    title = ""
+                    if title_match:
+                        title = re.sub(r"<[^>]+>", " ", title_match.group(1))
+                        title = re.sub(r"\s+", " ", title).strip()
+
+                    # Extract description/snippet
+                    desc_match = re.search(
+                        r'class="[^"]*snippet-description[^"]*"[^>]*>(.*?)</div>',
+                        block, re.DOTALL,
+                    )
+                    snippet = ""
+                    if desc_match:
+                        snippet = re.sub(r"<[^>]+>", " ", desc_match.group(1))
+                        snippet = re.sub(r"\s+", " ", snippet).strip()
+
+                    from html import unescape
+                    title = unescape(title)
+                    snippet = unescape(snippet)
+
+                    items.append({
+                        "url": result_url,
+                        "title": title[:120],
+                        "snippet": snippet[:300],
+                    })
+
+            if items:
+                logger.info("Brave search returned %d results for '%s'", len(items), query[:50])
+            else:
+                logger.debug("Brave search: 0 results for '%s'", query[:50])
+
+            # Success (even if 0 items) — break retry loop
+            break
+
+        except httpx.TimeoutException:
+            backoff = (2 ** attempt) + random.uniform(1.0, 2.0)
+            logger.debug("Brave search timeout — retry in %.1fs (attempt %d/%d)", backoff, attempt + 1, max_retries)
+            await asyncio.sleep(backoff)
+        except Exception as e:
+            logger.debug("Brave search error: %s", e)
+            break  # Non-retryable
+
+    return items[:max_results]
 
 
 async def _ddg_html_search(query: str, max_results: int = 30) -> list[dict]:
-    """Search DuckDuckGo via HTML-only endpoint (works from cloud IPs).
+    """Search DuckDuckGo via HTML-only endpoint (fallback if Brave fails).
 
-    PROVEN: The HTML endpoint at html.duckduckgo.com returns real results
-    from cloud servers, unlike the JS frontend which requires Selenium.
     Returns list of {url, title, snippet} dicts.
     """
     items: list[dict] = []
-    try:
-        async with httpx.AsyncClient(
-            follow_redirects=True, timeout=15, headers=HEADERS, verify=False,
-        ) as client:
-            url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
-            resp = await client.get(url)
-            if resp.status_code != 200:
-                logger.debug("DDG HTML returned %d", resp.status_code)
-                return items
+    max_retries = 2  # reduced retries since this is fallback
 
-            html = resp.text
-            # Extract result links (DDG uses uddg redirect)
-            raw_links = re.findall(
-                r'class="result__a"[^>]*href="([^"]+)"', html,
-            )
-            raw_titles = re.findall(
-                r'class="result__a"[^>]*>(.*?)</a>', html, re.DOTALL | re.IGNORECASE,
-            )
-            raw_snippets = re.findall(
-                r'class="result__snippet"[^>]*>(.*?)</(?:td|div)',
-                html, re.DOTALL | re.IGNORECASE,
-            )
+    for attempt in range(max_retries):
+        try:
+            await _search_throttle()
 
-            from urllib.parse import unquote
-            for i, raw_url in enumerate(raw_links):
-                if 'uddg=' in raw_url:
-                    actual_url = unquote(raw_url.split('uddg=')[1].split('&')[0])
-                else:
-                    actual_url = raw_url
+            headers = _random_headers()
+            async with httpx.AsyncClient(
+                follow_redirects=True, timeout=20, headers=headers, verify=False,
+            ) as client:
+                url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
+                resp = await client.get(url)
 
-                title = re.sub(r'<[^>]+>', '', raw_titles[i]).strip() if i < len(raw_titles) else ""
-                snippet = re.sub(r'<[^>]+>', '', raw_snippets[i]).strip() if i < len(raw_snippets) else ""
-                # Decode HTML entities
-                snippet = snippet.replace('&#x27;', "'").replace('&amp;', '&').replace('&quot;', '"')
-                title = title.replace('&#x27;', "'").replace('&amp;', '&').replace('&quot;', '"')
+                if resp.status_code in (202, 403, 429):
+                    backoff = (2 ** attempt) + random.uniform(1.0, 3.0)
+                    logger.debug("DDG rate limited (%d) — retry in %.1fs", resp.status_code, backoff)
+                    await asyncio.sleep(backoff)
+                    continue
 
-                items.append({
-                    "url": actual_url,
-                    "title": title,
-                    "snippet": snippet,
-                })
+                if resp.status_code != 200:
+                    break
 
-    except Exception as e:
-        logger.debug("DDG HTML search failed: %s", e)
+                html = resp.text
+
+                # Check for CAPTCHA or bot detection page
+                if "anomaly.js" in html or "cc=botnet" in html:
+                    logger.debug("DDG bot detection active — skipping")
+                    break
+
+                if "Please try again" in html or "bot" in html.lower()[:500]:
+                    logger.debug("DDG CAPTCHA detected — skipping")
+                    break
+
+                # Extract result links (DDG uses uddg redirect)
+                raw_links = re.findall(
+                    r'class="result__a"[^>]*href="([^"]+)"', html,
+                )
+                raw_titles = re.findall(
+                    r'class="result__a"[^>]*>(.*?)</a>', html, re.DOTALL | re.IGNORECASE,
+                )
+                raw_snippets = re.findall(
+                    r'class="result__snippet"[^>]*>(.*?)</(?:td|div)',
+                    html, re.DOTALL | re.IGNORECASE,
+                )
+
+                from urllib.parse import unquote
+                for i, raw_url in enumerate(raw_links):
+                    if 'uddg=' in raw_url:
+                        actual_url = unquote(raw_url.split('uddg=')[1].split('&')[0])
+                    else:
+                        actual_url = raw_url
+
+                    title = re.sub(r'<[^>]+>', '', raw_titles[i]).strip() if i < len(raw_titles) else ""
+                    snippet = re.sub(r'<[^>]+>', '', raw_snippets[i]).strip() if i < len(raw_snippets) else ""
+                    snippet = snippet.replace('&#x27;', "'").replace('&amp;', '&').replace('&quot;', '"')
+                    title = title.replace('&#x27;', "'").replace('&amp;', '&').replace('&quot;', '"')
+
+                    items.append({
+                        "url": actual_url,
+                        "title": title,
+                        "snippet": snippet,
+                    })
+
+                break  # Success
+
+        except httpx.TimeoutException:
+            logger.debug("DDG timeout (attempt %d)", attempt + 1)
+        except Exception as e:
+            logger.debug("DDG search failed: %s", e)
+            break
 
     return items[:max_results]
+
+
+async def _web_search(query: str, max_results: int = 30) -> list[dict]:
+    """Unified web search: tries Brave first, falls back to DDG.
+
+    Returns list of {url, title, snippet} dicts.
+    Both engines work from cloud IPs without API keys.
+    """
+    # Primary: Brave Search (proven to work from cloud IPs)
+    results = await _brave_search(query, max_results)
+    if results:
+        return results
+
+    # Fallback: DDG HTML (may be bot-blocked from some cloud IPs)
+    logger.info("Brave returned 0 results — trying DDG fallback for '%s'", query[:50])
+    return await _ddg_html_search(query, max_results)
 
 
 # ─── LinkedIn Direct Scraper ─────────────────────────────────────────────────
@@ -156,12 +379,12 @@ async def scrape_linkedin_direct(
 
         # Primary query: site: operator returns 10 LinkedIn profiles (proven)
         query = f"site:linkedin.com/in {keyword}"
-        ddg_results = await _ddg_html_search(query, max_results=20)
+        ddg_results = await _web_search(query, max_results=20)
 
         # Fallback query if primary returns few results
         if len(ddg_results) < 3:
             query2 = f"linkedin.com/in/ {keyword}"
-            ddg_results2 = await _ddg_html_search(query2, max_results=20)
+            ddg_results2 = await _web_search(query2, max_results=20)
             seen_urls = {item["url"] for item in ddg_results}
             for item in ddg_results2:
                 if item["url"] not in seen_urls:
@@ -207,34 +430,51 @@ async def scrape_linkedin_direct(
                         "keyword": keyword,
                     })
 
-        logger.info("LinkedIn: Found %d profiles for '%s' via DDG HTML", len(profile_urls), keyword)
+        logger.info("LinkedIn: Found %d profiles, %d snippet leads for '%s' via DDG HTML",
+                     len(profile_urls), len(results), keyword)
 
-        # Step 2: Visit each profile directly via HTTP for JSON-LD data
-        async with httpx.AsyncClient(
-            follow_redirects=True, timeout=15, headers={
-                **HEADERS,
-                "Accept": "text/html,application/xhtml+xml",
-            },
-            verify=False,
-        ) as client:
-            for url in profile_urls[:max_results]:
-                try:
-                    resp = await client.get(url)
-                    if resp.status_code == 200:
+        # Step 2: Try visiting LinkedIn profiles for extra JSON-LD data.
+        # LinkedIn blocks cloud IPs with 999 — this is best-effort only.
+        # If first request gets 999, skip all remaining visits (DDG snippets
+        # already captured names/emails/phones above).
+        if profile_urls and not results:
+            # Only attempt profile visits if DDG snippets yielded zero leads
+            try:
+                async with httpx.AsyncClient(
+                    follow_redirects=True, timeout=10, headers=_random_headers(),
+                    verify=False,
+                ) as client:
+                    # Test with first profile only
+                    client.headers.update(_random_headers())
+                    resp = await client.get(profile_urls[0])
+                    if resp.status_code == 999:
+                        logger.info("LinkedIn blocks profile visits from this IP (999) — using DDG snippet data only")
+                    elif resp.status_code == 200:
+                        # Cloud IP not blocked — visit remaining profiles
                         html = resp.text
-                        leads = _parse_linkedin_profile(html, url, keyword)
+                        leads = _parse_linkedin_profile(html, profile_urls[0], keyword)
                         for lead in leads:
                             if lead.get("email") and lead["email"] not in seen_emails:
                                 seen_emails.add(lead["email"])
                                 results.append(lead)
-                            elif not lead.get("email"):
-                                results.append(lead)
-                    elif resp.status_code == 999:
-                        logger.warning("LinkedIn rate limited (999) — pausing")
-                        await asyncio.sleep(delay * 3)
-                    await asyncio.sleep(delay)
-                except Exception as e:
-                    logger.debug("LinkedIn profile fetch failed %s: %s", url, e)
+
+                        for url in profile_urls[1:max_results]:
+                            try:
+                                client.headers.update(_random_headers())
+                                resp = await client.get(url)
+                                if resp.status_code == 200:
+                                    for lead in _parse_linkedin_profile(resp.text, url, keyword):
+                                        if lead.get("email") and lead["email"] not in seen_emails:
+                                            seen_emails.add(lead["email"])
+                                            results.append(lead)
+                                elif resp.status_code == 999:
+                                    logger.info("LinkedIn 999 mid-crawl — stopping profile visits")
+                                    break
+                                await asyncio.sleep(delay + random.uniform(0.5, 1.5))
+                            except Exception:
+                                pass
+            except Exception as e:
+                logger.debug("LinkedIn profile visit error: %s", e)
 
     except Exception as e:
         logger.error("LinkedIn direct scraper error: %s", e)
@@ -256,7 +496,7 @@ async def _find_linkedin_profiles(keyword: str, max_results: int = 20) -> list[s
 
     # Primary: DDG HTML API (proven from cloud)
     query = f"linkedin.com/in/ {keyword}"
-    ddg_results = await _ddg_html_search(query, max_results=20)
+    ddg_results = await _web_search(query, max_results=20)
     for item in ddg_results:
         for match in li_pattern.finditer(item["url"]):
             url = match.group(1).split("?")[0].rstrip("/")
@@ -268,7 +508,7 @@ async def _find_linkedin_profiles(keyword: str, max_results: int = 20) -> list[s
     if not urls:
         # Try broader query
         query2 = f"linkedin.com/in {keyword} email contact"
-        ddg_results = await _ddg_html_search(query2, max_results=20)
+        ddg_results = await _web_search(query2, max_results=20)
         for item in ddg_results:
             for match in li_pattern.finditer(item["url"]):
                 url = match.group(1).split("?")[0].rstrip("/")
@@ -367,7 +607,7 @@ async def scrape_tiktok_direct(
         profile_urls: list[str] = []
 
         query = f'"tiktok.com/@" {keyword}'
-        ddg_results = await _ddg_html_search(query, max_results=20)
+        ddg_results = await _web_search(query, max_results=20)
 
         for item in ddg_results:
             # Extract TikTok profile URLs
@@ -400,7 +640,7 @@ async def scrape_tiktok_direct(
         # Try broader query if few profiles found
         if len(profile_urls) < 3:
             query2 = f"tiktok.com @ {keyword} email business"
-            ddg_results2 = await _ddg_html_search(query2, max_results=20)
+            ddg_results2 = await _web_search(query2, max_results=20)
             for item in ddg_results2:
                 for match in tt_pattern.finditer(item["url"]):
                     url = match.group(1).rstrip("/")
@@ -587,7 +827,7 @@ async def scrape_youtube_direct(
         channel_urls: list[str] = []
 
         query = f"site:youtube.com/@ {keyword}"
-        ddg_results = await _ddg_html_search(query, max_results=20)
+        ddg_results = await _web_search(query, max_results=20)
 
         for item in ddg_results:
             for match in yt_pattern.finditer(item["url"]):
@@ -609,7 +849,7 @@ async def scrape_youtube_direct(
         # Fallback broader query
         if len(channel_urls) < 5:
             query2 = f"youtube.com/@ {keyword} channel"
-            ddg_results2 = await _ddg_html_search(query2, max_results=20)
+            ddg_results2 = await _web_search(query2, max_results=20)
             for item in ddg_results2:
                 for match in yt_pattern.finditer(item["url"]):
                     url = match.group(1).rstrip("/")
@@ -1180,13 +1420,13 @@ async def _find_instagram_profiles_via_search(
 
     # Primary query: proven to return profiles + emails in snippets
     query = f"instagram.com {keyword} @gmail.com"
-    ddg_results = await _ddg_html_search(query, max_results=20)
+    ddg_results = await _web_search(query, max_results=20)
     items.extend(ddg_results)
 
     # Broader query for more results
     if len(items) < 5:
         query2 = f"instagram.com {keyword} email contact"
-        ddg_results2 = await _ddg_html_search(query2, max_results=20)
+        ddg_results2 = await _web_search(query2, max_results=20)
         seen_urls = {item["url"] for item in items}
         for item in ddg_results2:
             if item["url"] not in seen_urls:
@@ -1309,12 +1549,12 @@ async def _find_facebook_pages_via_search(
 
     # Primary query: facebook.com pages for this keyword
     query = f"facebook.com {keyword} phone email"
-    ddg_results = await _ddg_html_search(query, max_results=20)
+    ddg_results = await _web_search(query, max_results=20)
     items.extend(ddg_results)
 
     # Second query: broader business search with contact info
     query2 = f"{keyword} near me phone email contact"
-    ddg_results2 = await _ddg_html_search(query2, max_results=20)
+    ddg_results2 = await _web_search(query2, max_results=20)
     seen_urls = {item["url"] for item in items}
     for item in ddg_results2:
         if item["url"] not in seen_urls:
@@ -1324,7 +1564,7 @@ async def _find_facebook_pages_via_search(
     # Third query: facebook.com specific pages
     if len([i for i in items if "facebook.com" in i.get("url", "")]) < 2:
         query3 = f"facebook.com/{keyword}"
-        ddg_results3 = await _ddg_html_search(query3, max_results=10)
+        ddg_results3 = await _web_search(query3, max_results=10)
         for item in ddg_results3:
             if item["url"] not in seen_urls:
                 items.append(item)
@@ -1374,10 +1614,21 @@ async def scrape_all_platforms_direct_v2(
 
     This is the main entry point for the direct scraping pipeline.
     Replaces scrape_all_platforms_direct() which used Google dorking.
+
+    Rate-limit protection:
+      - Inter-keyword delay (3-5s) between keywords to spread DDG load
+      - Inter-platform delay between platforms
+      - DDG-level throttle handled by _web_search internally
     """
     all_results: list[dict] = []
 
-    for keyword in keywords:
+    for kw_idx, keyword in enumerate(keywords):
+        # Inter-keyword delay (skip for the first keyword)
+        if kw_idx > 0:
+            inter_kw_delay = random.uniform(3.0, 5.0)
+            logger.info("Inter-keyword pause %.1fs before '%s'", inter_kw_delay, keyword[:30])
+            await asyncio.sleep(inter_kw_delay)
+
         for platform in platforms:
             # Skip platforms handled by their own dedicated extractors
             if platform in ("reddit", "yellowpages", "yelp", "twitter", "pinterest", "google_maps"):
@@ -1400,7 +1651,8 @@ async def scrape_all_platforms_direct_v2(
             except Exception as e:
                 logger.error("Direct scraping %s for '%s' failed: %s", platform, keyword, e)
 
+            # Inter-platform delay with jitter
             if delay > 0:
-                await asyncio.sleep(delay)
+                await asyncio.sleep(delay + random.uniform(0.5, 2.0))
 
     return all_results
