@@ -2322,14 +2322,35 @@ async def enrich_leads() -> dict:
 async def detect_gbp_status(business_data: dict) -> dict:
     """Detect if a Google Business Profile is claimed or unclaimed."""
     from app.services.gbp_detection import detect_claimed_status
-    return detect_claimed_status(business_data)
+    # Load Serper API key from settings DB (optional enhancement)
+    serper_api_key = ""
+    try:
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT value FROM settings WHERE key = 'serper_api_key'"
+            )
+            row = await cursor.fetchone()
+            serper_api_key = row[0] if row else ""
+    except Exception:
+        pass
+    return detect_claimed_status(business_data, serper_api_key=serper_api_key)
 
 
 @router.post("/gbp/batch-detect")
 async def batch_detect_gbp(businesses: list[dict]) -> list[dict]:
     """Batch detect claimed/unclaimed status for multiple businesses."""
     from app.services.gbp_detection import batch_detect
-    return batch_detect(businesses)
+    serper_api_key = ""
+    try:
+        async with get_db() as db:
+            cursor = await db.execute(
+                "SELECT value FROM settings WHERE key = 'serper_api_key'"
+            )
+            row = await cursor.fetchone()
+            serper_api_key = row[0] if row else ""
+    except Exception:
+        pass
+    return batch_detect(businesses, serper_api_key=serper_api_key)
 
 
 # ─── Enhancement: Multi-Language UI ──────────────────────────────────────────
