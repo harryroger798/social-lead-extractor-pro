@@ -4,13 +4,7 @@ import { detectGBPStatus } from '@/lib/api';
 
 export default function GBPDetector() {
   const [businessName, setBusinessName] = useState('');
-  const [hasWebsite, setHasWebsite] = useState(false);
-  const [hasPhone, setHasPhone] = useState(false);
-  const [hasHours, setHasHours] = useState(false);
-  const [hasDescription, setHasDescription] = useState(false);
-  const [hasPhotos, setHasPhotos] = useState(false);
-  const [hasReviews, setHasReviews] = useState(false);
-  const [reviewCount, setReviewCount] = useState(0);
+  const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     score: number;
@@ -19,6 +13,17 @@ export default function GBPDetector() {
     breakdown: { signal: string; points: number; present: boolean }[];
     opportunity: string;
     pitch: string;
+    auto_detected?: boolean;
+    search_data?: {
+      name?: string;
+      found?: boolean;
+      website?: string;
+      phone?: string;
+      rating?: number;
+      review_count?: number;
+      address?: string;
+      category?: string;
+    };
   } | null>(null);
 
   const handleDetect = async () => {
@@ -27,14 +32,7 @@ export default function GBPDetector() {
     try {
       const data = await detectGBPStatus({
         name: businessName,
-        has_website: hasWebsite,
-        has_phone: hasPhone,
-        has_hours: hasHours,
-        has_description: hasDescription,
-        has_photos: hasPhotos,
-        photo_count: hasPhotos ? 5 : 0,
-        has_reviews: hasReviews,
-        review_count: reviewCount,
+        location: location,
       });
       setResult(data);
     } catch (err) {
@@ -86,41 +84,21 @@ export default function GBPDetector() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary pb-3">Business Signals</label>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: 'Has Website', value: hasWebsite, set: setHasWebsite },
-                { label: 'Has Phone', value: hasPhone, set: setHasPhone },
-                { label: 'Has Hours', value: hasHours, set: setHasHours },
-                { label: 'Has Description', value: hasDescription, set: setHasDescription },
-                { label: 'Has Photos (5+)', value: hasPhotos, set: setHasPhotos },
-                { label: 'Has Reviews', value: hasReviews, set: setHasReviews },
-              ].map((signal) => (
-                <label key={signal.label} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={signal.value}
-                    onChange={(e) => signal.set(e.target.checked)}
-                    className="rounded border-border text-accent focus:ring-accent"
-                  />
-                  <span className="text-xs text-text-primary">{signal.label}</span>
-                </label>
-              ))}
-            </div>
+            <label className="block text-sm font-medium text-text-primary pb-3">Location <span className="text-text-muted font-normal">(optional)</span></label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+              placeholder="e.g., New York, NY"
+            />
           </div>
 
-          {hasReviews && (
-            <div>
-              <label className="block text-sm font-medium text-text-primary pb-3">Review Count</label>
-              <input
-                type="number"
-                value={reviewCount}
-                onChange={(e) => setReviewCount(Number(e.target.value))}
-                min={0}
-                className="w-32 px-4 py-3 rounded-xl bg-bg-input border border-[#3f3f46] text-sm text-text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-              />
-            </div>
-          )}
+          <div className="p-3 rounded-lg bg-accent/5 border border-accent/10">
+            <p className="text-xs text-text-muted">
+              Enter a business name and we'll automatically search Google to detect their GBP signals (website, phone, hours, reviews, etc.) — no manual input needed.
+            </p>
+          </div>
 
           <button
             onClick={handleDetect}
@@ -128,7 +106,7 @@ export default function GBPDetector() {
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent/90 transition-colors disabled:opacity-50"
           >
             {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
+              <><Loader2 className="w-4 h-4 animate-spin" /> Searching Google...</>
             ) : (
               <><MapPinned className="w-4 h-4" /> Detect GBP Status</>
             )}
@@ -170,6 +148,38 @@ export default function GBPDetector() {
                 </div>
               </div>
 
+              {result.search_data?.found && (
+                <div>
+                  <p className="text-xs font-medium text-text-muted mb-2">Google Data Found</p>
+                  <div className="space-y-1 text-xs">
+                    {result.search_data.website && (
+                      <div className="flex justify-between px-3 py-1.5 rounded-lg bg-bg-input">
+                        <span className="text-text-muted">Website</span>
+                        <span className="text-emerald-400 truncate ml-2 max-w-[200px]">{result.search_data.website}</span>
+                      </div>
+                    )}
+                    {result.search_data.phone && (
+                      <div className="flex justify-between px-3 py-1.5 rounded-lg bg-bg-input">
+                        <span className="text-text-muted">Phone</span>
+                        <span className="text-emerald-400">{result.search_data.phone}</span>
+                      </div>
+                    )}
+                    {result.search_data.rating ? (
+                      <div className="flex justify-between px-3 py-1.5 rounded-lg bg-bg-input">
+                        <span className="text-text-muted">Rating</span>
+                        <span className="text-emerald-400">{result.search_data.rating} ({result.search_data.review_count} reviews)</span>
+                      </div>
+                    ) : null}
+                    {result.search_data.address && (
+                      <div className="flex justify-between px-3 py-1.5 rounded-lg bg-bg-input">
+                        <span className="text-text-muted">Address</span>
+                        <span className="text-text-primary truncate ml-2 max-w-[200px]">{result.search_data.address}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="p-3 rounded-lg bg-accent/5 border border-accent/10">
                 <p className="text-xs font-medium text-accent mb-1">Sales Pitch</p>
                 <p className="text-xs text-text-muted">{result.pitch}</p>
@@ -178,7 +188,7 @@ export default function GBPDetector() {
           ) : (
             <div className="text-center py-12 text-text-muted">
               <MapPinned className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">Enter business details to detect GBP status</p>
+              <p className="text-sm">Enter a business name to auto-detect GBP status from Google</p>
             </div>
           )}
         </div>
