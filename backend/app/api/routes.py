@@ -1,4 +1,5 @@
 """API routes for SnapLeads."""
+import asyncio
 import json
 import uuid
 from datetime import datetime, timedelta
@@ -251,14 +252,24 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 await _update_progress(session_id, _calc_progress(),
                     f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                     platform, *_count_leads())
-                results = await dorking_search_multi(
-                    config.keywords, [platform],
-                    pages=config.pages_per_keyword,
-                    delay=config.delay_between_requests,
-                    serper_api_key=serper_api_key,
-                    use_patchright=True,
-                    headless=True,
-                )
+                try:
+                    results = await asyncio.wait_for(
+                        dorking_search_multi(
+                            config.keywords, [platform],
+                            pages=config.pages_per_keyword,
+                            delay=config.delay_between_requests,
+                            serper_api_key=serper_api_key,
+                            use_patchright=True,
+                            headless=True,
+                        ),
+                        timeout=45,  # Hard 45s timeout per platform to prevent hanging
+                    )
+                except asyncio.TimeoutError:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Dorking timeout for %s after 45s — skipping", platform
+                    )
+                    results = []
                 for result in results:
                     for email in result.get("emails", []):
                         all_leads.append({

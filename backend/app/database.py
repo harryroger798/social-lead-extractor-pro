@@ -10,6 +10,9 @@ async def init_db() -> None:
     """Initialize the SQLite database with all required tables."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     async with aiosqlite.connect(DB_PATH) as db:
+        # Enable WAL mode for concurrent read/write access
+        await db.execute("PRAGMA journal_mode=WAL")
+        await db.execute("PRAGMA busy_timeout=5000")
         await db.executescript("""
             CREATE TABLE IF NOT EXISTS leads (
                 id TEXT PRIMARY KEY,
@@ -154,7 +157,9 @@ async def init_db() -> None:
 
 @asynccontextmanager
 async def get_db() -> AsyncGenerator[aiosqlite.Connection, None]:
-    """Get a database connection."""
+    """Get a database connection with WAL mode for concurrent access."""
     async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("PRAGMA journal_mode=WAL")
+        await db.execute("PRAGMA busy_timeout=5000")
         db.row_factory = aiosqlite.Row
         yield db
