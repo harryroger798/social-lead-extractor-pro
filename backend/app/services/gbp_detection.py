@@ -1,13 +1,16 @@
 """Google Business Profile Claimed/Unclaimed Detection.
 
-Searches Google for a business and analyzes the real listing data
-to determine if the profile is claimed or unclaimed.
-No manual checkboxes - auto-detects signals from Google search results.
+Uses Serper.dev API (Knowledge Graph + organic results) to reliably
+detect business signals. Falls back to Google Maps scraping if
+Serper is not configured.
+
+No manual checkboxes - auto-detects signals from real data.
 """
 import logging
 import re
-import json
+import os
 from urllib.parse import quote_plus
+from typing import Optional
 
 import requests
 
@@ -44,195 +47,183 @@ _HEADERS = {
 }
 
 
-def _search_google_for_business(business_name: str, location: str = "") -> dict:
-    """Search Google for a business and extract real GBP data.
+def _is_valid_phone(candidate: str) -> bool:
+    """Validate that a string looks like a real phone number, not a date/ID."""
+    if not candidate:
+        return False
+    digits = re.sub(r'[^\d]', '', candidate)
+    if len(digits) < 7 or len(digits) > 15:
+        return False
+    if re.match(r'^20\d{6}$', digits):
+        return False
+    if re.match(r'^\d+\.\d+$', candidate.strip()):
+        return False
+    if not re.search(r'[+\-() ]', candidate) and not candidate.startswith('+'):
+        if len(digits) < 10:
+            return False
+    return True
 
-    Uses Google search to find the Knowledge Panel / business info
-    that appears when searching for a specific business name.
-    Returns extracted business signals from the search results.
-    """
-    query = business_name
-    if location:
-        query = f"{business_name} {location}"
 
+def _search_via_serper(business_name: str, location: str = "",
+                       api_key: str = "") -> dict:
+    """Search using Serper.dev API (Knowledge Graph + Places + organic)."""
     data: dict = {
-        "name": business_name,
-        "found": False,
-        "website": "",
-        "phone": "",
-        "hours": "",
-        "description": "",
-        "photos_count": 0,
-        "review_count": 0,
-        "rating": 0.0,
-        "has_reviews": False,
-        "address": "",
-        "category": "",
+        "name": business_name, "found": False, "website": "", "phone": "",
+        "hours": "", "description": "", "photos_count": 0, "review_count": 0,
+        "rating": 0.0, "has_reviews": False, "address": "", "category": "",
     }
+    if not api_key:
+        return data
 
-    # Strategy 1: Google search for Knowledge Panel data
+    query = f"{business_name} {location}".strip() if location else business_name
     try:
-        search_url = f"https://www.google.com/search?q={quote_plus(query)}"
-        resp = requests.get(search_url, headers=_HEADERS, timeout=15)
-        html = resp.text
-
-        # Phone number
-        phone_patterns = [
-            re.compile(r'data-phone-number="([^"]+)"'),
-            re.compile(r'"telephone"\s*:\s*"([^"]+)"'),
-            re.compile(r'aria-label="[Cc]all[^"]*"[^>]*>([+\d\s\-().]{7,20})<'),
-        ]
-        for pat in phone_patterns:
-            m = pat.search(html)
-            if m:
-                data["phone"] = m.group(1).strip()
-                break
-
-        # Website
-        website_patterns = [
-            re.compile(r'"url"\s*:\s*"(https?://(?!www\.google)[^"]+)"'),
-            re.compile(r'data-url="(https?://(?!www\.google)[^"]+)"'),
-        ]
-        for pat in website_patterns:
-            m = pat.search(html)
-            if m:
-                url_found = m.group(1)
-                if "google.com" not in url_found and "gstatic.com" not in url_found:
-                    data["website"] = url_found
-                    break
-
-        # Rating
-        rating_patterns = [
-            re.compile(r'"ratingValue"\s*:\s*"?([\d.]+)"?'),
-            re.compile(r'(\d\.\d)\s*stars?', re.IGNORECASE),
-        ]
-        for pat in rating_patterns:
-            m = pat.search(html)
-            if m:
-                try:
-                    data["rating"] = float(m.group(1))
-                except ValueError:
-                    pass
-                break
-
-        # Review count
-        review_patterns = [
-            re.compile(r'"reviewCount"\s*:\s*"?(\d+)"?'),
-            re.compile(r'(\d[\d,]*)\s*(?:Google\s+)?reviews?', re.IGNORECASE),
-            re.compile(r'(\d[\d,]*)\s*ratings?', re.IGNORECASE),
-        ]
-        for pat in review_patterns:
-            m = pat.search(html)
-            if m:
-                try:
-                    data["review_count"] = int(m.group(1).replace(",", ""))
-                    data["has_reviews"] = data["review_count"] > 0
-                except ValueError:
-                    pass
-                break
-
-        # Hours detection
-        hours_pat = re.compile(r'(?:Open|Closed|Hours|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s*[:\s]')
-        if hours_pat.search(html):
-            data["hours"] = "detected"
-
-        # Description
-        desc_pat = re.compile(r'"description"\s*:\s*"([^"]{20,})"')
-        m = desc_pat.search(html)
-        if m:
-            data["description"] = m.group(1)[:200]
-
-        # Category
-        cat_patterns = [
-            re.compile(r'"@type"\s*:\s*"(\w+Business[^"]*)"'),
-            re.compile(r'"category"\s*:\s*"([^"]+)"'),
-        ]
-        for pat in cat_patterns:
-            m = pat.search(html)
-            if m:
-                data["category"] = m.group(1)
-                break
-
-        if any([data["phone"], data["website"], data["rating"],
-                data["review_count"], data["hours"], data["description"]]):
-            data["found"] = True
-
-        # JSON-LD structured data
-        json_ld_pat = re.compile(
-            r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL
+        response = requests.post(
+            "https://google.serper.dev/search",
+            json={"q": query, "num": 10},
+            headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
+            timeout=15,
         )
-        for block in json_ld_pat.findall(html):
-            try:
-                ld = json.loads(block)
-                items = ld if isinstance(ld, list) else [ld]
-                for item in items:
-                    if not isinstance(item, dict):
-                        continue
-                    item_type = str(item.get("@type", ""))
-                    biz_types = (
-                        "LocalBusiness", "Restaurant", "Store",
-                        "Organization", "Place", "ProfessionalService",
-                        "MedicalBusiness",
-                    )
-                    if item_type in biz_types or "Business" in item_type:
-                        data["found"] = True
-                        if not data["phone"] and item.get("telephone"):
-                            data["phone"] = str(item["telephone"])
-                        if not data["website"] and item.get("url"):
-                            item_url = str(item["url"])
-                            if "google.com" not in item_url:
-                                data["website"] = item_url
-                        if not data["description"] and item.get("description"):
-                            data["description"] = str(item["description"])[:200]
-                        agg = item.get("aggregateRating")
-                        if isinstance(agg, dict):
-                            if not data["rating"]:
-                                try:
-                                    data["rating"] = float(agg.get("ratingValue", 0))
-                                except (ValueError, TypeError):
-                                    pass
-                            if not data["review_count"]:
-                                try:
-                                    data["review_count"] = int(agg.get("reviewCount", 0))
-                                    data["has_reviews"] = data["review_count"] > 0
-                                except (ValueError, TypeError):
-                                    pass
-                        addr = item.get("address", {})
-                        if isinstance(addr, dict) and not data["address"]:
-                            parts = [
-                                addr.get("streetAddress", ""),
-                                addr.get("addressLocality", ""),
-                                addr.get("addressRegion", ""),
-                            ]
-                            data["address"] = ", ".join(p for p in parts if p)
-            except (json.JSONDecodeError, TypeError):
-                continue
+        if response.status_code != 200:
+            logger.warning("Serper API returned status %d", response.status_code)
+            return data
+        result = response.json()
 
-    except Exception as e:
-        logger.error("Google search for GBP data failed: %s", e)
+        # Extract from Knowledge Graph
+        kg = result.get("knowledgeGraph", {})
+        if kg:
+            data["found"] = True
+            data["name"] = kg.get("title", business_name)
+            website = kg.get("website", "")
+            if website and "google.com" not in website:
+                data["website"] = website
+            phone = kg.get("phone", "")
+            if phone and _is_valid_phone(phone):
+                data["phone"] = phone
+            desc = kg.get("description", "")
+            if desc:
+                data["description"] = desc[:200]
+            category = kg.get("type", "") or kg.get("category", "")
+            if category:
+                data["category"] = category
+            rating = kg.get("rating")
+            if rating:
+                try:
+                    data["rating"] = float(rating)
+                except (ValueError, TypeError):
+                    pass
+            review_count = kg.get("ratingCount") or kg.get("reviewCount")
+            if review_count:
+                try:
+                    data["review_count"] = int(str(review_count).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except (ValueError, TypeError):
+                    pass
+            hours = kg.get("hours", {})
+            if hours:
+                data["hours"] = "detected"
+            address = kg.get("address", "")
+            if address:
+                data["address"] = address
+            if kg.get("imageUrl") or kg.get("images"):
+                images = kg.get("images", [])
+                data["photos_count"] = max(len(images), 1)
+            attributes = kg.get("attributes", {})
+            if attributes and not data["hours"]:
+                if any(k.lower() in ("hours", "service options") for k in attributes):
+                    data["hours"] = "detected"
 
-    # Strategy 2: Direct Google Maps search if nothing found
-    if not data["found"]:
-        try:
-            maps_url = f"https://www.google.com/maps/search/{quote_plus(query)}"
-            resp = requests.get(maps_url, headers=_HEADERS, timeout=15)
-            maps_html = resp.text
-            if business_name.lower() in maps_html.lower():
+        # Check Places results (local pack)
+        places = result.get("places", [])
+        if places:
+            place = places[0]
+            if not data["found"]:
                 data["found"] = True
+                data["name"] = place.get("title", business_name)
             if not data["phone"]:
-                m = re.search(r'"(\+?\d[\d\s\-().]{6,18}\d)"', maps_html)
-                if m:
-                    candidate = m.group(1)
-                    digits = re.sub(r'[^\d]', '', candidate)
-                    if 7 <= len(digits) <= 15:
-                        data["phone"] = candidate
-        except Exception as e:
-            logger.warning("Google Maps search failed: %s", e)
+                phone = place.get("phone", "")
+                if phone and _is_valid_phone(phone):
+                    data["phone"] = phone
+            if not data["address"]:
+                data["address"] = place.get("address", "")
+            if not data["rating"]:
+                try:
+                    data["rating"] = float(place.get("rating", 0))
+                except (ValueError, TypeError):
+                    pass
+            if not data["review_count"]:
+                try:
+                    rc = place.get("ratingCount", 0) or place.get("reviews", 0)
+                    data["review_count"] = int(str(rc).replace(",", ""))
+                    data["has_reviews"] = data["review_count"] > 0
+                except (ValueError, TypeError):
+                    pass
+            if not data["website"]:
+                data["website"] = place.get("website", "")
+            if not data["hours"] and place.get("hours"):
+                data["hours"] = "detected"
+            if not data["category"]:
+                data["category"] = place.get("type", "")
 
+        # Fallback: scan organic results
+        if not data["found"]:
+            for item in result.get("organic", []):
+                title = item.get("title", "").lower()
+                snippet = item.get("snippet", "").lower()
+                link = item.get("link", "")
+                if business_name.lower() in title or business_name.lower() in snippet:
+                    data["found"] = True
+                    if not data["phone"]:
+                        pm = re.search(r'(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})', item.get("snippet", ""))
+                        if pm and _is_valid_phone(pm.group(1)):
+                            data["phone"] = pm.group(1)
+                    if not data["website"] and link and "google.com" not in link:
+                        data["website"] = link
+                    if not data["description"]:
+                        data["description"] = item.get("snippet", "")[:200]
+                    break
+    except Exception as e:
+        logger.error("Serper API search for GBP data failed: %s", e)
     return data
 
 
-def detect_claimed_status(business_data: dict) -> dict:
+def _search_google_for_business(business_name: str, location: str = "",
+                                serper_api_key: str = "") -> dict:
+    """Search Google for a business and extract real GBP data.
+
+    Strategy:
+    1. Serper API (PRIMARY - structured Knowledge Graph data)
+    2. Google Maps direct scraping (FALLBACK - if Serper not available)
+    """
+    api_key = serper_api_key or os.environ.get("SERPER_API_KEY", "")
+    if api_key:
+        result = _search_via_serper(business_name, location, api_key)
+        if result["found"]:
+            return result
+
+    # Fallback: Direct Google Maps search
+    query = f"{business_name} {location}".strip() if location else business_name
+    data: dict = {
+        "name": business_name, "found": False, "website": "", "phone": "",
+        "hours": "", "description": "", "photos_count": 0, "review_count": 0,
+        "rating": 0.0, "has_reviews": False, "address": "", "category": "",
+    }
+    try:
+        maps_url = f"https://www.google.com/maps/search/{quote_plus(query)}"
+        resp = requests.get(maps_url, headers=_HEADERS, timeout=15)
+        maps_html = resp.text
+        if business_name.lower() in maps_html.lower():
+            data["found"] = True
+        if not data["phone"]:
+            m = re.search(r'"(\+?\d[\d\s\-().]{6,18}\d)"', maps_html)
+            if m and _is_valid_phone(m.group(1)):
+                data["phone"] = m.group(1)
+    except Exception as e:
+        logger.warning("Google Maps search failed: %s", e)
+    return data
+
+
+def detect_claimed_status(business_data: dict,
+                          serper_api_key: str = "") -> dict:
     """Analyze a business to determine claimed/unclaimed status.
 
     Auto-detect mode: Pass {"name": "Business Name", "location": "City"}
@@ -253,7 +244,7 @@ def detect_claimed_status(business_data: dict) -> dict:
         }
 
     location = business_data.get("location", "")
-    search_data = _search_google_for_business(name, location)
+    search_data = _search_google_for_business(name, location, serper_api_key)
 
     if search_data["found"]:
         return _score_business(search_data)
@@ -390,11 +381,12 @@ def _generate_pitch(status: str, data: dict) -> str:
         )
 
 
-def batch_detect(businesses: list[dict]) -> list[dict]:
+def batch_detect(businesses: list[dict],
+                 serper_api_key: str = "") -> list[dict]:
     """Detect claimed status for multiple businesses."""
     results = []
     for biz in businesses:
-        detection = detect_claimed_status(biz)
+        detection = detect_claimed_status(biz, serper_api_key=serper_api_key)
         detection["business_name"] = biz.get("name", "")
         results.append(detection)
     return results
