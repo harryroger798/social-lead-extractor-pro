@@ -1,6 +1,9 @@
 """Indeed + Glassdoor Job Scraper — Find hiring companies.
 Hiring companies = spending money = warm leads.
-100% free, uses Google Dorking.
+
+v3.3.0: Primary method uses FREE public job APIs (RemoteOK + Arbeitnow)
+that work 100% ban-free from cloud servers. Falls back to Google Dorking
+only if the free APIs return no results.
 """
 import asyncio
 import logging
@@ -17,11 +20,23 @@ async def scrape_indeed(
     delay: float = 3.0,
 ) -> list[dict]:
     """
-    Scrape Indeed job listings via Google Dorking.
+    Scrape job listings — uses free APIs first, falls back to dorking.
     Hiring companies are warm leads because they're spending money.
     """
     leads: list[dict] = []
 
+    # PRIMARY: Try free job APIs (100% ban-free, works from cloud)
+    try:
+        from app.services.direct_scrapers import scrape_job_boards_direct
+        search_term = f"{query} {location}".strip()
+        leads = await scrape_job_boards_direct(search_term, location, max_results, delay)
+        if leads:
+            logger.info("Indeed: Free APIs returned %d leads", len(leads))
+            return leads[:max_results]
+    except Exception as e:
+        logger.debug("Free job API failed, falling back to dorking: %s", e)
+
+    # FALLBACK: Google Dorking (may hit CAPTCHAs from cloud)
     try:
         from app.services.google_dorking import dorking_search_multi
 
@@ -74,9 +89,24 @@ async def scrape_glassdoor(
     max_results: int = 50,
     delay: float = 3.0,
 ) -> list[dict]:
-    """Scrape Glassdoor job listings via Google Dorking."""
+    """Scrape Glassdoor job listings — uses free APIs first, falls back to dorking."""
     leads: list[dict] = []
 
+    # PRIMARY: Try free job APIs (100% ban-free)
+    try:
+        from app.services.direct_scrapers import scrape_arbeitnow_api
+        search_term = f"{query} {location}".strip()
+        leads = await scrape_arbeitnow_api(search_term, max_results)
+        if leads:
+            # Re-label as glassdoor platform for UI consistency
+            for ld in leads:
+                ld["platform"] = "glassdoor"
+            logger.info("Glassdoor: Free API returned %d leads", len(leads))
+            return leads[:max_results]
+    except Exception as e:
+        logger.debug("Free job API failed, falling back to dorking: %s", e)
+
+    # FALLBACK: Google Dorking
     try:
         from app.services.google_dorking import dorking_search_multi
 

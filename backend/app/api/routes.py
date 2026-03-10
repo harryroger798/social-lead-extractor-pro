@@ -280,19 +280,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     platform, *_count_leads())
             current_step += 1
 
-        # ── Direct platform scraping (Patchright) ────────────────────────
+        # ── Direct platform scraping (v2: ban-free, no dorking) ─────────
         if config.use_direct_scraping and non_reddit_platforms:
             try:
-                from app.services.platform_scrapers import scrape_all_platforms_direct
+                from app.services.direct_scrapers import scrape_all_platforms_direct_v2
                 for idx, platform in enumerate(non_reddit_platforms):
                     await _update_progress(session_id, _calc_progress(),
                         f"Direct Scraping: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                         platform, *_count_leads())
-                    direct_leads = await scrape_all_platforms_direct(
+                    direct_leads = await scrape_all_platforms_direct_v2(
                         config.keywords, [platform],
                         max_results_per=config.pages_per_keyword * 5,
                         delay=config.delay_between_requests,
-                        headless=True,
                     )
                     all_leads.extend(direct_leads)
                     await _update_progress(session_id, _calc_progress(),
