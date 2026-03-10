@@ -1,14 +1,19 @@
-"""Pinterest RSS feed extraction — 100% free structured data.
+"""Pinterest extraction — RSS feeds + profile page bio scraping.
 
 Pinterest exposes public RSS feeds for user profiles and boards.
 These return structured XML with pin titles, descriptions, and links.
 
+Additionally, profile pages contain bio/about text that often includes
+email addresses, phone numbers, and website links for businesses.
+
 Endpoint: https://www.pinterest.com/{username}/feed.rss
-Returns: Up to 25 pins per feed in RSS/XML format.
+Profile: https://www.pinterest.com/{username}/
+Returns: Up to 25 pins per feed + profile bio contact data.
 
 100% FREE | No auth needed | Structured data.
 """
 import asyncio
+import json
 import logging
 import re
 import requests
@@ -66,14 +71,92 @@ def _fetch_pinterest_rss(username: str) -> list[dict]:
         return []
 
 
+def _fetch_pinterest_profile_bio(username: str) -> dict:
+    """Scrape a Pinterest profile page for bio/about contact info.
+
+    Pinterest embeds user profile data as serialized JSON inside <script> tags.
+    We extract key fields (full_name, about, website_url) via regex patterns
+    that match the JSON structure in the embedded scripts.
+
+    Returns dict with: name, bio, website, emails, phones.
+    """
+    url = f"https://www.pinterest.com/{username}/"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        if resp.status_code != 200:
+            logger.debug("Pinterest profile returned %d for %s", resp.status_code, username)
+            return {}
+
+        html = resp.text
+        name = ""
+        bio = ""
+        website = ""
+        all_text_parts: list[str] = []
+
+        # Extract fields from embedded JSON in script tags via regex
+        # These patterns match Pinterest's serialized user data
+        name_match = re.search(r'"full_name":"((?:[^"\\]|\\.)*)"', html)
+        if name_match:
+            name = name_match.group(1)
+
+        about_match = re.search(r'"about":"((?:[^"\\]|\\.)*)"', html)
+        if about_match:
+            bio = about_match.group(1)
+            all_text_parts.append(bio)
+
+        website_match = re.search(r'"website_url":"((?:[^"\\]|\\.)*)"', html)
+        if website_match:
+            raw_url = website_match.group(1)
+            if "pinterest.com" not in raw_url:
+                website = raw_url
+
+        domain_match = re.search(r'"domain_url":"((?:[^"\\]|\\.)*)"', html)
+        if domain_match and not website:
+            domain = domain_match.group(1)
+            if "pinterest.com" not in domain:
+                website = f"https://{domain}" if not domain.startswith("http") else domain
+
+        # Also check meta description as fallback
+        desc_match = re.search(r'<meta\s+name="description"\s+content="([^"]+)"', html)
+        if desc_match:
+            all_text_parts.append(desc_match.group(1))
+
+        og_desc = re.search(r'<meta\s+property="og:description"\s+content="([^"]+)"', html)
+        if og_desc:
+            all_text_parts.append(og_desc.group(1))
+
+        # Combine all text and extract emails/phones
+        combined_text = " ".join(all_text_parts)
+        emails = extract_emails(combined_text) if combined_text else []
+        phones = extract_phones(combined_text) if combined_text else []
+
+        if not name and not bio and not emails and not phones and not website:
+            return {}
+
+        return {
+            "username": username,
+            "name": name,
+            "bio": bio,
+            "website": website,
+            "emails": emails,
+            "phones": phones,
+        }
+
+    except Exception as e:
+        logger.debug("Pinterest profile scrape error for %s: %s", username, e)
+        return {}
+
+
 async def extract_pinterest_rss(
     keyword: str,
     max_results: int = 25,
 ) -> list[dict]:
-    """Extract leads from Pinterest RSS feeds for a keyword.
+    """Extract leads from Pinterest RSS feeds + profile bio for a keyword.
 
-    Strategy: Generate potential Pinterest usernames/boards from keyword,
-    fetch their RSS feeds, and extract emails/phones from pin descriptions.
+    Strategy:
+    1. Generate potential Pinterest usernames/boards from keyword
+    2. Scrape profile pages for bio/about contact info (emails, phones, websites)
+    3. Fetch RSS feeds and extract emails/phones from pin descriptions
 
     Returns list of lead dicts.
     """
@@ -93,6 +176,38 @@ async def extract_pinterest_rss(
             break
 
         try:
+            # First: scrape profile page for bio contact info
+            profile = await loop.run_in_executor(None, _fetch_pinterest_profile_bio, feed_name)
+            if profile:
+                profile_url = f"https://www.pinterest.com/{feed_name}/"
+                profile_name = profile.get("name", "")
+
+                for email in profile.get("emails", []):
+                    leads.append({
+                        "email": email, "phone": "",
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": keyword,
+                    })
+                for phone in profile.get("phones", []):
+                    leads.append({
+                        "email": "", "phone": phone,
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": keyword,
+                    })
+                # If profile has a website, add for bio link following
+                website = profile.get("website", "")
+                if website:
+                    leads.append({
+                        "email": "", "phone": "",
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": keyword,
+                        "bio_link": website,
+                    })
+
+            # Second: fetch RSS feed for pin content
             items = await loop.run_in_executor(None, _fetch_pinterest_rss, feed_name)
 
             for item in items:
@@ -117,7 +232,7 @@ async def extract_pinterest_rss(
 
             await asyncio.sleep(0.5)
         except Exception as e:
-            logger.debug("Pinterest RSS extraction error for %s: %s", feed_name, e)
+            logger.debug("Pinterest extraction error for %s: %s", feed_name, e)
 
     return leads[:max_results]
 
@@ -125,10 +240,10 @@ async def extract_pinterest_rss(
 async def enrich_pinterest_leads_with_rss(
     pinterest_urls: list[str],
 ) -> list[dict]:
-    """Enrich existing Pinterest leads by fetching RSS feeds for discovered users.
+    """Enrich existing Pinterest leads by fetching profile bio + RSS feeds.
 
     Takes Pinterest URLs found via dorking, extracts usernames,
-    fetches their RSS feeds, and returns enriched lead data.
+    scrapes their profile pages for contact info and fetches RSS feeds.
     """
     leads: list[dict] = []
     loop = asyncio.get_event_loop()
@@ -147,6 +262,37 @@ async def enrich_pinterest_leads_with_rss(
 
     for username in usernames[:20]:
         try:
+            # First: scrape profile page for bio contact info
+            profile = await loop.run_in_executor(None, _fetch_pinterest_profile_bio, username)
+            if profile:
+                profile_url = f"https://www.pinterest.com/{username}/"
+                profile_name = profile.get("name", "")
+
+                for email in profile.get("emails", []):
+                    leads.append({
+                        "email": email, "phone": "",
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": "",
+                    })
+                for phone in profile.get("phones", []):
+                    leads.append({
+                        "email": "", "phone": phone,
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": "",
+                    })
+                website = profile.get("website", "")
+                if website:
+                    leads.append({
+                        "email": "", "phone": "",
+                        "name": profile_name, "platform": "pinterest",
+                        "source_url": profile_url,
+                        "keyword": "",
+                        "bio_link": website,
+                    })
+
+            # Second: fetch RSS feed for pin content
             items = await loop.run_in_executor(None, _fetch_pinterest_rss, username)
 
             for item in items:
@@ -171,6 +317,6 @@ async def enrich_pinterest_leads_with_rss(
 
             await asyncio.sleep(0.3)
         except Exception as e:
-            logger.debug("Pinterest RSS enrich error for %s: %s", username, e)
+            logger.debug("Pinterest enrich error for %s: %s", username, e)
 
     return leads

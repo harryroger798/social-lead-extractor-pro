@@ -4,9 +4,12 @@ Enhanced with:
   - Reddit .json endpoints (structured data, no auth required)
   - Expanded subreddit coverage (20+ vs original 11)
   - User profile .json for cross-platform discovery
+  - Circuit breaker: auto-skips methods that return 403/timeout
+  - Overall function timeout to prevent hanging
 """
 import asyncio
 import logging
+import time
 import requests
 import xml.etree.ElementTree as ET
 
@@ -42,21 +45,30 @@ def _fetch_reddit_rss(subreddit: str, keyword: str) -> list[dict]:
         return []
 
 
-def _fetch_reddit_json(subreddit: str, keyword: str, limit: int = 25) -> list[dict]:
+# Sentinel value returned when a method is blocked (403) to trigger circuit breaker
+_BLOCKED_SENTINEL = "__BLOCKED__"
+
+
+def _fetch_reddit_json(subreddit: str, keyword: str, limit: int = 25) -> list[dict] | str:
     """Fetch Reddit search results via .json endpoint (structured, free, no auth).
 
     Appending .json to any Reddit URL returns structured JSON data.
     This provides richer data than RSS including full post text, author info,
     upvotes, and comment counts.
+
+    Returns list of entries, or _BLOCKED_SENTINEL if Reddit returns 403.
     """
     from urllib.parse import quote_plus
     url = f"https://www.reddit.com/r/{subreddit}/search.json?q={quote_plus(keyword)}&restrict_sr=1&sort=relevance&limit={limit}"
     try:
         response = requests.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; SnapLeads/2.2; +https://getsnapleads.store)"},
-            timeout=15,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; SnapLeads/3.1; +https://getsnapleads.store)"},
+            timeout=10,
         )
+        if response.status_code == 403:
+            logger.debug("Reddit .json blocked (403) for r/%s", subreddit)
+            return _BLOCKED_SENTINEL
         if response.status_code != 200:
             logger.debug("Reddit .json returned %d for r/%s", response.status_code, subreddit)
             return []
@@ -79,6 +91,9 @@ def _fetch_reddit_json(subreddit: str, keyword: str, limit: int = 25) -> list[di
                 "external_url": url_field if url_field and not url_field.startswith("https://www.reddit.com") else "",
             })
         return entries
+    except requests.exceptions.Timeout:
+        logger.debug("Reddit .json timeout for r/%s", subreddit)
+        return _BLOCKED_SENTINEL  # Treat timeout as blocked
     except Exception as e:
         logger.debug("Reddit .json error for r/%s: %s", subreddit, e)
         return []
@@ -110,13 +125,16 @@ def _fetch_reddit_user_about(username: str) -> dict:
     return {}
 
 
-def _fetch_pullpush(subreddit: str, keyword: str, limit: int = 100) -> list[dict]:
-    """Fetch from PullPush API (Reddit archive)."""
+def _fetch_pullpush(subreddit: str, keyword: str, limit: int = 50) -> list[dict] | str:
+    """Fetch from PullPush API (Reddit archive).
+
+    Returns list of entries, or _BLOCKED_SENTINEL if service is down/blocked.
+    """
     results = []
     # Search comments
     try:
         url = f"https://api.pullpush.io/reddit/search/comment/?subreddit={subreddit}&q={keyword}&size={limit}"
-        response = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
             for item in data.get("data", []):
@@ -125,13 +143,16 @@ def _fetch_pullpush(subreddit: str, keyword: str, limit: int = 100) -> list[dict
                     "content": item.get("body", ""),
                     "link": f"https://reddit.com/r/{subreddit}/comments/{item.get('link_id', '')[3:]}/",
                 })
+    except requests.exceptions.Timeout:
+        logger.debug("PullPush comment timeout for r/%s", subreddit)
+        return _BLOCKED_SENTINEL
     except Exception:
         pass
 
     # Search submissions
     try:
         url = f"https://api.pullpush.io/reddit/search/submission/?subreddit={subreddit}&q={keyword}&size={limit}"
-        response = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
             for item in data.get("data", []):
@@ -140,6 +161,10 @@ def _fetch_pullpush(subreddit: str, keyword: str, limit: int = 100) -> list[dict
                     "content": item.get("selftext", ""),
                     "link": f"https://reddit.com{item.get('permalink', '')}",
                 })
+    except requests.exceptions.Timeout:
+        logger.debug("PullPush submission timeout for r/%s", subreddit)
+        if not results:
+            return _BLOCKED_SENTINEL
     except Exception:
         pass
 
@@ -169,6 +194,7 @@ async def reddit_search(
     use_pullpush: bool = True,
     use_json: bool = True,
     enrich_users: bool = False,
+    max_duration_seconds: int = 90,
 ) -> dict:
     """
     Search Reddit for emails/phones using RSS, JSON endpoints, and PullPush.
@@ -177,6 +203,8 @@ async def reddit_search(
       - Reddit .json endpoints for structured data (richer than RSS)
       - Expanded subreddit coverage (20+ business-relevant subreddits)
       - Optional user profile enrichment for cross-platform discovery
+      - Circuit breaker: auto-disables methods that return 403 or timeout
+      - Overall time limit to prevent indefinite hanging
 
     Returns extracted emails, phones, source URLs, and method details.
     """
@@ -185,29 +213,46 @@ async def reddit_search(
     all_phones: list[str] = []
     all_sources: list[str] = []
     methods_used: list[str] = []
+    methods_blocked: list[str] = []
     authors_found: set[str] = set()
     loop = asyncio.get_event_loop()
+    start_time = time.monotonic()
+
+    # Circuit breaker flags: once a method gets 403/timeout, skip it for all subreddits
+    json_blocked = False
+    rss_blocked = False
+    pullpush_blocked = False
 
     for subreddit in target_subreddits:
+        # Check overall time limit
+        elapsed = time.monotonic() - start_time
+        if elapsed >= max_duration_seconds:
+            logger.info("Reddit search hit %ds time limit after %d subreddits",
+                        max_duration_seconds, target_subreddits.index(subreddit))
+            break
+
         entries: list[dict] = []
 
         # Method 1: Reddit .json endpoint (richest structured data)
-        if use_json:
-            json_entries = await loop.run_in_executor(
+        if use_json and not json_blocked:
+            json_result = await loop.run_in_executor(
                 None, _fetch_reddit_json, subreddit, keyword
             )
-            if json_entries:
-                entries.extend(json_entries)
+            if json_result == _BLOCKED_SENTINEL:
+                json_blocked = True
+                methods_blocked.append("json")
+                logger.info("Reddit .json blocked — circuit breaker tripped, skipping for all subreddits")
+            elif json_result:
+                entries.extend(json_result)
                 if "json" not in methods_used:
                     methods_used.append("json")
-                # Collect authors for optional enrichment
-                for entry in json_entries:
+                for entry in json_result:
                     author = entry.get("author", "")
                     if author and author not in ("[deleted]", "AutoModerator"):
                         authors_found.add(author)
 
         # Method 2: RSS feed
-        if use_rss:
+        if use_rss and not rss_blocked:
             rss_entries = await loop.run_in_executor(
                 None, _fetch_reddit_rss, subreddit, keyword
             )
@@ -217,12 +262,16 @@ async def reddit_search(
                     methods_used.append("rss")
 
         # Method 3: PullPush API (archived content)
-        if use_pullpush:
-            pp_entries = await loop.run_in_executor(
+        if use_pullpush and not pullpush_blocked:
+            pp_result = await loop.run_in_executor(
                 None, _fetch_pullpush, subreddit, keyword
             )
-            if pp_entries:
-                entries.extend(pp_entries)
+            if pp_result == _BLOCKED_SENTINEL:
+                pullpush_blocked = True
+                methods_blocked.append("pullpush")
+                logger.info("PullPush blocked/timeout — circuit breaker tripped")
+            elif pp_result:
+                entries.extend(pp_result)
                 if "pullpush" not in methods_used:
                     methods_used.append("pullpush")
 
@@ -233,31 +282,33 @@ async def reddit_search(
             link = entry.get("link", "")
             if link:
                 all_sources.append(link)
-            # Also check external URLs linked in posts
             ext_url = entry.get("external_url", "")
             if ext_url:
                 all_sources.append(ext_url)
 
         # Small delay between subreddits
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
 
     # Optional: enrich user profiles for cross-platform links
     if enrich_users and authors_found:
-        if "user_profiles" not in methods_used:
-            methods_used.append("user_profiles")
-        # Limit to first 20 unique authors to avoid rate limiting
-        for author in list(authors_found)[:20]:
-            try:
-                profile = await loop.run_in_executor(
-                    None, _fetch_reddit_user_about, author
-                )
-                if profile:
-                    profile_text = f"{profile.get('subreddit_title', '')} {profile.get('description', '')}"
-                    all_emails.extend(extract_emails(profile_text))
-                    all_phones.extend(extract_phones(profile_text))
-                await asyncio.sleep(0.3)  # Rate limit
-            except Exception:
-                pass
+        elapsed = time.monotonic() - start_time
+        if elapsed < max_duration_seconds:
+            if "user_profiles" not in methods_used:
+                methods_used.append("user_profiles")
+            for author in list(authors_found)[:20]:
+                if time.monotonic() - start_time >= max_duration_seconds:
+                    break
+                try:
+                    profile = await loop.run_in_executor(
+                        None, _fetch_reddit_user_about, author
+                    )
+                    if profile:
+                        profile_text = f"{profile.get('subreddit_title', '')} {profile.get('description', '')}"
+                        all_emails.extend(extract_emails(profile_text))
+                        all_phones.extend(extract_phones(profile_text))
+                    await asyncio.sleep(0.3)
+                except Exception:
+                    pass
 
     # Deduplicate
     seen_emails: set[str] = set()
@@ -275,6 +326,8 @@ async def reddit_search(
             seen_phones.add(phone)
             unique_phones.append(phone)
 
+    total_time = round(time.monotonic() - start_time, 1)
+
     return {
         "emails": unique_emails,
         "phones": unique_phones,
@@ -283,5 +336,7 @@ async def reddit_search(
         "keyword": keyword,
         "subreddits_searched": target_subreddits,
         "methods_used": methods_used,
+        "methods_blocked": methods_blocked,
         "authors_discovered": len(authors_found),
+        "duration_seconds": total_time,
     }
