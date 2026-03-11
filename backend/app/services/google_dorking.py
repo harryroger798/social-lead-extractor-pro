@@ -125,6 +125,27 @@ PLATFORM_DORK_MULTI_TEMPLATES: dict[str, list[str]] = {
         'site:tumblr.com "{keyword}" "commissions" OR "services" "contact"',
         'site:tumblr.com "{keyword}" "about me" "contact"',
     ],
+    # Non-site-specific queries that find company websites, directories, etc.
+    # These produce higher yield because they search the entire web.
+    "google_maps": [
+        '"{keyword}" "contact us" email phone',
+        '"{keyword}" "get in touch" email',
+        '"{keyword}" directory listing email phone address',
+    ],
+    "whatsapp": [
+        '"{keyword}" whatsapp contact email',
+        '"{keyword}" whatsapp business email phone',
+    ],
+    "telegram": [
+        '"{keyword}" telegram contact email',
+        '"{keyword}" t.me email contact',
+    ],
+    "email": [
+        '"{keyword}" "@gmail.com" OR "@yahoo.com" OR "@outlook.com" OR "@hotmail.com"',
+        '"{keyword}" "contact us" "email" -site:linkedin.com -site:facebook.com',
+        '"{keyword}" "reach out" OR "get in touch" email',
+        '"{keyword}" company directory email phone',
+    ],
 }
 
 
@@ -262,8 +283,8 @@ def _search_serper_with_key(query: str, num_results: int, api_key: str) -> list[
                     "link": item.get("link", ""),
                 })
             return results
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Serper API error: %s", exc)
     return []
 
 
@@ -347,29 +368,31 @@ async def dorking_search(
                     if link:
                         all_sources.append(link)
 
-        # Method 2: Multi-engine search (Bing, Brave, DuckDuckGo)
-        has_alt_keys = bing_api_key or brave_api_key or use_duckduckgo
-        if has_alt_keys:
-            try:
-                from app.services.multi_engine_search import multi_engine_search
-                loop = asyncio.get_event_loop()
-                alt_results = await loop.run_in_executor(
-                    None,
-                    lambda: multi_engine_search(
-                        query, num_results,
-                        bing_api_key=bing_api_key,
-                        brave_api_key=brave_api_key,
-                        use_duckduckgo=use_duckduckgo,
-                    ),
-                )
-                all_emails.extend(alt_results.get("emails", []))
-                all_phones.extend(alt_results.get("phones", []))
-                all_sources.extend(alt_results.get("sources", []))
-                for eng in alt_results.get("engines_used", []):
-                    if eng not in methods_used:
-                        methods_used.append(eng)
-            except ImportError:
-                logger.debug("multi_engine_search module not available")
+        # Method 2: Free multi-engine waterfall (Brave/Startpage/DDG Lite/
+        # Mojeek/Qwant/SearXNG) + API engines if keys provided + page scraping.
+        try:
+            import functools
+            from app.services.multi_engine_search import multi_engine_search
+            loop = asyncio.get_event_loop()
+            _bound = functools.partial(
+                multi_engine_search,
+                query, num_results,
+                bing_api_key=bing_api_key,
+                brave_api_key=brave_api_key,
+                use_duckduckgo=use_duckduckgo,
+                scrape_pages=True,
+            )
+            alt_results = await loop.run_in_executor(None, _bound)
+            all_emails.extend(alt_results.get("emails", []))
+            all_phones.extend(alt_results.get("phones", []))
+            all_sources.extend(alt_results.get("sources", []))
+            for eng in alt_results.get("engines_used", []):
+                if eng not in methods_used:
+                    methods_used.append(eng)
+        except ImportError:
+            logger.debug("multi_engine_search module not available")
+        except Exception as exc:
+            logger.warning("Multi-engine search error: %s", exc)
 
     # Method 3: Patchright (OPTIONAL — only if nothing found yet)
     if not all_emails and not all_phones and use_patchright:

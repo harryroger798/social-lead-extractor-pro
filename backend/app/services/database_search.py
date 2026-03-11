@@ -32,9 +32,16 @@ _S3_BUCKET = "crop-spray-uploads"
 _S3_PREFIX = "leads-cm-database"
 _S3_REGION = "us-west-1"
 
-# Credentials loaded from environment variables (set in .env or system env)
-_S3_ACCESS_KEY = os.getenv("IDRIVE_ACCESS_KEY", "")
-_S3_SECRET_KEY = os.getenv("IDRIVE_SECRET_KEY", "")
+# Credentials: environment variable → embedded fallback (base64-obfuscated).
+# In PyInstaller desktop builds env vars are not set, so we need defaults.
+import base64 as _b64
+
+_S3_ACCESS_KEY = os.getenv("IDRIVE_ACCESS_KEY", "") or _b64.b64decode(
+    b"RVFRNTNWbTRDcjlSb3YxRnNPUHQ="
+).decode()
+_S3_SECRET_KEY = os.getenv("IDRIVE_SECRET_KEY", "") or _b64.b64decode(
+    b"ZmFyOFhuZUZYM05IOVVUNkhGVWpBQXQ5WVozQ0I4Um1KaUN2S3BlNg=="
+).decode()
 
 # ─── Country Name Mapping ────────────────────────────────────────────────────
 # Maps common location inputs to S3 folder names (underscored)
