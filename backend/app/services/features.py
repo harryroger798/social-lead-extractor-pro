@@ -15,6 +15,7 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import re
 import socket
@@ -24,8 +25,35 @@ from urllib.parse import quote_plus, urlparse
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
+from app.services.multi_engine_search import free_search_waterfall
 
 logger = logging.getLogger(__name__)
+
+
+def _is_private_ip(hostname: str) -> bool:
+    """Check if a hostname resolves to a private/loopback IP (SSRF protection)."""
+    try:
+        # Resolve hostname to IP
+        addr_infos = socket.getaddrinfo(hostname, 443, proto=socket.IPPROTO_TCP)
+        for family, _, _, _, sockaddr in addr_infos:
+            ip_str = sockaddr[0]
+            ip = ipaddress.ip_address(ip_str)
+            if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:
+                return True
+        return False
+    except (socket.gaierror, ValueError, OSError):
+        # Can't resolve → treat as potentially unsafe
+        return True
+
+
+def _vcard_escape(value: str) -> str:
+    """Escape special characters in vCard field values per RFC 6868."""
+    # Order matters: escape backslash first
+    value = value.replace("\\", "\\\\")
+    value = value.replace(",", "\\,")
+    value = value.replace(";", "\\;")
+    value = value.replace("\n", "\\n")
+    return value
 
 
 def _strip_tags(text: str) -> str:
@@ -85,7 +113,6 @@ def find_emails_by_domain(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             search_results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in search_results:
@@ -103,14 +130,18 @@ def find_emails_by_domain(
     except Exception as exc:
         logger.debug("Email finder dorking error: %s", exc)
 
-    # Step 2: Visit domain contact pages
+    # Step 2: Visit domain contact pages (with SSRF protection)
+    if _is_private_ip(domain):
+        logger.warning("Skipping private/loopback domain: %s", domain)
+        return results[:max_results]
+
     try:
         contact_paths = ["/contact", "/about", "/contact-us", "/about-us", "/team"]
-        for path in contact_paths[:3]:
+        with AdSession(timeout=10.0, min_delay=1.5) as session:
+          for path in contact_paths[:3]:
             try:
                 url = f"https://{domain}{path}"
-                with AdSession(timeout=10.0, min_delay=1.5) as session:
-                    resp = session.get(url)
+                resp = session.get(url)
                 if resp.status_code == 200:
                     page_text = _strip_tags(resp.text[:100_000])
                     for email in extract_emails(page_text):
@@ -131,14 +162,14 @@ def find_emails_by_domain(
     if first_name and last_name:
         first = first_name.lower().strip()
         last = last_name.lower().strip()
-        f = first[0] if first else ""
+        f_initial = first[0] if first else ""
 
         for pattern in _EMAIL_PATTERNS[:6]:
             try:
                 email = pattern.format(
-                    first=first, last=last, f=f, domain=domain.lower(),
+                    first=first, last=last, f=f_initial, domain=domain.lower(),
                 )
-                if email not in found_emails:
+                if email and email not in found_emails and "@" in email:
                     found_emails.add(email)
                     results.append({
                         "email": email,
@@ -149,11 +180,11 @@ def find_emails_by_domain(
             except (KeyError, IndexError):
                 continue
 
-    # Also add generic patterns
+    # Also add generic patterns (no first/last needed)
     for pattern in _EMAIL_PATTERNS[6:]:
         try:
-            email = pattern.format(domain=domain.lower(), first="", last="", f="")
-            if email not in found_emails:
+            email = pattern.format(domain=domain.lower())
+            if email and email not in found_emails and "@" in email:
                 found_emails.add(email)
                 results.append({
                     "email": email,
@@ -196,11 +227,11 @@ def scrape_directories(
     search_term = f"{query} {location}".strip() if location else query
     encoded_query = quote_plus(search_term)
 
-    for dir_name, url_template in _DIRECTORY_SITES:
+    with AdSession(timeout=12.0, min_delay=2.5) as session:
+      for dir_name, url_template in _DIRECTORY_SITES:
         try:
             url = url_template.format(query=encoded_query)
-            with AdSession(timeout=12.0, min_delay=2.5) as session:
-                resp = session.get(url)
+            resp = session.get(url)
 
             if resp.status_code != 200:
                 logger.debug("Directory %s: HTTP %d", dir_name, resp.status_code)
@@ -258,7 +289,6 @@ def scrape_job_boards(
                 headers={"Accept": "application/json"},
             )
         if resp.status_code == 200:
-            import json
             data = resp.json()
             if isinstance(data, list):
                 for job in data[1:max_results + 1]:  # Skip first element (metadata)
@@ -292,7 +322,6 @@ def scrape_job_boards(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:1]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -339,6 +368,11 @@ def enrich_lead(lead: dict) -> dict:
         "aol.com", "icloud.com", "protonmail.com",
     }
     if domain in personal_domains:
+        return enriched
+
+    # SSRF protection: reject private/loopback IPs (Issue #33 fix)
+    if _is_private_ip(domain):
+        logger.warning("Skipping private/loopback domain in enrichment: %s", domain)
         return enriched
 
     # Try to fetch company website
@@ -414,7 +448,6 @@ def check_citations(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for site_name, site_prefix in citation_sites:
             try:
                 dork = f'{site_prefix} {search_term}'
@@ -461,7 +494,6 @@ def detect_gbp(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=5, min_results=1, max_engines=1)
             for r in results:
@@ -675,12 +707,12 @@ def export_leads_csv(leads: list[dict]) -> str:
 
 
 def export_leads_vcard(leads: list[dict]) -> str:
-    """Export leads to vCard format."""
+    """Export leads to vCard format with proper escaping (RFC 6868)."""
     vcards: list[str] = []
     for lead in leads:
-        name = lead.get("name", "Unknown")
-        email = lead.get("email", "")
-        phone = lead.get("phone", "")
+        name = _vcard_escape(lead.get("name", "") or "Unknown")
+        email = lead.get("email", "")  # emails don't need escaping
+        phone = lead.get("phone", "")  # phones don't need escaping
 
         vcard = "BEGIN:VCARD\nVERSION:3.0\n"
         vcard += f"FN:{name}\n"
@@ -689,9 +721,9 @@ def export_leads_vcard(leads: list[dict]) -> str:
         if phone:
             vcard += f"TEL:{phone}\n"
         if lead.get("company"):
-            vcard += f"ORG:{lead['company']}\n"
+            vcard += f"ORG:{_vcard_escape(lead['company'])}\n"
         if lead.get("location"):
-            vcard += f"ADR:;;{lead['location']};;;;\n"
+            vcard += f"ADR:;;{_vcard_escape(lead['location'])};;;;\n"
         vcard += "END:VCARD"
         vcards.append(vcard)
 

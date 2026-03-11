@@ -23,17 +23,38 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 from __future__ import annotations
 
 import html as _html_mod
+import inspect as _inspect_mod
+import json as _json_mod
 import logging
 import random
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 from urllib.parse import quote_plus, urlparse
 
-from app.services.anti_detection import AdSession, ad_get
+from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
+from app.services.multi_engine_search import free_search_waterfall
 
 logger = logging.getLogger(__name__)
+
+# Shared thread-pool for running async code from sync context (Issue #19 fix)
+_THREAD_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="live-scrape")
+
+
+def _dedup_leads(leads: list[dict]) -> list[dict]:
+    """Remove duplicate leads by (email, phone, platform) tuple."""
+    seen: set[tuple[str, str, str]] = set()
+    unique: list[dict] = []
+    for lead in leads:
+        key = (lead.get("email", ""), lead.get("phone", ""), lead.get("platform", ""))
+        if key == ("", "", ""):
+            continue  # skip completely empty leads
+        if key not in seen:
+            seen.add(key)
+            unique.append(lead)
+    return unique
 
 
 def _strip_tags(text: str) -> str:
@@ -49,12 +70,37 @@ def _strip_tags(text: str) -> str:
 # 1. TELEGRAM — Public preview scraping (t.me/s/username)
 # ===========================================================================
 
+# Nitter instances with health-check fallback (Issue #17 fix)
 _NITTER_INSTANCES = [
     "https://nitter.privacydev.net",
     "https://nitter.poast.org",
     "https://nitter.cz",
     "https://nitter.unixfox.eu",
+    "https://nitter.net",
+    "https://nitter.1d4.us",
 ]
+
+_nitter_healthy: list[str] = []  # populated lazily
+
+
+def _get_healthy_nitter() -> list[str]:
+    """Return Nitter instances that responded last time, or probe them."""
+    global _nitter_healthy  # noqa: PLW0603
+    if _nitter_healthy:
+        return _nitter_healthy
+    healthy: list[str] = []
+    for inst in _NITTER_INSTANCES:
+        try:
+            with AdSession(timeout=5.0, rate_limit=False, retries=0) as s:
+                r = s.get(inst, timeout=5.0)
+            if r.status_code < 400:
+                healthy.append(inst)
+                if len(healthy) >= 3:
+                    break
+        except Exception:
+            continue
+    _nitter_healthy = healthy or _NITTER_INSTANCES[:2]  # fallback
+    return _nitter_healthy
 
 
 def scrape_telegram_public(
@@ -77,7 +123,6 @@ def scrape_telegram_public(
 
     discovered_urls: list[str] = []
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -95,9 +140,10 @@ def scrape_telegram_public(
     except Exception as exc:
         logger.warning("Telegram dorking failed: %s", exc)
 
-    # Step 2: Visit t.me/s/ pages to extract contact info
+    # Step 2: Visit t.me/s/ pages to extract contact info (reuse session)
     seen_channels: set[str] = set()
-    for url in discovered_urls[:10]:
+    with AdSession(timeout=12.0, min_delay=2.0) as session:
+      for url in discovered_urls[:10]:
         try:
             # Extract username from URL
             parsed = urlparse(url)
@@ -111,8 +157,7 @@ def scrape_telegram_public(
 
             # Fetch public preview page
             preview_url = f"https://t.me/s/{username}"
-            with AdSession(timeout=12.0, min_delay=2.0) as session:
-                resp = session.get(preview_url)
+            resp = session.get(preview_url)
 
             if resp.status_code != 200:
                 continue
@@ -185,7 +230,6 @@ def scrape_whatsapp_links(
     wa_numbers: set[str] = set()
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -219,11 +263,11 @@ def scrape_whatsapp_links(
     except Exception as exc:
         logger.warning("WhatsApp dorking failed: %s", exc)
 
-    # Visit discovered pages to find more wa.me links
-    for url in discovered_urls[:5]:
+    # Visit discovered pages to find more wa.me links (reuse session)
+    with AdSession(timeout=10.0, min_delay=2.0) as session:
+      for url in discovered_urls[:5]:
         try:
-            with AdSession(timeout=10.0, min_delay=2.0) as session:
-                resp = session.get(url)
+            resp = session.get(url)
             if resp.status_code != 200:
                 continue
             page_text = resp.text[:100_000]
@@ -280,7 +324,6 @@ def scrape_youtube_channels(
 
     discovered_channels: list[str] = []
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -300,55 +343,68 @@ def scrape_youtube_channels(
     except Exception as exc:
         logger.warning("YouTube dorking failed: %s", exc)
 
-    # Visit channel About pages
+    # Visit channel pages and extract from ytInitialData JSON (Issue #14/#15 fix)
+    # YouTube embeds emails in the ytInitialData blob even without JS rendering
     seen_channels: set[str] = set()
-    for url in discovered_channels[:8]:
+    with AdSession(timeout=12.0, min_delay=2.5) as session:
+      for url in discovered_channels[:8]:
         try:
-            # Normalize to /about URL
-            about_url = url
-            if "/about" not in url:
-                about_url = url.rstrip("/") + "/about"
+            # Normalise to channel root (not /about — YouTube removed that route)
+            clean_url = re.sub(r'/(about|videos|shorts|streams|playlists)$', '', url.rstrip('/'))
 
-            channel_id = urlparse(url).path.strip("/").split("/")[0]
+            channel_id = urlparse(clean_url).path.strip("/").split("/")[0]
             if channel_id in seen_channels:
                 continue
             seen_channels.add(channel_id)
 
-            with AdSession(timeout=12.0, min_delay=2.5) as session:
-                resp = session.get(about_url)
-
+            resp = session.get(clean_url)
             if resp.status_code != 200:
                 continue
 
-            page_text = _strip_tags(resp.text[:200_000])
-            emails = extract_emails(page_text)
-            phones = extract_phones(page_text)
+            raw = resp.text[:500_000]
 
-            # Extract channel name
+            # Extract channel name from og:title
             title_match = re.search(
                 r'<meta\s+property="og:title"\s+content="([^"]+)"',
-                resp.text,
+                raw,
             )
             channel_name = title_match.group(1) if title_match else ""
 
-            for email in emails:
+            # Try to parse ytInitialData for business email
+            yt_match = re.search(r'var\s+ytInitialData\s*=\s*(\{.*?\});', raw)
+            if yt_match:
+                try:
+                    yt_data = _json_mod.loads(yt_match.group(1))
+                    yt_text = _json_mod.dumps(yt_data)
+                    for email in extract_emails(yt_text):
+                        leads.append({
+                            "email": email, "phone": "", "name": channel_name,
+                            "platform": "youtube",
+                            "source_url": clean_url,
+                        })
+                except (_json_mod.JSONDecodeError, ValueError):
+                    pass
+
+            # Fallback: extract from full page text
+            page_text = _strip_tags(raw)
+            for email in extract_emails(page_text):
                 leads.append({
                     "email": email, "phone": "", "name": channel_name,
                     "platform": "youtube",
-                    "source_url": about_url,
+                    "source_url": clean_url,
                 })
-            for phone in phones:
+            for phone in extract_phones(page_text):
                 leads.append({
                     "email": "", "phone": phone, "name": channel_name,
                     "platform": "youtube",
-                    "source_url": about_url,
+                    "source_url": clean_url,
                 })
 
         except Exception as exc:
             logger.debug("YouTube channel scrape error: %s", exc)
 
     logger.info("YouTube live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -378,7 +434,6 @@ def scrape_instagram(
 
     bio_links: list[str] = []
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:3]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -394,17 +449,19 @@ def scrape_instagram(
                     })
 
                 # Extract any URLs that might be bio links (non-Instagram)
+                # Tightened regex: must start with http(s) and end at whitespace/quote
                 url_matches = re.findall(
-                    r'https?://(?!(?:www\.)?instagram\.com)[^\s"<>]+',
+                    r'https?://(?!(?:www\.)?(?:instagram|facebook|google)\.com)[a-zA-Z0-9._~:/?#\[\]@!$&\'()*+,;=%-]+',
                     text,
                 )
                 bio_links.extend(url_matches[:3])
     except Exception as exc:
         logger.warning("Instagram dorking failed: %s", exc)
 
-    # Follow bio links to extract contact info
+    # Follow bio links to extract contact info (reuse session)
     seen_domains: set[str] = set()
-    for bio_url in bio_links[:5]:
+    with AdSession(timeout=10.0, min_delay=2.0) as session:
+      for bio_url in bio_links[:5]:
         try:
             domain = urlparse(bio_url).netloc.lower()
             base_domain = ".".join(domain.split(".")[-2:])
@@ -412,8 +469,7 @@ def scrape_instagram(
                 continue
             seen_domains.add(base_domain)
 
-            with AdSession(timeout=10.0, min_delay=2.0) as session:
-                resp = session.get(bio_url)
+            resp = session.get(bio_url)
             if resp.status_code != 200:
                 continue
 
@@ -434,7 +490,7 @@ def scrape_instagram(
             logger.debug("Instagram bio link error: %s", exc)
 
     logger.info("Instagram live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -462,7 +518,6 @@ def scrape_facebook(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:3]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -487,7 +542,7 @@ def scrape_facebook(
         logger.warning("Facebook dorking failed: %s", exc)
 
     logger.info("Facebook live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -513,7 +568,6 @@ def scrape_twitter(
 
     discovered_profiles: list[str] = []
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -533,21 +587,22 @@ def scrape_twitter(
     except Exception as exc:
         logger.warning("Twitter dorking failed: %s", exc)
 
-    # Try Nitter mirrors for discovered profiles
+    # Try healthy Nitter mirrors for discovered profiles (Issue #17 fix)
     seen_users: set[str] = set()
-    for url in discovered_profiles[:8]:
+    healthy = _get_healthy_nitter()
+    with AdSession(timeout=10.0, min_delay=2.0) as session:
+      for url in discovered_profiles[:8]:
         try:
             path = urlparse(url).path.strip("/").split("/")[0]
             if not path or path in seen_users or path in ("search", "hashtag", "i"):
                 continue
             seen_users.add(path)
 
-            # Try Nitter mirrors
-            for nitter in _NITTER_INSTANCES[:2]:
+            # Try healthy Nitter mirrors
+            for nitter in healthy:
                 try:
                     nitter_url = f"{nitter}/{path}"
-                    with AdSession(timeout=10.0, min_delay=2.0) as session:
-                        resp = session.get(nitter_url)
+                    resp = session.get(nitter_url)
                     if resp.status_code != 200:
                         continue
 
@@ -566,14 +621,8 @@ def scrape_twitter(
         except Exception as exc:
             logger.debug("Twitter Nitter scrape error: %s", exc)
 
-    # Also try fxtwitter API for bios
-    try:
-        from app.services.fxtwitter_api import extract_twitter_profiles
-    except ImportError:
-        pass
-
     logger.info("Twitter live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -618,7 +667,6 @@ def scrape_google_maps_directories(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -644,7 +692,7 @@ def scrape_google_maps_directories(
         logger.warning("Google Maps dorking failed: %s", exc)
 
     logger.info("Google Maps directories: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 def _scrape_yellowpages_http(query: str, max_results: int = 15) -> list[dict]:
@@ -724,8 +772,7 @@ def _scrape_yelp_http(
         )
         for json_text in json_ld_matches:
             try:
-                import json
-                data = json.loads(json_text)
+                data = _json_mod.loads(json_text)
                 if isinstance(data, list):
                     for item in data:
                         if item.get("@type") in ("LocalBusiness", "Restaurant", "Store"):
@@ -783,7 +830,6 @@ def scrape_pinterest(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -799,14 +845,8 @@ def scrape_pinterest(
     except Exception as exc:
         logger.warning("Pinterest dorking failed: %s", exc)
 
-    # Try RSS feeds for discovered profiles
-    try:
-        from app.services.pinterest_rss import extract_pinterest_rss
-    except ImportError:
-        pass
-
     logger.info("Pinterest live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -827,7 +867,6 @@ def scrape_tiktok(
     ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -844,7 +883,7 @@ def scrape_tiktok(
         logger.warning("TikTok dorking failed: %s", exc)
 
     logger.info("TikTok live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -865,7 +904,6 @@ def scrape_tumblr(
 
     discovered_blogs: list[str] = []
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:2]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -884,17 +922,17 @@ def scrape_tumblr(
     except Exception as exc:
         logger.warning("Tumblr dorking failed: %s", exc)
 
-    # Visit Tumblr blogs directly (public pages)
+    # Visit Tumblr blogs directly (public pages, reuse session)
     seen_blogs: set[str] = set()
-    for url in discovered_blogs[:5]:
+    with AdSession(timeout=10.0, min_delay=2.0) as session:
+      for url in discovered_blogs[:5]:
         try:
             domain = urlparse(url).netloc.lower()
             if domain in seen_blogs:
                 continue
             seen_blogs.add(domain)
 
-            with AdSession(timeout=10.0, min_delay=2.0) as session:
-                resp = session.get(url)
+            resp = session.get(url)
             if resp.status_code != 200:
                 continue
 
@@ -909,7 +947,7 @@ def scrape_tumblr(
             logger.debug("Tumblr blog scrape error: %s", exc)
 
     logger.info("Tumblr live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -945,7 +983,6 @@ def scrape_linkedin(
         ]
 
     try:
-        from app.services.multi_engine_search import free_search_waterfall
         for dork in dork_queries[:3]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
@@ -976,7 +1013,7 @@ def scrape_linkedin(
         logger.warning("LinkedIn dorking failed: %s", exc)
 
     logger.info("LinkedIn live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -987,23 +1024,32 @@ def scrape_reddit(
     query: str,
     max_results: int = 15,
 ) -> list[dict]:
-    """Extract contacts from Reddit via RSS/JSON endpoints."""
+    """Extract contacts from Reddit via RSS/JSON endpoints.
+
+    Issue #19 fix: Uses ThreadPoolExecutor instead of asyncio.run()
+    to avoid crashing when called from within FastAPI's running event loop.
+    """
+    import asyncio
+
     leads: list[dict] = []
     try:
         from app.services.reddit_extractor import reddit_search
-        import asyncio
+    except ImportError:
+        logger.warning("Reddit extractor not available")
+        return leads
 
-        # reddit_search is async, run it in sync context
+    def _run_async() -> dict:
+        """Run the async reddit_search in a fresh event loop on a worker thread."""
+        loop = asyncio.new_event_loop()
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # Can't await in sync context, skip
-                logger.debug("Reddit: event loop running, skipping sync call")
-                return leads
-        except RuntimeError:
-            pass
+            return loop.run_until_complete(reddit_search(query))
+        finally:
+            loop.close()
 
-        result = asyncio.run(reddit_search(query))
+    try:
+        future = _THREAD_POOL.submit(_run_async)
+        result = future.result(timeout=30)  # 30s max
+
         for email in result.get("emails", []):
             leads.append({
                 "email": email, "phone": "", "name": "",
@@ -1020,7 +1066,7 @@ def scrape_reddit(
         logger.warning("Reddit scrape failed: %s", exc)
 
     logger.info("Reddit live scrape: %d leads", len(leads))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -1051,6 +1097,9 @@ def live_scrape_platform(
 ) -> list[dict]:
     """Dispatch to the correct platform scraper.
 
+    Uses inspect.signature() to detect whether the scraper accepts a
+    ``location`` parameter instead of hard-coding platform names (Issue #21 fix).
+
     Args:
         platform: One of the 12 supported platforms
         query: Search keyword/query
@@ -1066,10 +1115,10 @@ def live_scrape_platform(
         return []
 
     try:
-        if platform.lower() in ("google_maps", "linkedin"):
+        sig = _inspect_mod.signature(scraper)
+        if "location" in sig.parameters:
             return scraper(query, location=location, max_results=max_results)
-        else:
-            return scraper(query, max_results=max_results)
+        return scraper(query, max_results=max_results)
     except Exception as exc:
         logger.error("Live scrape error for %s: %s", platform, exc)
         return []

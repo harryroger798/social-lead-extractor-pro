@@ -294,14 +294,21 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
     location = ""
 
     # --- Step 1: Try Hinglish location prepositions ---
+    # Sort longest-first so "ke aas paas" matches before "ke" alone
     for hindi_prep, eng_prep in sorted(
         HINGLISH_LOCATION_PREPS.items(), key=lambda x: -len(x[0])
     ):
-        if hindi_prep in text:
+        # Use word-boundary matching to avoid false positives
+        # e.g. "me" inside "mechanic" should NOT match
+        pattern = r'(?:^|\s)' + re.escape(hindi_prep) + r'(?:\s|$)'
+        match = re.search(pattern, text)
+        if match:
             is_hinglish = True
-            parts = text.split(hindi_prep, 1)
-            left = parts[0].strip()
-            right = parts[1].strip() if len(parts) > 1 else ""
+            # Split at the match position
+            start = match.start()
+            end = match.end()
+            left = text[:start].strip()
+            right = text[end:].strip()
 
             if eng_prep in ("near me", "here"):
                 keyword = left
@@ -314,35 +321,64 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
     # --- Step 2: If no Hinglish detected, try English patterns ---
     if not is_hinglish:
         # "X in Y", "X near Y", "X around Y", "X from Y", "X by Y", "X at Y"
+        # Use word-boundary to avoid matching "in" inside words like "inn", "interior"
         eng_match = re.match(
-            r'^(.+?)\s+(?:in|near|around|from|by|at|close\s+to|next\s+to|within)\s+(.+)$',
+            r'^(.+?)\s+\b(in|near|around|from|by|at|close\s+to|next\s+to|within)\b\s+(.+)$',
             text, re.IGNORECASE,
         )
         if eng_match:
-            keyword = eng_match.group(1).strip()
-            location = eng_match.group(2).strip()
+            candidate_kw = eng_match.group(1).strip()
+            prep = eng_match.group(2).strip().lower()
+            candidate_loc = eng_match.group(3).strip()
+
+            # Disambiguate "in": only treat as preposition if followed by
+            # a known location OR capitalized word (likely a place name)
+            if prep == "in":
+                loc_lower = candidate_loc.lower().split()[0] if candidate_loc else ""
+                is_known_location = loc_lower in CITY_ALIASES
+                # Check if original text had a capitalized word after "in"
+                orig_after = original[eng_match.start(3):eng_match.end(3)].strip()
+                starts_with_capital = bool(orig_after) and orig_after[0].isupper()
+                if is_known_location or starts_with_capital:
+                    keyword = candidate_kw
+                    location = candidate_loc
+                else:
+                    # "in" is probably part of the keyword (e.g. "inn", "interior")
+                    keyword = text
+                    location = ""
+            else:
+                keyword = candidate_kw
+                location = candidate_loc
         else:
             keyword = text
             location = ""
 
     # --- Step 3: Translate Hinglish words in keyword ---
+    # Longest-match-first: try multi-word phrases before single words
+    # to avoid "dawai ki dukaan" -> ["dawai", "ki", "pharmacy"] instead of ["pharmacy"]
     keyword_words = keyword.split()
     translated_words: list[str] = []
-    for word in keyword_words:
-        if word.lower() in HINGLISH_MAP:
-            is_hinglish = True
-            translated_words.append(HINGLISH_MAP[word.lower()])
-        else:
-            # Check multi-word matches
-            found = False
-            for i in range(len(keyword_words)):
-                two_word = " ".join(keyword_words[i:i+2]).lower()
-                if two_word in HINGLISH_MAP and word == keyword_words[i]:
-                    translated_words.append(HINGLISH_MAP[two_word])
-                    found = True
+    i = 0
+    while i < len(keyword_words):
+        matched = False
+        # Try 3-word, then 2-word, then 1-word matches (longest first)
+        for span in (3, 2):
+            if i + span <= len(keyword_words):
+                phrase = " ".join(keyword_words[i:i + span]).lower()
+                if phrase in HINGLISH_MAP:
+                    is_hinglish = True
+                    translated_words.append(HINGLISH_MAP[phrase])
+                    i += span
+                    matched = True
                     break
-            if not found:
+        if not matched:
+            word = keyword_words[i]
+            if word.lower() in HINGLISH_MAP:
+                is_hinglish = True
+                translated_words.append(HINGLISH_MAP[word.lower()])
+            else:
                 translated_words.append(word)
+            i += 1
     keyword = " ".join(translated_words).strip()
 
     # --- Step 4: Translate Hinglish location words ---
@@ -374,12 +410,13 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
                     break
 
     # --- Step 6: Clean up keyword ---
-    # Remove common noise words
+    # Only remove noise words if there are other substantive words remaining
     noise_words = {"best", "top", "good", "famous", "popular", "cheap", "nearby"}
     kw_words = keyword.split()
     cleaned_kw = [w for w in kw_words if w.lower() not in noise_words]
-    if cleaned_kw:
+    if cleaned_kw:  # Only strip noise if we still have content words
         keyword = " ".join(cleaned_kw)
+    # else: keep all words (the entire keyword is noise words — unlikely but safe)
     # Capitalize properly
     keyword = keyword.strip().title() if keyword else original.title()
 

@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import logging
 import random
+import threading
 import time
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -48,36 +50,69 @@ try:
 except ImportError:
     httpx = None  # type: ignore[assignment]
 
-# ---------------------------------------------------------------------------
-# Browser fingerprint rotation
-# ---------------------------------------------------------------------------
+# Fail-fast: warn at import time if NEITHER backend is available
+if not _HAS_CURL_CFFI and httpx is None:
+    logger.critical(
+        "No HTTP backend available! Install curl_cffi or httpx. "
+        "All scraping will fail."
+    )
 
-# curl_cffi impersonate targets — rotate to avoid single-fingerprint detection
-_IMPERSONATE_TARGETS = [
-    "chrome131",
-    "chrome130",
-    "chrome124",
-    "chrome120",
-    "chrome119",
-    "safari18_0",
-    "safari17_5",
-    "edge131",
-    "edge127",
-]
+# ---------------------------------------------------------------------------
+# Browser fingerprint rotation — PAIRED profiles
+# ---------------------------------------------------------------------------
+# Each profile pairs an impersonate target with a matching User-Agent
+# so TLS fingerprint and UA header always agree (Issue #3 fix).
 
-_USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) "
-    "Gecko/20100101 Firefox/133.0",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
-    "(KHTML, like Gecko) Version/18.1 Safari/605.1.15",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+_FINGERPRINT_PROFILES = [
+    {
+        "impersonate": "chrome131",
+        "ua": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ),
+    },
+    {
+        "impersonate": "chrome130",
+        "ua": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        ),
+    },
+    {
+        "impersonate": "chrome124",
+        "ua": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        ),
+    },
+    {
+        "impersonate": "chrome120",
+        "ua": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        ),
+    },
+    {
+        "impersonate": "safari18_0",
+        "ua": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
+            "(KHTML, like Gecko) Version/18.1 Safari/605.1.15"
+        ),
+    },
+    {
+        "impersonate": "safari17_5",
+        "ua": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
+            "(KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+        ),
+    },
+    {
+        "impersonate": "edge131",
+        "ua": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
+        ),
+    },
 ]
 
 _ACCEPT_LANGUAGES = [
@@ -88,15 +123,18 @@ _ACCEPT_LANGUAGES = [
 ]
 
 
-def _random_impersonate() -> str:
-    """Pick a random browser impersonation target."""
-    return random.choice(_IMPERSONATE_TARGETS)
+def _random_profile() -> dict[str, str]:
+    """Pick a random paired fingerprint profile."""
+    return random.choice(_FINGERPRINT_PROFILES)
 
 
-def _browser_headers(extra: Optional[dict[str, str]] = None) -> dict[str, str]:
-    """Generate realistic browser headers."""
+def _browser_headers(
+    ua: str,
+    extra: Optional[dict[str, str]] = None,
+) -> dict[str, str]:
+    """Generate realistic browser headers with a specific User-Agent."""
     headers = {
-        "User-Agent": random.choice(_USER_AGENTS),
+        "User-Agent": ua,
         "Accept": (
             "text/html,application/xhtml+xml,application/xml;"
             "q=0.9,image/webp,*/*;q=0.8"
@@ -118,28 +156,32 @@ def _browser_headers(extra: Optional[dict[str, str]] = None) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Rate limiter — per-domain request throttling
+# Rate limiter — per-domain request throttling (thread-safe, Issue #1 fix)
 # ---------------------------------------------------------------------------
 
+_domain_lock = threading.Lock()
 _domain_last_request: dict[str, float] = {}
 _DEFAULT_DELAY = 2.0  # seconds between requests to the same domain
 
 
 def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
-    """Sleep if needed to respect per-domain rate limits."""
+    """Sleep if needed to respect per-domain rate limits (thread-safe)."""
     now = time.time()
-    last = _domain_last_request.get(domain, 0.0)
-    elapsed = now - last
-    if elapsed < min_delay:
-        jitter = random.uniform(0.1, 0.5)
-        time.sleep(min_delay - elapsed + jitter)
-    _domain_last_request[domain] = time.time()
+    sleep_time = 0.0
+    with _domain_lock:
+        last = _domain_last_request.get(domain, 0.0)
+        elapsed = now - last
+        if elapsed < min_delay:
+            jitter = random.uniform(0.1, 0.5)
+            sleep_time = min_delay - elapsed + jitter
+        _domain_last_request[domain] = now + sleep_time
+    if sleep_time > 0:
+        time.sleep(sleep_time)
 
 
 def _extract_domain(url: str) -> str:
     """Extract domain from URL for rate limiting."""
     try:
-        from urllib.parse import urlparse
         return urlparse(url).netloc.lower()
     except Exception:
         return "unknown"
@@ -154,6 +196,9 @@ class AdSession:
 
     Uses curl_cffi when available, httpx as fallback.
     Supports context manager protocol.
+
+    The same paired profile (impersonate target + matching UA) is used
+    for the entire session lifetime to avoid fingerprint inconsistencies.
     """
 
     def __init__(
@@ -162,25 +207,38 @@ class AdSession:
         impersonate: Optional[str] = None,
         rate_limit: bool = True,
         min_delay: float = _DEFAULT_DELAY,
+        retries: int = 2,
     ) -> None:
         self._timeout = timeout
-        self._impersonate = impersonate or _random_impersonate()
-        self._rate_limit = rate_limit
+        self._rate_limit_enabled = rate_limit
         self._min_delay = min_delay
+        self._retries = retries
         self._session: Any = None
 
+        # Pick a paired profile for consistent TLS + UA
+        profile = _random_profile()
+        self._impersonate = impersonate or profile["impersonate"]
+        self._ua = profile["ua"]
+
         if _HAS_CURL_CFFI and CffiSession is not None:
-            self._session = CffiSession(
-                impersonate=self._impersonate,
-                timeout=timeout,
-                headers=_browser_headers(),
-            )
+            try:
+                self._session = CffiSession(
+                    impersonate=self._impersonate,
+                    timeout=timeout,
+                    headers=_browser_headers(self._ua),
+                )
+            except TypeError:
+                # Older curl_cffi versions don't accept timeout in constructor
+                self._session = CffiSession(
+                    impersonate=self._impersonate,
+                    headers=_browser_headers(self._ua),
+                )
             self._backend = "curl_cffi"
         elif httpx is not None:
             self._session = httpx.Client(
                 follow_redirects=True,
                 timeout=timeout,
-                headers=_browser_headers(),
+                headers=_browser_headers(self._ua),
             )
             self._backend = "httpx"
         else:
@@ -211,29 +269,61 @@ class AdSession:
         allow_redirects: bool = True,
         timeout: Optional[float] = None,
     ) -> Any:
-        """Perform GET request with anti-detection."""
-        if self._rate_limit:
+        """Perform GET request with anti-detection and retry logic."""
+        if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(headers)
+        merged_headers = _browser_headers(self._ua, headers)
         effective_timeout = timeout or self._timeout
 
-        if self._backend == "curl_cffi":
-            return self._session.get(
-                url,
-                params=params,
-                headers=merged_headers,
-                allow_redirects=allow_redirects,
-                timeout=effective_timeout,
-            )
-        else:
-            return self._session.get(
-                url,
-                params=params,
-                headers=merged_headers,
-                follow_redirects=allow_redirects,
-                timeout=effective_timeout,
-            )
+        last_exc: Optional[Exception] = None
+        for attempt in range(self._retries + 1):
+            try:
+                if self._backend == "curl_cffi":
+                    resp = self._session.get(
+                        url,
+                        params=params,
+                        headers=merged_headers,
+                        allow_redirects=allow_redirects,
+                        timeout=effective_timeout,
+                    )
+                else:
+                    resp = self._session.get(
+                        url,
+                        params=params,
+                        headers=merged_headers,
+                        follow_redirects=allow_redirects,
+                        timeout=effective_timeout,
+                    )
+
+                # Retry on 429 (rate limited) or 503 (service unavailable)
+                if resp.status_code in (429, 503) and attempt < self._retries:
+                    wait = (2 ** attempt) + random.random()
+                    logger.debug(
+                        "HTTP %d from %s, retrying in %.1fs (attempt %d/%d)",
+                        resp.status_code, _extract_domain(url), wait,
+                        attempt + 1, self._retries,
+                    )
+                    time.sleep(wait)
+                    continue
+
+                return resp
+
+            except Exception as exc:
+                last_exc = exc
+                if attempt < self._retries:
+                    wait = (2 ** attempt) + random.random()
+                    logger.debug(
+                        "Request error for %s: %s, retrying in %.1fs",
+                        _extract_domain(url), exc, wait,
+                    )
+                    time.sleep(wait)
+                else:
+                    raise
+
+        if last_exc:
+            raise last_exc
+        raise RuntimeError("Unexpected retry loop exit")
 
     def post(
         self,
@@ -244,31 +334,52 @@ class AdSession:
         allow_redirects: bool = True,
         timeout: Optional[float] = None,
     ) -> Any:
-        """Perform POST request with anti-detection."""
-        if self._rate_limit:
+        """Perform POST request with anti-detection and retry logic."""
+        if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(headers)
+        merged_headers = _browser_headers(self._ua, headers)
         effective_timeout = timeout or self._timeout
 
-        if self._backend == "curl_cffi":
-            return self._session.post(
-                url,
-                data=data,
-                json=json,
-                headers=merged_headers,
-                allow_redirects=allow_redirects,
-                timeout=effective_timeout,
-            )
-        else:
-            return self._session.post(
-                url,
-                data=data,
-                json=json,
-                headers=merged_headers,
-                follow_redirects=allow_redirects,
-                timeout=effective_timeout,
-            )
+        last_exc: Optional[Exception] = None
+        for attempt in range(self._retries + 1):
+            try:
+                if self._backend == "curl_cffi":
+                    resp = self._session.post(
+                        url,
+                        data=data,
+                        json=json,
+                        headers=merged_headers,
+                        allow_redirects=allow_redirects,
+                        timeout=effective_timeout,
+                    )
+                else:
+                    resp = self._session.post(
+                        url,
+                        data=data,
+                        json=json,
+                        headers=merged_headers,
+                        follow_redirects=allow_redirects,
+                        timeout=effective_timeout,
+                    )
+
+                if resp.status_code in (429, 503) and attempt < self._retries:
+                    wait = (2 ** attempt) + random.random()
+                    time.sleep(wait)
+                    continue
+
+                return resp
+
+            except Exception as exc:
+                last_exc = exc
+                if attempt < self._retries:
+                    time.sleep((2 ** attempt) + random.random())
+                else:
+                    raise
+
+        if last_exc:
+            raise last_exc
+        raise RuntimeError("Unexpected retry loop exit")
 
     @property
     def backend(self) -> str:
