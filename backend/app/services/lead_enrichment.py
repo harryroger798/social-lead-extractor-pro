@@ -150,7 +150,9 @@ async def enrich_leads_from_database(db_connection) -> dict:
             except Exception:
                 pass  # Web enrichment is best-effort
 
-        # Apply updates
+        # Apply updates — whitelist column names to prevent SQL injection
+        _ALLOWED_COLUMNS = {"name", "phone", "email", "company", "website", "location"}
+        updates = {k: v for k, v in updates.items() if k in _ALLOWED_COLUMNS}
         if updates:
             set_clauses = ", ".join(f"{k} = ?" for k in updates)
             values = list(updates.values()) + [lead_id]

@@ -365,7 +365,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
         if live_platforms:
             import asyncio as _aio_live
-            loop = _aio_live.get_event_loop()
+            loop = _aio_live.get_running_loop()
             for idx, platform in enumerate(live_platforms):
                 await _update_progress(session_id, _calc_progress(),
                     f"Live scraping: {platform} ({idx+1}/{len(live_platforms)})...",
@@ -540,7 +540,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 await _update_progress(session_id, _calc_progress(),
                     f"Following {len(bio_link_urls)} bio links...", "bio_links", *_count_leads())
                 import asyncio as _asyncio
-                loop = _asyncio.get_event_loop()
+                loop = _asyncio.get_running_loop()
                 bio_results = await loop.run_in_executor(
                     None, follow_bio_links, bio_link_urls, 20, True
                 )

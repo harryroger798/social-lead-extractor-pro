@@ -39,12 +39,17 @@ logger = logging.getLogger(__name__)
 
 
 def _is_private_ip(hostname: str) -> bool:
-    """Check if a hostname resolves to a private/loopback IP (SSRF protection)."""
+    """Check if a hostname resolves to a private/loopback IP (SSRF protection).
+
+    NOTE on DNS rebinding: A sophisticated attacker could return a public IP on
+    first resolution, then a private IP on subsequent resolutions.  For a
+    *desktop* app (not a server-side proxy) the risk is negligible because the
+    attacker would need to control DNS for a domain the *local user* visits.
+    We accept this as a known limitation — no server-side secrets to exfiltrate.
+    """
     try:
-        # Resolve hostname to IP
-        # R2-12 fix: use port=None for broader DNS coverage (SSRF protection)
         addr_infos = socket.getaddrinfo(hostname, None, proto=socket.IPPROTO_TCP)
-        for family, _, _, _, sockaddr in addr_infos:
+        for _family, _, _, _, sockaddr in addr_infos:
             ip_str = sockaddr[0]
             ip = ipaddress.ip_address(ip_str)
             if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:

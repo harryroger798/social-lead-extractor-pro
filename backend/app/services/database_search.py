@@ -226,7 +226,12 @@ def _resolve_country(location: str) -> list[str]:
 
 
 def _get_duckdb_connection():
-    """Create a DuckDB connection configured for S3 access."""
+    """Create a DuckDB connection configured for S3 access.
+
+    NOTE: S3 credentials are intentionally embedded (base64-obfuscated) for the
+    desktop app distribution.  They are **read-only** and scoped exclusively to
+    the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
+    """
     try:
         import duckdb
     except ImportError:
@@ -234,13 +239,17 @@ def _get_duckdb_connection():
         return None
 
     con = duckdb.connect()
-    con.execute("INSTALL httpfs; LOAD httpfs;")
-    con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
-    con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
-    con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
-    con.execute(f"SET s3_region='{_S3_REGION}';")
-    con.execute("SET s3_url_style='path';")
-    return con
+    try:
+        con.execute("INSTALL httpfs; LOAD httpfs;")
+        con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
+        con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
+        con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
+        con.execute(f"SET s3_region='{_S3_REGION}';")
+        con.execute("SET s3_url_style='path';")
+        return con
+    except Exception:
+        con.close()
+        raise
 
 
 def _build_linkedin_query(
@@ -324,7 +333,9 @@ def _build_linkedin_query(
             f"WHERE {where_clause}"
         )
 
-    sql = " UNION ALL ".join(unions) + f" LIMIT {max_results}"
+    # Clamp max_results to prevent injection via non-int values
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
     return sql, s3_paths
 
 
@@ -381,8 +392,15 @@ def _build_instagram_query(
             f"WHERE {where_clause}"
         )
 
-    sql = " UNION ALL ".join(unions) + f" LIMIT {max_results}"
+    # Clamp max_results to prevent injection via non-int values
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
     return sql, s3_paths
+
+
+def _clean_field(val: str) -> str:
+    """Clean a database field — return empty string for null-like values."""
+    return "" if val.lower() in ("none", "nan", "null", "") else val
 
 
 def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
@@ -407,28 +425,26 @@ def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
     if not email and not phone:
         return {}
 
-    # Clean up email (skip "None" or invalid)
-    if email.lower() in ("none", "nan", "null", ""):
-        email = ""
-
-    # Clean up phone
-    if phone.lower() in ("none", "nan", "null", ""):
-        phone = ""
+    # Clean up email and phone (skip "None" or invalid)
+    email = _clean_field(email)
+    phone = _clean_field(phone)
 
     if not email and not phone:
         return {}
 
     # Build source URL from LinkedIn ID
     source_url = ""
-    if linkedin_id and linkedin_id.lower() not in ("none", "nan"):
+    linkedin_id = _clean_field(linkedin_id)
+    if linkedin_id:
         source_url = f"https://linkedin.com/in/{linkedin_id}"
 
     # Build display name with title
     display_name = name
-    if title and title.lower() not in ("none", "nan"):
+    title = _clean_field(title)
+    if title:
         display_name = f"{name} - {title}" if name else title
 
-    location_parts = [p for p in [city, state, country] if p and p.lower() not in ("none", "nan")]
+    location_parts = [p for p in [_clean_field(city), _clean_field(state), _clean_field(country)] if p]
     location_str = ", ".join(location_parts)
 
     return {
@@ -438,10 +454,10 @@ def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
         "platform": "linkedin",
         "source_url": source_url,
         "keyword": keyword,
-        "company": company if company.lower() not in ("none", "nan") else "",
-        "industry": industry if industry.lower() not in ("none", "nan") else "",
+        "company": _clean_field(company),
+        "industry": _clean_field(industry),
         "location": location_str,
-        "website": website if website.lower() not in ("none", "nan") else "",
+        "website": _clean_field(website),
     }
 
 
@@ -460,27 +476,26 @@ def _instagram_row_to_lead(row: tuple, keyword: str) -> dict:
     if not email and not phone:
         return {}
 
-    if email.lower() in ("none", "nan", "null", ""):
-        email = ""
-    if phone.lower() in ("none", "nan", "null", ""):
-        phone = ""
+    email = _clean_field(email)
+    phone = _clean_field(phone)
 
     if not email and not phone:
         return {}
 
+    username = _clean_field(username)
     source_url = f"https://instagram.com/{username}" if username else ""
 
     return {
         "email": email,
         "phone": phone,
-        "name": name if name.lower() not in ("none", "nan") else username,
+        "name": _clean_field(name) or username,
         "platform": "instagram",
         "source_url": source_url,
         "keyword": keyword,
         "company": "",
-        "industry": category if category.lower() not in ("none", "nan") else "",
+        "industry": _clean_field(category),
         "location": "",
-        "website": website if website.lower() not in ("none", "nan") else "",
+        "website": _clean_field(website),
     }
 
 
