@@ -354,7 +354,6 @@ async def dorking_search(
             from app.services.multi_engine_search import (
                 free_search_waterfall,
                 multi_engine_search,
-                SearchResult,
             )
             # Run the free waterfall asynchronously (preferred path)
             free_results = await free_search_waterfall(
@@ -372,16 +371,16 @@ async def dorking_search(
 
             # Also try API-key engines for additional coverage
             if bing_api_key or brave_api_key:
+                import functools
                 loop = asyncio.get_event_loop()
-                alt_results = await loop.run_in_executor(
-                    None,
-                    lambda: multi_engine_search(
-                        query, num_results,
-                        bing_api_key=bing_api_key,
-                        brave_api_key=brave_api_key,
-                        use_duckduckgo=False,  # already covered by waterfall
-                    ),
+                _bound = functools.partial(
+                    multi_engine_search,
+                    query, num_results,
+                    bing_api_key=bing_api_key,
+                    brave_api_key=brave_api_key,
+                    use_duckduckgo=False,  # already covered by waterfall
                 )
+                alt_results = await loop.run_in_executor(None, _bound)
                 all_emails.extend(alt_results.get("emails", []))
                 all_phones.extend(alt_results.get("phones", []))
                 all_sources.extend(alt_results.get("sources", []))

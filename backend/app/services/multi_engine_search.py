@@ -58,13 +58,15 @@ class _EngineHealth:
         elif self.consecutive_failures >= 2:
             self.cooldown_until = time.time() + 300  # 5min cooldown
 
+    def try_recover(self) -> None:
+        """Reset failures if cooldown has passed. Call before checking."""
+        if self.consecutive_failures >= 3 and time.time() > self.cooldown_until:
+            self.consecutive_failures = 0
+
     @property
     def is_available(self) -> bool:
         if self.consecutive_failures >= 3:
-            if time.time() > self.cooldown_until:
-                self.consecutive_failures = 0  # auto-recovery
-                return True
-            return False
+            return time.time() > self.cooldown_until
         if self.consecutive_failures >= 2:
             return time.time() > self.cooldown_until
         return True
@@ -267,8 +269,8 @@ async def _search_brave_free(
         )
     except httpx.TimeoutException:
         logger.warning("Brave free: timeout")
-    except Exception as e:
-        logger.error("Brave free: %s", e)
+    except Exception:
+        logger.exception("Brave free error")
 
     return results[:num_results]
 
@@ -358,8 +360,8 @@ async def _search_startpage(
         )
     except httpx.TimeoutException:
         logger.warning("Startpage: timeout")
-    except Exception as e:
-        logger.error("Startpage: %s", e)
+    except Exception:
+        logger.exception("Startpage error")
 
     return results[:num_results]
 
@@ -431,8 +433,8 @@ async def _search_ddg_lite(
         logger.info(
             "DDG Lite: %d results for '%s'", len(results), query[:60],
         )
-    except Exception as e:
-        logger.error("DDG Lite: %s", e)
+    except Exception:
+        logger.exception("DDG Lite error")
 
     return results[:num_results]
 
@@ -512,8 +514,8 @@ async def _search_mojeek(
         logger.info(
             "Mojeek: %d results for '%s'", len(results), query[:60],
         )
-    except Exception as e:
-        logger.error("Mojeek: %s", e)
+    except Exception:
+        logger.exception("Mojeek error")
 
     return results[:num_results]
 
@@ -591,8 +593,8 @@ async def _search_qwant_lite(
         logger.info(
             "Qwant Lite: %d results for '%s'", len(results), query[:60],
         )
-    except Exception as e:
-        logger.error("Qwant Lite: %s", e)
+    except Exception:
+        logger.exception("Qwant Lite error")
 
     return results[:num_results]
 
@@ -624,6 +626,8 @@ def _extract_qwant_items(
 
 # --- SearXNG Public Instance Search -------------------------------------------
 
+# NOTE: Public SearXNG instances may go offline over time.
+# This list may need periodic updates. See https://searx.space for live status.
 _SEARXNG_INSTANCES = [
     "https://search.sapti.me",
     "https://searx.tiekoetter.com",
@@ -705,8 +709,8 @@ async def _search_searxng(
                     "SearXNG (%s): %d results", inst, len(results),
                 )
                 break
-        except Exception as e:
-            logger.debug("SearXNG %s failed: %s", inst, e)
+        except Exception:
+            logger.debug("SearXNG %s failed", inst, exc_info=True)
             continue
 
     return results[:num_results]
@@ -973,6 +977,7 @@ async def free_search_waterfall(
     ) as client:
         for engine_name, engine_fn in _FREE_ENGINE_ORDER:
             health = _get_health(engine_name)
+            health.try_recover()
             if not health.is_available:
                 logger.debug("Skipping %s (cooldown)", engine_name)
                 continue
@@ -1027,7 +1032,9 @@ async def free_search_parallel(
         limits=httpx.Limits(max_connections=10),
     ) as client:
         for eng in engines:
-            if eng in engine_map and _get_health(eng).is_available:
+            health_eng = _get_health(eng)
+            health_eng.try_recover()
+            if eng in engine_map and health_eng.is_available:
                 tasks.append(
                     engine_map[eng](  # type: ignore[operator]
                         client, query, num_results,
@@ -1155,13 +1162,12 @@ def multi_engine_search(
 
     # Deduplicate
     seen_emails: set[str] = set()
-    unique_emails = [
-        e for e in all_emails
-        if not (
-            e.lower() in seen_emails
-            or seen_emails.add(e.lower())  # type: ignore[func-returns-value]
-        )
-    ]
+    unique_emails: list[str] = []
+    for email in all_emails:
+        lower = email.lower()
+        if lower not in seen_emails:
+            seen_emails.add(lower)
+            unique_emails.append(email)
 
     seen_phones: set[str] = set()
     unique_phones: list[str] = []
