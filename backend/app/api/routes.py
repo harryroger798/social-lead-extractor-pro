@@ -966,8 +966,8 @@ async def clean_all_results() -> dict:
             )
             category = get_score_label(new_score)
             await db.execute(
-                "UPDATE leads SET quality_score=?, email_type=? WHERE id=?",
-                (new_score, email_type, r[0]),
+                "UPDATE leads SET quality_score=?, email_type=?, lead_score=?, score_category=? WHERE id=?",
+                (new_score, email_type, new_score, category, r[0]),
             )
             stats["leads_rescored"] += 1
 
@@ -2312,7 +2312,7 @@ async def search_directories(
     location: str = "",
     sources: str = "yellowpages,yelp",
     max_results: int = 50,
-    background_tasks: BackgroundTasks = None,
+    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search YellowPages, Yelp, and other business directories."""
     session_id = str(uuid.uuid4())
@@ -2519,7 +2519,7 @@ async def search_job_boards(
     location: str = "",
     sources: str = "indeed,glassdoor",
     max_results: int = 50,
-    background_tasks: BackgroundTasks = None,
+    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search Indeed, Glassdoor, Craigslist, OLX for leads."""
     session_id = str(uuid.uuid4())
