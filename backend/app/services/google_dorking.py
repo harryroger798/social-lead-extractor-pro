@@ -450,24 +450,40 @@ async def dorking_search_multi(
     use_patchright: bool = True,
     headless: bool = True,
     proxy: Optional[dict] = None,
+    max_total_queries: int = 8,
 ) -> list[dict]:
     """Search multiple keywords across multiple platforms.
 
-    Tries Serper API first (reliable), falls back to Patchright if installed.
+    v3.5.1: Added query budgeting (max_total_queries) and anti-bot delays.
+    Limits total queries to prevent Google rate-limiting / bans.
+    Default: 8 queries per search session (safe limit for free engines).
     """
     all_results = []
+    total_queries = 0
+
     for keyword in keywords:
         for platform in platforms:
             if platform == "reddit":
                 continue  # Reddit uses RSS/PullPush instead
+            if total_queries >= max_total_queries:
+                logger.info(
+                    "Query budget exhausted (%d/%d), stopping dorking",
+                    total_queries, max_total_queries,
+                )
+                return all_results
+
             result = await dorking_search(
                 keyword, platform, pages,
                 serper_api_key=serper_api_key,
                 use_patchright=use_patchright,
                 headless=headless,
                 proxy=proxy,
+                max_queries=min(3, max_total_queries - total_queries),
             )
             all_results.append(result)
-            if delay > 0:
-                await asyncio.sleep(delay)
+            total_queries += len(result.get("queries_used", [1]))
+
+            # v3.5.1: Anti-bot delay (5-10s between platforms)
+            anti_bot_delay = max(delay, 5.0)
+            await asyncio.sleep(anti_bot_delay)
     return all_results

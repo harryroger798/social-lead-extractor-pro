@@ -312,7 +312,7 @@ export default function NewExtraction() {
           Platforms
           <span className="text-[11px] text-text-muted font-normal ml-auto">{selectedPlatforms.length} selected</span>
         </h3>
-        <div className="grid grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
           {PLATFORMS.map(p => {
             const Icon = PLATFORM_ICONS[p.id];
             const isSelected = selectedPlatforms.includes(p.id);

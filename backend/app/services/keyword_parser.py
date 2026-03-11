@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -274,6 +274,7 @@ class ParsedKeyword:
     country: str           # Resolved country (empty if none)
     is_hinglish: bool      # Whether Hinglish was detected
     search_queries: list[str]  # Generated search query variations
+    expanded_terms: list[str] = field(default_factory=list)  # Synonym-expanded terms for DB
 
 
 # ---------------------------------------------------------------------------
@@ -430,6 +431,9 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
     # --- Step 7: Generate search query variations ---
     search_queries = _build_search_variations(keyword, location, country)
 
+    # --- Step 8: Semantic keyword expansion for DB queries ---
+    expanded_terms = expand_keyword(keyword)
+
     return ParsedKeyword(
         original=original,
         keyword=keyword,
@@ -437,6 +441,7 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
         country=country,
         is_hinglish=is_hinglish,
         search_queries=search_queries,
+        expanded_terms=expanded_terms,
     )
 
 
@@ -499,6 +504,150 @@ def _build_search_variations(
         variations.append(f"{keyword} contact email")
 
     return variations
+
+
+# ---------------------------------------------------------------------------
+# Semantic Keyword Expansion — synonym map for DB queries
+# ---------------------------------------------------------------------------
+
+# Maps a keyword to semantically related terms for OR-based DB queries.
+# When "bike owners" comes in, we also search for motorcycle, cycling, etc.
+# This fixes the #1 cause of 0 results: AND-based queries are too restrictive.
+SYNONYM_MAP: dict[str, list[str]] = {
+    # --- Vehicles ---
+    "bike": ["motorcycle", "bike shop", "cycling", "two-wheeler", "bike dealer",
+             "bicycle", "motorbike", "scooter", "bike owner"],
+    "car": ["automobile", "car dealer", "car owner", "automotive", "vehicle",
+            "car wash", "car rental", "auto repair"],
+    "truck": ["trucking", "transport", "logistics", "freight", "haulage"],
+    # --- Technology ---
+    "startup": ["startups", "tech startup", "technology", "saas", "fintech",
+                "edtech", "healthtech", "software company", "it services",
+                "information technology", "digital"],
+    "ai": ["artificial intelligence", "machine learning", "deep learning",
+           "ai company", "data science", "ml", "automation"],
+    "software": ["software development", "it services", "saas", "technology",
+                 "information technology", "application development"],
+    "it": ["information technology", "it services", "technology", "software",
+           "computer services", "tech support"],
+    # --- Food & Hospitality ---
+    "restaurant": ["restaurants", "food", "dining", "cafe", "eatery",
+                   "food service", "catering", "hospitality", "bar", "bistro"],
+    "cafe": ["coffee shop", "cafe", "bakery", "tea house", "restaurant",
+             "food", "bistro"],
+    "hotel": ["hotels", "hospitality", "resort", "lodge", "guest house",
+              "accommodation", "travel", "tourism"],
+    # --- Health ---
+    "doctor": ["physician", "medical", "healthcare", "clinic", "hospital",
+               "medical practice", "health care", "medicine"],
+    "dentist": ["dental", "dentistry", "dental clinic", "dental practice",
+                "orthodontist", "dental care"],
+    "hospital": ["healthcare", "medical", "clinic", "health care",
+                 "medical center", "hospital"],
+    "pharmacy": ["chemist", "drugstore", "pharmaceutical", "medical store",
+                 "medicine", "health care"],
+    # --- Legal ---
+    "lawyer": ["attorney", "legal", "law firm", "advocate", "legal services",
+               "solicitor", "barrister", "legal counsel"],
+    # --- Education ---
+    "school": ["education", "academy", "institute", "educational",
+               "teaching", "learning", "coaching"],
+    "college": ["university", "education", "higher education", "academic",
+                "institute"],
+    "teacher": ["educator", "instructor", "tutor", "professor", "coaching",
+                "teaching", "education"],
+    # --- Real Estate ---
+    "real estate": ["property", "realty", "real estate agent", "broker",
+                    "property dealer", "housing", "construction"],
+    "builder": ["construction", "contractor", "real estate", "developer",
+                "building", "civil engineering"],
+    # --- Finance ---
+    "bank": ["banking", "financial", "finance", "financial services",
+             "investment", "insurance"],
+    "accountant": ["accounting", "chartered accountant", "ca", "finance",
+                   "bookkeeping", "tax", "audit"],
+    "insurance": ["insurance company", "insurance agent", "financial services",
+                  "underwriting", "risk management"],
+    # --- Retail ---
+    "shop": ["retail", "store", "shopping", "retail store", "merchant",
+             "e-commerce", "ecommerce"],
+    "grocery": ["supermarket", "grocery store", "food retail", "kirana",
+                "general store", "convenience store"],
+    # --- Services ---
+    "salon": ["beauty salon", "hair salon", "spa", "beauty parlour",
+              "beauty", "grooming", "wellness"],
+    "gym": ["fitness", "health club", "fitness center", "gym",
+            "wellness", "sports", "training"],
+    "plumber": ["plumbing", "plumbing services", "pipe fitting",
+                "home services", "maintenance"],
+    "electrician": ["electrical", "electrical services", "wiring",
+                    "home services", "power"],
+    "photographer": ["photography", "photo studio", "videography",
+                     "creative", "media", "wedding photography"],
+    "tattoo": ["tattoo artist", "tattoo studio", "tattooing", "body art",
+               "tattoo shop", "ink", "piercing"],
+    # --- Marketing ---
+    "marketing": ["digital marketing", "advertising", "seo", "social media",
+                  "marketing agency", "brand", "pr", "content marketing"],
+    "seo": ["search engine optimization", "digital marketing", "sem",
+            "online marketing", "web marketing"],
+    # --- Manufacturing ---
+    "factory": ["manufacturing", "production", "industrial", "fabrication",
+                "assembly", "plant"],
+    "textile": ["garment", "apparel", "clothing", "fashion", "fabric",
+                "textile manufacturing"],
+    # --- Agriculture ---
+    "farmer": ["agriculture", "farming", "agribusiness", "agri",
+               "crop", "dairy", "organic farming"],
+    # --- Travel ---
+    "travel": ["travel agent", "tourism", "tour operator", "travel agency",
+               "holiday", "vacation", "adventure"],
+    # --- Events ---
+    "wedding": ["wedding planner", "event management", "wedding venue",
+                "celebration", "event planner", "catering"],
+    # --- Transport ---
+    "logistics": ["transport", "shipping", "freight", "supply chain",
+                  "courier", "delivery", "warehousing"],
+    "courier": ["delivery", "logistics", "shipping", "parcel",
+                "courier service", "express delivery"],
+}
+
+
+def expand_keyword(keyword: str) -> list[str]:
+    """Expand a keyword into semantically related terms for broader DB matching.
+
+    Given "bike owners", returns:
+      ["bike owners", "bike", "motorcycle", "bike shop", "cycling", "two-wheeler",
+       "bike dealer", "bicycle", "motorbike", "scooter", "bike owner"]
+
+    The original keyword always comes first.
+    """
+    terms: list[str] = [keyword.lower().strip()]
+    kw_lower = keyword.lower().strip()
+    kw_words = kw_lower.split()
+
+    # Check full phrase first
+    if kw_lower in SYNONYM_MAP:
+        for syn in SYNONYM_MAP[kw_lower]:
+            if syn not in terms:
+                terms.append(syn)
+
+    # Check individual words
+    for word in kw_words:
+        if word in SYNONYM_MAP:
+            for syn in SYNONYM_MAP[word]:
+                if syn not in terms:
+                    terms.append(syn)
+
+    # Check 2-word combinations (e.g. "tattoo artist")
+    for i in range(len(kw_words) - 1):
+        phrase = f"{kw_words[i]} {kw_words[i+1]}"
+        if phrase in SYNONYM_MAP:
+            for syn in SYNONYM_MAP[phrase]:
+                if syn not in terms:
+                    terms.append(syn)
+
+    return terms
 
 
 # ---------------------------------------------------------------------------

@@ -298,11 +298,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         kw, parsed.keyword, parsed.location,
                     )
 
+            # v3.5.1: Build expanded_terms_map for OR-based DB queries
+            expanded_terms_map: dict[str, list[str]] = {}
+            for pk in parsed_keywords:
+                if pk.expanded_terms:
+                    expanded_terms_map[pk.keyword] = pk.expanded_terms
+
             db_leads = await search_database_hybrid(
                 keywords=cleaned_keywords,
                 platforms=config.platforms,
                 location=location_hint,
                 max_results_per_keyword=db_max_results,
+                expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
             )
             all_leads.extend(db_leads)
             await _update_progress(
@@ -366,10 +373,12 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 try:
                     for kw_parsed in parsed_keywords:
                         search_query = kw_parsed.keyword
-                        if kw_parsed.location:
-                            search_query = f"{kw_parsed.keyword} {kw_parsed.location}"
+                        loc = kw_parsed.location or location_hint
+                        if loc:
+                            search_query = f"{kw_parsed.keyword} {loc}"
                         live_leads = await loop.run_in_executor(
-                            None, live_scrape_platform, platform, search_query, 20,
+                            None, live_scrape_platform, platform,
+                            search_query, loc, 20,
                         )
                         all_leads.extend(live_leads)
                 except Exception as e:
