@@ -49,6 +49,25 @@ from app.services.license_service import (
     validate_key_format,
     get_expiry_date,
 )
+# v3.5.0 LIVE scraping imports
+from app.services.keyword_parser import parse_keyword
+from app.services.live_scrapers import live_scrape_platform
+from app.services.quality_scorer import score_lead_quality, batch_score_leads
+from app.services.features import (
+    find_emails_by_domain,
+    scrape_directories as scrape_directories_v2,
+    scrape_job_boards,
+    enrich_lead,
+    check_citations,
+    detect_gbp,
+    check_smtp,
+    check_smtp_batch,
+    clean_lead,
+    clean_leads_batch,
+    export_leads_csv,
+    export_leads_vcard,
+    export_leads_pdf,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -261,38 +280,23 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 "Searching 89M+ leads database...", "database", *_count_leads(),
             )
 
-            # Extract location from keywords and clean keywords for search
-            # Handles: "Startups in India", "Cafes near Delhi",
-            #          "Tech companies around Bangalore", "Shops by Mumbai"
-            import re as _re
-
-            _LOCATION_PATTERNS = [
-                # "X in Y", "X near Y", "X around Y", "X from Y", "X by Y"
-                _re.compile(
-                    r'^(.+?)\s+(?:in|near|around|from|by|at)\s+(.+)$',
-                    _re.IGNORECASE,
-                ),
-            ]
-
+            # v3.5.0: Use smart KeywordParser with Hinglish support
+            # Handles: "Startups in India", "daktar dilli mein",
+            #          "restaurants mere samne", "cafes near Bangalore"
             location_hint = ""
             cleaned_keywords: list[str] = []
+            parsed_keywords = []
             for kw in config.keywords:
-                matched = False
-                for pat in _LOCATION_PATTERNS:
-                    m = pat.match(kw.strip())
-                    if m:
-                        business_part = m.group(1).strip()
-                        loc_part = m.group(2).strip()
-                        # Avoid false positives: location must be >= 2 chars
-                        if len(loc_part) >= 2:
-                            if not location_hint:
-                                location_hint = loc_part.lower()
-                            cleaned_kw = business_part if business_part else kw
-                            cleaned_keywords.append(cleaned_kw)
-                            matched = True
-                            break
-                if not matched:
-                    cleaned_keywords.append(kw)
+                parsed = parse_keyword(kw)
+                parsed_keywords.append(parsed)
+                cleaned_keywords.append(parsed.keyword)
+                if parsed.location and not location_hint:
+                    location_hint = parsed.location.lower()
+                if parsed.is_hinglish:
+                    logger.info(
+                        "Hinglish detected: '%s' -> keyword='%s', location='%s'",
+                        kw, parsed.keyword, parsed.location,
+                    )
 
             db_leads = await search_database_hybrid(
                 keywords=cleaned_keywords,
@@ -347,6 +351,33 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             current_step += 1
             await _update_progress(session_id, _calc_progress(),
                 f"Reddit done — {_count_leads()[0]} leads so far", "reddit", *_count_leads())
+
+        # ── v3.5.0: LIVE scraping for all platforms ──────────────────────
+        # Uses curl_cffi anti-detection + search engine dorking + page visiting
+        # Replaces Selenium/Patchright — 100% ban-free, no browser automation
+        live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
+        if live_platforms:
+            import asyncio as _aio_live
+            loop = _aio_live.get_event_loop()
+            for idx, platform in enumerate(live_platforms):
+                await _update_progress(session_id, _calc_progress(),
+                    f"Live scraping: {platform} ({idx+1}/{len(live_platforms)})...",
+                    platform, *_count_leads())
+                try:
+                    for kw_parsed in parsed_keywords:
+                        search_query = kw_parsed.keyword
+                        if kw_parsed.location:
+                            search_query = f"{kw_parsed.keyword} {kw_parsed.location}"
+                        live_leads = await loop.run_in_executor(
+                            None, live_scrape_platform, platform, search_query, 20,
+                        )
+                        all_leads.extend(live_leads)
+                except Exception as e:
+                    logger.warning("Live scraping %s failed: %s", platform, e)
+                await _update_progress(session_id, _calc_progress(),
+                    f"Live scraping: {platform} done — {_count_leads()[0]} leads",
+                    platform, *_count_leads())
+            current_step += 1
 
         # ── Google Dorking for non-Reddit platforms ───────────────────────
         if config.use_google_dorking and non_reddit_platforms:

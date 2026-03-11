@@ -26,8 +26,12 @@ import time
 from typing import Optional
 from urllib.parse import unquote, urlparse, parse_qs
 
-import httpx
+try:
+    import httpx
+except ImportError:
+    httpx = None  # type: ignore[assignment]
 
+from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
 
 logger = logging.getLogger(__name__)
@@ -129,14 +133,9 @@ def _strip_tags(text: str) -> str:
     return re.sub(r"\s+", " ", cleaned).strip()
 
 
-def _make_client(timeout: float = 15.0) -> httpx.Client:
-    """Create a configured httpx sync client."""
-    return httpx.Client(
-        follow_redirects=True,
-        timeout=timeout,
-        headers=_get_headers(),
-        limits=httpx.Limits(max_connections=10),
-    )
+def _make_client(timeout: float = 15.0) -> AdSession:
+    """Create an anti-detection HTTP session (curl_cffi with httpx fallback)."""
+    return AdSession(timeout=timeout, rate_limit=False)
 
 
 # ===========================================================================
@@ -153,6 +152,7 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
             resp = client.get(
                 "https://search.brave.com/search",
                 params={"q": query, "source": "web"},
+                timeout=15.0,
             )
         if resp.status_code != 200:
             health.record_failure()
@@ -232,6 +232,7 @@ def search_startpage(query: str, num_results: int = 10) -> list[dict]:
             resp = client.post(
                 "https://www.startpage.com/do/search",
                 data={"query": query, "cat": "web", "language": "english"},
+                timeout=15.0,
             )
         if resp.status_code != 200:
             health.record_failure()
@@ -305,6 +306,7 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
             resp = client.post(
                 "https://lite.duckduckgo.com/lite/",
                 data={"q": ddg_query},
+                timeout=15.0,
             )
         if resp.status_code not in (200, 202):
             health.record_failure()
@@ -364,6 +366,7 @@ def search_mojeek(query: str, num_results: int = 10) -> list[dict]:
             resp = client.get(
                 "https://www.mojeek.com/search",
                 params={"q": query, "fmt": "html"},
+                timeout=15.0,
             )
         if resp.status_code != 200:
             health.record_failure()
@@ -408,6 +411,7 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
             resp = client.get(
                 "https://lite.qwant.com/",
                 params={"q": query, "t": "web"},
+                timeout=15.0,
             )
         if resp.status_code != 200:
             health.record_failure()
@@ -479,6 +483,7 @@ def search_searxng(query: str, num_results: int = 10) -> list[dict]:
                     params={
                         "q": query, "format": "json", "categories": "general",
                     },
+                    timeout=12.0,
                 )
             if resp.status_code != 200:
                 continue
@@ -525,6 +530,7 @@ def search_bing(
                 "https://api.bing.microsoft.com/v7.0/search",
                 params={"q": query, "count": min(num_results, 50)},
                 headers={"Ocp-Apim-Subscription-Key": api_key},
+                timeout=15.0,
             )
         if resp.status_code == 200:
             data = resp.json()
@@ -560,6 +566,7 @@ def search_brave_api(
                     "X-Subscription-Token": api_key,
                     "Accept": "application/json",
                 },
+                timeout=15.0,
             )
         if resp.status_code == 200:
             data = resp.json()
@@ -629,8 +636,8 @@ def scrape_page_emails(
 
     for url in filtered_urls[:max_urls]:
         try:
-            with _make_client(timeout=10.0) as client:
-                resp = client.get(url)
+            with AdSession(timeout=10.0, rate_limit=True, min_delay=2.0) as client:
+                resp = client.get(url, timeout=10.0)
 
             if resp.status_code != 200:
                 continue
