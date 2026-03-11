@@ -17,7 +17,6 @@ All free methods: Zero API keys | Zero browser automation | 100% ban-free.
 Works in PyInstaller bundle on Windows/macOS/Linux.
 """
 
-import hashlib
 import html as _html_mod
 import logging
 import random
@@ -101,13 +100,20 @@ class _EngineHealth:
         elif self.consecutive_failures >= 2:
             self.cooldown_until = time.time() + 300
 
-    @property
-    def is_available(self) -> bool:
+    def try_reset(self) -> bool:
+        """Attempt to reset cooldown if expired. Returns True if available."""
         if self.consecutive_failures >= 2:
             if time.time() > self.cooldown_until:
                 self.consecutive_failures = 0
                 return True
             return False
+        return True
+
+    @property
+    def is_available(self) -> bool:
+        """Check availability without side effects (read-only)."""
+        if self.consecutive_failures >= 2:
+            return time.time() > self.cooldown_until
         return True
 
 
@@ -634,39 +640,39 @@ def scrape_page_emails(
         except Exception:
             continue
 
-    for url in filtered_urls[:max_urls]:
-        try:
-            with AdSession(timeout=10.0, rate_limit=True, min_delay=2.0) as client:
+    with AdSession(timeout=10.0, rate_limit=True, min_delay=2.0) as client:
+        for url in filtered_urls[:max_urls]:
+            try:
                 resp = client.get(url, timeout=10.0)
 
-            if resp.status_code != 200:
+                if resp.status_code != 200:
+                    continue
+
+                content_type = resp.headers.get("content-type", "")
+                if "text/html" not in content_type and "text/plain" not in content_type:
+                    continue
+
+                text = resp.text[:200_000]
+                page_text = _strip_tags(text)
+
+                emails = extract_emails(page_text)
+                phones = extract_phones(page_text)
+
+                if emails or phones:
+                    all_emails.extend(emails)
+                    all_phones.extend(phones)
+                    urls_visited.append(url)
+                    logger.info(
+                        "Page scrape %s: %d emails, %d phones",
+                        url[:80], len(emails), len(phones),
+                    )
+
+                if delay > 0:
+                    time.sleep(delay + random.uniform(0, 1))
+
+            except Exception as exc:
+                logger.debug("Page scrape error for %s: %s", url[:80], exc)
                 continue
-
-            content_type = resp.headers.get("content-type", "")
-            if "text/html" not in content_type and "text/plain" not in content_type:
-                continue
-
-            text = resp.text[:200_000]
-            page_text = _strip_tags(text)
-
-            emails = extract_emails(page_text)
-            phones = extract_phones(page_text)
-
-            if emails or phones:
-                all_emails.extend(emails)
-                all_phones.extend(phones)
-                urls_visited.append(url)
-                logger.info(
-                    "Page scrape %s: %d emails, %d phones",
-                    url[:80], len(emails), len(phones),
-                )
-
-            if delay > 0:
-                time.sleep(delay + random.uniform(0, 1))
-
-        except Exception as exc:
-            logger.debug("Page scrape error for %s: %s", url[:80], exc)
-            continue
 
     return {
         "emails": all_emails,
@@ -706,7 +712,7 @@ def free_search_waterfall(
             break
 
         health = _health(engine_name)
-        if not health.is_available:
+        if not health.try_reset():
             continue
 
         try:
@@ -716,11 +722,9 @@ def free_search_waterfall(
             if results:
                 engines_used.append(engine_name)
                 for r in results:
-                    url_hash = hashlib.md5(
-                        r.get("link", "").rstrip("/").lower().encode()
-                    ).hexdigest()
-                    if url_hash not in seen_urls:
-                        seen_urls.add(url_hash)
+                    url_key = r.get("link", "").rstrip("/").lower()
+                    if url_key not in seen_urls:
+                        seen_urls.add(url_key)
                         all_results.append(r)
 
                 if len(all_results) >= num_results:

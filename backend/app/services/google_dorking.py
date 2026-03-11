@@ -23,8 +23,12 @@ import os
 import re
 import asyncio
 import logging
-import requests
 from typing import Optional
+
+try:
+    import httpx as _httpx
+except ImportError:
+    _httpx = None  # type: ignore[assignment]
 
 from app.services.extractor import extract_emails, extract_phones
 
@@ -264,14 +268,17 @@ def _search_serper_with_key(query: str, num_results: int, api_key: str) -> list[
     if not api_key:
         return []
     try:
-        response = requests.post(
+        if _httpx is None:
+            logger.warning("httpx not available for Serper API call")
+            return []
+        response = _httpx.post(
             "https://google.serper.dev/search",
             json={"q": query, "num": num_results},
             headers={
                 "X-API-KEY": api_key,
                 "Content-Type": "application/json",
             },
-            timeout=15,
+            timeout=15.0,
         )
         if response.status_code == 200:
             data = response.json()
@@ -353,7 +360,7 @@ async def dorking_search(
         # Method 1: Serper API (PRIMARY — reliable, no browser dependency)
         api_key = serper_api_key or SERPER_API_KEY
         if api_key:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             results = await loop.run_in_executor(
                 None, _search_serper_with_key, query, num_results, api_key
             )
@@ -373,7 +380,7 @@ async def dorking_search(
         try:
             import functools
             from app.services.multi_engine_search import multi_engine_search
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             _bound = functools.partial(
                 multi_engine_search,
                 query, num_results,
@@ -450,24 +457,40 @@ async def dorking_search_multi(
     use_patchright: bool = True,
     headless: bool = True,
     proxy: Optional[dict] = None,
+    max_total_queries: int = 8,
 ) -> list[dict]:
     """Search multiple keywords across multiple platforms.
 
-    Tries Serper API first (reliable), falls back to Patchright if installed.
+    v3.5.1: Added query budgeting (max_total_queries) and anti-bot delays.
+    Limits total queries to prevent Google rate-limiting / bans.
+    Default: 8 queries per search session (safe limit for free engines).
     """
     all_results = []
+    total_queries = 0
+
     for keyword in keywords:
         for platform in platforms:
             if platform == "reddit":
                 continue  # Reddit uses RSS/PullPush instead
+            if total_queries >= max_total_queries:
+                logger.info(
+                    "Query budget exhausted (%d/%d), stopping dorking",
+                    total_queries, max_total_queries,
+                )
+                return all_results
+
             result = await dorking_search(
                 keyword, platform, pages,
                 serper_api_key=serper_api_key,
                 use_patchright=use_patchright,
                 headless=headless,
                 proxy=proxy,
+                max_queries=min(3, max_total_queries - total_queries),
             )
             all_results.append(result)
-            if delay > 0:
-                await asyncio.sleep(delay)
+            total_queries += len(result.get("queries_used", [1]))
+
+            # v3.5.1: Anti-bot delay (5-10s between platforms)
+            anti_bot_delay = max(delay, 5.0)
+            await asyncio.sleep(anti_bot_delay)
     return all_results

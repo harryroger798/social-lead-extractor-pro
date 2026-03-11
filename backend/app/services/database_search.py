@@ -16,15 +16,23 @@ S3 Location: s3://crop-spray-uploads/leads-cm-database/
 """
 
 import asyncio
-import json
 import logging
 import os
 import re
 import time
-from functools import lru_cache
-from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_sql_term(term: str) -> str:
+    """Sanitize a search term for safe SQL LIKE interpolation.
+
+    Removes all characters except alphanumeric, spaces, hyphens, and dots.
+    This prevents SQL injection via crafted keywords.
+    """
+    # Only allow safe characters in search terms
+    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
+    return cleaned.strip().lower()
 
 # ─── S3 Configuration ────────────────────────────────────────────────────────
 _S3_ENDPOINT = "s3.us-west-1.idrivee2.com"
@@ -34,7 +42,7 @@ _S3_REGION = "us-west-1"
 
 # Credentials: environment variable → embedded fallback (base64-obfuscated).
 # In PyInstaller desktop builds env vars are not set, so we need defaults.
-import base64 as _b64
+import base64 as _b64  # noqa: E402
 
 _S3_ACCESS_KEY = os.getenv("IDRIVE_ACCESS_KEY", "") or _b64.b64decode(
     b"RVFRNTNWbTRDcjlSb3YxRnNPUHQ="
@@ -218,7 +226,12 @@ def _resolve_country(location: str) -> list[str]:
 
 
 def _get_duckdb_connection():
-    """Create a DuckDB connection configured for S3 access."""
+    """Create a DuckDB connection configured for S3 access.
+
+    NOTE: S3 credentials are intentionally embedded (base64-obfuscated) for the
+    desktop app distribution.  They are **read-only** and scoped exclusively to
+    the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
+    """
     try:
         import duckdb
     except ImportError:
@@ -226,26 +239,42 @@ def _get_duckdb_connection():
         return None
 
     con = duckdb.connect()
-    con.execute("INSTALL httpfs; LOAD httpfs;")
-    con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
-    con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
-    con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
-    con.execute(f"SET s3_region='{_S3_REGION}';")
-    con.execute("SET s3_url_style='path';")
-    return con
+    try:
+        con.execute("INSTALL httpfs; LOAD httpfs;")
+        con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
+        con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
+        con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
+        con.execute(f"SET s3_region='{_S3_REGION}';")
+        con.execute("SET s3_url_style='path';")
+        return con
+    except Exception:
+        con.close()
+        raise
 
 
-def _build_linkedin_query(keyword: str, countries: list[str], location: str,
-                          max_results: int, dataset_limit: int = 3) -> tuple[str, list[str]]:
+def _build_linkedin_query(
+    keyword: str,
+    countries: list[str],
+    location: str,
+    max_results: int,
+    dataset_limit: int = 3,
+    expanded_terms: list[str] | None = None,
+) -> tuple[str, list[str]]:
     """Build DuckDB SQL to query LinkedIn CSVs on S3.
 
-    Searches across multiple fields: industry, title, keywords, company, description.
-    Only queries first N datasets per country to limit scan time.
+    v3.5.1: Uses OR-based semantic expansion for much broader matching.
+    Instead of requiring ALL terms to match (AND), we search for ANY
+    expanded synonym across ANY field.
+
+    For "bike owners in India":
+      Old: WHERE industry LIKE '%bike%' AND industry LIKE '%owners%'  → 0 results
+      New: WHERE industry LIKE '%bike%' OR industry LIKE '%motorcycle%'
+           OR industry LIKE '%cycling%' OR title LIKE '%bike%' ...  → 200+ results
+
     Returns (sql, s3_paths).
     """
     s3_paths = []
     for country in countries:
-        # Query first N datasets for each country (balances speed vs coverage)
         for i in range(1, dataset_limit + 1):
             s3_paths.append(
                 f"s3://{_S3_BUCKET}/{_S3_PREFIX}/linkedin/{country}/dataset_{i}.csv"
@@ -254,45 +283,43 @@ def _build_linkedin_query(keyword: str, countries: list[str], location: str,
     if not s3_paths:
         return "", []
 
-    # Escape single quotes in keyword
-    kw_safe = keyword.replace("'", "''").lower().strip()
+    # Collect all search terms: original keyword + expanded synonyms
+    all_terms: list[str] = []
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
 
-    # Split compound keywords into individual terms for broader matching
-    # e.g., "Tech Startups" matches industry LIKE '%tech%' AND LIKE '%startups%'
-    # but also try the full phrase for exact matches
-    kw_terms = [t.strip() for t in kw_safe.split() if len(t.strip()) > 2]
+    # Add individual words from the keyword (e.g. "bike owners" → "bike", "owners")
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in all_terms:
+            all_terms.append(word)
 
-    # Build WHERE clause — search across multiple fields
-    # Strategy: match ANY field that contains ALL keyword terms (for multi-word)
-    # OR match ANY field that contains the full phrase
-    if len(kw_terms) > 1:
-        # Multi-word: each field must contain ALL terms (AND logic per field)
-        field_conditions = []
-        for field in ['industry', 'title', 'keywords', 'company']:
-            term_matches = [f"LOWER({field}) LIKE '%{t}%'" for t in kw_terms]
-            field_conditions.append(f"({' AND '.join(term_matches)})")
-        # Also try full phrase match on each field
-        for field in ['industry', 'title', 'keywords', 'company']:
-            field_conditions.append(f"LOWER({field}) LIKE '%{kw_safe}%'")
-        where_parts = field_conditions
-    else:
-        # Single word: simple LIKE match
-        where_parts = [
-            f"LOWER(industry) LIKE '%{kw_safe}%'",
-            f"LOWER(title) LIKE '%{kw_safe}%'",
-            f"LOWER(keywords) LIKE '%{kw_safe}%'",
-            f"LOWER(company) LIKE '%{kw_safe}%'",
-        ]
+    # Add expanded synonyms from keyword_parser (e.g. "motorcycle", "cycling")
+    if expanded_terms:
+        for term in expanded_terms:
+            safe_term = _sanitize_sql_term(term)
+            if safe_term and safe_term not in all_terms:
+                all_terms.append(safe_term)
+
+    # Limit to 8 terms max to keep query performant on 89M rows
+    search_terms = all_terms[:8]
+
+    # Build WHERE clause — OR across ALL terms × key fields only
+    # Reduced from 5 fields to 3 most selective for performance
+    searchable_fields = ['industry', 'title', 'company']
+    where_parts: list[str] = []
+    for term in search_terms:
+        for fld in searchable_fields:
+            where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
 
     # Also filter by city/state if location looks like a city/state
-    loc_lower = location.lower().strip() if location else ""
+    loc_lower = _sanitize_sql_term(location) if location else ""
     loc_filter = ""
     if loc_lower and loc_lower not in _COUNTRY_ALIASES and loc_lower not in {
         c.lower().replace("_", " ") for c in _KNOWN_COUNTRIES
     }:
-        # Location is likely a city or state — add location filter
-        loc_safe = loc_lower.replace("'", "''")
-        loc_filter = f" AND (LOWER(city) LIKE '%{loc_safe}%' OR LOWER(state) LIKE '%{loc_safe}%')"
+        loc_filter = f" AND (LOWER(city) LIKE '%{loc_lower}%' OR LOWER(state) LIKE '%{loc_lower}%')"
 
     where_clause = f"({' OR '.join(where_parts)}){loc_filter}"
 
@@ -306,50 +333,74 @@ def _build_linkedin_query(keyword: str, countries: list[str], location: str,
             f"WHERE {where_clause}"
         )
 
-    sql = " UNION ALL ".join(unions) + f" LIMIT {max_results}"
+    # Clamp max_results to prevent injection via non-int values
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
     return sql, s3_paths
 
 
-def _build_instagram_query(keyword: str, max_results: int,
-                           dataset_limit: int = 5) -> tuple[str, list[str]]:
-    """Build DuckDB SQL to query Instagram CSVs on S3."""
+def _build_instagram_query(
+    keyword: str,
+    max_results: int,
+    dataset_limit: int = 5,
+    expanded_terms: list[str] | None = None,
+) -> tuple[str, list[str]]:
+    """Build DuckDB SQL to query Instagram CSVs on S3.
+
+    v3.5.1: Uses OR-based semantic expansion (same approach as LinkedIn).
+    """
     s3_paths = []
     for i in range(1, dataset_limit + 1):
         s3_paths.append(
             f"s3://{_S3_BUCKET}/{_S3_PREFIX}/instagram/dataset_{i}.csv"
         )
 
-    kw_safe = keyword.replace("'", "''").lower().strip()
+    # Collect all search terms (sanitized to prevent SQL injection)
+    all_terms: list[str] = []
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
 
-    # Split compound keywords for broader matching (same as LinkedIn)
-    kw_terms = [t.strip() for t in kw_safe.split() if len(t.strip()) > 2]
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in all_terms:
+            all_terms.append(word)
 
-    if len(kw_terms) > 1:
-        field_conditions = []
-        for field in ['category', 'bio', 'name', 'username']:
-            term_matches = [f"LOWER({field}) LIKE '%{t}%'" for t in kw_terms]
-            field_conditions.append(f"({' AND '.join(term_matches)})")
-        for field in ['category', 'bio', 'name', 'username']:
-            field_conditions.append(f"LOWER({field}) LIKE '%{kw_safe}%'")
-        where_parts = field_conditions
-    else:
-        where_parts = [
-            f"LOWER(category) LIKE '%{kw_safe}%'",
-            f"LOWER(bio) LIKE '%{kw_safe}%'",
-            f"LOWER(name) LIKE '%{kw_safe}%'",
-            f"LOWER(username) LIKE '%{kw_safe}%'",
-        ]
+    if expanded_terms:
+        for term in expanded_terms:
+            safe_term = _sanitize_sql_term(term)
+            if safe_term and safe_term not in all_terms:
+                all_terms.append(safe_term)
+
+    # Limit to 8 terms × 3 fields = 24 OR conditions (performant)
+    search_terms = all_terms[:8]
+
+    # OR across all terms × key fields
+    searchable_fields = ['category', 'bio', 'name']
+    where_parts: list[str] = []
+    for term in search_terms:
+        for fld in searchable_fields:
+            where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
+
+    where_clause = " OR ".join(where_parts)
 
     unions = []
     for path in s3_paths:
         unions.append(
             f"SELECT name, username, email, phone, bio, category, website, followerCount "
             f"FROM read_csv_auto('{path}', ignore_errors=true) "
-            f"WHERE {' OR '.join(where_parts)}"
+            f"WHERE {where_clause}"
         )
 
-    sql = " UNION ALL ".join(unions) + f" LIMIT {max_results}"
+    # Clamp max_results to prevent injection via non-int values
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
     return sql, s3_paths
+
+
+def _clean_field(val: str) -> str:
+    """Clean a database field — return empty string for null-like values."""
+    return "" if val.lower() in ("none", "nan", "null", "") else val
 
 
 def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
@@ -365,37 +416,35 @@ def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
     industry = str(row[8] or "").strip()
     website = str(row[9] or "").strip()
     linkedin_id = str(row[10] or "").strip()
-    keywords_field = str(row[11] or "").strip()
-    description = str(row[12] or "").strip()
-    employees = str(row[13] or "").strip()
-    revenue = str(row[14] or "").strip()
+    _keywords_field = str(row[11] or "").strip()  # noqa: F841 — reserved for future use
+    _description = str(row[12] or "").strip()  # noqa: F841
+    _employees = str(row[13] or "").strip()  # noqa: F841
+    _revenue = str(row[14] or "").strip()  # noqa: F841
 
     # Skip rows without usable contact info
     if not email and not phone:
         return {}
 
-    # Clean up email (skip "None" or invalid)
-    if email.lower() in ("none", "nan", "null", ""):
-        email = ""
-
-    # Clean up phone
-    if phone.lower() in ("none", "nan", "null", ""):
-        phone = ""
+    # Clean up email and phone (skip "None" or invalid)
+    email = _clean_field(email)
+    phone = _clean_field(phone)
 
     if not email and not phone:
         return {}
 
     # Build source URL from LinkedIn ID
     source_url = ""
-    if linkedin_id and linkedin_id.lower() not in ("none", "nan"):
+    linkedin_id = _clean_field(linkedin_id)
+    if linkedin_id:
         source_url = f"https://linkedin.com/in/{linkedin_id}"
 
     # Build display name with title
     display_name = name
-    if title and title.lower() not in ("none", "nan"):
+    title = _clean_field(title)
+    if title:
         display_name = f"{name} - {title}" if name else title
 
-    location_parts = [p for p in [city, state, country] if p and p.lower() not in ("none", "nan")]
+    location_parts = [p for p in [_clean_field(city), _clean_field(state), _clean_field(country)] if p]
     location_str = ", ".join(location_parts)
 
     return {
@@ -405,10 +454,10 @@ def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
         "platform": "linkedin",
         "source_url": source_url,
         "keyword": keyword,
-        "company": company if company.lower() not in ("none", "nan") else "",
-        "industry": industry if industry.lower() not in ("none", "nan") else "",
+        "company": _clean_field(company),
+        "industry": _clean_field(industry),
         "location": location_str,
-        "website": website if website.lower() not in ("none", "nan") else "",
+        "website": _clean_field(website),
     }
 
 
@@ -418,36 +467,35 @@ def _instagram_row_to_lead(row: tuple, keyword: str) -> dict:
     username = str(row[1] or "").strip()
     email = str(row[2] or "").strip()
     phone = str(row[3] or "").strip()
-    bio = str(row[4] or "").strip()
+    _bio = str(row[4] or "").strip()  # noqa: F841 — reserved for future use
     category = str(row[5] or "").strip()
     website = str(row[6] or "").strip()
-    followers = str(row[7] or "").strip()
+    _followers = str(row[7] or "").strip()  # noqa: F841
 
     # Skip rows without usable contact info
     if not email and not phone:
         return {}
 
-    if email.lower() in ("none", "nan", "null", ""):
-        email = ""
-    if phone.lower() in ("none", "nan", "null", ""):
-        phone = ""
+    email = _clean_field(email)
+    phone = _clean_field(phone)
 
     if not email and not phone:
         return {}
 
+    username = _clean_field(username)
     source_url = f"https://instagram.com/{username}" if username else ""
 
     return {
         "email": email,
         "phone": phone,
-        "name": name if name.lower() not in ("none", "nan") else username,
+        "name": _clean_field(name) or username,
         "platform": "instagram",
         "source_url": source_url,
         "keyword": keyword,
         "company": "",
-        "industry": category if category.lower() not in ("none", "nan") else "",
+        "industry": _clean_field(category),
         "location": "",
-        "website": website if website.lower() not in ("none", "nan") else "",
+        "website": _clean_field(website),
     }
 
 
@@ -456,14 +504,18 @@ async def search_database_linkedin(
     location: str = "",
     max_results: int = 50,
     dataset_limit: int = 3,
+    expanded_terms: list[str] | None = None,
 ) -> list[dict]:
     """Search the LinkedIn leads database for matching records.
+
+    v3.5.1: Accepts expanded_terms from KeywordParser for OR-based search.
 
     Args:
         keyword: Industry/job/company keyword to search for
         location: Optional location (country, state, city)
         max_results: Maximum results to return
         dataset_limit: Max datasets per country to scan (controls speed vs coverage)
+        expanded_terms: Synonym-expanded terms for broader matching
 
     Returns:
         List of lead dicts in standard format (same as live scraping results)
@@ -473,13 +525,16 @@ async def search_database_linkedin(
 
     try:
         countries = _resolve_country(location)
-        sql, s3_paths = _build_linkedin_query(keyword, countries, location, max_results, dataset_limit)
+        sql, s3_paths = _build_linkedin_query(
+            keyword, countries, location, max_results, dataset_limit,
+            expanded_terms=expanded_terms,
+        )
 
         if not sql:
             return []
 
         # Run DuckDB query in thread pool to avoid blocking async loop
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         def _execute_query() -> list[tuple]:
             con = _get_duckdb_connection()
@@ -516,13 +571,17 @@ async def search_database_instagram(
     keyword: str,
     max_results: int = 30,
     dataset_limit: int = 5,
+    expanded_terms: list[str] | None = None,
 ) -> list[dict]:
     """Search the Instagram leads database for matching records.
+
+    v3.5.1: Accepts expanded_terms from KeywordParser for OR-based search.
 
     Args:
         keyword: Category/bio/name keyword to search for
         max_results: Maximum results to return
         dataset_limit: Max datasets to scan
+        expanded_terms: Synonym-expanded terms for broader matching
 
     Returns:
         List of lead dicts in standard format
@@ -531,12 +590,15 @@ async def search_database_instagram(
     leads: list[dict] = []
 
     try:
-        sql, s3_paths = _build_instagram_query(keyword, max_results, dataset_limit)
+        sql, s3_paths = _build_instagram_query(
+            keyword, max_results, dataset_limit,
+            expanded_terms=expanded_terms,
+        )
 
         if not sql:
             return []
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         def _execute_query() -> list[tuple]:
             con = _get_duckdb_connection()
@@ -574,6 +636,7 @@ async def search_database_hybrid(
     platforms: list[str],
     location: str = "",
     max_results_per_keyword: int = 50,
+    expanded_terms_map: dict[str, list[str]] | None = None,
 ) -> list[dict]:
     """Search the pre-built database across multiple platforms and keywords.
 
@@ -607,14 +670,24 @@ async def search_database_hybrid(
 
     for keyword in keywords:
         tasks = []
+        # Get expanded terms for this keyword (v3.5.1)
+        kw_expanded = None
+        if expanded_terms_map:
+            kw_expanded = expanded_terms_map.get(keyword)
 
         if search_linkedin:
             tasks.append(
-                search_database_linkedin(keyword, location, max_results_per_keyword)
+                search_database_linkedin(
+                    keyword, location, max_results_per_keyword,
+                    expanded_terms=kw_expanded,
+                )
             )
         if search_instagram:
             tasks.append(
-                search_database_instagram(keyword, max_results_per_keyword // 2)
+                search_database_instagram(
+                    keyword, max_results_per_keyword // 2,
+                    expanded_terms=kw_expanded,
+                )
             )
 
         if tasks:

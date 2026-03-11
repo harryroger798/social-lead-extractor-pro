@@ -30,6 +30,7 @@ import json as _json_mod
 import logging
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
@@ -93,7 +94,10 @@ _NITTER_INSTANCES = [
 ]
 
 _nitter_healthy: list[str] = []  # populated lazily
+_nitter_healthy_time: float = 0.0  # R3-6 fix: TTL for cache invalidation
 _nitter_lock = threading.Lock()  # R2-5 fix: thread-safe health check
+
+_NITTER_TTL = 1800.0  # 30 minutes before re-probing
 
 
 def _get_healthy_nitter() -> list[str]:
@@ -101,10 +105,11 @@ def _get_healthy_nitter() -> list[str]:
 
     R2-4 fix: reuse a single session for all probes.
     R2-5 fix: use a lock so only one thread probes at a time.
+    R3-6 fix: invalidate cache after 30 minutes so dead instances recover.
     """
-    global _nitter_healthy  # noqa: PLW0603
+    global _nitter_healthy, _nitter_healthy_time  # noqa: PLW0603
     with _nitter_lock:
-        if _nitter_healthy:
+        if _nitter_healthy and (time.time() - _nitter_healthy_time < _NITTER_TTL):
             return list(_nitter_healthy)
         healthy: list[str] = []
         with AdSession(timeout=5.0, rate_limit=False, retries=0) as probe_session:
@@ -118,6 +123,7 @@ def _get_healthy_nitter() -> list[str]:
                 except Exception:
                     continue
         _nitter_healthy = healthy or _NITTER_INSTANCES[:2]  # fallback
+        _nitter_healthy_time = time.time()
         return list(_nitter_healthy)
 
 
@@ -648,6 +654,91 @@ def scrape_twitter(
 # 7. GOOGLE MAPS — Directory scraping (Yelp + YellowPages + BBB)
 # ===========================================================================
 
+def _query_osm_overpass(
+    query: str,
+    location: str = "",
+    max_results: int = 30,
+) -> list[dict]:
+    """Query OpenStreetMap Overpass API for business listings.
+
+    v3.5.1: OSM Overpass API is free, no API key needed, and returns
+    real business data (name, phone, email, website, address).
+    """
+    leads: list[dict] = []
+    # R4-2 fix: Clamp max_results to prevent Overpass QL injection
+    max_results = max(1, min(int(max_results), 100))
+    # Build Overpass QL query for businesses matching the search term
+    # Search for nodes/ways with name/brand containing the query
+    # Sanitize inputs to prevent Overpass QL injection (R3-3 fix: strict allowlist)
+    import re as _re
+    _ql_safe = _re.compile(r'[^a-zA-Z0-9\s\-\.]')
+
+    area_filter = ""
+    if location:
+        # Use area search for location filtering
+        loc_clean = _ql_safe.sub("", location.strip().title())
+        area_filter = f'area["name"="{loc_clean}"]->.searchArea;'
+        area_ref = "(area.searchArea)"
+    else:
+        area_ref = ""  # Global search (slower but works)
+
+    kw_lower = _ql_safe.sub("", query.lower().strip())
+    overpass_query = f"""
+    [out:json][timeout:25];
+    {area_filter}
+    (
+      node["name"~"{kw_lower}",i]["phone"]{area_ref};
+      node["name"~"{kw_lower}",i]["contact:email"]{area_ref};
+      node["name"~"{kw_lower}",i]["email"]{area_ref};
+      node["name"~"{kw_lower}",i]["website"]{area_ref};
+      way["name"~"{kw_lower}",i]["phone"]{area_ref};
+      way["name"~"{kw_lower}",i]["contact:email"]{area_ref};
+    );
+    out body {max_results};
+    """
+
+    try:
+        with AdSession(timeout=30.0, rate_limit=False, retries=1) as session:
+            resp = session.post(
+                "https://overpass-api.de/api/interpreter",
+                data={"data": overpass_query},
+                timeout=30.0,
+            )
+            if resp.status_code != 200:
+                logger.debug("Overpass API returned %d", resp.status_code)
+                return leads
+
+            data = resp.json()
+            for element in data.get("elements", [])[:max_results]:
+                tags = element.get("tags", {})
+                name = tags.get("name", "")
+                phone = tags.get("phone", "") or tags.get("contact:phone", "")
+                email = tags.get("email", "") or tags.get("contact:email", "")
+                website = tags.get("website", "") or tags.get("contact:website", "")
+                addr_parts = [
+                    tags.get("addr:street", ""),
+                    tags.get("addr:city", ""),
+                    tags.get("addr:state", ""),
+                ]
+                address = ", ".join(p for p in addr_parts if p)
+
+                if name and (phone or email or website):
+                    leads.append({
+                        "name": name,
+                        "phone": phone,
+                        "email": email,
+                        "platform": "google_maps",
+                        "source_url": website,
+                        "location": address or location,
+                        "website": website,
+                    })
+    except Exception as exc:
+        logger.debug("OSM Overpass query failed: %s", exc)
+
+    logger.info("OSM Overpass: %d business leads for '%s'", len(leads), query)
+    return leads
+
+
 def scrape_google_maps_directories(
     query: str,
     location: str = "",
@@ -655,31 +746,34 @@ def scrape_google_maps_directories(
 ) -> list[dict]:
     """Scrape business directories for Google Maps-style local business data.
 
-    Instead of scraping Google Maps directly (heavily protected),
-    we scrape public business directories that have the same data:
-    - YellowPages (structured HTML)
-    - Yelp (business listings)
-    - BBB (Better Business Bureau)
-    - Company websites found via dorking
+    v3.5.1: Added OSM Overpass API as primary source (free, real business data).
+    Waterfall: OSM Overpass -> YellowPages -> Yelp -> Dorking
     """
     leads: list[dict] = []
     search_term = f"{query} {location}".strip() if location else query
 
-    # Method 1: YellowPages scraping
+    # Method 1: OSM Overpass API (free, real structured business data)
+    try:
+        osm_leads = _query_osm_overpass(query, location, max_results=20)
+        leads.extend(osm_leads)
+    except Exception as exc:
+        logger.debug("OSM Overpass failed: %s", exc)
+
+    # Method 2: YellowPages scraping
     try:
         yp_leads = _scrape_yellowpages_http(search_term, max_results=15)
         leads.extend(yp_leads)
     except Exception as exc:
         logger.debug("YellowPages scrape failed: %s", exc)
 
-    # Method 2: Yelp scraping
+    # Method 3: Yelp scraping
     try:
         yelp_leads = _scrape_yelp_http(search_term, location, max_results=15)
         leads.extend(yelp_leads)
     except Exception as exc:
         logger.debug("Yelp scrape failed: %s", exc)
 
-    # Method 3: Dorking for local businesses
+    # Method 4: Dorking for local businesses
     dork_queries = [
         f'"{query}" "{location}" "contact us" email phone' if location else f'"{query}" "contact us" email phone',
         f'"{query}" "{location}" directory listing email' if location else f'"{query}" directory listing email',
@@ -710,7 +804,7 @@ def scrape_google_maps_directories(
     except Exception as exc:
         logger.warning("Google Maps dorking failed: %s", exc)
 
-    logger.info("Google Maps directories: %d leads", len(leads))
+    logger.info("Google Maps total: %d leads (OSM+YP+Yelp+Dorking)", len(leads))
     return _dedup_leads(leads)[:max_results]
 
 
@@ -983,24 +1077,37 @@ def scrape_linkedin(
     NEVER directly access linkedin.com — they block ALL automated access
     and will send cease-and-desist letters. The S3 database contains 89M+
     pre-extracted LinkedIn records.
+
+    v3.5.1: Improved dork queries — URL discovery first (find profile URLs),
+    then extract names from title. Don't require email in snippet.
     """
     leads: list[dict] = []
 
     # Primary: S3 database (handled in main extraction pipeline)
     # This function handles the secondary dorking path
 
-    dork_queries = [
-        f'site:linkedin.com/in "{query}" "@gmail.com" OR "@yahoo.com"',
-        f'site:linkedin.com/in "{query}" "email me at" OR "contact me"',
-        f'site:linkedin.com/in "{query}" "founder" OR "CEO" email',
-    ]
-
+    # v3.5.1: Two-phase dorking:
+    # Phase 1: URL discovery dorks (find LinkedIn profile/company pages)
+    # Phase 2: Email-specific dorks (find pages with exposed emails)
     if location:
         dork_queries = [
+            # Phase 1: URL discovery (broad, finds more profiles)
+            f'site:linkedin.com/in "{query}" "{location}"',
+            f'site:linkedin.com/company "{query}" "{location}"',
+            # Phase 2: Email-specific
             f'site:linkedin.com/in "{query}" "{location}" "@gmail.com" OR "@yahoo.com"',
-            f'site:linkedin.com/in "{query}" "{location}" email OR contact',
+        ]
+    else:
+        dork_queries = [
+            # Phase 1: URL discovery
+            f'site:linkedin.com/in "{query}"',
+            f'site:linkedin.com/company "{query}"',
+            # Phase 2: Email-specific
+            f'site:linkedin.com/in "{query}" "@gmail.com" OR "@yahoo.com"',
+            f'site:linkedin.com/in "{query}" "founder" OR "CEO" email',
         ]
 
+    discovered_urls: list[str] = []
     try:
         for dork in dork_queries[:3]:
             results = free_search_waterfall(dork, num_results=10, min_results=2)
@@ -1012,26 +1119,39 @@ def scrape_linkedin(
                 title = r.get("title", "")
                 name = title.split(" - ")[0].split(" | ")[0].strip() if title else ""
 
-                for email in extract_emails(text):
-                    leads.append({
-                        "email": email, "phone": "",
+                # Always record the profile as a lead (even without email)
+                if "linkedin.com" in link:
+                    lead_entry: dict[str, str] = {
+                        "email": "", "phone": "",
                         "name": name,
                         "platform": "linkedin",
                         "source_url": link,
                         "location": location,
-                    })
-                for phone in extract_phones(text):
-                    leads.append({
-                        "email": "", "phone": phone,
-                        "name": name,
-                        "platform": "linkedin",
-                        "source_url": link,
-                        "location": location,
-                    })
+                    }
+                    # Add email/phone if found in snippet
+                    emails_found = extract_emails(text)
+                    phones_found = extract_phones(text)
+                    if emails_found:
+                        lead_entry["email"] = emails_found[0]
+                    if phones_found:
+                        lead_entry["phone"] = phones_found[0]
+                    leads.append(lead_entry)
+                    discovered_urls.append(link)
+                else:
+                    # Non-LinkedIn URLs: only add if we found contact info
+                    snippet_emails = extract_emails(text)
+                    if snippet_emails:
+                        leads.append({
+                            "email": snippet_emails[0], "phone": "",
+                            "name": name,
+                            "platform": "linkedin",
+                            "source_url": link,
+                            "location": location,
+                        })
     except Exception as exc:
         logger.warning("LinkedIn dorking failed: %s", exc)
 
-    logger.info("LinkedIn live scrape: %d leads", len(leads))
+    logger.info("LinkedIn live scrape: %d leads from %d discovered URLs", len(leads), len(discovered_urls))
     return _dedup_leads(leads)[:max_results]
 
 

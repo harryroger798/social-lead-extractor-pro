@@ -298,11 +298,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         kw, parsed.keyword, parsed.location,
                     )
 
+            # v3.5.1: Build expanded_terms_map for OR-based DB queries
+            expanded_terms_map: dict[str, list[str]] = {}
+            for pk in parsed_keywords:
+                if pk.expanded_terms:
+                    expanded_terms_map[pk.keyword] = pk.expanded_terms
+
             db_leads = await search_database_hybrid(
                 keywords=cleaned_keywords,
                 platforms=config.platforms,
                 location=location_hint,
                 max_results_per_keyword=db_max_results,
+                expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
             )
             all_leads.extend(db_leads)
             await _update_progress(
@@ -358,7 +365,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
         if live_platforms:
             import asyncio as _aio_live
-            loop = _aio_live.get_event_loop()
+            loop = _aio_live.get_running_loop()
             for idx, platform in enumerate(live_platforms):
                 await _update_progress(session_id, _calc_progress(),
                     f"Live scraping: {platform} ({idx+1}/{len(live_platforms)})...",
@@ -366,10 +373,12 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 try:
                     for kw_parsed in parsed_keywords:
                         search_query = kw_parsed.keyword
-                        if kw_parsed.location:
-                            search_query = f"{kw_parsed.keyword} {kw_parsed.location}"
+                        loc = kw_parsed.location or location_hint
+                        if loc:
+                            search_query = f"{kw_parsed.keyword} {loc}"
                         live_leads = await loop.run_in_executor(
-                            None, live_scrape_platform, platform, search_query, 20,
+                            None, live_scrape_platform, platform,
+                            search_query, loc, 20,
                         )
                         all_leads.extend(live_leads)
                 except Exception as e:
@@ -531,7 +540,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 await _update_progress(session_id, _calc_progress(),
                     f"Following {len(bio_link_urls)} bio links...", "bio_links", *_count_leads())
                 import asyncio as _asyncio
-                loop = _asyncio.get_event_loop()
+                loop = _asyncio.get_running_loop()
                 bio_results = await loop.run_in_executor(
                     None, follow_bio_links, bio_link_urls, 20, True
                 )
@@ -718,8 +727,10 @@ async def get_results(
             conditions.append("platform = ?")
             params.append(platform)
         if search:
-            conditions.append("(email LIKE ? OR name LIKE ? OR phone LIKE ?)")
-            params.extend([f"%{search}%"] * 3)
+            # Escape LIKE wildcards to prevent pattern injection
+            safe_search = search.replace("%", "\\%").replace("_", "\\_")
+            conditions.append("(email LIKE ? ESCAPE '\\' OR name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\')")
+            params.extend([f"%{safe_search}%"] * 3)
 
         where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -733,6 +744,8 @@ async def get_results(
         order_col = sort_by if sort_by in allowed_sort_columns else 'extracted_at'
         order_dir = 'ASC' if sort_dir == 'asc' else 'DESC'
 
+        # Clamp page_size to prevent memory exhaustion
+        page_size = max(1, min(page_size, 500))
         # Fetch page
         offset = (page - 1) * page_size
         cursor = await db.execute(
@@ -953,8 +966,8 @@ async def clean_all_results() -> dict:
             )
             category = get_score_label(new_score)
             await db.execute(
-                "UPDATE leads SET quality_score=?, email_type=? WHERE id=?",
-                (new_score, email_type, r[0]),
+                "UPDATE leads SET quality_score=?, email_type=?, lead_score=?, score_category=? WHERE id=?",
+                (new_score, email_type, new_score, category, r[0]),
             )
             stats["leads_rescored"] += 1
 
@@ -2299,7 +2312,7 @@ async def search_directories(
     location: str = "",
     sources: str = "yellowpages,yelp",
     max_results: int = 50,
-    background_tasks: BackgroundTasks = None,
+    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search YellowPages, Yelp, and other business directories."""
     session_id = str(uuid.uuid4())
@@ -2506,7 +2519,7 @@ async def search_job_boards(
     location: str = "",
     sources: str = "indeed,glassdoor",
     max_results: int = 50,
-    background_tasks: BackgroundTasks = None,
+    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search Indeed, Glassdoor, Craigslist, OLX for leads."""
     session_id = str(uuid.uuid4())

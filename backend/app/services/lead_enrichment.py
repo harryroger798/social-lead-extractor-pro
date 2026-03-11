@@ -1,10 +1,10 @@
 """Lead Enrichment Service — Auto-fill missing data from existing leads.
-100% free, no external APIs. Cross-references existing data to fill gaps.
+
+v3.5.1: Enhanced with web-based enrichment from features.enrich_lead().
+Cross-references existing data + visits company websites for missing info.
+100% free, no external APIs.
 """
-import asyncio
 import logging
-import re
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,15 @@ async def enrich_leads_from_database(db_connection) -> dict:
             if company and company.strip():
                 phone_to_data[phone]["company"] = company
 
-    # Step 2: Enrich leads with missing data
+    # Step 2: Import web-based enrichment (v3.5.1)
+    try:
+        from app.services.features import enrich_lead as _web_enrich
+    except ImportError:
+        _web_enrich = None  # type: ignore[assignment]
+
+    # Step 3: Enrich leads with missing data
+    web_enrich_count = 0
+    max_web_enrichments = 20  # Limit web requests to avoid rate limiting
     for r in all_rows:
         lead_id = r[0]
         email = r[1] or ""
@@ -109,7 +117,42 @@ async def enrich_leads_from_database(db_connection) -> dict:
                 updates["website"] = detected_website
                 stats["websites_detected"] += 1
 
-        # Apply updates
+        # v3.5.1: Web-based enrichment for leads still missing data
+        # Uses asyncio.to_thread to avoid blocking the event loop
+        if (
+            _web_enrich is not None
+            and web_enrich_count < max_web_enrichments
+            and email
+            and "@" in email
+            and (not updates.get("company") and not company)
+        ):
+            try:
+                import asyncio as _asyncio
+                web_data = await _asyncio.to_thread(
+                    _web_enrich,
+                    {
+                        "email": email,
+                        "phone": phone or updates.get("phone", ""),
+                        "name": name or updates.get("name", ""),
+                        "company": company,
+                        "location": "",
+                    },
+                )
+                if web_data.get("company") and not (company or updates.get("company")):
+                    updates["company"] = web_data["company"]
+                    stats["companies_detected"] += 1
+                if web_data.get("phone") and not (phone or updates.get("phone")):
+                    updates["phone"] = web_data["phone"]
+                    stats["phones_filled"] += 1
+                if web_data.get("location") and not updates.get("location"):
+                    updates["location"] = web_data["location"]
+                web_enrich_count += 1
+            except Exception:
+                pass  # Web enrichment is best-effort
+
+        # Apply updates — whitelist column names to prevent SQL injection
+        _ALLOWED_COLUMNS = {"name", "phone", "email", "company", "website", "location"}
+        updates = {k: v for k, v in updates.items() if k in _ALLOWED_COLUMNS}
         if updates:
             set_clauses = ", ".join(f"{k} = ?" for k in updates)
             values = list(updates.values()) + [lead_id]
@@ -120,6 +163,7 @@ async def enrich_leads_from_database(db_connection) -> dict:
             stats["total_enriched"] += 1
 
     await db.commit()
+    logger.info("Lead enrichment complete: %s (web enriched: %d)", stats, web_enrich_count)
     return stats
 
 
