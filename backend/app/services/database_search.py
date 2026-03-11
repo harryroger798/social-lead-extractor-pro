@@ -519,7 +519,7 @@ async def search_database_linkedin(
             return []
 
         # Run DuckDB query in thread pool to avoid blocking async loop
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         def _execute_query() -> list[tuple]:
             con = _get_duckdb_connection()
@@ -583,7 +583,7 @@ async def search_database_instagram(
         if not sql:
             return []
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         def _execute_query() -> list[tuple]:
             con = _get_duckdb_connection()
