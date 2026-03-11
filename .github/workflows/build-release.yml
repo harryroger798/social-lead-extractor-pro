@@ -45,7 +45,7 @@ jobs:
         working-directory: backend
         run: |
           pip install pyinstaller
-          pip install "fastapi[standard]" uvicorn psycopg[binary] dnspython "requests[socks]" openpyxl python-multipart aiosqlite pydantic-settings python-dotenv aiohttp-socks patchright openai-whisper selenium webdriver-manager fpdf2
+          pip install "fastapi[standard]" uvicorn psycopg[binary] dnspython "requests[socks]" openpyxl python-multipart aiosqlite pydantic-settings python-dotenv aiohttp-socks patchright openai-whisper selenium webdriver-manager fpdf2 duckdb
 
       - name: Build PyInstaller backend binary
         working-directory: backend
@@ -86,6 +86,8 @@ jobs:
             --hidden-import=app.services.pinterest_rss \
             --hidden-import=app.services.bio_link_follower \
             --hidden-import=app.services.verifier \
+            --hidden-import=app.services.database_search \
+            --hidden-import=duckdb \
             --hidden-import=fpdf --collect-all fpdf2 \
             --collect-all fastapi --collect-all uvicorn \
             --collect-all aiosqlite --collect-all pydantic_settings \
