@@ -22,6 +22,7 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 
 from __future__ import annotations
 
+import asyncio
 import atexit
 import html as _html_mod
 import inspect as _inspect_mod
@@ -1047,8 +1048,6 @@ def scrape_reddit(
     Issue #19 fix: Uses ThreadPoolExecutor instead of asyncio.run()
     to avoid crashing when called from within FastAPI's running event loop.
     """
-    import asyncio
-
     leads: list[dict] = []
     try:
         from app.services.reddit_extractor import reddit_search
