@@ -118,6 +118,7 @@ async def enrich_leads_from_database(db_connection) -> dict:
                 stats["websites_detected"] += 1
 
         # v3.5.1: Web-based enrichment for leads still missing data
+        # Uses asyncio.to_thread to avoid blocking the event loop
         if (
             _web_enrich is not None
             and web_enrich_count < max_web_enrichments
@@ -126,13 +127,17 @@ async def enrich_leads_from_database(db_connection) -> dict:
             and (not updates.get("company") and not company)
         ):
             try:
-                web_data = _web_enrich({
-                    "email": email,
-                    "phone": phone or updates.get("phone", ""),
-                    "name": name or updates.get("name", ""),
-                    "company": company,
-                    "location": "",
-                })
+                import asyncio as _asyncio
+                web_data = await _asyncio.to_thread(
+                    _web_enrich,
+                    {
+                        "email": email,
+                        "phone": phone or updates.get("phone", ""),
+                        "name": name or updates.get("name", ""),
+                        "company": company,
+                        "location": "",
+                    },
+                )
                 if web_data.get("company") and not (company or updates.get("company")):
                     updates["company"] = web_data["company"]
                     stats["companies_detected"] += 1

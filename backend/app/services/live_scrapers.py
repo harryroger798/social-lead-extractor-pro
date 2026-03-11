@@ -661,16 +661,20 @@ def _query_osm_overpass(
     leads: list[dict] = []
     # Build Overpass QL query for businesses matching the search term
     # Search for nodes/ways with name/brand containing the query
+    # Sanitize inputs to prevent Overpass QL injection
+    import re as _re
+    _ql_unsafe = _re.compile(r'["\\\]\[;{}()\n\r]')
+
     area_filter = ""
     if location:
         # Use area search for location filtering
-        loc_clean = location.strip().title()
+        loc_clean = _ql_unsafe.sub("", location.strip().title())
         area_filter = f'area["name"="{loc_clean}"]->.searchArea;'
         area_ref = "(area.searchArea)"
     else:
         area_ref = ""  # Global search (slower but works)
 
-    kw_lower = query.lower().strip()
+    kw_lower = _ql_unsafe.sub("", query.lower().strip())
     overpass_query = f"""
     [out:json][timeout:25];
     {area_filter}
@@ -1125,16 +1129,17 @@ def scrape_linkedin(
                         lead_entry["phone"] = phones_found[0]
                     leads.append(lead_entry)
                     discovered_urls.append(link)
-
-                # Also capture non-LinkedIn URLs with emails
-                for email in extract_emails(text):
-                    leads.append({
-                        "email": email, "phone": "",
-                        "name": name,
-                        "platform": "linkedin",
-                        "source_url": link,
-                        "location": location,
-                    })
+                else:
+                    # Non-LinkedIn URLs: only add if we found contact info
+                    snippet_emails = extract_emails(text)
+                    if snippet_emails:
+                        leads.append({
+                            "email": snippet_emails[0], "phone": "",
+                            "name": name,
+                            "platform": "linkedin",
+                            "source_url": link,
+                            "location": location,
+                        })
     except Exception as exc:
         logger.warning("LinkedIn dorking failed: %s", exc)
 

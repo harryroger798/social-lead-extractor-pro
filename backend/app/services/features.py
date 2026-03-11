@@ -451,14 +451,16 @@ def scrape_job_boards(
                     company = title.split(" Reviews")[0].split(" | ")[0].strip() if title else ""
 
                     emails_found = extract_emails(text)
-                    leads.append({
-                        "email": emails_found[0] if emails_found else "",
-                        "phone": "",
-                        "name": company,
-                        "platform": "job_boards",
-                        "source_url": link,
-                        "location": location,
-                    })
+                    # Only add lead if we found contact info (avoid empty leads)
+                    if emails_found:
+                        leads.append({
+                            "email": emails_found[0],
+                            "phone": "",
+                            "name": company,
+                            "platform": "job_boards",
+                            "source_url": link,
+                            "location": location,
+                        })
         except Exception as exc:
             logger.debug("Glassdoor dorking error: %s", exc)
 

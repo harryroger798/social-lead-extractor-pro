@@ -18,9 +18,21 @@ S3 Location: s3://crop-spray-uploads/leads-cm-database/
 import asyncio
 import logging
 import os
+import re
 import time
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_sql_term(term: str) -> str:
+    """Sanitize a search term for safe SQL LIKE interpolation.
+
+    Removes all characters except alphanumeric, spaces, hyphens, and dots.
+    This prevents SQL injection via crafted keywords.
+    """
+    # Only allow safe characters in search terms
+    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
+    return cleaned.strip().lower()
 
 # ─── S3 Configuration ────────────────────────────────────────────────────────
 _S3_ENDPOINT = "s3.us-west-1.idrivee2.com"
@@ -264,8 +276,9 @@ def _build_linkedin_query(
 
     # Collect all search terms: original keyword + expanded synonyms
     all_terms: list[str] = []
-    kw_safe = keyword.replace("'", "''").lower().strip()
-    all_terms.append(kw_safe)
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
 
     # Add individual words from the keyword (e.g. "bike owners" → "bike", "owners")
     for word in kw_safe.split():
@@ -276,29 +289,28 @@ def _build_linkedin_query(
     # Add expanded synonyms from keyword_parser (e.g. "motorcycle", "cycling")
     if expanded_terms:
         for term in expanded_terms:
-            safe_term = term.replace("'", "''").lower().strip()
+            safe_term = _sanitize_sql_term(term)
             if safe_term and safe_term not in all_terms:
                 all_terms.append(safe_term)
 
-    # Limit to 15 terms max to keep query size reasonable
-    search_terms = all_terms[:15]
+    # Limit to 8 terms max to keep query performant on 89M rows
+    search_terms = all_terms[:8]
 
-    # Build WHERE clause — OR across ALL terms × ALL fields
-    # This is the key fix: any term matching any field = result
-    searchable_fields = ['industry', 'title', 'keywords', 'company', 'description']
+    # Build WHERE clause — OR across ALL terms × key fields only
+    # Reduced from 5 fields to 3 most selective for performance
+    searchable_fields = ['industry', 'title', 'company']
     where_parts: list[str] = []
     for term in search_terms:
         for fld in searchable_fields:
             where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
 
     # Also filter by city/state if location looks like a city/state
-    loc_lower = location.lower().strip() if location else ""
+    loc_lower = _sanitize_sql_term(location) if location else ""
     loc_filter = ""
     if loc_lower and loc_lower not in _COUNTRY_ALIASES and loc_lower not in {
         c.lower().replace("_", " ") for c in _KNOWN_COUNTRIES
     }:
-        loc_safe = loc_lower.replace("'", "''")
-        loc_filter = f" AND (LOWER(city) LIKE '%{loc_safe}%' OR LOWER(state) LIKE '%{loc_safe}%')"
+        loc_filter = f" AND (LOWER(city) LIKE '%{loc_lower}%' OR LOWER(state) LIKE '%{loc_lower}%')"
 
     where_clause = f"({' OR '.join(where_parts)}){loc_filter}"
 
@@ -332,10 +344,11 @@ def _build_instagram_query(
             f"s3://{_S3_BUCKET}/{_S3_PREFIX}/instagram/dataset_{i}.csv"
         )
 
-    # Collect all search terms
+    # Collect all search terms (sanitized to prevent SQL injection)
     all_terms: list[str] = []
-    kw_safe = keyword.replace("'", "''").lower().strip()
-    all_terms.append(kw_safe)
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
 
     for word in kw_safe.split():
         word = word.strip()
@@ -344,14 +357,15 @@ def _build_instagram_query(
 
     if expanded_terms:
         for term in expanded_terms:
-            safe_term = term.replace("'", "''").lower().strip()
+            safe_term = _sanitize_sql_term(term)
             if safe_term and safe_term not in all_terms:
                 all_terms.append(safe_term)
 
-    search_terms = all_terms[:15]
+    # Limit to 8 terms × 3 fields = 24 OR conditions (performant)
+    search_terms = all_terms[:8]
 
-    # OR across all terms × all fields
-    searchable_fields = ['category', 'bio', 'name', 'username']
+    # OR across all terms × key fields
+    searchable_fields = ['category', 'bio', 'name']
     where_parts: list[str] = []
     for term in search_terms:
         for fld in searchable_fields:

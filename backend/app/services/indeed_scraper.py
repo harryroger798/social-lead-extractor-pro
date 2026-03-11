@@ -35,7 +35,7 @@ async def scrape_job_boards(
         sources = ["indeed", "glassdoor"]
 
     # Run synchronous scraper in thread pool to avoid blocking event loop
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     leads = await loop.run_in_executor(
         None,
         _scrape_job_boards_sync,
