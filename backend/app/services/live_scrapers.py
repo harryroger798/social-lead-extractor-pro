@@ -27,13 +27,10 @@ import html as _html_mod
 import inspect as _inspect_mod
 import json as _json_mod
 import logging
-import random
 import re
 import threading
-import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional
-from urllib.parse import quote_plus, urlparse
+from urllib.parse import urlparse
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -720,7 +717,7 @@ def _scrape_yellowpages_http(query: str, max_results: int = 15) -> list[dict]:
     """Scrape YellowPages via HTTP (no browser needed)."""
     leads: list[dict] = []
     try:
-        url = f"https://www.yellowpages.com/search"
+        url = "https://www.yellowpages.com/search"
         params = {"search_terms": query, "geo_location_terms": ""}
         with AdSession(timeout=12.0, min_delay=2.0) as session:
             resp = session.get(url, params=params)

@@ -22,9 +22,7 @@ import ipaddress
 import logging
 import re
 import socket
-import time
-from typing import Optional
-from urllib.parse import quote_plus, urlparse
+from urllib.parse import quote_plus
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -310,7 +308,7 @@ def scrape_job_boards(
                             "email": "",
                             "phone": "",
                             "platform": "job_boards",
-                            "source_url": url or f"https://remoteok.com",
+                            "source_url": url or "https://remoteok.com",
                             "location": job_location,
                             "job_title": position,
                         })
