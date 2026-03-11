@@ -1,5 +1,6 @@
 """API routes for SnapLeads."""
 import json
+import logging
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -37,6 +38,7 @@ from app.services.reddit_extractor import reddit_search
 from app.services.proxy_manager import proxy_manager, test_proxy, parse_proxy_line
 from app.services.firecrawl_service import enrich_leads_with_firecrawl, check_firecrawl_credits
 from app.services.export_service import export_leads_bytes
+from app.services.database_search import search_database_hybrid, deduplicate_leads
 # v3.1.0 Enhancement imports
 from app.services.yellowpages_scraper import scrape_yellowpages, scrape_yelp, scrape_directories
 from app.services.fxtwitter_api import extract_twitter_profiles, enrich_twitter_leads_with_fxtwitter
@@ -47,6 +49,8 @@ from app.services.license_service import (
     validate_key_format,
     get_expiry_date,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
 
@@ -206,6 +210,80 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             return len(all_leads), emails, phones
 
         await _update_progress(session_id, 2, "Initializing extraction...", "", 0, 0, 0)
+
+        # ── v3.4.0: Database Hybrid Search (tier-gated limits) ──────────
+        # Query 89M+ pre-extracted leads from S3 database FIRST for instant results.
+        # All tiers get access; limits differ:
+        #   Free    → 10 leads max per search
+        #   Starter → 25 leads max per search
+        #   Pro/Unlimited → 50+ leads (unlimited)
+        db_leads: list[dict] = []
+        try:
+            # Determine tier based on active license
+            db_max_results = 10  # Free tier default
+            tier_label = "free"
+            async with get_db() as db:
+                cursor = await db.execute(
+                    "SELECT key, status FROM licenses WHERE status = 'active' "
+                    "AND current_activations > 0 ORDER BY activated_at DESC LIMIT 1"
+                )
+                active_license = await cursor.fetchone()
+                if active_license:
+                    # Check if it's a lifetime/long license (Pro) vs short (Starter)
+                    cursor2 = await db.execute(
+                        "SELECT expires_at FROM licenses WHERE key = ?",
+                        (active_license[0],),
+                    )
+                    lic_row = await cursor2.fetchone()
+                    if lic_row and lic_row[0]:
+                        try:
+                            exp = datetime.fromisoformat(str(lic_row[0]))
+                            remaining_days = (exp - datetime.now()).days
+                            if remaining_days > 365:
+                                # Pro/Unlimited (lifetime or annual+)
+                                db_max_results = 50
+                                tier_label = "pro"
+                            else:
+                                # Starter (shorter license)
+                                db_max_results = 25
+                                tier_label = "starter"
+                        except (ValueError, TypeError):
+                            db_max_results = 25
+                            tier_label = "starter"
+                    else:
+                        db_max_results = 25
+                        tier_label = "starter"
+
+            logger.info("Database search tier: %s (max %d results/keyword)", tier_label, db_max_results)
+
+            await _update_progress(
+                session_id, 5,
+                "Searching 89M+ leads database...", "database", *_count_leads(),
+            )
+
+            # Extract location from keywords (last keyword often contains location)
+            location_hint = ""
+            for kw in config.keywords:
+                # Simple heuristic: if keyword contains "in" it may have location
+                if " in " in kw.lower():
+                    location_hint = kw.lower().split(" in ", 1)[1].strip()
+                    break
+
+            db_leads = await search_database_hybrid(
+                keywords=config.keywords,
+                platforms=config.platforms,
+                location=location_hint,
+                max_results_per_keyword=db_max_results,
+            )
+            all_leads.extend(db_leads)
+            await _update_progress(
+                session_id, 10,
+                f"Database: {len(db_leads)} instant leads ({tier_label})",
+                "database", *_count_leads(),
+            )
+            logger.info("Database hybrid search returned %d leads (tier=%s)", len(db_leads), tier_label)
+        except Exception as e:
+            logger.warning("Database search failed (non-fatal): %s", e)
 
         # Load proxy pool if proxies are enabled
         if config.use_proxies:
