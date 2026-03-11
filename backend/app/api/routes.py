@@ -262,19 +262,37 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             )
 
             # Extract location from keywords and clean keywords for search
-            # e.g., "Startups in India" → keyword="Startups", location="india"
+            # Handles: "Startups in India", "Cafes near Delhi",
+            #          "Tech companies around Bangalore", "Shops by Mumbai"
+            # Also handles: "India Startups", "New York restaurants"
+            import re as _re
+
+            _LOCATION_PATTERNS = [
+                # "X in Y", "X near Y", "X around Y", "X from Y", "X by Y"
+                _re.compile(
+                    r'^(.+?)\s+(?:in|near|around|from|by|at)\s+(.+)$',
+                    _re.IGNORECASE,
+                ),
+            ]
+
             location_hint = ""
             cleaned_keywords: list[str] = []
             for kw in config.keywords:
-                # Simple heuristic: if keyword contains "in" it may have location
-                if " in " in kw.lower():
-                    parts = kw.split(" in ", 1)  # case-preserving split
-                    if not location_hint:
-                        location_hint = parts[1].strip().lower()
-                    # Use just the business part for searching
-                    cleaned_kw = parts[0].strip()
-                    cleaned_keywords.append(cleaned_kw if cleaned_kw else kw)
-                else:
+                matched = False
+                for pat in _LOCATION_PATTERNS:
+                    m = pat.match(kw.strip())
+                    if m:
+                        business_part = m.group(1).strip()
+                        loc_part = m.group(2).strip()
+                        # Avoid false positives: location must be >= 2 chars
+                        if len(loc_part) >= 2:
+                            if not location_hint:
+                                location_hint = loc_part.lower()
+                            cleaned_kw = business_part if business_part else kw
+                            cleaned_keywords.append(cleaned_kw)
+                            matched = True
+                            break
+                if not matched:
                     cleaned_keywords.append(kw)
 
             db_leads = await search_database_hybrid(

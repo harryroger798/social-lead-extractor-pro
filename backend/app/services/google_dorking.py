@@ -347,29 +347,48 @@ async def dorking_search(
                     if link:
                         all_sources.append(link)
 
-        # Method 2: Multi-engine search (Bing, Brave, DuckDuckGo)
-        has_alt_keys = bing_api_key or brave_api_key or use_duckduckgo
-        if has_alt_keys:
-            try:
-                from app.services.multi_engine_search import multi_engine_search
+        # Method 2: Free multi-engine waterfall (Brave/Startpage/DDG Lite/
+        # Mojeek/Qwant/SearXNG) — always available, no API keys needed.
+        # Also tries Bing/Brave API if keys are provided.
+        try:
+            from app.services.multi_engine_search import (
+                free_search_waterfall,
+                multi_engine_search,
+            )
+            # Run the free waterfall asynchronously (preferred path)
+            free_results = await free_search_waterfall(
+                query, num_results, min_results=5, max_engines=3,
+            )
+            if free_results:
+                if "free_waterfall" not in methods_used:
+                    methods_used.append("free_waterfall")
+                for r in free_results:
+                    text = f"{r.title} {r.snippet}"
+                    all_emails.extend(extract_emails(text))
+                    all_phones.extend(extract_phones(text))
+                    if r.url:
+                        all_sources.append(r.url)
+
+            # Also try API-key engines for additional coverage
+            if bing_api_key or brave_api_key:
+                import functools
                 loop = asyncio.get_event_loop()
-                alt_results = await loop.run_in_executor(
-                    None,
-                    lambda: multi_engine_search(
-                        query, num_results,
-                        bing_api_key=bing_api_key,
-                        brave_api_key=brave_api_key,
-                        use_duckduckgo=use_duckduckgo,
-                    ),
+                _bound = functools.partial(
+                    multi_engine_search,
+                    query, num_results,
+                    bing_api_key=bing_api_key,
+                    brave_api_key=brave_api_key,
+                    use_duckduckgo=False,  # already covered by waterfall
                 )
+                alt_results = await loop.run_in_executor(None, _bound)
                 all_emails.extend(alt_results.get("emails", []))
                 all_phones.extend(alt_results.get("phones", []))
                 all_sources.extend(alt_results.get("sources", []))
                 for eng in alt_results.get("engines_used", []):
                     if eng not in methods_used:
                         methods_used.append(eng)
-            except ImportError:
-                logger.debug("multi_engine_search module not available")
+        except ImportError:
+            logger.debug("multi_engine_search module not available")
 
     # Method 3: Patchright (OPTIONAL — only if nothing found yet)
     if not all_emails and not all_phones and use_patchright:
