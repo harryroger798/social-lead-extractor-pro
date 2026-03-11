@@ -24,6 +24,13 @@ import re
 import socket
 from urllib.parse import quote_plus
 
+try:
+    import dns.resolver as _dns_resolver  # type: ignore[import-untyped]
+    _HAS_DNSPYTHON = True
+except ImportError:
+    _dns_resolver = None  # type: ignore[assignment]
+    _HAS_DNSPYTHON = False
+
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
 from app.services.multi_engine_search import free_search_waterfall
@@ -562,19 +569,18 @@ def check_smtp(email: str) -> dict:
         result["is_role_based"] = True
 
     # MX record lookup
-    try:
-        import dns.resolver
+    if _HAS_DNSPYTHON and _dns_resolver is not None:
         try:
-            mx_records = dns.resolver.resolve(domain, "MX")
+            mx_records = _dns_resolver.resolve(domain, "MX")
             result["has_mx"] = True
             result["mx_records"] = [
                 str(r.exchange).rstrip(".") for r in mx_records
             ]
-        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        except (_dns_resolver.NoAnswer, _dns_resolver.NXDOMAIN):
             result["has_mx"] = False
-        except dns.resolver.NoNameservers:
+        except _dns_resolver.NoNameservers:
             result["has_mx"] = False
-    except ImportError:
+    else:
         # dnspython not available, try socket fallback
         try:
             socket.getaddrinfo(domain, 25)
@@ -670,11 +676,13 @@ def clean_leads_batch(leads: list[dict]) -> list[dict]:
                 continue
             seen_emails.add(email.lower())
 
-        # Dedup by phone
+        # Dedup by phone (R3-9 fix: also dedup when lead has both email AND phone)
         phone = cl.get("phone", "")
-        if phone and not email:
+        if phone:
             digits = re.sub(r'[^\d]', '', phone)
-            if digits in seen_phones:
+            if digits in seen_phones and not email:
+                # Only skip if this lead has NO email — leads with unique
+                # emails but duplicate phones are still valuable
                 continue
             seen_phones.add(digits)
 
@@ -736,6 +744,21 @@ def export_leads_vcard(leads: list[dict]) -> str:
 # 10. PDF EXPORT
 # ===========================================================================
 
+
+def _pdf_safe(text: str) -> str:
+    """Sanitize text for PDF output — replace characters that can't be encoded.
+
+    R3-8 fix: When the Unicode font (DejaVu) is unavailable and we fall back to
+    Helvetica (latin1), non-ASCII characters would raise an encoding error.
+    This strips them gracefully.
+    """
+    try:
+        text.encode("latin-1")
+        return text
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        # Replace non-latin1 chars with '?' so the PDF doesn't crash
+        return text.encode("latin-1", errors="replace").decode("latin-1")
+
 def export_leads_pdf(leads: list[dict], title: str = "SnapLeads Export") -> bytes:
     """Export leads to PDF using fpdf2 (already in dependencies)."""
     try:
@@ -745,12 +768,21 @@ def export_leads_pdf(leads: list[dict], title: str = "SnapLeads Export") -> byte
         return b""
 
     pdf = FPDF()
+    # R3-8 fix: Add a Unicode-capable font for non-ASCII characters.
+    # fpdf2 ships DejaVuSans internally; fall back to Helvetica (latin1) if missing.
+    try:
+        pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
+        pdf.add_font("DejaVu", "B", "DejaVuSans-Bold.ttf", uni=True)
+        _font_family = "DejaVu"
+    except (RuntimeError, OSError):
+        _font_family = "Helvetica"
+
     pdf.add_page()
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(0, 10, title, new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.set_font(_font_family, "B", 16)
+    pdf.cell(0, 10, _pdf_safe(title), new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
 
-    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_font(_font_family, "B", 10)
     # Table header
     col_widths = [40, 55, 35, 25, 35]
     headers = ["Name", "Email", "Phone", "Platform", "Location"]
@@ -758,13 +790,13 @@ def export_leads_pdf(leads: list[dict], title: str = "SnapLeads Export") -> byte
         pdf.cell(col_widths[i], 8, header, border=1, align="C")
     pdf.ln()
 
-    pdf.set_font("Helvetica", "", 8)
+    pdf.set_font(_font_family, "", 8)
     for lead in leads[:500]:  # Limit to 500 for PDF
-        name = (lead.get("name", "") or "")[:25]
-        email = (lead.get("email", "") or "")[:35]
-        phone = (lead.get("phone", "") or "")[:20]
-        platform = (lead.get("platform", "") or "")[:15]
-        location = (lead.get("location", "") or "")[:20]
+        name = _pdf_safe((lead.get("name", "") or "")[:25])
+        email = _pdf_safe((lead.get("email", "") or "")[:35])
+        phone = _pdf_safe((lead.get("phone", "") or "")[:20])
+        platform = _pdf_safe((lead.get("platform", "") or "")[:15])
+        location = _pdf_safe((lead.get("location", "") or "")[:20])
 
         pdf.cell(col_widths[0], 6, name, border=1)
         pdf.cell(col_widths[1], 6, email, border=1)

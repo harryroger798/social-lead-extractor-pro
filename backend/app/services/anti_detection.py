@@ -132,8 +132,13 @@ def _browser_headers(
     ua: str,
     extra: Optional[dict[str, str]] = None,
     accept_lang: Optional[str] = None,
+    impersonate: Optional[str] = None,
 ) -> dict[str, str]:
-    """Generate realistic browser headers with a specific User-Agent."""
+    """Generate realistic browser headers with a specific User-Agent.
+
+    R3-7 fix: Safari does NOT send Sec-Fetch-User header. Only add it
+    for Chrome/Edge profiles to avoid fingerprint inconsistency.
+    """
     headers = {
         "User-Agent": ua,
         "Accept": (
@@ -148,9 +153,12 @@ def _browser_headers(
         "Sec-Fetch-Dest": "document",
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
         "Cache-Control": "max-age=0",
     }
+    # R3-7 fix: Safari doesn't send Sec-Fetch-User; only Chrome/Edge do
+    is_safari = impersonate and "safari" in impersonate.lower()
+    if not is_safari:
+        headers["Sec-Fetch-User"] = "?1"
     if extra:
         headers.update(extra)
     return headers
@@ -243,20 +251,20 @@ class AdSession:
                 self._session = CffiSession(
                     impersonate=self._impersonate,
                     timeout=timeout,
-                    headers=_browser_headers(self._ua),
+                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
                 )
             except TypeError:
                 # Older curl_cffi versions don't accept timeout in constructor
                 self._session = CffiSession(
                     impersonate=self._impersonate,
-                    headers=_browser_headers(self._ua),
+                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
                 )
             self._backend = "curl_cffi"
         elif httpx is not None:
             self._session = httpx.Client(
                 follow_redirects=True,
                 timeout=timeout,
-                headers=_browser_headers(self._ua),
+                headers=_browser_headers(self._ua, impersonate=self._impersonate),
             )
             self._backend = "httpx"
         else:
@@ -291,7 +299,7 @@ class AdSession:
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language)
+        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language, impersonate=self._impersonate)
         effective_timeout = self._timeout if timeout is None else timeout
 
         last_exc: Optional[Exception] = None
@@ -356,7 +364,7 @@ class AdSession:
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language)
+        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language, impersonate=self._impersonate)
         effective_timeout = self._timeout if timeout is None else timeout
 
         last_exc: Optional[Exception] = None

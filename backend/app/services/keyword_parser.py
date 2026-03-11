@@ -403,9 +403,15 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
             # Determine country from city
             country = _resolve_country(resolved)
         else:
-            # Try partial match
-            for alias, canonical in CITY_ALIASES.items():
-                if alias in loc_lower:
+            # R3-10 fix: Use word-boundary matching instead of substring `in`
+            # to avoid false positives like "goa" matching inside "goalpara"
+            # or "us" matching inside "business"
+            for alias, canonical in sorted(
+                CITY_ALIASES.items(), key=lambda x: -len(x[0])
+            ):
+                # Build a word-boundary regex for the alias
+                pattern = r'(?:^|\b)' + re.escape(alias) + r'(?:\b|$)'
+                if re.search(pattern, loc_lower):
                     location = canonical
                     country = _resolve_country(canonical)
                     break
