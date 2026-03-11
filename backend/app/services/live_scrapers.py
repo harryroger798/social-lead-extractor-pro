@@ -30,6 +30,7 @@ import json as _json_mod
 import logging
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
@@ -664,6 +665,8 @@ def _query_osm_overpass(
     real business data (name, phone, email, website, address).
     """
     leads: list[dict] = []
+    # R4-2 fix: Clamp max_results to prevent Overpass QL injection
+    max_results = max(1, min(int(max_results), 100))
     # Build Overpass QL query for businesses matching the search term
     # Search for nodes/ways with name/brand containing the query
     # Sanitize inputs to prevent Overpass QL injection (R3-3 fix: strict allowlist)
