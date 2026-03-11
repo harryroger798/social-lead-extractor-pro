@@ -222,9 +222,19 @@ class AdSession:
         self._session: Any = None
 
         # Pick a paired profile for consistent TLS + UA
+        # R3-1 fix: When custom impersonate is provided, look up the matching UA
+        # to avoid TLS fingerprint / User-Agent mismatch
         profile = _random_profile()
-        self._impersonate = impersonate or profile["impersonate"]
-        self._ua = profile["ua"]
+        if impersonate:
+            matched = next(
+                (p for p in _FINGERPRINT_PROFILES if p["impersonate"] == impersonate),
+                None,
+            )
+            self._impersonate = impersonate
+            self._ua = matched["ua"] if matched else profile["ua"]
+        else:
+            self._impersonate = profile["impersonate"]
+            self._ua = profile["ua"]
         # Fix R2-8: Accept-Language is consistent per session (not randomised per request)
         self._accept_language = random.choice(_ACCEPT_LANGUAGES)
 

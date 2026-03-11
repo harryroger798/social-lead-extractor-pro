@@ -48,19 +48,22 @@ atexit.register(_THREAD_POOL.shutdown, wait=False)
 
 
 def _dedup_leads(leads: list[dict]) -> list[dict]:
-    """Remove duplicate leads by (email, phone, platform) tuple.
+    """Remove duplicate leads by (email, phone, platform, source_url) tuple.
 
     R2-14 fix: Coerce None values to empty string so the empty-check works.
+    R3-3/R3-4 fix: Include source_url in dedup key so informational-only leads
+    (no email/phone) from different sources aren't collapsed into one.
     """
-    seen: set[tuple[str, str, str]] = set()
+    seen: set[tuple[str, str, str, str]] = set()
     unique: list[dict] = []
     for lead in leads:
         key = (
             lead.get("email") or "",
             lead.get("phone") or "",
             lead.get("platform") or "",
+            lead.get("source_url") or "",
         )
-        if key == ("", "", ""):
+        if key == ("", "", "", ""):
             continue  # skip completely empty leads
         if key not in seen:
             seen.add(key)
