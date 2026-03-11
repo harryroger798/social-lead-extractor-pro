@@ -22,12 +22,14 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 
 from __future__ import annotations
 
+import atexit
 import html as _html_mod
 import inspect as _inspect_mod
 import json as _json_mod
 import logging
 import random
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
@@ -40,15 +42,24 @@ from app.services.multi_engine_search import free_search_waterfall
 logger = logging.getLogger(__name__)
 
 # Shared thread-pool for running async code from sync context (Issue #19 fix)
+# R2-10 fix: Register atexit handler so the pool shuts down cleanly on app exit
 _THREAD_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="live-scrape")
+atexit.register(_THREAD_POOL.shutdown, wait=False)
 
 
 def _dedup_leads(leads: list[dict]) -> list[dict]:
-    """Remove duplicate leads by (email, phone, platform) tuple."""
+    """Remove duplicate leads by (email, phone, platform) tuple.
+
+    R2-14 fix: Coerce None values to empty string so the empty-check works.
+    """
     seen: set[tuple[str, str, str]] = set()
     unique: list[dict] = []
     for lead in leads:
-        key = (lead.get("email", ""), lead.get("phone", ""), lead.get("platform", ""))
+        key = (
+            lead.get("email") or "",
+            lead.get("phone") or "",
+            lead.get("platform") or "",
+        )
         if key == ("", "", ""):
             continue  # skip completely empty leads
         if key not in seen:
@@ -81,26 +92,32 @@ _NITTER_INSTANCES = [
 ]
 
 _nitter_healthy: list[str] = []  # populated lazily
+_nitter_lock = threading.Lock()  # R2-5 fix: thread-safe health check
 
 
 def _get_healthy_nitter() -> list[str]:
-    """Return Nitter instances that responded last time, or probe them."""
+    """Return Nitter instances that responded last time, or probe them.
+
+    R2-4 fix: reuse a single session for all probes.
+    R2-5 fix: use a lock so only one thread probes at a time.
+    """
     global _nitter_healthy  # noqa: PLW0603
-    if _nitter_healthy:
-        return _nitter_healthy
-    healthy: list[str] = []
-    for inst in _NITTER_INSTANCES:
-        try:
-            with AdSession(timeout=5.0, rate_limit=False, retries=0) as s:
-                r = s.get(inst, timeout=5.0)
-            if r.status_code < 400:
-                healthy.append(inst)
-                if len(healthy) >= 3:
-                    break
-        except Exception:
-            continue
-    _nitter_healthy = healthy or _NITTER_INSTANCES[:2]  # fallback
-    return _nitter_healthy
+    with _nitter_lock:
+        if _nitter_healthy:
+            return list(_nitter_healthy)
+        healthy: list[str] = []
+        with AdSession(timeout=5.0, rate_limit=False, retries=0) as probe_session:
+            for inst in _NITTER_INSTANCES:
+                try:
+                    r = probe_session.get(inst, timeout=5.0)
+                    if r.status_code < 400:
+                        healthy.append(inst)
+                        if len(healthy) >= 3:
+                            break
+                except Exception:
+                    continue
+        _nitter_healthy = healthy or _NITTER_INSTANCES[:2]  # fallback
+        return list(_nitter_healthy)
 
 
 def scrape_telegram_public(
@@ -202,7 +219,7 @@ def scrape_telegram_public(
             continue
 
     logger.info("Telegram live scrape: %d leads from %d channels", len(leads), len(seen_channels))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -298,7 +315,7 @@ def scrape_whatsapp_links(
             logger.debug("WhatsApp page scrape error: %s", exc)
 
     logger.info("WhatsApp live scrape: %d leads, %d WA numbers", len(leads), len(wa_numbers))
-    return leads[:max_results]
+    return _dedup_leads(leads)[:max_results]
 
 
 # ===========================================================================
@@ -371,7 +388,8 @@ def scrape_youtube_channels(
             channel_name = title_match.group(1) if title_match else ""
 
             # Try to parse ytInitialData for business email
-            yt_match = re.search(r'var\s+ytInitialData\s*=\s*(\{.*?\});', raw)
+            # R2-11 fix: use re.DOTALL and anchor to `;</script>` for robust matching
+            yt_match = re.search(r'var\s+ytInitialData\s*=\s*(\{.+?\});\s*</script>', raw, re.DOTALL)
             if yt_match:
                 try:
                     yt_data = _json_mod.loads(yt_match.group(1))

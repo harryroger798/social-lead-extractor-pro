@@ -149,7 +149,8 @@ HINGLISH_MAP: dict[str, str] = {
 
 HINGLISH_LOCATION_PREPS: dict[str, str] = {
     "mein": "in",
-    "me": "in",
+    # R2-16/R2-20 fix: removed "me": "in" — too ambiguous with English pronoun
+    # ("hire me", "contact me", "near me" etc.). Keep "mein" and "mai" only.
     "mai": "in",
     "main": "in",
     "ke paas": "near",

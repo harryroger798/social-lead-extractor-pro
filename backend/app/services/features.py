@@ -15,6 +15,9 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 
 from __future__ import annotations
 
+import csv
+import html as _html_mod
+import io
 import ipaddress
 import logging
 import re
@@ -34,7 +37,8 @@ def _is_private_ip(hostname: str) -> bool:
     """Check if a hostname resolves to a private/loopback IP (SSRF protection)."""
     try:
         # Resolve hostname to IP
-        addr_infos = socket.getaddrinfo(hostname, 443, proto=socket.IPPROTO_TCP)
+        # R2-12 fix: use port=None for broader DNS coverage (SSRF protection)
+        addr_infos = socket.getaddrinfo(hostname, None, proto=socket.IPPROTO_TCP)
         for family, _, _, _, sockaddr in addr_infos:
             ip_str = sockaddr[0]
             ip = ipaddress.ip_address(ip_str)
@@ -58,7 +62,6 @@ def _vcard_escape(value: str) -> str:
 
 def _strip_tags(text: str) -> str:
     """Remove HTML tags."""
-    import html as _html_mod
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
     cleaned = re.sub(r"<[^>]+>", "", cleaned)
@@ -690,9 +693,6 @@ def clean_leads_batch(leads: list[dict]) -> list[dict]:
 
 def export_leads_csv(leads: list[dict]) -> str:
     """Export leads to CSV string."""
-    import csv
-    import io
-
     output = io.StringIO()
     if not leads:
         return ""
@@ -711,8 +711,12 @@ def export_leads_vcard(leads: list[dict]) -> str:
     vcards: list[str] = []
     for lead in leads:
         name = _vcard_escape(lead.get("name", "") or "Unknown")
-        email = lead.get("email", "")  # emails don't need escaping
-        phone = lead.get("phone", "")  # phones don't need escaping
+        email = lead.get("email", "")
+        phone = lead.get("phone", "")
+
+        # R2-17 fix: validate email format before including in vCard
+        if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            email = ""
 
         vcard = "BEGIN:VCARD\nVERSION:3.0\n"
         vcard += f"FN:{name}\n"

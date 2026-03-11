@@ -131,6 +131,7 @@ def _random_profile() -> dict[str, str]:
 def _browser_headers(
     ua: str,
     extra: Optional[dict[str, str]] = None,
+    accept_lang: Optional[str] = None,
 ) -> dict[str, str]:
     """Generate realistic browser headers with a specific User-Agent."""
     headers = {
@@ -139,7 +140,7 @@ def _browser_headers(
             "text/html,application/xhtml+xml,application/xml;"
             "q=0.9,image/webp,*/*;q=0.8"
         ),
-        "Accept-Language": random.choice(_ACCEPT_LANGUAGES),
+        "Accept-Language": accept_lang or random.choice(_ACCEPT_LANGUAGES),
         "Accept-Encoding": "gzip, deflate, br",
         "DNT": "1",
         "Connection": "keep-alive",
@@ -165,15 +166,20 @@ _DEFAULT_DELAY = 2.0  # seconds between requests to the same domain
 
 
 def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
-    """Sleep if needed to respect per-domain rate limits (thread-safe)."""
-    now = time.time()
+    """Sleep if needed to respect per-domain rate limits (thread-safe).
+
+    Uses atomic check-and-set inside the lock to avoid TOCTOU race conditions.
+    The sleep happens OUTSIDE the lock so other domains aren't blocked.
+    """
     sleep_time = 0.0
     with _domain_lock:
+        now = time.time()
         last = _domain_last_request.get(domain, 0.0)
         elapsed = now - last
         if elapsed < min_delay:
             jitter = random.uniform(0.1, 0.5)
             sleep_time = min_delay - elapsed + jitter
+        # Reserve this time slot so concurrent threads see the updated timestamp
         _domain_last_request[domain] = now + sleep_time
     if sleep_time > 0:
         time.sleep(sleep_time)
@@ -219,6 +225,8 @@ class AdSession:
         profile = _random_profile()
         self._impersonate = impersonate or profile["impersonate"]
         self._ua = profile["ua"]
+        # Fix R2-8: Accept-Language is consistent per session (not randomised per request)
+        self._accept_language = random.choice(_ACCEPT_LANGUAGES)
 
         if _HAS_CURL_CFFI and CffiSession is not None:
             try:
@@ -273,8 +281,8 @@ class AdSession:
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(self._ua, headers)
-        effective_timeout = timeout or self._timeout
+        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language)
+        effective_timeout = self._timeout if timeout is None else timeout
 
         last_exc: Optional[Exception] = None
         for attempt in range(self._retries + 1):
@@ -338,8 +346,8 @@ class AdSession:
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
-        merged_headers = _browser_headers(self._ua, headers)
-        effective_timeout = timeout or self._timeout
+        merged_headers = _browser_headers(self._ua, headers, accept_lang=self._accept_language)
+        effective_timeout = self._timeout if timeout is None else timeout
 
         last_exc: Optional[Exception] = None
         for attempt in range(self._retries + 1):
