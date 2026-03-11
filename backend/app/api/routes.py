@@ -261,16 +261,24 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 "Searching 89M+ leads database...", "database", *_count_leads(),
             )
 
-            # Extract location from keywords (last keyword often contains location)
+            # Extract location from keywords and clean keywords for search
+            # e.g., "Startups in India" → keyword="Startups", location="india"
             location_hint = ""
+            cleaned_keywords: list[str] = []
             for kw in config.keywords:
                 # Simple heuristic: if keyword contains "in" it may have location
                 if " in " in kw.lower():
-                    location_hint = kw.lower().split(" in ", 1)[1].strip()
-                    break
+                    parts = kw.split(" in ", 1)  # case-preserving split
+                    if not location_hint:
+                        location_hint = parts[1].strip().lower()
+                    # Use just the business part for searching
+                    cleaned_kw = parts[0].strip()
+                    cleaned_keywords.append(cleaned_kw if cleaned_kw else kw)
+                else:
+                    cleaned_keywords.append(kw)
 
             db_leads = await search_database_hybrid(
-                keywords=config.keywords,
+                keywords=cleaned_keywords,
                 platforms=config.platforms,
                 location=location_hint,
                 max_results_per_keyword=db_max_results,

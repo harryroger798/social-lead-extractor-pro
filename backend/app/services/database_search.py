@@ -248,15 +248,34 @@ def _build_linkedin_query(keyword: str, countries: list[str], location: str,
         return "", []
 
     # Escape single quotes in keyword
-    kw_safe = keyword.replace("'", "''").lower()
+    kw_safe = keyword.replace("'", "''").lower().strip()
+
+    # Split compound keywords into individual terms for broader matching
+    # e.g., "Tech Startups" matches industry LIKE '%tech%' AND LIKE '%startups%'
+    # but also try the full phrase for exact matches
+    kw_terms = [t.strip() for t in kw_safe.split() if len(t.strip()) > 2]
 
     # Build WHERE clause — search across multiple fields
-    where_parts = [
-        f"LOWER(industry) LIKE '%{kw_safe}%'",
-        f"LOWER(title) LIKE '%{kw_safe}%'",
-        f"LOWER(keywords) LIKE '%{kw_safe}%'",
-        f"LOWER(company) LIKE '%{kw_safe}%'",
-    ]
+    # Strategy: match ANY field that contains ALL keyword terms (for multi-word)
+    # OR match ANY field that contains the full phrase
+    if len(kw_terms) > 1:
+        # Multi-word: each field must contain ALL terms (AND logic per field)
+        field_conditions = []
+        for field in ['industry', 'title', 'keywords', 'company']:
+            term_matches = [f"LOWER({field}) LIKE '%{t}%'" for t in kw_terms]
+            field_conditions.append(f"({' AND '.join(term_matches)})")
+        # Also try full phrase match on each field
+        for field in ['industry', 'title', 'keywords', 'company']:
+            field_conditions.append(f"LOWER({field}) LIKE '%{kw_safe}%'")
+        where_parts = field_conditions
+    else:
+        # Single word: simple LIKE match
+        where_parts = [
+            f"LOWER(industry) LIKE '%{kw_safe}%'",
+            f"LOWER(title) LIKE '%{kw_safe}%'",
+            f"LOWER(keywords) LIKE '%{kw_safe}%'",
+            f"LOWER(company) LIKE '%{kw_safe}%'",
+        ]
 
     # Also filter by city/state if location looks like a city/state
     loc_lower = location.lower().strip() if location else ""
@@ -293,14 +312,26 @@ def _build_instagram_query(keyword: str, max_results: int,
             f"s3://{_S3_BUCKET}/{_S3_PREFIX}/instagram/dataset_{i}.csv"
         )
 
-    kw_safe = keyword.replace("'", "''").lower()
+    kw_safe = keyword.replace("'", "''").lower().strip()
 
-    where_parts = [
-        f"LOWER(category) LIKE '%{kw_safe}%'",
-        f"LOWER(bio) LIKE '%{kw_safe}%'",
-        f"LOWER(name) LIKE '%{kw_safe}%'",
-        f"LOWER(username) LIKE '%{kw_safe}%'",
-    ]
+    # Split compound keywords for broader matching (same as LinkedIn)
+    kw_terms = [t.strip() for t in kw_safe.split() if len(t.strip()) > 2]
+
+    if len(kw_terms) > 1:
+        field_conditions = []
+        for field in ['category', 'bio', 'name', 'username']:
+            term_matches = [f"LOWER({field}) LIKE '%{t}%'" for t in kw_terms]
+            field_conditions.append(f"({' AND '.join(term_matches)})")
+        for field in ['category', 'bio', 'name', 'username']:
+            field_conditions.append(f"LOWER({field}) LIKE '%{kw_safe}%'")
+        where_parts = field_conditions
+    else:
+        where_parts = [
+            f"LOWER(category) LIKE '%{kw_safe}%'",
+            f"LOWER(bio) LIKE '%{kw_safe}%'",
+            f"LOWER(name) LIKE '%{kw_safe}%'",
+            f"LOWER(username) LIKE '%{kw_safe}%'",
+        ]
 
     unions = []
     for path in s3_paths:
