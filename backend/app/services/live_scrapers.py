@@ -93,7 +93,10 @@ _NITTER_INSTANCES = [
 ]
 
 _nitter_healthy: list[str] = []  # populated lazily
+_nitter_healthy_time: float = 0.0  # R3-6 fix: TTL for cache invalidation
 _nitter_lock = threading.Lock()  # R2-5 fix: thread-safe health check
+
+_NITTER_TTL = 1800.0  # 30 minutes before re-probing
 
 
 def _get_healthy_nitter() -> list[str]:
@@ -101,10 +104,11 @@ def _get_healthy_nitter() -> list[str]:
 
     R2-4 fix: reuse a single session for all probes.
     R2-5 fix: use a lock so only one thread probes at a time.
+    R3-6 fix: invalidate cache after 30 minutes so dead instances recover.
     """
-    global _nitter_healthy  # noqa: PLW0603
+    global _nitter_healthy, _nitter_healthy_time  # noqa: PLW0603
     with _nitter_lock:
-        if _nitter_healthy:
+        if _nitter_healthy and (time.time() - _nitter_healthy_time < _NITTER_TTL):
             return list(_nitter_healthy)
         healthy: list[str] = []
         with AdSession(timeout=5.0, rate_limit=False, retries=0) as probe_session:
@@ -118,6 +122,7 @@ def _get_healthy_nitter() -> list[str]:
                 except Exception:
                     continue
         _nitter_healthy = healthy or _NITTER_INSTANCES[:2]  # fallback
+        _nitter_healthy_time = time.time()
         return list(_nitter_healthy)
 
 
@@ -661,20 +666,20 @@ def _query_osm_overpass(
     leads: list[dict] = []
     # Build Overpass QL query for businesses matching the search term
     # Search for nodes/ways with name/brand containing the query
-    # Sanitize inputs to prevent Overpass QL injection
+    # Sanitize inputs to prevent Overpass QL injection (R3-3 fix: strict allowlist)
     import re as _re
-    _ql_unsafe = _re.compile(r'["\\\]\[;{}()\n\r]')
+    _ql_safe = _re.compile(r'[^a-zA-Z0-9\s\-\.]')
 
     area_filter = ""
     if location:
         # Use area search for location filtering
-        loc_clean = _ql_unsafe.sub("", location.strip().title())
+        loc_clean = _ql_safe.sub("", location.strip().title())
         area_filter = f'area["name"="{loc_clean}"]->.searchArea;'
         area_ref = "(area.searchArea)"
     else:
         area_ref = ""  # Global search (slower but works)
 
-    kw_lower = _ql_unsafe.sub("", query.lower().strip())
+    kw_lower = _ql_safe.sub("", query.lower().strip())
     overpass_query = f"""
     [out:json][timeout:25];
     {area_filter}

@@ -727,8 +727,10 @@ async def get_results(
             conditions.append("platform = ?")
             params.append(platform)
         if search:
-            conditions.append("(email LIKE ? OR name LIKE ? OR phone LIKE ?)")
-            params.extend([f"%{search}%"] * 3)
+            # Escape LIKE wildcards to prevent pattern injection
+            safe_search = search.replace("%", "\\%").replace("_", "\\_")
+            conditions.append("(email LIKE ? ESCAPE '\\' OR name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\')")
+            params.extend([f"%{safe_search}%"] * 3)
 
         where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -742,6 +744,8 @@ async def get_results(
         order_col = sort_by if sort_by in allowed_sort_columns else 'extracted_at'
         order_dir = 'ASC' if sort_dir == 'asc' else 'DESC'
 
+        # Clamp page_size to prevent memory exhaustion
+        page_size = max(1, min(page_size, 500))
         # Fetch page
         offset = (page - 1) * page_size
         cursor = await db.execute(

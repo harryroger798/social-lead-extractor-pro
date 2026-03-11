@@ -959,14 +959,25 @@ def export_leads_pdf(leads: list[dict], title: str = "SnapLeads Export") -> byte
         return b""
 
     pdf = FPDF()
-    # R3-8 fix: Add a Unicode-capable font for non-ASCII characters.
-    # fpdf2 ships DejaVuSans internally; fall back to Helvetica (latin1) if missing.
+    # R3-8 fix: Locate DejaVuSans font reliably in PyInstaller bundles.
+    # Try multiple paths: fpdf2 bundled font dir, system fonts, then fallback.
+    _font_family = "Helvetica"  # safe default (latin1 only)
     try:
-        pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
-        pdf.add_font("DejaVu", "B", "DejaVuSans-Bold.ttf", uni=True)
-        _font_family = "DejaVu"
-    except (RuntimeError, OSError):
-        _font_family = "Helvetica"
+        import importlib.resources as _pkg_res
+        # fpdf2 ≥2.7.5 ships DejaVuSans in its font directory
+        _fpdf_font_dir = str(_pkg_res.files("fpdf").joinpath("font"))
+        import os as _os
+        _djv_path = _os.path.join(_fpdf_font_dir, "DejaVuSans.ttf")
+        _djv_bold = _os.path.join(_fpdf_font_dir, "DejaVuSans-Bold.ttf")
+        if _os.path.isfile(_djv_path):
+            pdf.add_font("DejaVu", "", _djv_path, uni=True)
+            if _os.path.isfile(_djv_bold):
+                pdf.add_font("DejaVu", "B", _djv_bold, uni=True)
+            else:
+                pdf.add_font("DejaVu", "B", _djv_path, uni=True)
+            _font_family = "DejaVu"
+    except Exception:
+        pass  # Helvetica fallback is fine for ASCII leads
 
     pdf.add_page()
     pdf.set_font(_font_family, "B", 16)
