@@ -270,25 +270,32 @@ class AdSession:
         # Fix R2-8: Accept-Language is consistent per session (not randomised per request)
         self._accept_language = random.choice(_ACCEPT_LANGUAGES)
 
+        # R3-3 fix: pass accept_lang to session-level headers so they match
+        # the per-request headers (avoids stale random Accept-Language in session)
+        _init_headers = _browser_headers(
+            self._ua, accept_lang=self._accept_language,
+            impersonate=self._impersonate,
+        )
+
         if _HAS_CURL_CFFI and CffiSession is not None:
             try:
                 self._session = CffiSession(
                     impersonate=self._impersonate,
                     timeout=timeout,
-                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                    headers=_init_headers,
                 )
             except TypeError:
                 # Older curl_cffi versions don't accept timeout in constructor
                 self._session = CffiSession(
                     impersonate=self._impersonate,
-                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                    headers=_init_headers,
                 )
             self._backend = "curl_cffi"
         elif httpx is not None:
             self._session = httpx.Client(
                 follow_redirects=True,
                 timeout=timeout,
-                headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                headers=_init_headers,
             )
             self._backend = "httpx"
         else:

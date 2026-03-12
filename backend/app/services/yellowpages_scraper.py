@@ -8,7 +8,6 @@ Yelp Fusion API support added as optional power-up (free tier: 5K/day).
 import asyncio
 import logging
 import re
-import requests
 from typing import Optional
 
 from app.services.extractor import extract_emails, extract_phones
@@ -62,19 +61,20 @@ async def scrape_yellowpages_direct(
                     html = resp.text
 
                     # Parse each listing card as a unit to avoid field garbling.
-                    # N6 fix: use non-backtracking negated lookahead to prevent
-                    # catastrophic backtracking on large/malformed HTML pages.
-                    card_pattern = re.compile(
-                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>'
-                        r'((?:(?!<div[^>]*class="[^"]*(?:result|info|pagination)"[^>]*>).)*)',
-                        re.DOTALL,
+                    # N6/R3 fix: use re.split on card boundaries then extract
+                    # fields from each chunk — O(n) and backtrack-safe.
+                    _CARD_BOUNDARY = re.compile(
+                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>',
                     )
-                    cards = card_pattern.findall(html)
+                    chunks = _CARD_BOUNDARY.split(html)
+                    # First chunk is before the first card — skip it
+                    cards = chunks[1:] if len(chunks) > 1 else []
 
                     if not cards:
-                        # Fallback: try simpler card boundary
+                        # R3-4 fix: fallback uses <article> open tag (not <div>)
+                        # since YP may use <article class="srp-listing"> for cards
                         cards = re.findall(
-                            r'<div[^>]*class="[^"]*srp-listing[^"]*"[^>]*>(.*?)</article>',
+                            r'<(?:article|div)[^>]*class="[^"]*srp-listing[^"]*"[^>]*>(.*?)(?=<(?:article|div)[^>]*class="[^"]*srp-listing|$)',
                             html, re.DOTALL,
                         )
 
@@ -191,7 +191,11 @@ async def scrape_yelp_fusion(
             }
             headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
             try:
-                resp = requests.get(url, params=params, headers=headers, timeout=15)
+                from app.services.anti_detection import AdSession
+                # R3-1 fix: use AdSession for SSRF protection + retries
+                # rate_limit=False because Yelp handles its own 5K/day quota
+                with AdSession(timeout=15.0, rate_limit=False) as ad_sess:
+                    resp = ad_sess.get(url, params=params, headers=headers)
                 if resp.status_code != 200:
                     logger.debug("Yelp API returned %d", resp.status_code)
                     return []

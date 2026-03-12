@@ -13,8 +13,8 @@ PHONE_PATTERN = re.compile(
 # Patterns that look like phone numbers but aren't (GPS coords, versions, IPs)
 _PHONE_FALSE_POSITIVE = re.compile(
     r'^\-?\d{1,3}\.\d{4,}$'      # GPS coordinates like 72.8777 or -37.7749
-    r'|^\d+\.\d+\.\d+'            # Version numbers / IPs like 3.5.4 or 192.168.1.1
-    r'|^0\.\d+'                     # CSS/decimal values like 0.9
+    r'|^\d+\.\d+\.\d+.*$'         # Version numbers / IPs like 3.5.4 or 192.168.1.1
+    r'|^0\.\d+$'                   # CSS/decimal values like 0.9
 )
 
 # Common false-positive email patterns to filter out
