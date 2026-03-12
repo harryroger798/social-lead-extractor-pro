@@ -116,11 +116,11 @@ export default function TeamDashboard() {
     try {
       const [teamData, activityData, leadsData] = await Promise.all([
         apiFetch<{ team: Team & { members: TeamMember[] } }>(`/api/teams/${teamId}`),
-        apiFetch<{ activity: ActivityItem[] }>(`/api/teams/${teamId}/activity`),
+        apiFetch<{ activities: ActivityItem[] }>(`/api/teams/${teamId}/activity`),
         apiFetch<{ leads: SharedLead[]; total: number }>(`/api/teams/${teamId}/leads?limit=50`),
       ]);
       setSelectedTeam({ ...teamData.team, members: teamData.team.members });
-      setActivity(activityData.activity);
+      setActivity(activityData.activities);
       setSharedLeads(leadsData.leads);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load team details');

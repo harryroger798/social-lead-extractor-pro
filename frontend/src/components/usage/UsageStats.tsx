@@ -6,36 +6,23 @@ import {
 
 const API_URL = 'https://snapleads-api.onrender.com';
 
-interface QuotaInfo {
+/** Backend /api/usage/quotas response shape */
+interface QuotaResponse {
   plan: string;
   quotas: Record<string, number>;
+  today_usage: Record<string, number>;
+}
+
+/** Backend /api/usage/stats response shape */
+interface StatsResponse {
+  plan: string;
+  quotas: Record<string, number>;
+  period_days: number;
+  by_action: Record<string, { count: number; total_leads: number }>;
+  total_leads_extracted: number;
+  daily: Array<{ day: string; action: string; cnt: number }>;
   today: Record<string, number>;
-}
-
-interface UsageByAction {
-  action: string;
-  count: number;
-  total_leads: number;
-}
-
-interface UsageByPlatform {
-  platform: string;
-  count: number;
-  total_leads: number;
-}
-
-interface DailyUsage {
-  date: string;
-  count: number;
-  total_leads: number;
-}
-
-interface UsageStatsData {
-  by_action: UsageByAction[];
-  by_platform: UsageByPlatform[];
-  daily: DailyUsage[];
-  total_leads: number;
-  today_count: number;
+  by_platform: Array<{ platform: string; cnt: number; total_leads: number }>;
 }
 
 function getToken(): string | null {
@@ -63,14 +50,24 @@ const ACTION_ICONS: Record<string, typeof Search> = {
   search: Search,
   export: Download,
   enrichment: Zap,
-  share: Share2,
+  share_lead: Share2,
+  extraction: Search,
 };
 
 const ACTION_COLORS: Record<string, string> = {
   search: 'text-blue-400',
   export: 'text-emerald-400',
   enrichment: 'text-purple-400',
-  share: 'text-amber-400',
+  share_lead: 'text-amber-400',
+  extraction: 'text-blue-400',
+};
+
+const ACTION_LABELS: Record<string, string> = {
+  search: 'Searches',
+  export: 'Exports',
+  enrichment: 'Enrichments',
+  share_lead: 'Shared Leads',
+  extraction: 'Extractions',
 };
 
 function formatQuotaValue(value: number): string {
@@ -113,8 +110,8 @@ function QuotaBar({ label, used, limit, icon: Icon }: { label: string; used: num
 }
 
 export default function UsageStats() {
-  const [quotas, setQuotas] = useState<QuotaInfo | null>(null);
-  const [stats, setStats] = useState<UsageStatsData | null>(null);
+  const [quotaData, setQuotaData] = useState<QuotaResponse | null>(null);
+  const [statsData, setStatsData] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const token = getToken();
@@ -124,12 +121,12 @@ export default function UsageStats() {
     setLoading(true);
     setError(null);
     try {
-      const [quotaData, statsData] = await Promise.all([
-        apiFetch<QuotaInfo>('/api/usage/quotas'),
-        apiFetch<UsageStatsData>('/api/usage/stats'),
+      const [qData, sData] = await Promise.all([
+        apiFetch<QuotaResponse>('/api/usage/quotas'),
+        apiFetch<StatsResponse>('/api/usage/stats'),
       ]);
-      setQuotas(quotaData);
-      setStats(statsData);
+      setQuotaData(qData);
+      setStatsData(sData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load usage data');
     } finally {
@@ -155,6 +152,33 @@ export default function UsageStats() {
     );
   }
 
+  // Convert backend by_action dict to array for rendering
+  const byActionArray = statsData
+    ? Object.entries(statsData.by_action).map(([action, data]) => ({
+        action,
+        count: data.count,
+        total_leads: data.total_leads,
+      }))
+    : [];
+
+  // Aggregate daily data by date for the trend chart
+  const dailyAggregated = statsData
+    ? Object.values(
+        statsData.daily.reduce<Record<string, { date: string; count: number }>>((acc, item) => {
+          if (!acc[item.day]) {
+            acc[item.day] = { date: item.day, count: 0 };
+          }
+          acc[item.day].count += item.cnt;
+          return acc;
+        }, {})
+      ).sort((a, b) => a.date.localeCompare(b.date))
+    : [];
+
+  // Today's total actions count
+  const todayCount = statsData
+    ? Object.values(statsData.today).reduce((sum, cnt) => sum + cnt, 0)
+    : 0;
+
   return (
     <div className="flex-1 overflow-y-auto p-8">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -170,33 +194,33 @@ export default function UsageStats() {
           </div>
         )}
 
-        {loading && !quotas ? (
+        {loading && !quotaData ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-6 h-6 text-accent animate-spin" />
           </div>
         ) : (
           <>
             {/* Plan Banner */}
-            {quotas && (
-              <div className={`card p-6 border-l-4 ${quotas.plan === 'pro' ? 'border-l-amber-400' : 'border-l-accent'}`}>
+            {quotaData && (
+              <div className={`card p-6 border-l-4 ${quotaData.plan === 'pro' ? 'border-l-amber-400' : 'border-l-accent'}`}>
                 <div className="flex items-center gap-3">
-                  {quotas.plan === 'pro' ? (
+                  {quotaData.plan === 'pro' ? (
                     <Crown className="w-6 h-6 text-amber-400" />
                   ) : (
                     <Shield className="w-6 h-6 text-accent" />
                   )}
                   <div>
-                    <h3 className="text-lg font-bold text-text-primary capitalize">{quotas.plan} Plan</h3>
+                    <h3 className="text-lg font-bold text-text-primary capitalize">{quotaData.plan} Plan</h3>
                     <p className="text-xs text-text-muted">
-                      {quotas.plan === 'pro' ? 'Unlimited access to all features' : 'Quotas reset daily at midnight UTC'}
+                      {quotaData.plan === 'pro' ? 'Unlimited access to all features' : 'Quotas reset daily at midnight UTC'}
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Today's Quotas */}
-            {quotas && (
+            {/* Today's Quotas — maps action names to quota keys */}
+            {quotaData && (
               <div className="card p-6 space-y-5">
                 <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-accent" />Today's Usage
@@ -204,26 +228,26 @@ export default function UsageStats() {
                 <div className="space-y-4">
                   <QuotaBar
                     label="Searches"
-                    used={quotas.today.searches_per_day ?? 0}
-                    limit={quotas.quotas.searches_per_day ?? 10}
+                    used={quotaData.today_usage.search ?? 0}
+                    limit={quotaData.quotas.searches_per_day ?? 10}
                     icon={Search}
                   />
                   <QuotaBar
                     label="Exports"
-                    used={quotas.today.exports_per_day ?? 0}
-                    limit={quotas.quotas.exports_per_day ?? 5}
+                    used={quotaData.today_usage.export ?? 0}
+                    limit={quotaData.quotas.exports_per_day ?? 5}
                     icon={Download}
                   />
                   <QuotaBar
                     label="Enrichments"
-                    used={quotas.today.enrichments_per_day ?? 0}
-                    limit={quotas.quotas.enrichments_per_day ?? 10}
+                    used={quotaData.today_usage.enrichment ?? 0}
+                    limit={quotaData.quotas.enrichments_per_day ?? 10}
                     icon={Zap}
                   />
                   <QuotaBar
                     label="Shared Leads"
-                    used={quotas.today.shared_leads_per_day ?? 0}
-                    limit={quotas.quotas.shared_leads_per_day ?? 50}
+                    used={quotaData.today_usage.share_lead ?? 0}
+                    limit={quotaData.quotas.shared_leads_per_day ?? 50}
                     icon={Share2}
                   />
                 </div>
@@ -231,20 +255,20 @@ export default function UsageStats() {
             )}
 
             {/* Stats by Action */}
-            {stats && stats.by_action.length > 0 && (
+            {byActionArray.length > 0 && (
               <div className="card p-6 space-y-4">
                 <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-accent" />Activity Breakdown
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {stats.by_action.map((item) => {
+                  {byActionArray.map((item) => {
                     const Icon = ACTION_ICONS[item.action] ?? Search;
                     const color = ACTION_COLORS[item.action] ?? 'text-text-muted';
                     return (
                       <div key={item.action} className="p-4 bg-zinc-800/40 rounded-xl border border-[#3f3f46]">
                         <Icon className={`w-5 h-5 ${color} mb-2`} />
                         <p className="text-2xl font-bold text-text-primary">{item.count}</p>
-                        <p className="text-xs text-text-muted capitalize">{item.action}es</p>
+                        <p className="text-xs text-text-muted capitalize">{ACTION_LABELS[item.action] ?? item.action}</p>
                         {item.total_leads > 0 && (
                           <p className="text-xs text-text-secondary mt-1">{item.total_leads} leads</p>
                         )}
@@ -256,18 +280,18 @@ export default function UsageStats() {
             )}
 
             {/* Stats by Platform */}
-            {stats && stats.by_platform.length > 0 && (
+            {statsData && statsData.by_platform.length > 0 && (
               <div className="card p-6 space-y-4">
                 <h3 className="text-lg font-bold text-text-primary">Platform Usage</h3>
                 <div className="space-y-3">
-                  {stats.by_platform.map((item) => {
-                    const maxCount = Math.max(...stats.by_platform.map((p) => p.count));
-                    const pct = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                  {statsData.by_platform.map((item) => {
+                    const maxCount = Math.max(...statsData.by_platform.map((p) => p.cnt));
+                    const pct = maxCount > 0 ? (item.cnt / maxCount) * 100 : 0;
                     return (
                       <div key={item.platform} className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-text-primary capitalize font-medium">{item.platform || 'Unknown'}</span>
-                          <span className="text-text-muted">{item.count} uses &middot; {item.total_leads} leads</span>
+                          <span className="text-text-muted">{item.cnt} uses &middot; {item.total_leads} leads</span>
                         </div>
                         <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                           <div className="h-full bg-accent/60 rounded-full" style={{ width: `${pct}%` }} />
@@ -280,19 +304,19 @@ export default function UsageStats() {
             )}
 
             {/* Daily Trend */}
-            {stats && stats.daily.length > 0 && (
+            {dailyAggregated.length > 0 && (
               <div className="card p-6 space-y-4">
-                <h3 className="text-lg font-bold text-text-primary">Daily Trend (Last 30 Days)</h3>
+                <h3 className="text-lg font-bold text-text-primary">Daily Trend (Last 7 Days)</h3>
                 <div className="flex items-end gap-1 h-32">
-                  {stats.daily.map((day) => {
-                    const maxCount = Math.max(...stats.daily.map((d) => d.count));
+                  {dailyAggregated.map((day) => {
+                    const maxCount = Math.max(...dailyAggregated.map((d) => d.count));
                     const heightPct = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
                     return (
                       <div
                         key={day.date}
                         className="flex-1 bg-accent/30 hover:bg-accent/50 rounded-t transition-all cursor-default group relative"
                         style={{ height: `${Math.max(heightPct, 2)}%` }}
-                        title={`${day.date}: ${day.count} actions, ${day.total_leads} leads`}
+                        title={`${day.date}: ${day.count} actions`}
                       >
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-zinc-900 text-xs text-text-primary px-2 py-1 rounded whitespace-nowrap border border-[#3f3f46]">
                           {day.date}: {day.count}
@@ -302,23 +326,23 @@ export default function UsageStats() {
                   })}
                 </div>
                 <div className="flex justify-between text-xs text-text-muted">
-                  <span>{stats.daily[0]?.date}</span>
-                  <span>{stats.daily[stats.daily.length - 1]?.date}</span>
+                  <span>{dailyAggregated[0]?.date}</span>
+                  <span>{dailyAggregated[dailyAggregated.length - 1]?.date}</span>
                 </div>
               </div>
             )}
 
             {/* Summary */}
-            {stats && (
+            {statsData && (
               <div className="card p-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <p className="text-xs text-text-muted font-medium uppercase tracking-wider">Total Leads Processed</p>
-                    <p className="text-3xl font-bold text-text-primary mt-1">{stats.total_leads.toLocaleString()}</p>
+                    <p className="text-3xl font-bold text-text-primary mt-1">{statsData.total_leads_extracted.toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-xs text-text-muted font-medium uppercase tracking-wider">Actions Today</p>
-                    <p className="text-3xl font-bold text-text-primary mt-1">{stats.today_count}</p>
+                    <p className="text-3xl font-bold text-text-primary mt-1">{todayCount}</p>
                   </div>
                 </div>
               </div>
