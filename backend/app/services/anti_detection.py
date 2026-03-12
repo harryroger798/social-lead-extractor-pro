@@ -171,6 +171,7 @@ def _browser_headers(
 _domain_lock = threading.Lock()
 _domain_last_request: dict[str, float] = {}
 _DEFAULT_DELAY = 2.0  # seconds between requests to the same domain
+_MAX_QUEUE_DELAY = 10.0  # cap max queued delay to prevent unbounded accumulation
 
 
 def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
@@ -188,8 +189,6 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
             jitter = random.uniform(0.1, 0.5)
             sleep_time = min_delay - elapsed + jitter
         # Reserve this time slot so concurrent threads see the updated timestamp
-        # N8 fix: cap max queued delay to prevent unbounded accumulation under high concurrency
-        _MAX_QUEUE_DELAY = 10.0
         _domain_last_request[domain] = min(now + sleep_time, now + _MAX_QUEUE_DELAY)
     if sleep_time > 0:
         time.sleep(min(sleep_time, 10.0))

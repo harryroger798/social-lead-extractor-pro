@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # NEW-1/NEW-2 fix: compile card boundary regexes at module level (not per-loop).
 # Covers both class patterns used by YellowPages: result/info AND srp-listing.
 _CARD_BOUNDARY_PRIMARY = re.compile(
-    r'<(?:div|article)[^>]*class="[^"]*(?:result|info|srp-listing)[^"]*"[^>]*>',
+    r'<(?:div|article)[^>]*class="[^"]*(?<![a-z])(?:result|info|srp-listing)(?![a-z])[^"]*"[^>]*>',
 )
 
 
@@ -264,7 +264,7 @@ async def scrape_directories(
     max_results: int = 100, delay: float = 3.0, yelp_api_key: str = "",
 ) -> list[dict]:
     """Scrape multiple business directories. Returns combined leads."""
-    if sources is None:
+    if not sources:
         sources = ["yellowpages", "yelp"]
 
     all_leads: list[dict] = []
