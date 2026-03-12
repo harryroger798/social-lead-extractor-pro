@@ -20,6 +20,9 @@ from app.services.extractor import extract_emails, extract_phones
 # V-R1 fix: bounded executor for YP/Yelp scraping (avoids unbounded default)
 _YP_EXECUTOR = ThreadPoolExecutor(max_workers=3, thread_name_prefix="yp-scrape")
 
+import atexit as _atexit_yp  # noqa: E402
+_atexit_yp.register(_YP_EXECUTOR.shutdown, wait=False)
+
 logger = logging.getLogger(__name__)
 
 # Lazy-load BeautifulSoup to avoid import overhead if not used

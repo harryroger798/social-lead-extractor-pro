@@ -216,6 +216,9 @@ async def _update_progress(
 # R5-B18 fix: dedicated thread pool for live scraping (bounded workers)
 _LIVE_SCRAPE_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="live-scrape-route")
 
+import atexit as _atexit_routes  # noqa: E402
+_atexit_routes.register(_LIVE_SCRAPE_POOL.shutdown, wait=False)
+
 
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     """Background task to run extraction.

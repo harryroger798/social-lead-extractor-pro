@@ -78,21 +78,33 @@ def _strip_tags(text: str) -> str:
 
 
 def _dedup_leads(leads: list[dict]) -> list[dict]:
-    """Remove duplicate leads by (email, phone, name) tuple.
+    """Remove duplicate leads using a tiered dedup strategy.
 
-    V-R1 fix: removed source_url from dedup key so the same contact
-    found via two different URLs is correctly deduplicated.
+    V-R2 fix: use email as primary key (strongest), then (phone, name) as
+    secondary, then (name, source_url) as fallback. This avoids both
+    over-deduplication (collapsing different leads) and under-deduplication
+    (keeping same contact from two URLs).
     """
-    seen: set[tuple[str, str, str]] = set()
+    seen: set[str] = set()
     unique: list[dict] = []
     for lead in leads:
-        key = (
-            lead.get("email") or "",
-            lead.get("phone") or "",
-            lead.get("name") or "",
-        )
-        if key == ("", "", ""):
-            continue
+        email = (lead.get("email") or "").lower().strip()
+        phone = (lead.get("phone") or "").strip()
+        name = (lead.get("name") or "").strip()
+        src = (lead.get("source_url") or "").strip()
+
+        # Tiered dedup: strongest signal first
+        if email:
+            key = f"email:{email}"
+        elif phone and name:
+            key = f"pn:{phone}|{name}"
+        elif phone:
+            key = f"phone:{phone}"
+        elif name and src:
+            key = f"ns:{name}|{src}"
+        else:
+            continue  # No useful identity — skip
+
         if key not in seen:
             seen.add(key)
             unique.append(lead)

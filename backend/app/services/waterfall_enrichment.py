@@ -335,7 +335,9 @@ def enrich_via_website_crawl(
         logger.warning("Skipping private/loopback domain: %s", domain)
         return result
 
-    # V-R1 fix: per-batch crawled domain tracking (avoids module-level state)
+    # V-R2 fix: per-batch crawled domain tracking (avoids module-level state)
+    # When _crawled is None (standalone call), tracking is skipped — dedup only
+    # applies within batches where callers pass a shared set.
     if _crawled is not None:
         dom_key = domain.lower()
         if dom_key in _crawled:

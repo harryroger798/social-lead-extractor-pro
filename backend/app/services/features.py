@@ -151,23 +151,23 @@ def find_emails_by_domain(
     try:
         contact_paths = ["/contact", "/about", "/contact-us", "/about-us", "/team"]
         with AdSession(timeout=10.0, min_delay=1.5) as session:
-          for path in contact_paths[:3]:
-            try:
-                url = f"https://{domain}{path}"
-                resp = session.get(url)
-                if resp.status_code == 200:
-                    page_text = _strip_tags(resp.text[:100_000])
-                    for email in extract_emails(page_text):
-                        if email.lower() not in found_emails:
-                            found_emails.add(email.lower())
-                            results.append({
-                                "email": email,
-                                "source": "website",
-                                "confidence": "high",
-                                "verified": False,
-                            })
-            except Exception:
-                continue
+            for path in contact_paths[:3]:
+                try:
+                    url = f"https://{domain}{path}"
+                    resp = session.get(url)
+                    if resp.status_code == 200:
+                        page_text = _strip_tags(resp.text[:100_000])
+                        for email in extract_emails(page_text):
+                            if email.lower() not in found_emails:
+                                found_emails.add(email.lower())
+                                results.append({
+                                    "email": email,
+                                    "source": "website",
+                                    "confidence": "high",
+                                    "verified": False,
+                                })
+                except Exception:
+                    continue
     except Exception as exc:
         logger.debug("Email finder website scrape error: %s", exc)
 
@@ -241,39 +241,39 @@ def scrape_directories(
     encoded_query = quote_plus(search_term)
 
     with AdSession(timeout=12.0, min_delay=2.5) as session:
-      for dir_name, url_template in _DIRECTORY_SITES:
-        try:
-            url = url_template.format(query=encoded_query)
-            resp = session.get(url)
+        for dir_name, url_template in _DIRECTORY_SITES:
+            try:
+                url = url_template.format(query=encoded_query)
+                resp = session.get(url)
 
-            if resp.status_code != 200:
-                logger.debug("Directory %s: HTTP %d", dir_name, resp.status_code)
+                if resp.status_code != 200:
+                    logger.debug("Directory %s: HTTP %d", dir_name, resp.status_code)
+                    continue
+
+                page_text = _strip_tags(resp.text[:200_000])
+                emails = extract_emails(page_text)
+                phones = extract_phones(page_text)
+
+                for email in emails[:max_per_directory]:
+                    leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "directories",
+                        "source_url": url,
+                        "directory": dir_name,
+                    })
+                for phone in phones[:max_per_directory]:
+                    leads.append({
+                        "email": "", "phone": phone, "name": "",
+                        "platform": "directories",
+                        "source_url": url,
+                        "directory": dir_name,
+                    })
+
+                logger.info("Directory %s: %d emails, %d phones", dir_name, len(emails), len(phones))
+
+            except Exception as exc:
+                logger.debug("Directory %s scrape error: %s", dir_name, exc)
                 continue
-
-            page_text = _strip_tags(resp.text[:200_000])
-            emails = extract_emails(page_text)
-            phones = extract_phones(page_text)
-
-            for email in emails[:max_per_directory]:
-                leads.append({
-                    "email": email, "phone": "", "name": "",
-                    "platform": "directories",
-                    "source_url": url,
-                    "directory": dir_name,
-                })
-            for phone in phones[:max_per_directory]:
-                leads.append({
-                    "email": "", "phone": phone, "name": "",
-                    "platform": "directories",
-                    "source_url": url,
-                    "directory": dir_name,
-                })
-
-            logger.info("Directory %s: %d emails, %d phones", dir_name, len(emails), len(phones))
-
-        except Exception as exc:
-            logger.debug("Directory %s scrape error: %s", dir_name, exc)
-            continue
 
     return leads
 
