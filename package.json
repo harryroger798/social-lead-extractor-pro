@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
@@ -41,9 +41,9 @@
       "!backend/.github/**",
       "!**/node_modules/**"
     ],
-        "asarUnpack": [
-          "backend/dist/**"
-        ],
+    "asarUnpack": [
+      "backend/dist/**"
+    ],
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -57,19 +57,26 @@
       "include": "electron/installer.nsh"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "electron/assets/icon.ico"
     },
-        "mac": {
-          "target": ["zip"],
-          "icon": "electron/assets/icon.png",
-          "category": "public.app-category.business",
-          "identity": null,
-          "hardenedRuntime": false,
-          "gatekeeperAssess": false
-        },
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "icon": "electron/assets/icon.png",
+      "category": "public.app-category.business",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "electron/assets/icon.png",
       "category": "Office"
     }
@@ -79,6 +86,9 @@
     "electron-builder": "^25.0.0",
     "concurrently": "^9.0.0"
   },
-  "author": { "name": "SnapLeads", "email": "support@getsnapleads.store" },
+  "author": {
+    "name": "SnapLeads",
+    "email": "support@getsnapleads.store"
+  },
   "license": "MIT"
 }
