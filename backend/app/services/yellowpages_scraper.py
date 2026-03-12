@@ -240,11 +240,17 @@ async def scrape_yellowpages(
             f'site:yellowpages.com "{search_query}"',
             f'site:yellowpages.com "{query}" "{location}" phone',
         ]
+        # V-R3 fix: dedup across dork queries to prevent duplicate leads
+        seen_urls: set[str] = set()
         for dork in dork_queries:
             results = free_search_waterfall(dork, num_results=15, min_results=2)
             for r in results:
-                text = f"{r.get('title', '')} {r.get('snippet', '')}"
                 link = r.get("link", "")
+                if link and link in seen_urls:
+                    continue
+                if link:
+                    seen_urls.add(link)
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
                 emails_found = extract_emails(text)
                 phones_found = extract_phones(text)
                 # R6-B11 fix: emit one unified lead per result
@@ -338,11 +344,17 @@ async def scrape_yelp(
             f'site:yelp.com "{search_query}"',
             f'site:yelp.com "{query}" "{location}" business',
         ]
+        # V-R3 fix: dedup across dork queries to prevent duplicate leads
+        seen_urls: set[str] = set()
         for dork in dork_queries:
             results = free_search_waterfall(dork, num_results=15, min_results=2)
             for r in results:
-                text = f"{r.get('title', '')} {r.get('snippet', '')}"
                 link = r.get("link", "")
+                if link and link in seen_urls:
+                    continue
+                if link:
+                    seen_urls.add(link)
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
                 emails_found = extract_emails(text)
                 phones_found = extract_phones(text)
                 leads.append({
