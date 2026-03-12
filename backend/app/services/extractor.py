@@ -19,19 +19,19 @@ _PHONE_FALSE_POSITIVE = re.compile(
 
 # Common false-positive email patterns to filter out
 EMAIL_BLACKLIST_PATTERNS = [
-    r'.*@example\.com$',
-    r'.*@test\.com$',
-    r'.*@localhost$',
-    r'.*\.png$',
-    r'.*\.jpg$',
-    r'.*\.gif$',
-    r'.*\.svg$',
-    r'.*\.css$',
-    r'.*\.js$',
-    r'.*@.*\.wixpress\.com$',
-    r'noreply@.*',
-    r'no-reply@.*',
-    r'mailer-daemon@.*',
+    r'^.*@example\.com$',
+    r'^.*@test\.com$',
+    r'^.*@localhost$',
+    r'^.*\.png$',
+    r'^.*\.jpg$',
+    r'^.*\.gif$',
+    r'^.*\.svg$',
+    r'^.*\.css$',
+    r'^.*\.js$',
+    r'^.*@.*\.wixpress\.com$',
+    r'^noreply@.*$',
+    r'^no-reply@.*$',
+    r'^mailer-daemon@.*$',
 ]
 
 EMAIL_BLACKLIST_COMPILED = [re.compile(p, re.IGNORECASE) for p in EMAIL_BLACKLIST_PATTERNS]
@@ -47,7 +47,7 @@ def extract_emails(text: str) -> list[str]:
         email_lower = email.lower()
         if email_lower in seen:
             continue
-        if any(bp.match(email_lower) for bp in EMAIL_BLACKLIST_COMPILED):
+        if any(bp.fullmatch(email_lower) for bp in EMAIL_BLACKLIST_COMPILED):
             continue
         seen.add(email_lower)
         filtered.append(email)
@@ -68,8 +68,9 @@ def extract_phones(text: str) -> list[str]:
         # Reject GPS coordinate-like patterns (e.g., 72.8777, -37.7749)
         if _PHONE_FALSE_POSITIVE.match(raw):
             continue
-        # Clean up the phone number
-        cleaned = re.sub(r'[^\d+]', '', raw)
+        # Clean up the phone number — strip everything except digits for dedup
+        # (N2 fix: don't keep '+' in dedup key so +14155551234 and 14155551234 dedup correctly)
+        cleaned = re.sub(r'[^\d]', '', raw)
         if len(cleaned) < 7 or len(cleaned) > 15:
             continue
         if cleaned in seen:

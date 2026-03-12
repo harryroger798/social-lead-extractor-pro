@@ -52,7 +52,9 @@ async def scrape_yellowpages_direct(
                     url += f"&page={page_num}"
 
                 try:
-                    resp = requests.get(url, headers=HEADERS, timeout=15)
+                    from app.services.anti_detection import AdSession
+                    with AdSession(timeout=15.0, min_delay=2.0) as ad_session:
+                        resp = ad_session.get(url)
                     if resp.status_code != 200:
                         logger.debug("YP page %d: HTTP %d", page_num, resp.status_code)
                         continue
@@ -60,12 +62,11 @@ async def scrape_yellowpages_direct(
                     html = resp.text
 
                     # Parse each listing card as a unit to avoid field garbling.
-                    # YellowPages wraps each business in a <div class="result">
-                    # or <div class="search-results organic"> containing all fields.
+                    # N6 fix: use non-backtracking negated lookahead to prevent
+                    # catastrophic backtracking on large/malformed HTML pages.
                     card_pattern = re.compile(
-                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>(.*?)'
-                        r'(?=<div[^>]*class="[^"]*(?:result|info)"[^>]*>|'
-                        r'<div[^>]*class="[^"]*pagination|$)',
+                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>'
+                        r'((?:(?!<div[^>]*class="[^"]*(?:result|info|pagination)"[^>]*>).)*)',
                         re.DOTALL,
                     )
                     cards = card_pattern.findall(html)
@@ -178,7 +179,7 @@ async def scrape_yelp_fusion(
         return []
 
     leads: list[dict] = []
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
 
     try:
         def _fetch_yelp() -> list[dict]:

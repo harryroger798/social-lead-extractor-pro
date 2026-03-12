@@ -188,9 +188,11 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
             jitter = random.uniform(0.1, 0.5)
             sleep_time = min_delay - elapsed + jitter
         # Reserve this time slot so concurrent threads see the updated timestamp
-        _domain_last_request[domain] = now + sleep_time
+        # N8 fix: cap max queued delay to prevent unbounded accumulation under high concurrency
+        _MAX_QUEUE_DELAY = 10.0
+        _domain_last_request[domain] = min(now + sleep_time, now + _MAX_QUEUE_DELAY)
     if sleep_time > 0:
-        time.sleep(sleep_time)
+        time.sleep(min(sleep_time, 10.0))
 
 
 def _validate_url_scheme(url: str) -> bool:
@@ -251,8 +253,17 @@ class AdSession:
                 (p for p in _FINGERPRINT_PROFILES if p["impersonate"] == impersonate),
                 None,
             )
-            self._impersonate = impersonate
-            self._ua = matched["ua"] if matched else profile["ua"]
+            if matched:
+                self._impersonate = matched["impersonate"]
+                self._ua = matched["ua"]
+            else:
+                # N3 fix: unrecognized impersonate target — fall back to random profile
+                # to avoid passing unknown string to curl_cffi which may raise ValueError
+                logger.warning(
+                    "Unknown impersonate target %r — using random profile", impersonate
+                )
+                self._impersonate = profile["impersonate"]
+                self._ua = profile["ua"]
         else:
             self._impersonate = profile["impersonate"]
             self._ua = profile["ua"]
