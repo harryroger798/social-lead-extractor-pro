@@ -29,6 +29,9 @@ import CitationChecker from '@/components/enhancements/CitationChecker';
 import ServiceSuggestions from '@/components/enhancements/ServiceSuggestions';
 import SMTPChecker from '@/components/enhancements/SMTPChecker';
 import JobBoardScraper from '@/components/enhancements/JobBoardScraper';
+import AccountProfile from '@/components/account/AccountProfile';
+import TeamDashboard from '@/components/team/TeamDashboard';
+import UsageStats from '@/components/usage/UsageStats';
 import { Loader2 } from 'lucide-react';
 import type { Section } from '@/types';
 
@@ -110,6 +113,12 @@ function AppContent() {
         return <ProGate featureName="SMTP Checker"><SMTPChecker /></ProGate>;
       case 'job_boards':
         return <ProGate featureName="Job Board Scraper"><JobBoardScraper /></ProGate>;
+      case 'account':
+        return <AccountProfile />;
+      case 'team':
+        return <TeamDashboard />;
+      case 'usage':
+        return <UsageStats />;
       default:
         return <Dashboard onNavigate={setActiveSection} />;
     }

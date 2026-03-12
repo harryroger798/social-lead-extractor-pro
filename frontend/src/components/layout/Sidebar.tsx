@@ -27,6 +27,9 @@ import {
   CheckSquare,
   Lightbulb,
   MailCheck,
+  Users,
+  BarChart3,
+  User,
 } from 'lucide-react';
 import type { Section } from '@/types';
 import { cn } from '@/lib/utils';
@@ -102,6 +105,14 @@ const navGroups: NavGroup[] = [
       { id: 'blacklist' as Section, label: 'Blacklist', icon: ShieldBan },
       { id: 'settings' as Section, label: 'Settings', icon: Settings },
       { id: 'safety_guide' as Section, label: 'Safety Guide', icon: Shield },
+    ],
+  },
+  {
+    label: 'Collaboration',
+    items: [
+      { id: 'account' as Section, label: 'Account', icon: User },
+      { id: 'team' as Section, label: 'Teams', icon: Users },
+      { id: 'usage' as Section, label: 'Usage & Quotas', icon: BarChart3 },
     ],
   },
   {
