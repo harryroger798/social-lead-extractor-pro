@@ -318,15 +318,35 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
         html = resp.text
         results: list[dict] = []
 
+        # R3-B03 fix: DDG Lite HTML selectors — try multiple patterns
+        # Pattern 1: Current DDG Lite layout (nofollow links)
         links = re.findall(
-            r"<a[^>]*rel=['\"]nofollow['\"][^>]*href=['\"]([^'\"]+)['\"]"
-            r"[^>]*class=['\"]result-link['\"][^>]*>(.*?)</a>",
+            r'<a\s+rel=["\']nofollow["\']\s+href=["\']([^"\'>]+)["\'][^>]*>(.*?)</a>',
             html, re.DOTALL,
         )
+        # Pattern 2: Fallback — result-link class
+        if not links:
+            links = re.findall(
+                r"<a[^>]*class=['\"]result-link['\"][^>]*href=['\"]([^'\"]+)['\"][^>]*>(.*?)</a>",
+                html, re.DOTALL,
+            )
+        # Pattern 3: Fallback — any link in result table rows
+        if not links:
+            links = re.findall(
+                r'<a[^>]*href=["\']((https?://[^"\'>]+))["\'][^>]*>(.*?)</a>',
+                html, re.DOTALL,
+            )
+            # Reformat to (url, title) tuples
+            links = [(m[0], m[2]) for m in links if not m[0].startswith('https://lite.duckduckgo')]
         snippets = re.findall(
             r"<td[^>]*class=['\"]result-snippet['\"][^>]*>(.*?)</td>",
             html, re.DOTALL,
         )
+        if not snippets:
+            snippets = re.findall(
+                r'<span[^>]*class=["\']result-snippet["\'][^>]*>(.*?)</span>',
+                html, re.DOTALL,
+            )
 
         for i, (url, title) in enumerate(links):
             if url.startswith("//"):
@@ -705,7 +725,10 @@ def free_search_waterfall(
     engines_used: list[str] = []
 
     for engine_name, engine_fn in _FREE_ENGINES:
-        if engines_tried >= max_engines and len(all_results) >= min_results:
+        # R3-B07 fix: check both conditions independently
+        if engines_tried >= max_engines:
+            break
+        if len(all_results) >= num_results:
             break
 
         health = _health(engine_name)

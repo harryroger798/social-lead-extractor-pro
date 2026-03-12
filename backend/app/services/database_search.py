@@ -19,6 +19,7 @@ import asyncio
 import logging
 import os
 import re
+import threading
 import time
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,18 @@ def _sanitize_sql_term(term: str) -> str:
     cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
     # Also strip SQL LIKE wildcards that survived (% and _ are already stripped
     # by the regex above, but belt-and-suspenders)
+    cleaned = cleaned.replace("%", "").replace("_", "")
+    return cleaned.strip().lower()
+
+
+def _sanitize_location_term(location: str) -> str:
+    """R5-B03/B06 fix: separate sanitizer for location strings.
+
+    Preserves spaces and hyphens needed for city/state matching
+    (e.g., "New Delhi", "Andhra Pradesh") but strips injection chars.
+    Only allows [a-zA-Z0-9 -] — no dots, no underscores, no SQL wildcards.
+    """
+    cleaned = re.sub(r"[^a-zA-Z0-9\s\-]", "", location)
     cleaned = cleaned.replace("%", "").replace("_", "")
     return cleaned.strip().lower()
 
@@ -76,6 +89,21 @@ _COUNTRY_ALIASES: dict[str, str] = {
     "saint vincent": "Saint_Vincent_and_the_Grenadines",
     "marshall islands": "Marshall_Islands", "solomon islands": "Solomon_Islands",
     "vatican": "Vatican_City", "south sudan": "South_Sudan",
+    # R5-B27 fix: add direct country name aliases for O(1) lookup
+    "india": "India", "china": "China", "russia": "Russia", "japan": "Japan",
+    "germany": "Germany", "france": "France", "brazil": "Brazil", "canada": "Canada",
+    "australia": "Australia", "mexico": "Mexico", "italy": "Italy", "spain": "Spain",
+    "indonesia": "Indonesia", "turkey": "Turkey", "pakistan": "Pakistan",
+    "nigeria": "Nigeria", "bangladesh": "Bangladesh", "philippines": "Philippines",
+    "egypt": "Egypt", "vietnam": "Vietnam", "thailand": "Thailand",
+    "malaysia": "Malaysia", "singapore": "Singapore", "israel": "Israel",
+    "netherlands": "Netherlands", "sweden": "Sweden", "norway": "Norway",
+    "denmark": "Denmark", "finland": "Finland", "switzerland": "Switzerland",
+    "ireland": "Ireland", "portugal": "Portugal", "poland": "Poland",
+    "belgium": "Belgium", "austria": "Austria", "greece": "Greece",
+    "argentina": "Argentina", "colombia": "Colombia", "chile": "Chile",
+    "peru": "Peru", "kenya": "Kenya", "ghana": "Ghana",
+    "nepal": "Nepal", "morocco": "Morocco", "taiwan": "Taiwan",
 }
 
 # All known S3 country folder names (populated from manifest or hardcoded)
@@ -136,8 +164,10 @@ def _resolve_country(location: str) -> list[str]:
     Handles aliases, fuzzy matching, and city/state → country mapping.
     Returns list of matching country folder names.
     """
+    # R5-B15 fix: don't default to US for empty location
+    # — caller should be explicit; otherwise wrong country is queried
     if not location:
-        return ["United_States"]  # default to US if no location given
+        return []
 
     loc_lower = location.lower().strip()
 
@@ -205,13 +235,22 @@ def _resolve_country(location: str) -> list[str]:
     if loc_lower in au_cities:
         return ["Australia"]
 
-    # Indian cities
-    in_cities = {
+    # Indian cities and states (R5-B26 fix: add Indian states)
+    in_locations = {
+        # Cities
         "mumbai", "delhi", "bangalore", "hyderabad", "ahmedabad",
         "chennai", "kolkata", "pune", "jaipur", "lucknow",
         "new delhi", "bengaluru", "noida", "gurgaon", "gurugram",
+        "chandigarh", "indore", "nagpur", "bhopal", "surat",
+        "kochi", "coimbatore", "visakhapatnam", "thiruvananthapuram",
+        # States
+        "rajasthan", "maharashtra", "tamil nadu", "karnataka",
+        "uttar pradesh", "andhra pradesh", "telangana", "gujarat",
+        "kerala", "west bengal", "madhya pradesh", "bihar",
+        "odisha", "punjab", "haryana", "jharkhand", "chhattisgarh",
+        "assam", "goa", "himachal pradesh", "uttarakhand",
     }
-    if loc_lower in in_cities:
+    if loc_lower in in_locations:
         return ["India"]
 
     # Try substring match against country names
@@ -224,8 +263,15 @@ def _resolve_country(location: str) -> list[str]:
     if matches:
         return matches
 
-    # Fallback: search US (largest dataset)
-    return ["United_States"]
+    # R5-B15 fix: return empty list instead of defaulting to US
+    # Let the caller handle no-country case (global search or skip)
+    logger.debug("Could not resolve location %r to a country", location)
+    return []
+
+
+# R5-B08 fix: thread-safe httpfs installation lock
+_HTTPFS_INSTALLED = False
+_HTTPFS_LOCK = threading.Lock()
 
 
 def _get_duckdb_connection():
@@ -243,7 +289,13 @@ def _get_duckdb_connection():
 
     con = duckdb.connect()
     try:
-        con.execute("INSTALL httpfs; LOAD httpfs;")
+        # R5-B08 fix: thread-safe httpfs installation
+        global _HTTPFS_INSTALLED  # noqa: PLW0603
+        with _HTTPFS_LOCK:
+            if not _HTTPFS_INSTALLED:
+                con.execute("INSTALL httpfs;")
+                _HTTPFS_INSTALLED = True
+        con.execute("LOAD httpfs;")
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
         con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
         con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
@@ -305,8 +357,20 @@ def _build_linkedin_query(
             if safe_term and safe_term not in all_terms:
                 all_terms.append(safe_term)
 
-    # Limit to 8 terms max to keep query performant on 89M rows
-    search_terms = all_terms[:8]
+    # R5-B19 fix: prioritize original keyword and individual words over synonyms
+    # slot 0 = original keyword, slots 1-3 = individual words, slots 4-9 = expanded terms
+    prioritized: list[str] = []
+    if kw_safe:
+        prioritized.append(kw_safe)
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in prioritized:
+            prioritized.append(word)
+    # Fill remaining slots with expanded synonyms
+    for term in all_terms:
+        if term not in prioritized:
+            prioritized.append(term)
+    search_terms = prioritized[:10]  # R5-B04 fix: increase from 8 to 10
 
     # Build WHERE clause — OR across ALL terms × key fields only
     # Reduced from 5 fields to 3 most selective for performance
@@ -317,15 +381,15 @@ def _build_linkedin_query(
             where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
 
     # Also filter by city/state if location looks like a city/state
-    loc_lower = _sanitize_sql_term(location) if location else ""
+    # R5-B03/B06 fix: use _sanitize_location_term (preserves spaces, no dots)
+    loc_lower = _sanitize_location_term(location) if location else ""
     loc_filter = ""
     if loc_lower and loc_lower not in _COUNTRY_ALIASES and loc_lower not in {
         c.lower().replace("_", " ") for c in _KNOWN_COUNTRIES
     }:
-        # loc_lower is already sanitized via _sanitize_sql_term which strips
-        # all non-alphanumeric chars except spaces, hyphens, and dots.
-        # DuckDB's read_csv_auto doesn't support parameterized queries,
-        # so we rely on strict sanitization instead.
+        # R5-B06 fix: loc_lower is sanitized via _sanitize_location_term which
+        # only allows [a-zA-Z0-9 -]. DuckDB's read_csv_auto doesn't support
+        # parameterized queries, so we rely on strict sanitization.
         loc_filter = f" AND (LOWER(city) LIKE '%{loc_lower}%' OR LOWER(state) LIKE '%{loc_lower}%')"
 
     where_clause = f"({' OR '.join(where_parts)}){loc_filter}"
@@ -510,7 +574,7 @@ async def search_database_linkedin(
     keyword: str,
     location: str = "",
     max_results: int = 50,
-    dataset_limit: int = 3,
+    dataset_limit: int = 10,
     expanded_terms: list[str] | None = None,
 ) -> list[dict]:
     """Search the LinkedIn leads database for matching records.
@@ -532,6 +596,16 @@ async def search_database_linkedin(
 
     try:
         countries = _resolve_country(location)
+        # R5-B15 fix: if no country resolved, use top 5 countries for global search
+        if not countries:
+            countries = ["United_States", "United_Kingdom", "India", "Canada", "Australia"]
+            logger.info("No country resolved for '%s' — using global search across top 5", location)
+
+        logger.info(
+            "DB search params: keyword=%r, location=%r, countries=%r, expanded_terms=%r",
+            keyword, location, countries, (expanded_terms or [])[:5],
+        )
+
         sql, s3_paths = _build_linkedin_query(
             keyword, countries, location, max_results, dataset_limit,
             expanded_terms=expanded_terms,
@@ -707,9 +781,10 @@ async def search_database_hybrid(
                     # Deduplicate by email or phone
                     email = lead.get("email", "")
                     phone = lead.get("phone", "")
+                    # R5-B16 fix: dedup by email OR phone independently
                     if email and email in seen_emails:
                         continue
-                    if phone and not email and phone in seen_phones:
+                    if phone and phone in seen_phones:
                         continue
                     if email:
                         seen_emails.add(email)
@@ -741,9 +816,10 @@ def deduplicate_leads(db_leads: list[dict], live_leads: list[dict]) -> list[dict
     for lead in db_leads:
         email = lead.get("email", "").strip().lower()
         phone = lead.get("phone", "").strip()
+        # R5-B16 fix: dedup by email OR phone independently
         if email and email in seen_emails:
             continue
-        if phone and not email and phone in seen_phones:
+        if phone and phone in seen_phones:
             continue
         if email:
             seen_emails.add(email)
@@ -755,9 +831,10 @@ def deduplicate_leads(db_leads: list[dict], live_leads: list[dict]) -> list[dict
     for lead in live_leads:
         email = lead.get("email", "").strip().lower()
         phone = lead.get("phone", "").strip()
+        # R5-B16 fix: dedup by email OR phone independently
         if email and email in seen_emails:
             continue
-        if phone and not email and phone in seen_phones:
+        if phone and phone in seen_phones:
             continue
         if email:
             seen_emails.add(email)

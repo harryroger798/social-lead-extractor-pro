@@ -40,6 +40,9 @@ from urllib.parse import quote_plus
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
 
+# R4 fix: track crawled domains per-batch to prevent double crawls
+# NOTE: Passed as parameter to avoid module-level state bleeding across sessions
+
 logger = logging.getLogger(__name__)
 
 
@@ -113,14 +116,24 @@ def enrich_email_via_hunter_pattern(
 
             page_text = resp.text
 
-            # Hunter.io shows email pattern on the page
-            # Look for pattern indicators like "{first}.{last}@domain"
+            # R4 fix: Hunter.io shows email pattern on the page
+            # Improved regex to capture pattern format more reliably
             pattern_match = re.search(
-                r'(?:pattern|format)\s*(?:is|:)\s*'
-                r'[\{]?(first|f)[\}]?[._-]?[\{]?(last|l)[\}]?@',
+                r'(?:pattern|format|structure)\s*(?:is|:)\s*'
+                r'[\{\[]?(first|f)[\}\]]?\s*[._\-]?\s*[\{\[]?(last|l)[\}\]]?\s*@',
                 page_text,
                 re.IGNORECASE,
             )
+
+            # V-R1 fix: Use pattern_match to select generation strategy
+            if pattern_match:
+                # Detected explicit pattern on the page
+                fmt_first = pattern_match.group(1).lower()  # "first" or "f"
+                use_initial = fmt_first == "f"
+                if use_initial and first_name and last_name:
+                    return f"{first_name[0].lower()}.{last_name.lower().strip()}@{domain.lower()}"
+                elif first_name and last_name:
+                    return f"{first_name.lower().strip()}.{last_name.lower().strip()}@{domain.lower()}"
 
             # Extract sample emails to infer pattern
             sample_emails = extract_emails(_strip_tags(page_text))
@@ -299,6 +312,7 @@ def enrich_email_via_github(
 def enrich_via_website_crawl(
     domain: str,
     max_pages: int = 5,
+    _crawled: set[str] | None = None,
 ) -> dict:
     """Crawl a company website for contact information.
 
@@ -320,6 +334,16 @@ def enrich_via_website_crawl(
     if _is_private_ip(domain):
         logger.warning("Skipping private/loopback domain: %s", domain)
         return result
+
+    # V-R2 fix: per-batch crawled domain tracking (avoids module-level state)
+    # When _crawled is None (standalone call), tracking is skipped — dedup only
+    # applies within batches where callers pass a shared set.
+    if _crawled is not None:
+        dom_key = domain.lower()
+        if dom_key in _crawled:
+            logger.debug("Skipping already-crawled domain: %s", domain)
+            return result
+        _crawled.add(dom_key)
 
     contact_paths = [
         "/contact",
@@ -640,8 +664,11 @@ def enrich_lead_waterfall(
 
     # --- ENRICH PHONE ---
     if not enriched.get("phone"):
-        # Website crawl (if not already done)
-        if company_domain and not skip_website_crawl and "website_crawl" not in enriched.get("enrichment_sources", []):
+        # R4 fix: Website crawl (skip if already done in email stage — prevents double crawl)
+        already_crawled = any(
+            s.startswith("website_crawl") for s in enriched.get("enrichment_sources", [])
+        )
+        if company_domain and not skip_website_crawl and not already_crawled:
             try:
                 website_data = enrich_via_website_crawl(company_domain, max_pages=2)
                 if website_data["phones"]:

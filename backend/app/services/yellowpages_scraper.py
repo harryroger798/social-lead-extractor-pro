@@ -4,22 +4,147 @@ Enhanced with DIRECT HTTP scraping of YellowPages pages (not just dorking).
 Extracts business names, phone numbers, addresses directly from YellowPages.
 
 Yelp Fusion API support added as optional power-up (free tier: 5K/day).
+
+R6 rewrite: Uses BeautifulSoup for card parsing instead of regex splitting
+to fix the garbled output bug ("72812info@dentzz.comShantanu").
 """
 import asyncio
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
 
+# V-R1 fix: bounded executor for YP/Yelp scraping (avoids unbounded default)
+_YP_EXECUTOR = ThreadPoolExecutor(max_workers=3, thread_name_prefix="yp-scrape")
+
+import atexit as _atexit_yp  # noqa: E402
+_atexit_yp.register(_YP_EXECUTOR.shutdown, wait=False)
+
 logger = logging.getLogger(__name__)
 
-# NEW-1/NEW-2 fix: compile card boundary regexes at module level (not per-loop).
-# Covers both class patterns used by YellowPages: result/info AND srp-listing.
-_CARD_BOUNDARY_PRIMARY = re.compile(
-    r'<(?:div|article)[^>]*class="[^"]*(?<![a-z])(?:result|info|srp-listing)(?![a-z])[^"]*"[^>]*>',
-)
+# Lazy-load BeautifulSoup to avoid import overhead if not used
+_bs4_available = False
+try:
+    from bs4 import BeautifulSoup
+    _bs4_available = True
+except ImportError:
+    logger.debug("bs4 not available — YP will use regex fallback")
+
+
+def _parse_yp_page_bs4(html: str, url: str, query: str) -> list[dict]:
+    """R6-B1..B5 fix: Parse one YP page using BeautifulSoup.
+
+    Replaces regex card-splitting which caused garbled output by splitting
+    on inner <div class="info"> sub-elements instead of outer card wrappers.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    results: list[dict] = []
+
+    # YP uses <div class="result"> wrapping <div class="v-card">
+    cards = soup.select("div.result") or soup.select("div.v-card")
+
+    if len(cards) < 3:
+        logger.warning(
+            "YP: only %d cards found at %s — layout may have changed",
+            len(cards), url,
+        )
+
+    for card in cards:
+        # R6-B2 fix: Business name via .business-name get_text
+        name_tag = card.select_one(".business-name")
+        name = name_tag.get_text(strip=True) if name_tag else ""
+
+        # R6-B3 fix: Phone via .phones get_text (handles nested <a> tags)
+        phone_tag = card.select_one(".phones")
+        phone = phone_tag.get_text(strip=True) if phone_tag else ""
+
+        # R6-B4 fix: Address from <p class="adr"> containing street + locality
+        adr_tag = card.select_one("p.adr")
+        if adr_tag:
+            street = adr_tag.select_one(".street-address")
+            locality = adr_tag.select_one(".locality")
+            parts = [
+                street.get_text(strip=True) if street else "",
+                locality.get_text(strip=True) if locality else "",
+            ]
+            # R6-B5 fix: join with filter to avoid ", " when both empty
+            full_addr = ", ".join(p for p in parts if p)
+        else:
+            full_addr = ""
+
+        # R6-B9 fix: extract emails from card HTML
+        card_text = str(card)
+        emails = extract_emails(card_text)
+        email = emails[0] if emails else ""
+
+        if name or phone:
+            results.append({
+                "name": name,
+                "phone": phone,
+                "email": email,
+                "address": full_addr,
+                "platform": "yellowpages",
+                "source_url": url,
+                "keyword": query,
+                "category": "business_directory",
+            })
+
+    return results
+
+
+def _parse_yp_page_regex(html: str, url: str, query: str) -> list[dict]:
+    """Fallback regex parser if BeautifulSoup is not available."""
+    results: list[dict] = []
+    # R6-B2 fix: improved regex to skip intermediate tags
+    card_pattern = re.compile(
+        r'<div[^>]+class="[^"]*\bresult\b[^"]*"[^>]*>(.*?)</div>\s*(?=<div[^>]+class="[^"]*\bresult\b|$)',
+        re.DOTALL,
+    )
+    cards = card_pattern.findall(html)
+
+    for card_html in cards:
+        name_m = re.search(
+            r'class="business-name\b[^"]*"[^>]*>\s*(?:<[^>]+>)*([^<]+)',
+            card_html,
+        )
+        # R6-B3 fix: skip optional child tag for phone
+        phone_m = re.search(
+            r'class="phones\b[^"]*"[^>]*>(?:<[^>]+>)?([^<]+)',
+            card_html,
+        )
+        # R6-B4 fix: parse full adr block
+        adr_m = re.search(
+            r'class="adr"[^>]*>(.*?)</p>', card_html, re.DOTALL,
+        )
+        if adr_m:
+            adr_text = re.sub(r'<[^>]+>', ' ', adr_m.group(1)).strip()
+            adr_text = re.sub(r'\s+', ' ', adr_text)
+        else:
+            adr_text = ""
+
+        name = name_m.group(1).strip() if name_m else ""
+        phone = phone_m.group(1).strip() if phone_m else ""
+
+        # R6-B9 fix: extract emails from card
+        emails = extract_emails(card_html)
+        email = emails[0] if emails else ""
+
+        if name or phone:
+            results.append({
+                "name": name,
+                "phone": phone,
+                "email": email,
+                "address": adr_text,
+                "platform": "yellowpages",
+                "source_url": url,
+                "keyword": query,
+                "category": "business_directory",
+            })
+
+    return results
 
 
 async def scrape_yellowpages_direct(
@@ -29,8 +154,8 @@ async def scrape_yellowpages_direct(
 ) -> list[dict]:
     """Scrape YellowPages via DIRECT HTTP — 30 businesses per page with phones.
 
-    Parses each listing card as a unit to avoid field garbling from
-    independent flat-list zipping (fix for known data-concatenation bug).
+    R6 rewrite: Uses BeautifulSoup for reliable card parsing.
+    Falls back to improved regex if bs4 is not installed.
     """
     leads: list[dict] = []
     loop = asyncio.get_running_loop()
@@ -41,10 +166,12 @@ async def scrape_yellowpages_direct(
             search_terms = query.replace(" ", "+")
             geo = location.replace(" ", "+") if location else "United+States"
             pages_to_fetch = min((max_results // 30) + 1, 3)
+            # R6-B6 fix: warn if max_results > 90 (3 pages × 30)
+            if max_results > 90:
+                logger.warning("YP direct: capped at 90 results (3 pages)")
 
-            # NEW-5 fix: reuse one AdSession across all pages for connection
-            # reuse, consistent fingerprint, and proper rate limiting
-            with AdSession(timeout=15.0, min_delay=2.0) as ad_session:
+            # R6-B7 fix: add Referer, Accept-Language, cookie persistence
+            with AdSession(timeout=15.0, min_delay=2.0, max_delay=5.0) as ad_session:
                 for page_num in range(1, pages_to_fetch + 1):
                     url = (
                         f"https://www.yellowpages.com/search?"
@@ -54,62 +181,41 @@ async def scrape_yellowpages_direct(
                         url += f"&page={page_num}"
 
                     try:
-                        resp = ad_session.get(url)
+                        resp = ad_session.get(
+                            url,
+                            headers={
+                                "Referer": "https://www.yellowpages.com/",
+                                "Accept-Language": "en-US,en;q=0.9",
+                            },
+                        )
                         if resp.status_code != 200:
                             logger.debug("YP page %d: HTTP %d", page_num, resp.status_code)
                             continue
 
                         html = resp.text
 
-                        # Parse each listing card as a unit to avoid field garbling.
-                        # Uses O(n) re.split — no backtracking possible.
-                        # Unified regex covers both result/info and srp-listing classes.
-                        chunks = _CARD_BOUNDARY_PRIMARY.split(html)
-                        # First chunk is before the first card — skip it
-                        cards = chunks[1:] if len(chunks) > 1 else []
+                        # R6-B1 fix: use BeautifulSoup if available
+                        if _bs4_available:
+                            page_results = _parse_yp_page_bs4(html, url, query)
+                        else:
+                            page_results = _parse_yp_page_regex(html, url, query)
 
-                        for card_html in cards:
-                            # Extract fields WITHIN each card
-                            name_m = re.search(
-                                r'class="business-name"[^>]*>.*?<span>([^<]+)</span>',
-                                card_html, re.DOTALL,
-                            )
-                            phone_m = re.search(
-                                r'class="phones[^"]*"[^>]*>([^<]+)', card_html,
-                            )
-                            addr_m = re.search(
-                                r'class="street-address"[^>]*>([^<]+)', card_html,
-                            )
-                            city_m = re.search(
-                                r'class="locality"[^>]*>([^<]+)', card_html,
-                            )
-
-                            name = name_m.group(1).strip() if name_m else ""
-                            phone = phone_m.group(1).strip() if phone_m else ""
-                            addr = addr_m.group(1).strip() if addr_m else ""
-                            city = city_m.group(1).strip() if city_m else ""
-                            full_addr = f"{addr}, {city}" if addr and city else addr or city
-
-                            if name or phone:
-                                results.append({
-                                    "name": name, "phone": phone, "email": "",
-                                    "address": full_addr, "platform": "yellowpages",
-                                    "source_url": url, "keyword": query,
-                                    "category": "business_directory",
-                                })
-
-                        if not cards:
+                        # R6-B8 fix: sanity check card count
+                        if len(page_results) < 3:
                             logger.warning(
-                                "YP page %d: 0 listing cards found — HTML structure may have changed",
-                                page_num,
+                                "YP page %d: only %d cards — selector may be wrong",
+                                page_num, len(page_results),
                             )
+
+                        results.extend(page_results)
 
                     except Exception as e:
                         logger.warning("YP direct page %d error: %s", page_num, e)
 
             return results
 
-        leads = await loop.run_in_executor(None, _fetch_yp)
+        # V-R1 fix: use bounded executor instead of default
+        leads = await loop.run_in_executor(_YP_EXECUTOR, _fetch_yp)
     except Exception as e:
         logger.warning("YellowPages direct scraping failed: %s", e)
 
@@ -125,32 +231,35 @@ async def scrape_yellowpages(
         logger.info("YP direct: got %d leads for '%s'", len(leads), query)
         return leads
 
+    # R6-B11 fix: dorking fallback emits one lead per result (not per email/phone)
     logger.info("YP direct returned 0, falling back to dorking for '%s'", query)
     try:
-        from app.services.google_dorking import dorking_search_multi
+        from app.services.multi_engine_search import free_search_waterfall
         search_query = f"{query} {location}".strip()
-        dork_keywords = [
+        dork_queries = [
             f'site:yellowpages.com "{search_query}"',
-            f'site:yellowpages.com {query} {location} phone email',
+            f'site:yellowpages.com "{query}" "{location}" phone',
         ]
-        results = await dorking_search_multi(
-            keywords=dork_keywords, platforms=["yellowpages"],
-            pages=min(max_results // 10, 5), delay=delay,
-            use_patchright=True, headless=True,
-        )
-        for result in results:
-            for email in result.get("emails", []):
+        # V-R3 fix: dedup across dork queries to prevent duplicate leads
+        seen_urls: set[str] = set()
+        for dork in dork_queries:
+            results = free_search_waterfall(dork, num_results=15, min_results=2)
+            for r in results:
+                link = r.get("link", "")
+                if link and link in seen_urls:
+                    continue
+                if link:
+                    seen_urls.add(link)
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                emails_found = extract_emails(text)
+                phones_found = extract_phones(text)
+                # R6-B11 fix: emit one unified lead per result
                 leads.append({
-                    "email": email, "phone": "", "name": "",
+                    "email": emails_found[0] if emails_found else "",
+                    "phone": phones_found[0] if phones_found else "",
+                    "name": r.get("title", ""),
                     "platform": "yellowpages",
-                    "source_url": result.get("sources", [""])[0],
-                    "keyword": query, "category": "business_directory",
-                })
-            for phone in result.get("phones", []):
-                leads.append({
-                    "email": "", "phone": phone, "name": "",
-                    "platform": "yellowpages",
-                    "source_url": result.get("sources", [""])[0],
+                    "source_url": link,
                     "keyword": query, "category": "business_directory",
                 })
     except Exception as e:
@@ -207,7 +316,8 @@ async def scrape_yelp_fusion(
                 logger.debug("Yelp API error: %s", e)
             return results
 
-        leads = await loop.run_in_executor(None, _fetch_yelp)
+        # V-R1 fix: use bounded executor instead of default
+        leads = await loop.run_in_executor(_YP_EXECUTOR, _fetch_yelp)
     except Exception as e:
         logger.warning("Yelp Fusion API failed: %s", e)
 
@@ -225,32 +335,34 @@ async def scrape_yelp(
             logger.info("Yelp Fusion: got %d leads for '%s'", len(leads), query)
             return leads
 
+    # R6-B11 fix: dorking fallback emits one lead per result
     leads: list[dict] = []
     try:
-        from app.services.google_dorking import dorking_search_multi
+        from app.services.multi_engine_search import free_search_waterfall
         search_query = f"{query} {location}".strip()
-        dork_keywords = [
+        dork_queries = [
             f'site:yelp.com "{search_query}"',
-            f'site:yelp.com {query} {location} phone email',
+            f'site:yelp.com "{query}" "{location}" business',
         ]
-        results = await dorking_search_multi(
-            keywords=dork_keywords, platforms=["yelp"],
-            pages=min(max_results // 10, 5), delay=delay,
-            use_patchright=True, headless=True,
-        )
-        for result in results:
-            for email in result.get("emails", []):
+        # V-R3 fix: dedup across dork queries to prevent duplicate leads
+        seen_urls: set[str] = set()
+        for dork in dork_queries:
+            results = free_search_waterfall(dork, num_results=15, min_results=2)
+            for r in results:
+                link = r.get("link", "")
+                if link and link in seen_urls:
+                    continue
+                if link:
+                    seen_urls.add(link)
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                emails_found = extract_emails(text)
+                phones_found = extract_phones(text)
                 leads.append({
-                    "email": email, "phone": "", "name": "",
+                    "email": emails_found[0] if emails_found else "",
+                    "phone": phones_found[0] if phones_found else "",
+                    "name": r.get("title", ""),
                     "platform": "yelp",
-                    "source_url": result.get("sources", [""])[0],
-                    "keyword": query, "category": "business_directory",
-                })
-            for phone in result.get("phones", []):
-                leads.append({
-                    "email": "", "phone": phone, "name": "",
-                    "platform": "yelp",
-                    "source_url": result.get("sources", [""])[0],
+                    "source_url": link,
                     "keyword": query, "category": "business_directory",
                 })
     except Exception as e:
@@ -268,7 +380,8 @@ async def scrape_directories(
         sources = ["yellowpages", "yelp"]
 
     all_leads: list[dict] = []
-    per_source = max_results // len(sources)
+    # R6-B13 fix: use full max_results per source, let final slice deduplicate
+    per_source = max_results
 
     for source in sources:
         if source == "yellowpages":
