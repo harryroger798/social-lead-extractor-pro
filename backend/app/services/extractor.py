@@ -66,7 +66,7 @@ def extract_phones(text: str) -> list[str]:
     for phone in phones:
         raw = phone.strip()
         # Reject GPS coordinate-like patterns (e.g., 72.8777, -37.7749)
-        if _PHONE_FALSE_POSITIVE.match(raw):
+        if _PHONE_FALSE_POSITIVE.fullmatch(raw):
             continue
         # Clean up the phone number — strip everything except digits for dedup
         # (N2 fix: don't keep '+' in dedup key so +14155551234 and 14155551234 dedup correctly)

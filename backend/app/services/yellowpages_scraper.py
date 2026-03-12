@@ -10,16 +10,16 @@ import logging
 import re
 from typing import Optional
 
+from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
 
 logger = logging.getLogger(__name__)
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+# NEW-1/NEW-2 fix: compile card boundary regexes at module level (not per-loop).
+# Covers both class patterns used by YellowPages: result/info AND srp-listing.
+_CARD_BOUNDARY_PRIMARY = re.compile(
+    r'<(?:div|article)[^>]*class="[^"]*(?:result|info|srp-listing)[^"]*"[^>]*>',
+)
 
 
 async def scrape_yellowpages_direct(
@@ -42,80 +42,70 @@ async def scrape_yellowpages_direct(
             geo = location.replace(" ", "+") if location else "United+States"
             pages_to_fetch = min((max_results // 30) + 1, 3)
 
-            for page_num in range(1, pages_to_fetch + 1):
-                url = (
-                    f"https://www.yellowpages.com/search?"
-                    f"search_terms={search_terms}&geo_location_terms={geo}"
-                )
-                if page_num > 1:
-                    url += f"&page={page_num}"
-
-                try:
-                    from app.services.anti_detection import AdSession
-                    with AdSession(timeout=15.0, min_delay=2.0) as ad_session:
-                        resp = ad_session.get(url)
-                    if resp.status_code != 200:
-                        logger.debug("YP page %d: HTTP %d", page_num, resp.status_code)
-                        continue
-
-                    html = resp.text
-
-                    # Parse each listing card as a unit to avoid field garbling.
-                    # N6/R3 fix: use re.split on card boundaries then extract
-                    # fields from each chunk — O(n) and backtrack-safe.
-                    _CARD_BOUNDARY = re.compile(
-                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>',
+            # NEW-5 fix: reuse one AdSession across all pages for connection
+            # reuse, consistent fingerprint, and proper rate limiting
+            with AdSession(timeout=15.0, min_delay=2.0) as ad_session:
+                for page_num in range(1, pages_to_fetch + 1):
+                    url = (
+                        f"https://www.yellowpages.com/search?"
+                        f"search_terms={search_terms}&geo_location_terms={geo}"
                     )
-                    chunks = _CARD_BOUNDARY.split(html)
-                    # First chunk is before the first card — skip it
-                    cards = chunks[1:] if len(chunks) > 1 else []
+                    if page_num > 1:
+                        url += f"&page={page_num}"
 
-                    if not cards:
-                        # R3-4 fix: fallback uses <article> open tag (not <div>)
-                        # since YP may use <article class="srp-listing"> for cards
-                        cards = re.findall(
-                            r'<(?:article|div)[^>]*class="[^"]*srp-listing[^"]*"[^>]*>(.*?)(?=<(?:article|div)[^>]*class="[^"]*srp-listing|$)',
-                            html, re.DOTALL,
-                        )
+                    try:
+                        resp = ad_session.get(url)
+                        if resp.status_code != 200:
+                            logger.debug("YP page %d: HTTP %d", page_num, resp.status_code)
+                            continue
 
-                    for card_html in cards:
-                        # Extract fields WITHIN each card
-                        name_m = re.search(
-                            r'class="business-name"[^>]*>.*?<span>([^<]+)</span>',
-                            card_html, re.DOTALL,
-                        )
-                        phone_m = re.search(
-                            r'class="phones[^"]*"[^>]*>([^<]+)', card_html,
-                        )
-                        addr_m = re.search(
-                            r'class="street-address"[^>]*>([^<]+)', card_html,
-                        )
-                        city_m = re.search(
-                            r'class="locality"[^>]*>([^<]+)', card_html,
-                        )
+                        html = resp.text
 
-                        name = name_m.group(1).strip() if name_m else ""
-                        phone = phone_m.group(1).strip() if phone_m else ""
-                        addr = addr_m.group(1).strip() if addr_m else ""
-                        city = city_m.group(1).strip() if city_m else ""
-                        full_addr = f"{addr}, {city}" if addr and city else addr or city
+                        # Parse each listing card as a unit to avoid field garbling.
+                        # Uses O(n) re.split — no backtracking possible.
+                        # Unified regex covers both result/info and srp-listing classes.
+                        chunks = _CARD_BOUNDARY_PRIMARY.split(html)
+                        # First chunk is before the first card — skip it
+                        cards = chunks[1:] if len(chunks) > 1 else []
 
-                        if name or phone:
-                            results.append({
-                                "name": name, "phone": phone, "email": "",
-                                "address": full_addr, "platform": "yellowpages",
-                                "source_url": url, "keyword": query,
-                                "category": "business_directory",
-                            })
+                        for card_html in cards:
+                            # Extract fields WITHIN each card
+                            name_m = re.search(
+                                r'class="business-name"[^>]*>.*?<span>([^<]+)</span>',
+                                card_html, re.DOTALL,
+                            )
+                            phone_m = re.search(
+                                r'class="phones[^"]*"[^>]*>([^<]+)', card_html,
+                            )
+                            addr_m = re.search(
+                                r'class="street-address"[^>]*>([^<]+)', card_html,
+                            )
+                            city_m = re.search(
+                                r'class="locality"[^>]*>([^<]+)', card_html,
+                            )
 
-                    if not cards:
-                        logger.warning(
-                            "YP page %d: 0 listing cards found — HTML structure may have changed",
-                            page_num,
-                        )
+                            name = name_m.group(1).strip() if name_m else ""
+                            phone = phone_m.group(1).strip() if phone_m else ""
+                            addr = addr_m.group(1).strip() if addr_m else ""
+                            city = city_m.group(1).strip() if city_m else ""
+                            full_addr = f"{addr}, {city}" if addr and city else addr or city
 
-                except Exception as e:
-                    logger.warning("YP direct page %d error: %s", page_num, e)
+                            if name or phone:
+                                results.append({
+                                    "name": name, "phone": phone, "email": "",
+                                    "address": full_addr, "platform": "yellowpages",
+                                    "source_url": url, "keyword": query,
+                                    "category": "business_directory",
+                                })
+
+                        if not cards:
+                            logger.warning(
+                                "YP page %d: 0 listing cards found — HTML structure may have changed",
+                                page_num,
+                            )
+
+                    except Exception as e:
+                        logger.warning("YP direct page %d error: %s", page_num, e)
 
             return results
 
@@ -191,7 +181,6 @@ async def scrape_yelp_fusion(
             }
             headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
             try:
-                from app.services.anti_detection import AdSession
                 # R3-1 fix: use AdSession for SSRF protection + retries
                 # rate_limit=False because Yelp handles its own 5K/day quota
                 with AdSession(timeout=15.0, rate_limit=False) as ad_sess:
