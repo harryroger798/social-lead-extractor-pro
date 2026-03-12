@@ -2308,11 +2308,11 @@ async def generate_pdf_report(
 
 @router.post("/directories/search")
 async def search_directories(
+    background_tasks: BackgroundTasks,
     query: str,
     location: str = "",
     sources: str = "yellowpages,yelp",
     max_results: int = 50,
-    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search YellowPages, Yelp, and other business directories."""
     session_id = str(uuid.uuid4())
@@ -2515,11 +2515,11 @@ async def get_supported_languages() -> list[dict]:
 
 @router.post("/jobs/search")
 async def search_job_boards(
+    background_tasks: BackgroundTasks,
     query: str,
     location: str = "",
     sources: str = "indeed,glassdoor",
     max_results: int = 50,
-    background_tasks: BackgroundTasks,
 ) -> dict:
     """Search Indeed, Glassdoor, Craigslist, OLX for leads."""
     session_id = str(uuid.uuid4())
