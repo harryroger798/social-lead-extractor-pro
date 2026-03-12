@@ -53,6 +53,15 @@ from app.services.license_service import (
 from app.services.keyword_parser import parse_keyword
 from app.services.live_scrapers import live_scrape_platform
 from app.services.quality_scorer import score_lead_quality, batch_score_leads
+# v3.5.4 B2B platform scrapers + Waterfall Enrichment
+from app.services.b2b_scrapers import (
+    b2b_scrape_platform,
+    get_available_b2b_platforms,
+)
+from app.services.waterfall_enrichment import (
+    enrich_leads_batch_waterfall,
+    merge_and_deduplicate_leads,
+)
 from app.services.features import (
     find_emails_by_domain,
     scrape_directories as scrape_directories_v2,
@@ -562,6 +571,64 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     f"Bio links done — {_count_leads()[0]} leads", "", *_count_leads())
             except Exception as e:
                 logger.warning("Bio link following failed: %s", e)
+
+        # ── v3.5.4: B2B Platform Scraping ─────────────────────────────────
+        # Dedicated scrapers for IndiaMART, Apollo, TradeIndia, ExportersIndia,
+        # JustDial, Google Maps B2B, RocketReach, Crunchbase
+        b2b_platforms = [
+            p for p in config.platforms
+            if p in (
+                "indiamart", "apollo", "tradeindia", "exportersindia",
+                "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
+            )
+        ]
+        if b2b_platforms:
+            import asyncio as _aio_b2b
+            loop_b2b = _aio_b2b.get_running_loop()
+            for idx, platform in enumerate(b2b_platforms):
+                await _update_progress(session_id, _calc_progress(),
+                    f"B2B scraping: {platform} ({idx+1}/{len(b2b_platforms)})...",
+                    platform, *_count_leads())
+                try:
+                    for kw_parsed in parsed_keywords:
+                        search_query = kw_parsed.keyword
+                        loc = kw_parsed.location or location_hint
+                        if loc:
+                            search_query = f"{kw_parsed.keyword} {loc}"
+                        b2b_leads = await loop_b2b.run_in_executor(
+                            None, b2b_scrape_platform, platform,
+                            search_query, loc, 50,
+                        )
+                        all_leads.extend(b2b_leads)
+                except Exception as e:
+                    logger.warning("B2B scraping %s failed: %s", platform, e)
+                await _update_progress(session_id, _calc_progress(),
+                    f"B2B scraping: {platform} done — {_count_leads()[0]} leads",
+                    platform, *_count_leads())
+            current_step += 1
+
+        # ── v3.5.4: Waterfall Enrichment ────────────────────────────────────
+        # Auto-fill missing email/phone/LinkedIn via Hunter, GitHub, website crawl
+        if all_leads:
+            await _update_progress(session_id, _calc_progress(),
+                "Waterfall enrichment: filling missing fields...", "enrichment", *_count_leads())
+            try:
+                import asyncio as _aio_enrich
+                loop_enrich = _aio_enrich.get_running_loop()
+                enriched_leads = await loop_enrich.run_in_executor(
+                    None, enrich_leads_batch_waterfall,
+                    all_leads, 30, False, False, False,
+                )
+                # Merge and deduplicate across all sources
+                all_leads = await loop_enrich.run_in_executor(
+                    None, merge_and_deduplicate_leads, enriched_leads,
+                )
+                await _update_progress(session_id, _calc_progress(),
+                    f"Enrichment done — {_count_leads()[0]} leads (deduped)",
+                    "enrichment", *_count_leads())
+            except Exception as e:
+                logger.warning("Waterfall enrichment failed: %s", e)
+            current_step += 1
 
         # ── Firecrawl enrichment ──────────────────────────────────────────
         if config.use_firecrawl_enrichment:
