@@ -486,33 +486,33 @@ def scrape_instagram(
     # Follow bio links to extract contact info (reuse session)
     seen_domains: set[str] = set()
     with AdSession(timeout=10.0, min_delay=2.0) as session:
-      for bio_url in bio_links[:5]:
-        try:
-            domain = urlparse(bio_url).netloc.lower()
-            base_domain = ".".join(domain.split(".")[-2:])
-            if base_domain in seen_domains:
-                continue
-            seen_domains.add(base_domain)
+        for bio_url in bio_links[:5]:
+            try:
+                domain = urlparse(bio_url).netloc.lower()
+                base_domain = ".".join(domain.split(".")[-2:])
+                if base_domain in seen_domains:
+                    continue
+                seen_domains.add(base_domain)
 
-            resp = session.get(bio_url)
-            if resp.status_code != 200:
-                continue
+                resp = session.get(bio_url)
+                if resp.status_code != 200:
+                    continue
 
-            page_text = _strip_tags(resp.text[:100_000])
-            for email in extract_emails(page_text):
-                leads.append({
-                    "email": email, "phone": "", "name": "",
-                    "platform": "instagram",
-                    "source_url": bio_url,
-                })
-            for phone in extract_phones(page_text):
-                leads.append({
-                    "email": "", "phone": phone, "name": "",
-                    "platform": "instagram",
-                    "source_url": bio_url,
-                })
-        except Exception as exc:
-            logger.debug("Instagram bio link error: %s", exc)
+                page_text = _strip_tags(resp.text[:100_000])
+                for email in extract_emails(page_text):
+                    leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "instagram",
+                        "source_url": bio_url,
+                    })
+                for phone in extract_phones(page_text):
+                    leads.append({
+                        "email": "", "phone": phone, "name": "",
+                        "platform": "instagram",
+                        "source_url": bio_url,
+                    })
+            except Exception as exc:
+                logger.debug("Instagram bio link error: %s", exc)
 
     logger.info("Instagram live scrape: %d leads", len(leads))
     return _dedup_leads(leads)[:max_results]

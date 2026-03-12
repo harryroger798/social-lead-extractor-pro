@@ -383,7 +383,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # Replaces Selenium/Patchright — 100% ban-free, no browser automation
         live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
         if live_platforms:
-            import asyncio as _aio_live
+            # V-R1 fix: import asyncio at block top, not inside loop
+            import asyncio as _aio_live  # noqa: E402
             loop = _aio_live.get_running_loop()
             for idx, platform in enumerate(live_platforms):
                 await _update_progress(session_id, _calc_progress(),

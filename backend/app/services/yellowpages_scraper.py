@@ -11,10 +11,14 @@ to fix the garbled output bug ("72812info@dentzz.comShantanu").
 import asyncio
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
+
+# V-R1 fix: bounded executor for YP/Yelp scraping (avoids unbounded default)
+_YP_EXECUTOR = ThreadPoolExecutor(max_workers=3, thread_name_prefix="yp-scrape")
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +211,8 @@ async def scrape_yellowpages_direct(
 
             return results
 
-        leads = await loop.run_in_executor(None, _fetch_yp)
+        # V-R1 fix: use bounded executor instead of default
+        leads = await loop.run_in_executor(_YP_EXECUTOR, _fetch_yp)
     except Exception as e:
         logger.warning("YellowPages direct scraping failed: %s", e)
 
@@ -302,7 +307,8 @@ async def scrape_yelp_fusion(
                 logger.debug("Yelp API error: %s", e)
             return results
 
-        leads = await loop.run_in_executor(None, _fetch_yelp)
+        # V-R1 fix: use bounded executor instead of default
+        leads = await loop.run_in_executor(_YP_EXECUTOR, _fetch_yelp)
     except Exception as e:
         logger.warning("Yelp Fusion API failed: %s", e)
 

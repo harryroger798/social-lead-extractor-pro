@@ -94,7 +94,13 @@ def extract_phones(text: str) -> list[str]:
 
 
 def classify_email(email: str) -> str:
-    """Classify email as personal, business, or unknown."""
+    """Classify email as personal, business, or unknown.
+
+    V-R1 fix: guard against emails without '@' to avoid treating
+    the whole string as the domain.
+    """
+    if '@' not in email:
+        return 'unknown'
     personal_domains = {
         'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
         'aol.com', 'icloud.com', 'mail.com', 'protonmail.com',
@@ -113,9 +119,11 @@ def score_lead(email: str, phone: str, name: str, verified: bool) -> int:
     score = 0
     if email:
         score += 30
-        if classify_email(email) == 'business':
+        # V-R1 fix: call classify_email once to avoid redundant work
+        email_type = classify_email(email)
+        if email_type == 'business':
             score += 15
-        elif classify_email(email) == 'personal':
+        elif email_type == 'personal':
             score += 10
     if phone:
         score += 20

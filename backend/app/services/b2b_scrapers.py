@@ -78,17 +78,20 @@ def _strip_tags(text: str) -> str:
 
 
 def _dedup_leads(leads: list[dict]) -> list[dict]:
-    """Remove duplicate leads by (email, phone, name, source_url) tuple."""
-    seen: set[tuple[str, str, str, str]] = set()
+    """Remove duplicate leads by (email, phone, name) tuple.
+
+    V-R1 fix: removed source_url from dedup key so the same contact
+    found via two different URLs is correctly deduplicated.
+    """
+    seen: set[tuple[str, str, str]] = set()
     unique: list[dict] = []
     for lead in leads:
         key = (
             lead.get("email") or "",
             lead.get("phone") or "",
             lead.get("name") or "",
-            lead.get("source_url") or "",
         )
-        if key == ("", "", "", ""):
+        if key == ("", "", ""):
             continue
         if key not in seen:
             seen.add(key)
