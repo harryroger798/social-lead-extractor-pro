@@ -171,6 +171,7 @@ def _browser_headers(
 _domain_lock = threading.Lock()
 _domain_last_request: dict[str, float] = {}
 _DEFAULT_DELAY = 2.0  # seconds between requests to the same domain
+_MAX_QUEUE_DELAY = 10.0  # cap max queued delay to prevent unbounded accumulation
 
 
 def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
@@ -188,9 +189,22 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
             jitter = random.uniform(0.1, 0.5)
             sleep_time = min_delay - elapsed + jitter
         # Reserve this time slot so concurrent threads see the updated timestamp
-        _domain_last_request[domain] = now + sleep_time
+        _domain_last_request[domain] = min(now + sleep_time, now + _MAX_QUEUE_DELAY)
     if sleep_time > 0:
-        time.sleep(sleep_time)
+        time.sleep(min(sleep_time, 10.0))
+
+
+def _validate_url_scheme(url: str) -> bool:
+    """Validate that a URL uses an allowed scheme (http or https only).
+
+    Rejects file://, ftp://, gopher://, data:, etc. to prevent SSRF
+    via scheme confusion.
+    """
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme.lower() in ("http", "https")
+    except Exception:
+        return False
 
 
 def _extract_domain(url: str) -> str:
@@ -238,33 +252,49 @@ class AdSession:
                 (p for p in _FINGERPRINT_PROFILES if p["impersonate"] == impersonate),
                 None,
             )
-            self._impersonate = impersonate
-            self._ua = matched["ua"] if matched else profile["ua"]
+            if matched:
+                self._impersonate = matched["impersonate"]
+                self._ua = matched["ua"]
+            else:
+                # N3 fix: unrecognized impersonate target — fall back to random profile
+                # to avoid passing unknown string to curl_cffi which may raise ValueError
+                logger.warning(
+                    "Unknown impersonate target %r — using random profile", impersonate
+                )
+                self._impersonate = profile["impersonate"]
+                self._ua = profile["ua"]
         else:
             self._impersonate = profile["impersonate"]
             self._ua = profile["ua"]
         # Fix R2-8: Accept-Language is consistent per session (not randomised per request)
         self._accept_language = random.choice(_ACCEPT_LANGUAGES)
 
+        # R3-3 fix: pass accept_lang to session-level headers so they match
+        # the per-request headers (avoids stale random Accept-Language in session)
+        _init_headers = _browser_headers(
+            self._ua, accept_lang=self._accept_language,
+            impersonate=self._impersonate,
+        )
+
         if _HAS_CURL_CFFI and CffiSession is not None:
             try:
                 self._session = CffiSession(
                     impersonate=self._impersonate,
                     timeout=timeout,
-                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                    headers=_init_headers,
                 )
             except TypeError:
                 # Older curl_cffi versions don't accept timeout in constructor
                 self._session = CffiSession(
                     impersonate=self._impersonate,
-                    headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                    headers=_init_headers,
                 )
             self._backend = "curl_cffi"
         elif httpx is not None:
             self._session = httpx.Client(
                 follow_redirects=True,
                 timeout=timeout,
-                headers=_browser_headers(self._ua, impersonate=self._impersonate),
+                headers=_init_headers,
             )
             self._backend = "httpx"
         else:
@@ -296,6 +326,8 @@ class AdSession:
         timeout: Optional[float] = None,
     ) -> Any:
         """Perform GET request with anti-detection and retry logic."""
+        if not _validate_url_scheme(url):
+            raise ValueError(f"Blocked non-HTTP(S) URL scheme: {url[:80]}")
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
@@ -361,6 +393,8 @@ class AdSession:
         timeout: Optional[float] = None,
     ) -> Any:
         """Perform POST request with anti-detection and retry logic."""
+        if not _validate_url_scheme(url):
+            raise ValueError(f"Blocked non-HTTP(S) URL scheme: {url[:80]}")
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 

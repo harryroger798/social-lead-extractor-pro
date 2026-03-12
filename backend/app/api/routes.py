@@ -650,6 +650,13 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await _update_progress(session_id, _calc_progress(),
                 f"Firecrawl done — {_count_leads()[0]} leads total", "", *_count_leads())
 
+        # Log platform-level summary so 0-result failures are visible
+        if not all_leads:
+            logger.warning(
+                "Session %s: 0 leads found across all stages (DB search, live scraping, "
+                "dorking, B2B, enrichment). Keywords=%s, Platforms=%s",
+                session_id, config.keywords, config.platforms,
+            )
         await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
 
         # Process leads: classify, score, verify, and store

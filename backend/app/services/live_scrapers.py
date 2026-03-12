@@ -71,10 +71,10 @@ def _dedup_leads(leads: list[dict]) -> list[dict]:
 
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags and decode entities, inserting spaces between fields."""
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)  # space, not empty string
     cleaned = _html_mod.unescape(cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 
@@ -889,21 +889,29 @@ def _scrape_yelp_http(
                 if isinstance(data, list):
                     for item in data:
                         if item.get("@type") in ("LocalBusiness", "Restaurant", "Store"):
+                            phone = item.get("telephone", "")
+                            # Yelp sometimes puts geo coordinates in telephone field
+                            # Reject if it looks like GPS coords (e.g. "37.7749")
+                            if phone and re.match(r'^-?\d{1,3}\.\d{4,}$', phone):
+                                phone = ""
                             leads.append({
                                 "name": item.get("name", ""),
-                                "phone": item.get("telephone", ""),
+                                "phone": phone,
                                 "email": "",
-                                "platform": "google_maps",
+                                "platform": "yelp",
                                 "source_url": item.get("url", ""),
                                 "location": str(item.get("address", "")),
                             })
                 elif isinstance(data, dict):
                     if data.get("@type") in ("LocalBusiness", "Restaurant", "Store"):
+                        phone = data.get("telephone", "")
+                        if phone and re.match(r'^-?\d{1,3}\.\d{4,}$', phone):
+                            phone = ""
                         leads.append({
                             "name": data.get("name", ""),
-                            "phone": data.get("telephone", ""),
+                            "phone": phone,
                             "email": "",
-                            "platform": "google_maps",
+                            "platform": "yelp",
                             "source_url": data.get("url", ""),
                             "location": str(data.get("address", "")),
                         })
@@ -916,7 +924,7 @@ def _scrape_yelp_http(
             for phone in phones[:max_results]:
                 leads.append({
                     "name": "", "phone": phone, "email": "",
-                    "platform": "google_maps",
+                    "platform": "yelp",
                     "source_url": "https://www.yelp.com",
                 })
 
