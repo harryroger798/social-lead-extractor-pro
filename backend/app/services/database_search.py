@@ -28,10 +28,13 @@ def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
 
     Removes all characters except alphanumeric, spaces, hyphens, and dots.
-    This prevents SQL injection via crafted keywords.
+    Also removes SQL wildcards (% and _) to prevent injection via LIKE patterns.
     """
     # Only allow safe characters in search terms
     cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
+    # Also strip SQL LIKE wildcards that survived (% and _ are already stripped
+    # by the regex above, but belt-and-suspenders)
+    cleaned = cleaned.replace("%", "").replace("_", "")
     return cleaned.strip().lower()
 
 # ─── S3 Configuration ────────────────────────────────────────────────────────
@@ -319,6 +322,10 @@ def _build_linkedin_query(
     if loc_lower and loc_lower not in _COUNTRY_ALIASES and loc_lower not in {
         c.lower().replace("_", " ") for c in _KNOWN_COUNTRIES
     }:
+        # loc_lower is already sanitized via _sanitize_sql_term which strips
+        # all non-alphanumeric chars except spaces, hyphens, and dots.
+        # DuckDB's read_csv_auto doesn't support parameterized queries,
+        # so we rely on strict sanitization instead.
         loc_filter = f" AND (LOWER(city) LIKE '%{loc_lower}%' OR LOWER(state) LIKE '%{loc_lower}%')"
 
     where_clause = f"({' OR '.join(where_parts)}){loc_filter}"

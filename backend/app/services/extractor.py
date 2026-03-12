@@ -10,6 +10,13 @@ PHONE_PATTERN = re.compile(
     r'(?:\+?\d{1,3}[\s\-.]?)?\(?\d{2,4}\)?[\s\-.]?\d{3,4}[\s\-.]?\d{3,4}'
 )
 
+# Patterns that look like phone numbers but aren't (GPS coords, versions, IPs)
+_PHONE_FALSE_POSITIVE = re.compile(
+    r'^\-?\d{1,3}\.\d{4,}$'      # GPS coordinates like 72.8777 or -37.7749
+    r'|^\d+\.\d+\.\d+'            # Version numbers / IPs like 3.5.4 or 192.168.1.1
+    r'|^0\.\d+'                     # CSS/decimal values like 0.9
+)
+
 # Common false-positive email patterns to filter out
 EMAIL_BLACKLIST_PATTERNS = [
     r'.*@example\.com$',
@@ -48,19 +55,27 @@ def extract_emails(text: str) -> list[str]:
 
 
 def extract_phones(text: str) -> list[str]:
-    """Extract unique phone numbers from text."""
+    """Extract unique phone numbers from text.
+
+    Filters out GPS coordinates, version numbers, IP addresses, and other
+    numeric patterns that match the phone regex but aren't phone numbers.
+    """
     phones = PHONE_PATTERN.findall(text)
     filtered = []
     seen = set()
     for phone in phones:
+        raw = phone.strip()
+        # Reject GPS coordinate-like patterns (e.g., 72.8777, -37.7749)
+        if _PHONE_FALSE_POSITIVE.match(raw):
+            continue
         # Clean up the phone number
-        cleaned = re.sub(r'[^\d+]', '', phone)
+        cleaned = re.sub(r'[^\d+]', '', raw)
         if len(cleaned) < 7 or len(cleaned) > 15:
             continue
         if cleaned in seen:
             continue
         seen.add(cleaned)
-        filtered.append(phone.strip())
+        filtered.append(raw)
     return filtered
 
 

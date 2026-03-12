@@ -69,10 +69,10 @@ def _is_private_ip(hostname: str) -> bool:
 
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags and decode entities, inserting spaces between fields."""
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)  # space, not empty string
     cleaned = _html_mod.unescape(cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 
@@ -145,8 +145,10 @@ def scrape_indiamart(
                     break
 
                 # Parse JSON-LD structured data (most reliable)
+                # Match both objects ({...}) and arrays ([...]) — previous regex
+                # only matched objects, missing ItemList arrays.
                 jsonld_blocks = re.findall(
-                    r'<script\s+type="application/ld\+json">\s*(\{.+?\})\s*</script>',
+                    r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
                     page_html,
                     re.DOTALL,
                 )
@@ -561,8 +563,9 @@ def scrape_tradeindia(
                     break
 
                 # Parse JSON-LD (TradeIndia uses structured data)
+                # Match both objects and arrays
                 jsonld_blocks = re.findall(
-                    r'<script\s+type="application/ld\+json">\s*(\{.+?\})\s*</script>',
+                    r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
                     page_html,
                     re.DOTALL,
                 )
@@ -831,9 +834,9 @@ def scrape_justdial(
                 if not page_html:
                     break
 
-                # Extract JSON-LD data if available
+                # Extract JSON-LD data if available (match objects and arrays)
                 jsonld_blocks = re.findall(
-                    r'<script\s+type="application/ld\+json">\s*(\{.+?\})\s*</script>',
+                    r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
                     page_html,
                     re.DOTALL,
                 )

@@ -193,6 +193,19 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
         time.sleep(sleep_time)
 
 
+def _validate_url_scheme(url: str) -> bool:
+    """Validate that a URL uses an allowed scheme (http or https only).
+
+    Rejects file://, ftp://, gopher://, data:, etc. to prevent SSRF
+    via scheme confusion.
+    """
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme.lower() in ("http", "https")
+    except Exception:
+        return False
+
+
 def _extract_domain(url: str) -> str:
     """Extract domain from URL for rate limiting."""
     try:
@@ -296,6 +309,8 @@ class AdSession:
         timeout: Optional[float] = None,
     ) -> Any:
         """Perform GET request with anti-detection and retry logic."""
+        if not _validate_url_scheme(url):
+            raise ValueError(f"Blocked non-HTTP(S) URL scheme: {url[:80]}")
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 
@@ -361,6 +376,8 @@ class AdSession:
         timeout: Optional[float] = None,
     ) -> Any:
         """Perform POST request with anti-detection and retry logic."""
+        if not _validate_url_scheme(url):
+            raise ValueError(f"Blocked non-HTTP(S) URL scheme: {url[:80]}")
         if self._rate_limit_enabled:
             _rate_limit(_extract_domain(url), self._min_delay)
 

@@ -28,9 +28,13 @@ async def scrape_yellowpages_direct(
     location: str = "",
     max_results: int = 50,
 ) -> list[dict]:
-    """Scrape YellowPages via DIRECT HTTP — 30 businesses per page with phones."""
+    """Scrape YellowPages via DIRECT HTTP — 30 businesses per page with phones.
+
+    Parses each listing card as a unit to avoid field garbling from
+    independent flat-list zipping (fix for known data-concatenation bug).
+    """
     leads: list[dict] = []
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
 
     try:
         def _fetch_yp() -> list[dict]:
@@ -50,23 +54,49 @@ async def scrape_yellowpages_direct(
                 try:
                     resp = requests.get(url, headers=HEADERS, timeout=15)
                     if resp.status_code != 200:
+                        logger.debug("YP page %d: HTTP %d", page_num, resp.status_code)
                         continue
 
                     html = resp.text
-                    names = re.findall(
-                        r'class="business-name"[^>]*>.*?<span>([^<]+)</span>',
-                        html, re.DOTALL,
-                    )
-                    phones = re.findall(r'class="phones[^"]*"[^>]*>([^<]+)', html)
-                    addresses = re.findall(r'class="street-address"[^>]*>([^<]+)', html)
-                    localities = re.findall(r'class="locality"[^>]*>([^<]+)', html)
 
-                    count = max(len(names), len(phones))
-                    for i in range(count):
-                        name = names[i].strip() if i < len(names) else ""
-                        phone = phones[i].strip() if i < len(phones) else ""
-                        addr = addresses[i].strip() if i < len(addresses) else ""
-                        city = localities[i].strip() if i < len(localities) else ""
+                    # Parse each listing card as a unit to avoid field garbling.
+                    # YellowPages wraps each business in a <div class="result">
+                    # or <div class="search-results organic"> containing all fields.
+                    card_pattern = re.compile(
+                        r'<div[^>]*class="[^"]*(?:result|info)"[^>]*>(.*?)'
+                        r'(?=<div[^>]*class="[^"]*(?:result|info)"[^>]*>|'
+                        r'<div[^>]*class="[^"]*pagination|$)',
+                        re.DOTALL,
+                    )
+                    cards = card_pattern.findall(html)
+
+                    if not cards:
+                        # Fallback: try simpler card boundary
+                        cards = re.findall(
+                            r'<div[^>]*class="[^"]*srp-listing[^"]*"[^>]*>(.*?)</article>',
+                            html, re.DOTALL,
+                        )
+
+                    for card_html in cards:
+                        # Extract fields WITHIN each card
+                        name_m = re.search(
+                            r'class="business-name"[^>]*>.*?<span>([^<]+)</span>',
+                            card_html, re.DOTALL,
+                        )
+                        phone_m = re.search(
+                            r'class="phones[^"]*"[^>]*>([^<]+)', card_html,
+                        )
+                        addr_m = re.search(
+                            r'class="street-address"[^>]*>([^<]+)', card_html,
+                        )
+                        city_m = re.search(
+                            r'class="locality"[^>]*>([^<]+)', card_html,
+                        )
+
+                        name = name_m.group(1).strip() if name_m else ""
+                        phone = phone_m.group(1).strip() if phone_m else ""
+                        addr = addr_m.group(1).strip() if addr_m else ""
+                        city = city_m.group(1).strip() if city_m else ""
                         full_addr = f"{addr}, {city}" if addr and city else addr or city
 
                         if name or phone:
@@ -76,8 +106,15 @@ async def scrape_yellowpages_direct(
                                 "source_url": url, "keyword": query,
                                 "category": "business_directory",
                             })
+
+                    if not cards:
+                        logger.warning(
+                            "YP page %d: 0 listing cards found — HTML structure may have changed",
+                            page_num,
+                        )
+
                 except Exception as e:
-                    logger.debug("YP direct page %d error: %s", page_num, e)
+                    logger.warning("YP direct page %d error: %s", page_num, e)
 
             return results
 

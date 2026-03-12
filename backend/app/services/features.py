@@ -71,10 +71,10 @@ def _vcard_escape(value: str) -> str:
 
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags."""
+    """Remove HTML tags, inserting a space so adjacent fields don't merge."""
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)  # space, not empty string
     cleaned = _html_mod.unescape(cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 

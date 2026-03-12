@@ -131,10 +131,15 @@ def _health(name: str) -> _EngineHealth:
 # ---------------------------------------------------------------------------
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags and decode entities.
+
+    Inserts a space when removing tags so adjacent text nodes don't concatenate
+    (e.g., ``<span>phone</span><span>email</span>`` → ``phone email`` not
+    ``phoneemail``).
+    """
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)  # space, not empty string
     cleaned = _html_mod.unescape(cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 
@@ -294,18 +299,10 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
     if not health.is_available:
         return []
 
+    # DDG Lite supports site: and OR operators natively — pass query through
+    # Previous code stripped these operators, destroying search quality for
+    # LinkedIn, job boards, and all platform-scoped dorking queries.
     ddg_query = query
-    if "site:" in query:
-        site_match = re.search(r"site:(\S+)", query)
-        domain = ""
-        if site_match:
-            domain = site_match.group(1).replace("/", " ").split(".")[0]
-        ddg_query = re.sub(r"site:\S+", "", query)
-        ddg_query = re.sub(r"\bOR\b", "", ddg_query, flags=re.IGNORECASE)
-        ddg_query = ddg_query.replace('"', "").replace("'", "")
-        ddg_query = re.sub(r"\s+", " ", ddg_query).strip()
-        if domain and domain.lower() not in ddg_query.lower():
-            ddg_query = f"{ddg_query} {domain}"
 
     try:
         with _make_client() as client:

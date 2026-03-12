@@ -44,10 +44,10 @@ logger = logging.getLogger(__name__)
 
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags and decode entities, inserting spaces between fields."""
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
     cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)  # space, not empty string
     cleaned = _html_mod.unescape(cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 
@@ -340,12 +340,9 @@ def enrich_via_website_crawl(
                     resp = session.get(url)
 
                     if resp.status_code != 200:
-                        # Try http if https fails
-                        if resp.status_code >= 400:
-                            url = f"http://{domain}{path}"
-                            resp = session.get(url)
-                            if resp.status_code != 200:
-                                continue
+                        # Do NOT fall back to HTTP — SSRF protection requires
+                        # HTTPS to prevent DNS rebinding and plaintext credential leaks
+                        continue
 
                     page_text = _strip_tags(resp.text[:200_000])
 
