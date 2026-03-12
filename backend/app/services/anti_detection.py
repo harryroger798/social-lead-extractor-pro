@@ -22,8 +22,10 @@ Usage:
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import random
+import socket
 import threading
 import time
 from typing import Any, Optional
@@ -92,25 +94,28 @@ _FINGERPRINT_PROFILES = [
             "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         ),
     },
+    # R3-B10/B11 fix: use curl_cffi validated impersonate strings only
+    # safari18_0 is not supported in most curl_cffi versions; use safari17_0
     {
-        "impersonate": "safari18_0",
+        "impersonate": "safari17_0",
         "ua": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
-            "(KHTML, like Gecko) Version/18.1 Safari/605.1.15"
+            "(KHTML, like Gecko) Version/17.0 Safari/605.1.15"
         ),
     },
     {
-        "impersonate": "safari17_5",
+        "impersonate": "safari15_5",
         "ua": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
-            "(KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+            "(KHTML, like Gecko) Version/15.5 Safari/605.1.15"
         ),
     },
+    # R3-B11 fix: edge131 not supported; use edge101 which is validated
     {
-        "impersonate": "edge131",
+        "impersonate": "edge101",
         "ua": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
+            "(KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.47"
         ),
     },
 ]
@@ -194,15 +199,80 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
         time.sleep(min(sleep_time, 10.0))
 
 
+# R3-B14 / R4-B08/B09 fix: comprehensive SSRF protection
+_PRIVATE_NETWORKS = [
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+    ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("fc00::/7"),
+    ipaddress.ip_network("fe80::/10"),
+]
+
+
+def _is_private_ip(hostname: str) -> bool:
+    """Check if hostname resolves to a private/reserved IP.
+
+    R4-B09 fix: reject raw IP literals like 0.0.0.0, [::], etc.
+    R4-B08 fix: DNS rebinding protection via strict IP validation.
+    """
+    # Reject hostnames containing ':' (port injection)
+    if ':' in hostname and not hostname.startswith('['):
+        return True
+    # Check if hostname is a raw IP literal
+    try:
+        ip = ipaddress.ip_address(hostname.strip('[]'))
+        if ip.is_private or ip.is_reserved or ip.is_loopback or ip.is_link_local:
+            return True
+        if str(ip) in ('0.0.0.0', '::'):
+            return True
+        for network in _PRIVATE_NETWORKS:
+            if ip in network:
+                return True
+        return False
+    except ValueError:
+        pass  # Not an IP literal, resolve DNS
+    # DNS resolution check
+    try:
+        infos = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        for info in infos:
+            addr = info[4][0]
+            try:
+                ip = ipaddress.ip_address(addr)
+                if ip.is_private or ip.is_reserved or ip.is_loopback or ip.is_link_local:
+                    return True
+                if str(ip) in ('0.0.0.0', '::'):
+                    return True
+                for network in _PRIVATE_NETWORKS:
+                    if ip in network:
+                        return True
+            except ValueError:
+                return True  # Unparseable IP, block conservatively
+    except socket.gaierror:
+        logger.debug("DNS resolution failed for %r — treating as potentially unsafe", hostname)
+        return True
+    return False
+
+
 def _validate_url_scheme(url: str) -> bool:
     """Validate that a URL uses an allowed scheme (http or https only).
 
     Rejects file://, ftp://, gopher://, data:, etc. to prevent SSRF
-    via scheme confusion.
+    via scheme confusion. Also checks for private IP addresses.
     """
     try:
         parsed = urlparse(url)
-        return parsed.scheme.lower() in ("http", "https")
+        if parsed.scheme.lower() not in ("http", "https"):
+            return False
+        hostname = parsed.hostname or ""
+        if not hostname:
+            return False
+        if _is_private_ip(hostname):
+            logger.warning("Blocked SSRF attempt to private IP: %s", hostname)
+            return False
+        return True
     except Exception:
         return False
 

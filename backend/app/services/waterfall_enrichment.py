@@ -34,11 +34,16 @@ import ipaddress
 import logging
 import re
 import socket
+import threading
 from typing import Optional
 from urllib.parse import quote_plus
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
+
+# R4 fix: track crawled domains per-session to prevent double crawls
+_crawled_domains: set[str] = set()
+_crawled_lock = threading.Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -113,11 +118,11 @@ def enrich_email_via_hunter_pattern(
 
             page_text = resp.text
 
-            # Hunter.io shows email pattern on the page
-            # Look for pattern indicators like "{first}.{last}@domain"
+            # R4 fix: Hunter.io shows email pattern on the page
+            # Improved regex to capture pattern format more reliably
             pattern_match = re.search(
-                r'(?:pattern|format)\s*(?:is|:)\s*'
-                r'[\{]?(first|f)[\}]?[._-]?[\{]?(last|l)[\}]?@',
+                r'(?:pattern|format|structure)\s*(?:is|:)\s*'
+                r'[\{\[]?(first|f)[\}\]]?\s*[._\-]?\s*[\{\[]?(last|l)[\}\]]?\s*@',
                 page_text,
                 re.IGNORECASE,
             )
@@ -320,6 +325,13 @@ def enrich_via_website_crawl(
     if _is_private_ip(domain):
         logger.warning("Skipping private/loopback domain: %s", domain)
         return result
+
+    # R4 fix: prevent double crawling the same domain in one batch
+    with _crawled_lock:
+        if domain.lower() in _crawled_domains:
+            logger.debug("Skipping already-crawled domain: %s", domain)
+            return result
+        _crawled_domains.add(domain.lower())
 
     contact_paths = [
         "/contact",
@@ -640,8 +652,11 @@ def enrich_lead_waterfall(
 
     # --- ENRICH PHONE ---
     if not enriched.get("phone"):
-        # Website crawl (if not already done)
-        if company_domain and not skip_website_crawl and "website_crawl" not in enriched.get("enrichment_sources", []):
+        # R4 fix: Website crawl (skip if already done in email stage — prevents double crawl)
+        already_crawled = any(
+            s.startswith("website_crawl") for s in enriched.get("enrichment_sources", [])
+        )
+        if company_domain and not skip_website_crawl and not already_crawled:
             try:
                 website_data = enrich_via_website_crawl(company_domain, max_pages=2)
                 if website_data["phones"]:

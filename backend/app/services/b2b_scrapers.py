@@ -128,9 +128,10 @@ def scrape_indiamart(
     with AdSession(timeout=15.0, min_delay=4.0) as session:
         for page_offset in range(0, min(max_results, 100), 25):
             try:
+                # R4 fix: use correct IndiaMART search URL
                 url = (
                     f"https://dir.indiamart.com/search.mp"
-                    f"?ss={encoded_query}&start={page_offset}"
+                    f"?ss={encoded_query}&prdsrc=1&start={page_offset}"
                 )
                 if location:
                     url += f"&cq={quote_plus(location)}"
@@ -330,6 +331,8 @@ def scrape_apollo(
     """
     leads: list[dict] = []
 
+    # R4 fix: Apollo API requires no auth for partial data, but
+    # gracefully handle 401/403 by falling through to dorking
     # Method 1: People search API
     try:
         _scrape_apollo_people(query, location, leads, max_results)
@@ -426,6 +429,10 @@ def _scrape_apollo_people(
                 headers={"Content-Type": "application/json"},
             )
 
+            if resp.status_code in (401, 403):
+                # R4 fix: Apollo may require auth now — fall through to dorking
+                logger.info("Apollo people API auth required (HTTP %d) — using dorking fallback", resp.status_code)
+                return
             if resp.status_code != 200:
                 logger.debug("Apollo people API: HTTP %d", resp.status_code)
                 return
@@ -493,6 +500,9 @@ def _scrape_apollo_companies(
                 headers={"Content-Type": "application/json"},
             )
 
+            if resp.status_code in (401, 403):
+                logger.info("Apollo companies API auth required (HTTP %d) — using dorking fallback", resp.status_code)
+                return
             if resp.status_code != 200:
                 logger.debug("Apollo companies API: HTTP %d", resp.status_code)
                 return
@@ -825,7 +835,17 @@ def scrape_justdial(
                 else:
                     url = f"https://www.justdial.com/{city}/{category}/page-{page_num}"
 
-                resp = session.get(url)
+                resp = session.get(
+                    url,
+                    headers={
+                        "Referer": "https://www.justdial.com/",
+                        "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8",
+                    },
+                )
+                if resp.status_code == 403:
+                    # R4 fix: JustDial CAPTCHA challenge — fall through to dorking
+                    logger.info("JustDial CAPTCHA challenge (403) on page %d — using dorking", page_num)
+                    break
                 if resp.status_code != 200:
                     logger.debug("JustDial HTTP %d for page %d", resp.status_code, page_num)
                     break

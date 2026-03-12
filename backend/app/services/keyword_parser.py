@@ -152,7 +152,8 @@ HINGLISH_LOCATION_PREPS: dict[str, str] = {
     # R2-16/R2-20 fix: removed "me": "in" — too ambiguous with English pronoun
     # ("hire me", "contact me", "near me" etc.). Keep "mein" and "mai" only.
     "mai": "in",
-    "main": "in",
+    # R1A-B08 fix: removed "main" — collides with English "main office in Delhi"
+    # "main": "in",
     "ke paas": "near",
     "ke pass": "near",
     "k paas": "near",
@@ -305,13 +306,17 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
         pattern = r'(?:^|\s)' + re.escape(hindi_prep) + r'(?:\s|$)'
         match = re.search(pattern, text)
         if match:
-            is_hinglish = True
             # Split at the match position
             start = match.start()
             end = match.end()
             left = text[:start].strip()
             right = text[end:].strip()
 
+            # R1A-B09 fix: guard against empty keyword after Hinglish split
+            if not left.strip():
+                continue  # discard this match, try next prep or fall through
+
+            is_hinglish = True
             if eng_prep in ("near me", "here"):
                 keyword = left
                 location = ""  # "near me" means local, no specific location
@@ -610,6 +615,41 @@ SYNONYM_MAP: dict[str, list[str]] = {
                   "courier", "delivery", "warehousing"],
     "courier": ["delivery", "logistics", "shipping", "parcel",
                 "courier service", "express delivery"],
+    # --- Roles (R1A-B02 fix: role-based expansion) ---
+    "manager": ["executive", "director", "professional", "officer", "head",
+                "lead", "supervisor", "management"],
+    "owner": ["founder", "proprietor", "entrepreneur", "director",
+              "co-founder", "business owner"],
+    "director": ["executive", "manager", "head", "chief", "officer",
+                 "leadership", "board member"],
+    "founder": ["entrepreneur", "co-founder", "startup founder", "owner",
+                "ceo", "business founder"],
+    "ceo": ["chief executive", "founder", "managing director", "md",
+            "executive", "c-suite", "leadership"],
+    "engineer": ["developer", "programmer", "software engineer", "technical",
+                 "engineering", "tech"],
+    "designer": ["graphic designer", "ui designer", "ux designer", "creative",
+                 "design", "visual designer"],
+    "consultant": ["advisor", "consulting", "specialist", "expert",
+                   "professional services", "freelancer"],
+    # --- Compound phrases (R1A-B03 fix) ---
+    "bike owner": ["motorcycle owner", "biker", "cycling enthusiast",
+                   "two-wheeler owner", "bike rider"],
+    "bike owners": ["motorcycle owner", "biker", "cycling enthusiast",
+                    "two-wheeler owner", "bike rider", "bike owner"],
+    "car owner": ["vehicle owner", "automobile owner", "car enthusiast",
+                  "driver", "motorist"],
+    "car owners": ["vehicle owner", "automobile owner", "car enthusiast",
+                   "driver", "motorist", "car owner"],
+    "marketing manager": ["marketing executive", "marketing director",
+                          "marketing head", "marketing professional",
+                          "brand manager", "marketing lead"],
+    "sales manager": ["sales executive", "sales director", "sales head",
+                      "business development", "sales lead"],
+    "project manager": ["project lead", "program manager", "scrum master",
+                        "project coordinator", "pm"],
+    "hr manager": ["human resources", "hr director", "hr head",
+                   "people manager", "talent acquisition"],
 }
 
 
@@ -621,31 +661,47 @@ def expand_keyword(keyword: str) -> list[str]:
        "bike dealer", "bicycle", "motorbike", "scooter", "bike owner"]
 
     The original keyword always comes first.
+    Handles plural forms: "startups" -> tries "startup" in SYNONYM_MAP.
     """
-    terms: list[str] = [keyword.lower().strip()]
     kw_lower = keyword.lower().strip()
+    terms: list[str] = [kw_lower]
+    seen: set[str] = {kw_lower}  # R1A-B12 fix: O(1) dedup with set
     kw_words = kw_lower.split()
 
+    def _add(syn: str) -> None:
+        """Add a synonym if not already seen."""
+        if syn not in seen:
+            terms.append(syn)
+            seen.add(syn)
+
+    def _lookup(key: str) -> None:
+        """Lookup a key in SYNONYM_MAP with plural fallback (R1A-B01 fix)."""
+        if key in SYNONYM_MAP:
+            for syn in SYNONYM_MAP[key]:
+                _add(syn)
+        # Plural fallback: "startups" -> try "startup"
+        elif key.endswith('s') and len(key) > 2 and key[:-1] in SYNONYM_MAP:
+            _add(key[:-1])  # add singular form too
+            for syn in SYNONYM_MAP[key[:-1]]:
+                _add(syn)
+        # "ies" -> "y" fallback: "companies" -> "company"
+        elif key.endswith('ies') and len(key) > 4:
+            singular = key[:-3] + 'y'
+            if singular in SYNONYM_MAP:
+                _add(singular)
+                for syn in SYNONYM_MAP[singular]:
+                    _add(syn)
+
     # Check full phrase first
-    if kw_lower in SYNONYM_MAP:
-        for syn in SYNONYM_MAP[kw_lower]:
-            if syn not in terms:
-                terms.append(syn)
+    _lookup(kw_lower)
 
     # Check individual words
     for word in kw_words:
-        if word in SYNONYM_MAP:
-            for syn in SYNONYM_MAP[word]:
-                if syn not in terms:
-                    terms.append(syn)
+        _lookup(word)
 
-    # Check 2-word combinations (e.g. "tattoo artist")
+    # Check 2-word combinations (e.g. "tattoo artist", "marketing manager")
     for i in range(len(kw_words) - 1):
-        phrase = f"{kw_words[i]} {kw_words[i+1]}"
-        if phrase in SYNONYM_MAP:
-            for syn in SYNONYM_MAP[phrase]:
-                if syn not in terms:
-                    terms.append(syn)
+        _lookup(f"{kw_words[i]} {kw_words[i+1]}")
 
     return terms
 
@@ -655,5 +711,21 @@ def expand_keyword(keyword: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def parse_keywords(raw_inputs: list[str]) -> list[ParsedKeyword]:
-    """Parse multiple keywords."""
-    return [parse_keyword(kw) for kw in raw_inputs]
+    """Parse multiple keywords with error handling (R1A-B14 fix)."""
+    results: list[ParsedKeyword] = []
+    for kw in raw_inputs:
+        try:
+            results.append(parse_keyword(kw))
+        except Exception:
+            logger.exception("Failed to parse keyword %r, using fallback", kw)
+            # Fallback: use the raw input as-is
+            results.append(ParsedKeyword(
+                original=kw,
+                keyword=kw.strip().title(),
+                location="",
+                country="",
+                is_hinglish=False,
+                search_queries=[kw.strip()],
+                expanded_terms=[kw.strip().lower()],
+            ))
+    return results

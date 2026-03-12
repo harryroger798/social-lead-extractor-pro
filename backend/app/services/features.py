@@ -282,72 +282,69 @@ def scrape_directories(
 # 3. JOB BOARDS — Indeed + RemoteOK
 # ===========================================================================
 
-def _scrape_indeed_rss(
+def _scrape_indeed_dorking(
     query: str,
     location: str = "",
     max_results: int = 15,
 ) -> list[dict]:
-    """Scrape Indeed via RSS feed (public, no auth, no API key).
+    """Find Indeed job listings via Google dorking.
 
-    v3.5.1: Indeed provides RSS feeds at /rss?q=QUERY&l=LOCATION
-    that return job listings with company names and links.
+    R2-B01 fix: Indeed RSS was deprecated in 2023. Replace with dorking
+    approach that still works reliably.
+    R2-B02 fix: Use in.indeed.com for India, www.indeed.com for others.
     """
     leads: list[dict] = []
+    search_term = f"{query} {location}".strip() if location else query
+
+    # R2-B02 fix: Use correct domain for India
+    india_locations = {"india", "delhi", "mumbai", "bangalore", "chennai",
+                       "hyderabad", "pune", "kolkata", "ahmedabad", "jaipur"}
+    domain = "in.indeed.com" if location.lower() in india_locations else "indeed.com"
+
+    dork_queries = [
+        f'site:{domain} "{search_term}"',
+        f'site:{domain} "{query}" "{location}" company',
+    ]
+
     try:
-        params = f"q={quote_plus(query)}"
-        if location:
-            params += f"&l={quote_plus(location)}"
+        for dork in dork_queries[:2]:
+            results = free_search_waterfall(dork, num_results=10, min_results=2)
+            for r in results:
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                link = r.get("link", "")
+                title = r.get("title", "")
 
-        url = f"https://www.indeed.com/rss?{params}"
-        with AdSession(timeout=12.0, min_delay=2.0) as session:
-            resp = session.get(url)
+                # Extract company from Indeed title: "Job Title - Company - Location"
+                company = ""
+                if " - " in title:
+                    parts = title.split(" - ")
+                    if len(parts) >= 2:
+                        company = parts[-2].strip() if len(parts) >= 3 else parts[-1].strip()
 
-        if resp.status_code != 200:
-            return leads
+                emails_found = extract_emails(text)
+                phones_found = extract_phones(text)
 
-        xml = resp.text
+                # R2-B03 fix: Don't require email — add lead if we have company name
+                lead_entry: dict[str, str] = {
+                    "name": company or title,
+                    "email": emails_found[0] if emails_found else "",
+                    "phone": phones_found[0] if phones_found else "",
+                    "platform": "job_boards",
+                    "source_url": link,
+                    "location": location,
+                    "job_title": title,
+                }
+                leads.append(lead_entry)
 
-        # Parse RSS items
-        items = re.findall(
-            r'<item>(.*?)</item>',
-            xml, re.DOTALL,
-        )
-        for item in items[:max_results]:
-            title_match = re.search(r'<title>(.*?)</title>', item, re.DOTALL)
-            link_match = re.search(r'<link>(.*?)</link>', item, re.DOTALL)
-            desc_match = re.search(r'<description>(.*?)</description>', item, re.DOTALL)
-            source_match = re.search(r'<source[^>]*>(.*?)</source>', item, re.DOTALL)
-
-            title = _strip_tags(title_match.group(1)) if title_match else ""
-            link = link_match.group(1).strip() if link_match else ""
-            desc = _strip_tags(desc_match.group(1)) if desc_match else ""
-            company = _strip_tags(source_match.group(1)) if source_match else ""
-
-            # Extract job title and company from Indeed title format: "Job Title - Company"
-            if " - " in title and not company:
-                parts = title.rsplit(" - ", 1)
-                if len(parts) == 2:
-                    company = parts[1].strip()
-
-            # Extract emails from description
-            emails_found = extract_emails(desc)
-            phones_found = extract_phones(desc)
-
-            lead_entry: dict[str, str] = {
-                "name": company,
-                "email": emails_found[0] if emails_found else "",
-                "phone": phones_found[0] if phones_found else "",
-                "platform": "job_boards",
-                "source_url": link,
-                "location": location,
-                "job_title": title,
-            }
-            leads.append(lead_entry)
+                if len(leads) >= max_results:
+                    break
+            if len(leads) >= max_results:
+                break
 
     except Exception as exc:
-        logger.debug("Indeed RSS error: %s", exc)
+        logger.debug("Indeed dorking error: %s", exc)
 
-    return leads
+    return leads[:max_results]
 
 
 def _scrape_craigslist(
@@ -410,62 +407,42 @@ def scrape_job_boards(
     leads: list[dict] = []
     target_boards = set(b.lower() for b in (boards or ["indeed", "glassdoor", "craigslist", "olx", "remoteok"]))
 
-    # Method 1: Indeed RSS feed (v3.5.1: real job data, no API key)
+    # Method 1: Indeed dorking (R2-B01 fix: RSS deprecated, use dorking)
     if "indeed" in target_boards:
         try:
-            indeed_leads = _scrape_indeed_rss(query, location, max_results=15)
+            indeed_leads = _scrape_indeed_dorking(query, location, max_results=15)
             leads.extend(indeed_leads)
-            logger.info("Indeed RSS: %d leads", len(indeed_leads))
-        except Exception as exc:
-            logger.debug("Indeed RSS error: %s", exc)
-
-        # Also try dorking for Indeed (catches older/cached listings)
-        search_term = f"{query} {location}".strip() if location else query
-        try:
-            results = free_search_waterfall(
-                f'site:indeed.com "{search_term}" email OR contact',
-                num_results=10, min_results=2,
-            )
-            for r in results:
-                text = f"{r.get('title', '')} {r.get('snippet', '')}"
-                link = r.get("link", "")
-                for email in extract_emails(text):
-                    leads.append({
-                        "email": email, "phone": "", "name": r.get("title", ""),
-                        "platform": "job_boards",
-                        "source_url": link,
-                    })
+            logger.info("Indeed dorking: %d leads", len(indeed_leads))
         except Exception as exc:
             logger.debug("Indeed dorking error: %s", exc)
 
-    # Method 2: Glassdoor dorking (v3.5.1: find company reviews with contact info)
+    # Method 2: Glassdoor dorking (R2-B03 fix: remove email guard)
     if "glassdoor" in target_boards:
         search_term = f"{query} {location}".strip() if location else query
         dork_queries = [
-            f'site:glassdoor.com "{search_term}" "reviews" email OR contact',
-            f'glassdoor.com "{search_term}" company hiring',
+            f'site:glassdoor.com "{search_term}" company',
+            f'site:glassdoor.co.in "{search_term}" company',
         ]
         try:
-            for dork in dork_queries[:1]:
+            for dork in dork_queries:
                 results = free_search_waterfall(dork, num_results=10, min_results=2)
                 for r in results:
                     text = f"{r.get('title', '')} {r.get('snippet', '')}"
                     link = r.get("link", "")
-                    # Extract company name from Glassdoor title: "Company Reviews"
                     title = r.get("title", "")
                     company = title.split(" Reviews")[0].split(" | ")[0].strip() if title else ""
 
                     emails_found = extract_emails(text)
-                    # Only add lead if we found contact info (avoid empty leads)
-                    if emails_found:
-                        leads.append({
-                            "email": emails_found[0],
-                            "phone": "",
-                            "name": company,
-                            "platform": "job_boards",
-                            "source_url": link,
-                            "location": location,
-                        })
+                    phones_found = extract_phones(text)
+                    # R2-B03 fix: Don't require email — company name is valuable
+                    leads.append({
+                        "email": emails_found[0] if emails_found else "",
+                        "phone": phones_found[0] if phones_found else "",
+                        "name": company,
+                        "platform": "job_boards",
+                        "source_url": link,
+                        "location": location,
+                    })
         except Exception as exc:
             logger.debug("Glassdoor dorking error: %s", exc)
 
@@ -478,20 +455,22 @@ def scrape_job_boards(
         except Exception as exc:
             logger.debug("Craigslist error: %s", exc)
 
-    # Method 4: OLX dorking (v3.5.1: popular in India/emerging markets)
+    # Method 4: OLX dorking (R2-B05 fix: split into separate dork per domain)
     if "olx" in target_boards:
         search_term = f"{query} {location}".strip() if location else query
-        try:
-            results = free_search_waterfall(
-                f'site:olx.in OR site:olx.com "{search_term}" phone OR contact OR email',
-                num_results=10, min_results=2,
-            )
-            for r in results:
-                text = f"{r.get('title', '')} {r.get('snippet', '')}"
-                link = r.get("link", "")
-                emails_found = extract_emails(text)
-                phones_found = extract_phones(text)
-                if emails_found or phones_found:
+        # R2-B05 fix: separate dorks — DDG/Brave don't support multi-site OR
+        for olx_domain in ["olx.in", "olx.com"]:
+            try:
+                results = free_search_waterfall(
+                    f'site:{olx_domain} "{search_term}"',
+                    num_results=8, min_results=2,
+                )
+                for r in results:
+                    text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                    link = r.get("link", "")
+                    emails_found = extract_emails(text)
+                    phones_found = extract_phones(text)
+                    # R2-B03 fix: Don't require email
                     leads.append({
                         "email": emails_found[0] if emails_found else "",
                         "phone": phones_found[0] if phones_found else "",
@@ -500,10 +479,49 @@ def scrape_job_boards(
                         "source_url": link,
                         "location": location,
                     })
-        except Exception as exc:
-            logger.debug("OLX dorking error: %s", exc)
+            except Exception as exc:
+                logger.debug("OLX %s dorking error: %s", olx_domain, exc)
 
-    # Method 5: RemoteOK JSON API (public, no auth)
+    # Method 5: Indian job boards (R2-B04 fix: Naukri, Shine, Foundit)
+    india_locations = {"india", "delhi", "mumbai", "bangalore", "chennai",
+                       "hyderabad", "pune", "kolkata", "ahmedabad", "jaipur",
+                       "noida", "gurugram", "gurgaon"}
+    if location.lower() in india_locations:
+        indian_boards = [
+            ("naukri", "naukri.com"),
+            ("shine", "shine.com"),
+            ("foundit", "foundit.in"),
+        ]
+        for board_name, board_domain in indian_boards:
+            if boards and board_name not in target_boards:
+                continue
+            try:
+                dork = f'site:{board_domain} "{query}" "{location}"'
+                results = free_search_waterfall(dork, num_results=8, min_results=2)
+                for r in results:
+                    text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                    link = r.get("link", "")
+                    title = r.get("title", "")
+                    company = ""
+                    if " - " in title:
+                        parts = title.split(" - ")
+                        company = parts[-1].strip() if len(parts) >= 2 else ""
+
+                    emails_found = extract_emails(text)
+                    phones_found = extract_phones(text)
+                    leads.append({
+                        "email": emails_found[0] if emails_found else "",
+                        "phone": phones_found[0] if phones_found else "",
+                        "name": company or title,
+                        "platform": "job_boards",
+                        "source_url": link,
+                        "location": location,
+                        "job_title": title,
+                    })
+            except Exception as exc:
+                logger.debug("%s dorking error: %s", board_name, exc)
+
+    # Method 6: RemoteOK JSON API (public, no auth)
     if "remoteok" in target_boards:
         try:
             with AdSession(timeout=10.0, min_delay=2.0) as session:

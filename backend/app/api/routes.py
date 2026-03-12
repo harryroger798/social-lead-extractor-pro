@@ -2,6 +2,7 @@
 import json
 import logging
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -212,9 +213,21 @@ async def _update_progress(
         await db.commit()
 
 
+# R5-B18 fix: dedicated thread pool for live scraping (bounded workers)
+_LIVE_SCRAPE_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="live-scrape-route")
+
+
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
-    """Background task to run extraction."""
+    """Background task to run extraction.
+
+    R5-B24 fix: wrapped in try/finally to always update session status.
+    R5-B14 fix: parsed_keywords and cleaned_keywords initialized before try.
+    """
     all_leads: list[dict] = []
+    # R5-B14 fix: initialize before try block to prevent NameError
+    parsed_keywords: list = []
+    cleaned_keywords: list[str] = []
+    location_hint = ""
 
     try:
         # Calculate total steps for progress tracking
@@ -292,9 +305,6 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             # v3.5.0: Use smart KeywordParser with Hinglish support
             # Handles: "Startups in India", "daktar dilli mein",
             #          "restaurants mere samne", "cafes near Bangalore"
-            location_hint = ""
-            cleaned_keywords: list[str] = []
-            parsed_keywords = []
             for kw in config.keywords:
                 parsed = parse_keyword(kw)
                 parsed_keywords.append(parsed)
@@ -385,8 +395,9 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         loc = kw_parsed.location or location_hint
                         if loc:
                             search_query = f"{kw_parsed.keyword} {loc}"
+                        # R5-B18 fix: use dedicated bounded thread pool
                         live_leads = await loop.run_in_executor(
-                            None, live_scrape_platform, platform,
+                            _LIVE_SCRAPE_POOL, live_scrape_platform, platform,
                             search_query, loc, 20,
                         )
                         all_leads.extend(live_leads)
@@ -719,6 +730,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await db.commit()
 
     except Exception as e:
+        # R5-B24 fix: log full traceback for debugging
+        logger.exception("Extraction failed for session %s", session_id)
         async with get_db() as db:
             await db.execute(
                 """UPDATE sessions SET status='failed', completed_at=?,
@@ -727,6 +740,24 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 (datetime.now().isoformat(), f"Extraction failed: {e}", session_id),
             )
             await db.commit()
+    finally:
+        # R5-B24 fix: always ensure session is not stuck in 'running'
+        try:
+            async with get_db() as db:
+                cursor = await db.execute(
+                    "SELECT status FROM sessions WHERE id=?", (session_id,)
+                )
+                row = await cursor.fetchone()
+                if row and row[0] == "running":
+                    await db.execute(
+                        """UPDATE sessions SET status='completed', completed_at=?,
+                           progress=100, status_message='Completed'
+                        WHERE id=? AND status='running'""",
+                        (datetime.now().isoformat(), session_id),
+                    )
+                    await db.commit()
+        except Exception:
+            logger.debug("Failed to finalize session %s status", session_id)
 
 
 @router.post("/extract")

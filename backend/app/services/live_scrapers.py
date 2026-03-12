@@ -167,63 +167,63 @@ def scrape_telegram_public(
     # Step 2: Visit t.me/s/ pages to extract contact info (reuse session)
     seen_channels: set[str] = set()
     with AdSession(timeout=12.0, min_delay=2.0) as session:
-      for url in discovered_urls[:10]:
-        try:
-            # Extract username from URL
-            parsed = urlparse(url)
-            path_parts = parsed.path.strip("/").split("/")
-            if not path_parts:
-                continue
-            username = path_parts[0]
-            if username in seen_channels or username in ("s", "joinchat", "addstickers"):
-                continue
-            seen_channels.add(username)
+        for url in discovered_urls[:10]:
+            try:
+                # Extract username from URL
+                parsed = urlparse(url)
+                path_parts = parsed.path.strip("/").split("/")
+                if not path_parts:
+                    continue
+                username = path_parts[0]
+                if username in seen_channels or username in ("s", "joinchat", "addstickers"):
+                    continue
+                seen_channels.add(username)
 
-            # Fetch public preview page
-            preview_url = f"https://t.me/s/{username}"
-            resp = session.get(preview_url)
+                # Fetch public preview page
+                preview_url = f"https://t.me/s/{username}"
+                resp = session.get(preview_url)
 
-            if resp.status_code != 200:
-                continue
+                if resp.status_code != 200:
+                    continue
 
-            page_text = _strip_tags(resp.text[:100_000])
+                page_text = _strip_tags(resp.text[:100_000])
 
-            # Extract channel name
-            name_match = re.search(
-                r'<meta\s+property="og:title"\s+content="([^"]+)"',
-                resp.text,
-            )
-            channel_name = name_match.group(1) if name_match else username
+                # Extract channel name
+                name_match = re.search(
+                    r'<meta\s+property="og:title"\s+content="([^"]+)"',
+                    resp.text,
+                )
+                channel_name = name_match.group(1) if name_match else username
 
-            # Extract emails and phones
-            emails = extract_emails(page_text)
-            phones = extract_phones(page_text)
+                # Extract emails and phones
+                emails = extract_emails(page_text)
+                phones = extract_phones(page_text)
 
-            if emails or phones:
-                for email in emails:
+                if emails or phones:
+                    for email in emails:
+                        leads.append({
+                            "email": email, "phone": "", "name": channel_name,
+                            "platform": "telegram",
+                            "source_url": preview_url,
+                        })
+                    for phone in phones:
+                        leads.append({
+                            "email": "", "phone": phone, "name": channel_name,
+                            "platform": "telegram",
+                            "source_url": preview_url,
+                        })
+                else:
+                    # Even without email/phone, record the channel as a lead
                     leads.append({
-                        "email": email, "phone": "", "name": channel_name,
+                        "email": "", "phone": "", "name": channel_name,
                         "platform": "telegram",
                         "source_url": preview_url,
+                        "username": f"@{username}",
                     })
-                for phone in phones:
-                    leads.append({
-                        "email": "", "phone": phone, "name": channel_name,
-                        "platform": "telegram",
-                        "source_url": preview_url,
-                    })
-            else:
-                # Even without email/phone, record the channel as a lead
-                leads.append({
-                    "email": "", "phone": "", "name": channel_name,
-                    "platform": "telegram",
-                    "source_url": preview_url,
-                    "username": f"@{username}",
-                })
 
-        except Exception as exc:
-            logger.debug("Telegram preview scrape error for %s: %s", url, exc)
-            continue
+            except Exception as exc:
+                logger.debug("Telegram preview scrape error for %s: %s", url, exc)
+                continue
 
     logger.info("Telegram live scrape: %d leads from %d channels", len(leads), len(seen_channels))
     return _dedup_leads(leads)[:max_results]
@@ -289,37 +289,37 @@ def scrape_whatsapp_links(
 
     # Visit discovered pages to find more wa.me links (reuse session)
     with AdSession(timeout=10.0, min_delay=2.0) as session:
-      for url in discovered_urls[:5]:
-        try:
-            resp = session.get(url)
-            if resp.status_code != 200:
-                continue
-            page_text = resp.text[:100_000]
+        for url in discovered_urls[:5]:
+            try:
+                resp = session.get(url)
+                if resp.status_code != 200:
+                    continue
+                page_text = resp.text[:100_000]
 
-            # Find wa.me links in page
-            wa_page_matches = re.findall(
-                r'(?:wa\.me/|api\.whatsapp\.com/send\?phone=)(\d{7,15})',
-                page_text,
-            )
-            for num in wa_page_matches:
-                if num not in wa_numbers:
-                    wa_numbers.add(num)
+                # Find wa.me links in page
+                wa_page_matches = re.findall(
+                    r'(?:wa\.me/|api\.whatsapp\.com/send\?phone=)(\d{7,15})',
+                    page_text,
+                )
+                for num in wa_page_matches:
+                    if num not in wa_numbers:
+                        wa_numbers.add(num)
+                        leads.append({
+                            "email": "", "phone": f"+{num}", "name": "",
+                            "platform": "whatsapp",
+                            "source_url": url,
+                        })
+
+                # Extract emails too
+                cleaned = _strip_tags(page_text)
+                for email in extract_emails(cleaned):
                     leads.append({
-                        "email": "", "phone": f"+{num}", "name": "",
+                        "email": email, "phone": "", "name": "",
                         "platform": "whatsapp",
                         "source_url": url,
                     })
-
-            # Extract emails too
-            cleaned = _strip_tags(page_text)
-            for email in extract_emails(cleaned):
-                leads.append({
-                    "email": email, "phone": "", "name": "",
-                    "platform": "whatsapp",
-                    "source_url": url,
-                })
-        except Exception as exc:
-            logger.debug("WhatsApp page scrape error: %s", exc)
+            except Exception as exc:
+                logger.debug("WhatsApp page scrape error: %s", exc)
 
     logger.info("WhatsApp live scrape: %d leads, %d WA numbers", len(leads), len(wa_numbers))
     return _dedup_leads(leads)[:max_results]
@@ -371,62 +371,62 @@ def scrape_youtube_channels(
     # YouTube embeds emails in the ytInitialData blob even without JS rendering
     seen_channels: set[str] = set()
     with AdSession(timeout=12.0, min_delay=2.5) as session:
-      for url in discovered_channels[:8]:
-        try:
-            # Normalise to channel root (not /about — YouTube removed that route)
-            clean_url = re.sub(r'/(about|videos|shorts|streams|playlists)$', '', url.rstrip('/'))
+        for url in discovered_channels[:8]:
+            try:
+                # Normalise to channel root (not /about — YouTube removed that route)
+                clean_url = re.sub(r'/(about|videos|shorts|streams|playlists)$', '', url.rstrip('/'))
 
-            channel_id = urlparse(clean_url).path.strip("/").split("/")[0]
-            if channel_id in seen_channels:
-                continue
-            seen_channels.add(channel_id)
+                channel_id = urlparse(clean_url).path.strip("/").split("/")[0]
+                if channel_id in seen_channels:
+                    continue
+                seen_channels.add(channel_id)
 
-            resp = session.get(clean_url)
-            if resp.status_code != 200:
-                continue
+                resp = session.get(clean_url)
+                if resp.status_code != 200:
+                    continue
 
-            raw = resp.text[:500_000]
+                raw = resp.text[:500_000]
 
-            # Extract channel name from og:title
-            title_match = re.search(
-                r'<meta\s+property="og:title"\s+content="([^"]+)"',
-                raw,
-            )
-            channel_name = title_match.group(1) if title_match else ""
+                # Extract channel name from og:title
+                title_match = re.search(
+                    r'<meta\s+property="og:title"\s+content="([^"]+)"',
+                    raw,
+                )
+                channel_name = title_match.group(1) if title_match else ""
 
-            # Try to parse ytInitialData for business email
-            # R2-11 fix: use re.DOTALL and anchor to `;</script>` for robust matching
-            yt_match = re.search(r'var\s+ytInitialData\s*=\s*(\{.+?\});\s*</script>', raw, re.DOTALL)
-            if yt_match:
-                try:
-                    yt_data = _json_mod.loads(yt_match.group(1))
-                    yt_text = _json_mod.dumps(yt_data)
-                    for email in extract_emails(yt_text):
-                        leads.append({
-                            "email": email, "phone": "", "name": channel_name,
-                            "platform": "youtube",
-                            "source_url": clean_url,
-                        })
-                except (_json_mod.JSONDecodeError, ValueError):
-                    pass
+                # Try to parse ytInitialData for business email
+                # R2-11 fix: use re.DOTALL and anchor to `;</script>` for robust matching
+                yt_match = re.search(r'var\s+ytInitialData\s*=\s*(\{.+?\});\s*</script>', raw, re.DOTALL)
+                if yt_match:
+                    try:
+                        yt_data = _json_mod.loads(yt_match.group(1))
+                        yt_text = _json_mod.dumps(yt_data)
+                        for email in extract_emails(yt_text):
+                            leads.append({
+                                "email": email, "phone": "", "name": channel_name,
+                                "platform": "youtube",
+                                "source_url": clean_url,
+                            })
+                    except (_json_mod.JSONDecodeError, ValueError):
+                        pass
 
-            # Fallback: extract from full page text
-            page_text = _strip_tags(raw)
-            for email in extract_emails(page_text):
-                leads.append({
-                    "email": email, "phone": "", "name": channel_name,
-                    "platform": "youtube",
-                    "source_url": clean_url,
-                })
-            for phone in extract_phones(page_text):
-                leads.append({
-                    "email": "", "phone": phone, "name": channel_name,
-                    "platform": "youtube",
-                    "source_url": clean_url,
-                })
+                # Fallback: extract from full page text
+                page_text = _strip_tags(raw)
+                for email in extract_emails(page_text):
+                    leads.append({
+                        "email": email, "phone": "", "name": channel_name,
+                        "platform": "youtube",
+                        "source_url": clean_url,
+                    })
+                for phone in extract_phones(page_text):
+                    leads.append({
+                        "email": "", "phone": phone, "name": channel_name,
+                        "platform": "youtube",
+                        "source_url": clean_url,
+                    })
 
-        except Exception as exc:
-            logger.debug("YouTube channel scrape error: %s", exc)
+            except Exception as exc:
+                logger.debug("YouTube channel scrape error: %s", exc)
 
     logger.info("YouTube live scrape: %d leads", len(leads))
     return _dedup_leads(leads)[:max_results]
