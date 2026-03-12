@@ -11,18 +11,27 @@ import type { ExtractionStatusResponse } from '@/lib/api';
 import { PLATFORM_ICONS } from '@/components/icons/PlatformIcons';
 
 const PLATFORMS = [
-  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2' },
-  { id: 'google_maps', name: 'Google Maps', color: '#4285F4' },
-  { id: 'reddit', name: 'Reddit', color: '#FF4500' },
-  { id: 'telegram', name: 'Telegram', color: '#26A5E4' },
-  { id: 'instagram', name: 'Instagram', color: '#E4405F' },
-  { id: 'facebook', name: 'Facebook', color: '#1877F2' },
-  { id: 'twitter', name: 'Twitter/X', color: '#1DA1F2' },
-  { id: 'whatsapp', name: 'WhatsApp', color: '#25D366' },
-  { id: 'tiktok', name: 'TikTok', color: '#000000' },
-  { id: 'youtube', name: 'YouTube', color: '#FF0000' },
-  { id: 'pinterest', name: 'Pinterest', color: '#E60023' },
-  { id: 'email', name: 'Email', color: '#6366F1' },
+  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2', group: 'social' },
+  { id: 'google_maps', name: 'Google Maps', color: '#4285F4', group: 'social' },
+  { id: 'reddit', name: 'Reddit', color: '#FF4500', group: 'social' },
+  { id: 'telegram', name: 'Telegram', color: '#26A5E4', group: 'social' },
+  { id: 'instagram', name: 'Instagram', color: '#E4405F', group: 'social' },
+  { id: 'facebook', name: 'Facebook', color: '#1877F2', group: 'social' },
+  { id: 'twitter', name: 'Twitter/X', color: '#1DA1F2', group: 'social' },
+  { id: 'whatsapp', name: 'WhatsApp', color: '#25D366', group: 'social' },
+  { id: 'tiktok', name: 'TikTok', color: '#000000', group: 'social' },
+  { id: 'youtube', name: 'YouTube', color: '#FF0000', group: 'social' },
+  { id: 'pinterest', name: 'Pinterest', color: '#E60023', group: 'social' },
+  { id: 'email', name: 'Email', color: '#6366F1', group: 'social' },
+  // B2B Platforms (v3.5.4)
+  { id: 'indiamart', name: 'IndiaMART', color: '#1B6AC5', group: 'b2b' },
+  { id: 'apollo', name: 'Apollo.io', color: '#6C3AED', group: 'b2b' },
+  { id: 'tradeindia', name: 'TradeIndia', color: '#E65100', group: 'b2b' },
+  { id: 'exportersindia', name: 'ExportersIndia', color: '#2E7D32', group: 'b2b' },
+  { id: 'justdial', name: 'JustDial', color: '#FFB300', group: 'b2b' },
+  { id: 'google_maps_b2b', name: 'Google Maps B2B', color: '#34A853', group: 'b2b' },
+  { id: 'rocketreach', name: 'RocketReach', color: '#FF6B35', group: 'b2b' },
+  { id: 'crunchbase', name: 'Crunchbase', color: '#0288D1', group: 'b2b' },
 ];
 
 type Step = 'config' | 'running' | 'complete';
@@ -312,8 +321,36 @@ export default function NewExtraction() {
           Platforms
           <span className="text-[11px] text-text-muted font-normal ml-auto">{selectedPlatforms.length} selected</span>
         </h3>
+
+        {/* Social Media Platforms */}
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pb-3">Social Media</p>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-          {PLATFORMS.map(p => {
+          {PLATFORMS.filter(p => p.group === 'social').map(p => {
+            const Icon = PLATFORM_ICONS[p.id];
+            const isSelected = selectedPlatforms.includes(p.id);
+            return (
+            <button key={p.id} onClick={() => togglePlatform(p.id)}
+              className={cn(
+                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px]',
+                  isSelected
+                    ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
+                    : 'border-[#3f3f46] bg-bg-card hover:border-[#52525b] hover:bg-bg-tertiary/30'
+              )}
+            >
+              {isSelected && <CheckCircle className="absolute top-2 right-2 w-3.5 h-3.5 text-accent" />}
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: p.color, color: '#FFFFFF' }}>
+                {Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
+              </div>
+              <span className={cn('text-[11px] font-semibold uppercase tracking-wide text-center leading-tight', isSelected ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
+            </button>
+            );
+          })}
+        </div>
+
+        {/* B2B Platforms */}
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pb-3 pt-6">B2B Platforms <span className="text-accent font-normal normal-case">(New in v3.5.4)</span></p>
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          {PLATFORMS.filter(p => p.group === 'b2b').map(p => {
             const Icon = PLATFORM_ICONS[p.id];
             const isSelected = selectedPlatforms.includes(p.id);
             return (
