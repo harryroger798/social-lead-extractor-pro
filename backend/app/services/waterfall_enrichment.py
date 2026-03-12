@@ -148,24 +148,25 @@ def _infer_email_pattern(emails: list[str], domain: str) -> Optional[str]:
         return None
 
     # Analyze the local part (before @) of sample emails
-    local_parts = [e.split("@")[0].lower() for e in emails if "@" in e]
+    local_parts = [e.split("@")[0].lower() for e in emails if "@" in e and e.split("@")[0].strip()]
     if not local_parts:
         return None
 
-    # Check common patterns
-    has_dot = any("." in lp for lp in local_parts)
-    has_underscore = any("_" in lp for lp in local_parts)
-    has_hyphen = any("-" in lp for lp in local_parts)
+    # Check common patterns by counting separator frequency
+    dot_count = sum(1 for lp in local_parts if "." in lp)
+    underscore_count = sum(1 for lp in local_parts if "_" in lp)
+    hyphen_count = sum(1 for lp in local_parts if "-" in lp)
 
-    if has_dot:
+    total = len(local_parts)
+    if dot_count > total * 0.4:
         return "{first}.{last}"
-    elif has_underscore:
+    elif underscore_count > total * 0.4:
         return "{first}_{last}"
-    elif has_hyphen:
+    elif hyphen_count > total * 0.4:
         return "{first}-{last}"
     else:
         # Could be firstlast or first or flast
-        avg_length = sum(len(lp) for lp in local_parts) / len(local_parts)
+        avg_length = sum(len(lp) for lp in local_parts) / max(len(local_parts), 1)
         if avg_length > 10:
             return "{first}{last}"
         elif avg_length > 5:
@@ -502,7 +503,7 @@ def calculate_lead_confidence(lead: dict) -> float:
     """
     score = 0.0
 
-    email = lead.get("email", "")
+    email = str(lead.get("email", "") or "")
     if email and "@" in email and "." in email.split("@")[-1]:
         score += 0.25
         if lead.get("email_verified"):
@@ -511,11 +512,11 @@ def calculate_lead_confidence(lead: dict) -> float:
     if lead.get("phone"):
         score += 0.20
 
-    name = lead.get("name", "")
+    name = str(lead.get("name", "") or "")
     if name and len(name) > 2:
         score += 0.15
 
-    company = lead.get("company", "")
+    company = str(lead.get("company", "") or "")
     if company and len(company) > 1:
         score += 0.15
 
@@ -525,10 +526,11 @@ def calculate_lead_confidence(lead: dict) -> float:
     if lead.get("location"):
         score += 0.05
 
-    if lead.get("source_count", 0) > 1:
+    source_count = lead.get("source_count", 0)
+    if isinstance(source_count, (int, float)) and source_count > 1:
         score += 0.05
 
-    return min(score, 1.0)
+    return round(min(score, 1.0), 2)
 
 
 # ===========================================================================

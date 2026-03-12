@@ -21,9 +21,11 @@ Uses curl_cffi TLS fingerprint impersonation via AdSession.
 from __future__ import annotations
 
 import html as _html_mod
+import ipaddress
 import json as _json_mod
 import logging
 import re
+import socket
 from typing import Optional
 from urllib.parse import quote_plus, urlparse
 
@@ -32,6 +34,38 @@ from app.services.extractor import extract_emails, extract_phones
 from app.services.multi_engine_search import free_search_waterfall
 
 logger = logging.getLogger(__name__)
+
+# Maximum response body size to read (5 MB) — prevents OOM on huge pages
+_MAX_RESPONSE_SIZE = 5 * 1024 * 1024
+
+
+def _safe_response_text(resp: object) -> str:
+    """Safely read response text, truncating to _MAX_RESPONSE_SIZE bytes.
+
+    Prevents uncontrolled memory consumption from unexpectedly large responses.
+    """
+    try:
+        text = resp.text  # type: ignore[union-attr]
+        if len(text) > _MAX_RESPONSE_SIZE:
+            return text[:_MAX_RESPONSE_SIZE]
+        return text
+    except Exception:
+        return ""
+
+
+def _is_private_ip(hostname: str) -> bool:
+    """Check if hostname resolves to a private/loopback IP (SSRF protection)."""
+    try:
+        addr_infos = socket.getaddrinfo(hostname, None, proto=socket.IPPROTO_TCP)
+        for _family, _, _, _, sockaddr in addr_infos:
+            ip_str = sockaddr[0]
+            ip = ipaddress.ip_address(ip_str)
+            if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:
+                return True
+        return False
+    except (socket.gaierror, ValueError, OSError):
+        # DNS resolution failure — treat as potentially unsafe
+        return True
 
 
 def _strip_tags(text: str) -> str:
@@ -106,7 +140,9 @@ def scrape_indiamart(
                     logger.debug("IndiaMART HTTP %d for offset %d", resp.status_code, page_offset)
                     break
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    break
 
                 # Parse JSON-LD structured data (most reliable)
                 jsonld_blocks = re.findall(
@@ -114,7 +150,7 @@ def scrape_indiamart(
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks:
+                for block in jsonld_blocks[:50]:  # Limit blocks to prevent unbounded loops
                     try:
                         data = _json_mod.loads(block)
                         ld_type = data.get("@type", "")
@@ -520,7 +556,9 @@ def scrape_tradeindia(
                 if resp.status_code != 200:
                     break
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    break
 
                 # Parse JSON-LD (TradeIndia uses structured data)
                 jsonld_blocks = re.findall(
@@ -528,7 +566,7 @@ def scrape_tradeindia(
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks:
+                for block in jsonld_blocks[:50]:
                     try:
                         data = _json_mod.loads(block)
                         if data.get("@type") in ("Organization", "LocalBusiness"):
@@ -657,7 +695,9 @@ def scrape_exportersindia(
                 if resp.status_code != 200:
                     break
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    break
 
                 # Parse company cards
                 # ExportersIndia uses simple div-based card layout
@@ -787,7 +827,9 @@ def scrape_justdial(
                     logger.debug("JustDial HTTP %d for page %d", resp.status_code, page_num)
                     break
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    break
 
                 # Extract JSON-LD data if available
                 jsonld_blocks = re.findall(
@@ -795,7 +837,7 @@ def scrape_justdial(
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks:
+                for block in jsonld_blocks[:50]:
                     try:
                         data = _json_mod.loads(block)
                         if data.get("@type") == "ItemList":
@@ -936,7 +978,9 @@ def scrape_google_maps_local(
                     logger.debug("Google Maps local: HTTP %d", resp.status_code)
                     break
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    break
 
                 # Parse local business results
                 # Google local results have specific patterns in the HTML
@@ -1092,7 +1136,9 @@ def scrape_rocketreach(
                 if resp.status_code != 200:
                     continue
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    continue
 
                 # Parse JSON-LD
                 jsonld_blocks = re.findall(
@@ -1100,7 +1146,7 @@ def scrape_rocketreach(
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks:
+                for block in jsonld_blocks[:20]:
                     try:
                         data = _json_mod.loads(block)
                         if data.get("@type") == "Person":
@@ -1235,7 +1281,9 @@ def scrape_crunchbase(
                 if resp.status_code != 200:
                     continue
 
-                page_html = resp.text
+                page_html = _safe_response_text(resp)
+                if not page_html:
+                    continue
 
                 # Parse JSON-LD
                 jsonld_blocks = re.findall(
@@ -1243,7 +1291,7 @@ def scrape_crunchbase(
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks:
+                for block in jsonld_blocks[:20]:
                     try:
                         data = _json_mod.loads(block)
                         ld_type = data.get("@type", "")
