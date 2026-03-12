@@ -15,7 +15,7 @@ interface UserAccount {
 export default function AccountProfile() {
   const { license, isPro, deactivate } = useLicense();
   const [user, setUser] = useState<UserAccount | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'login' | 'register'>('login');
