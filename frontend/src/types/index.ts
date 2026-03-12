@@ -136,4 +136,7 @@ export type Section =
   | 'citation_checker'
   | 'service_suggestions'
   | 'smtp_checker'
-  | 'job_boards';
+  | 'job_boards'
+  | 'account'
+  | 'team'
+  | 'usage';
