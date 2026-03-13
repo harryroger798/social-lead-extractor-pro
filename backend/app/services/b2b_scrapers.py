@@ -94,14 +94,20 @@ def _dedup_leads(leads: list[dict]) -> list[dict]:
         src = (lead.get("source_url") or "").strip()
 
         # Tiered dedup: strongest signal first
+        # V7-fix: add name-only fallback to prevent data loss for
+        # leads from JSON-LD that may lack source URLs
         if email:
             key = f"email:{email}"
         elif phone and name:
             key = f"pn:{phone}|{name}"
-        elif phone:
-            key = f"phone:{phone}"
         elif name and src:
             key = f"ns:{name}|{src}"
+        elif name:
+            # V7-fix R2: use name+company composite to avoid cross-company collisions
+            company = (lead.get("company") or "").strip().lower()
+            key = f"name:{name}|{company}" if company else f"name:{name}"
+        elif phone:
+            key = f"phone:{phone}"
         else:
             continue  # No useful identity — skip
 

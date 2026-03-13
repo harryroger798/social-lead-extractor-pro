@@ -118,9 +118,12 @@ def enrich_email_via_hunter_pattern(
 
             # R4 fix: Hunter.io shows email pattern on the page
             # Improved regex to capture pattern format more reliably
+            # V7-fix: capture separator between first and last
             pattern_match = re.search(
                 r'(?:pattern|format|structure)\s*(?:is|:)\s*'
-                r'[\{\[]?(first|f)[\}\]]?\s*[._\-]?\s*[\{\[]?(last|l)[\}\]]?\s*@',
+                r'[\{\[]?(first|f)[\}\]]?'
+                r'([._\-]?)'
+                r'\s*[\{\[]?(last|l)[\}\]]?\s*@',
                 page_text,
                 re.IGNORECASE,
             )
@@ -129,11 +132,12 @@ def enrich_email_via_hunter_pattern(
             if pattern_match:
                 # Detected explicit pattern on the page
                 fmt_first = pattern_match.group(1).lower()  # "first" or "f"
+                separator = pattern_match.group(2) or "."   # V7-fix: use captured separator
                 use_initial = fmt_first == "f"
                 if use_initial and first_name and last_name:
-                    return f"{first_name[0].lower()}.{last_name.lower().strip()}@{domain.lower()}"
+                    return f"{first_name[0].lower()}{separator}{last_name.lower().strip()}@{domain.lower()}"
                 elif first_name and last_name:
-                    return f"{first_name.lower().strip()}.{last_name.lower().strip()}@{domain.lower()}"
+                    return f"{first_name.lower().strip()}{separator}{last_name.lower().strip()}@{domain.lower()}"
 
             # Extract sample emails to infer pattern
             sample_emails = extract_emails(_strip_tags(page_text))
@@ -160,8 +164,18 @@ def _infer_email_pattern(emails: list[str], domain: str) -> Optional[str]:
     if not emails:
         return None
 
-    # Analyze the local part (before @) of sample emails
-    local_parts = [e.split("@")[0].lower() for e in emails if "@" in e and e.split("@")[0].strip()]
+    # V7-fix: filter out generic/role addresses before pattern analysis
+    _GENERIC_LOCAL_PARTS = {
+        "info", "contact", "sales", "support", "admin", "hello",
+        "noreply", "no-reply", "mail", "office", "enquiry", "inquiry",
+        "hr", "jobs", "careers", "billing", "help", "team", "press",
+    }
+    local_parts = [
+        e.split("@")[0].lower() for e in emails
+        if "@" in e
+        and e.split("@")[0].strip()
+        and e.split("@")[0].lower() not in _GENERIC_LOCAL_PARTS
+    ]
     if not local_parts:
         return None
 

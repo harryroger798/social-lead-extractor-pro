@@ -77,7 +77,7 @@ def extract_phones(text: str) -> list[str]:
     filtered = []
     seen = set()
     for phone in phones:
-        raw = phone.strip()
+        raw = phone.strip().strip('-.() ')  # V7-fix: strip leading+trailing punctuation
         # Reject GPS coordinate-like patterns (e.g., 72.8777, -37.7749)
         if _PHONE_FALSE_POSITIVE.fullmatch(raw):
             continue

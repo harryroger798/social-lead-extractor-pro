@@ -70,6 +70,19 @@ def _dedup_leads(leads: list[dict]) -> list[dict]:
     return unique
 
 
+def _is_gps_coord(value: str) -> bool:
+    """Return True if value looks like a GPS coordinate, not a phone number.
+
+    V7-fix: fullmatch instead of match, also catches "lat, lon" pairs.
+    """
+    if not value:
+        return False
+    return bool(re.fullmatch(
+        r'-?\d{1,3}\.\d{4,}(?:\s*,\s*-?\d{1,3}\.\d{4,})?',
+        value.strip(),
+    ))
+
+
 def _strip_tags(text: str) -> str:
     """Remove HTML tags and decode entities, inserting spaces between fields."""
     cleaned = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
@@ -613,38 +626,39 @@ def scrape_twitter(
         logger.warning("Twitter dorking failed: %s", exc)
 
     # Try healthy Nitter mirrors for discovered profiles (Issue #17 fix)
+    # V7-fix: normalized 4-space indentation throughout
     seen_users: set[str] = set()
     healthy = _get_healthy_nitter()
     with AdSession(timeout=10.0, min_delay=2.0) as session:
-      for url in discovered_profiles[:8]:
-        try:
-            path = urlparse(url).path.strip("/").split("/")[0]
-            if not path or path in seen_users or path in ("search", "hashtag", "i"):
-                continue
-            seen_users.add(path)
-
-            # Try healthy Nitter mirrors
-            for nitter in healthy:
-                try:
-                    nitter_url = f"{nitter}/{path}"
-                    resp = session.get(nitter_url)
-                    if resp.status_code != 200:
-                        continue
-
-                    page_text = _strip_tags(resp.text[:50_000])
-                    emails = extract_emails(page_text)
-                    if emails:
-                        for email in emails:
-                            leads.append({
-                                "email": email, "phone": "", "name": path,
-                                "platform": "twitter",
-                                "source_url": f"https://twitter.com/{path}",
-                            })
-                        break  # Found data on this Nitter instance
-                except Exception:
+        for url in discovered_profiles[:8]:
+            try:
+                path = urlparse(url).path.strip("/").split("/")[0]
+                if not path or path in seen_users or path in ("search", "hashtag", "i"):
                     continue
-        except Exception as exc:
-            logger.debug("Twitter Nitter scrape error: %s", exc)
+                seen_users.add(path)
+
+                # Try healthy Nitter mirrors
+                for nitter in healthy:
+                    try:
+                        nitter_url = f"{nitter}/{path}"
+                        resp = session.get(nitter_url)
+                        if resp.status_code != 200:
+                            continue
+
+                        page_text = _strip_tags(resp.text[:50_000])
+                        emails = extract_emails(page_text)
+                        if emails:
+                            for email in emails:
+                                leads.append({
+                                    "email": email, "phone": "", "name": path,
+                                    "platform": "twitter",
+                                    "source_url": f"https://twitter.com/{path}",
+                                })
+                            break  # Found data on this Nitter instance
+                    except Exception:
+                        continue
+            except Exception as exc:
+                logger.debug("Twitter Nitter scrape error: %s", exc)
 
     logger.info("Twitter live scrape: %d leads", len(leads))
     return _dedup_leads(leads)[:max_results]
@@ -891,8 +905,8 @@ def _scrape_yelp_http(
                         if item.get("@type") in ("LocalBusiness", "Restaurant", "Store"):
                             phone = item.get("telephone", "")
                             # Yelp sometimes puts geo coordinates in telephone field
-                            # Reject if it looks like GPS coords (e.g. "37.7749")
-                            if phone and re.match(r'^-?\d{1,3}\.\d{4,}$', phone):
+                            # V7-fix: use fullmatch + catch "lat, lon" pairs
+                            if phone and _is_gps_coord(phone):
                                 phone = ""
                             leads.append({
                                 "name": item.get("name", ""),
@@ -905,7 +919,7 @@ def _scrape_yelp_http(
                 elif isinstance(data, dict):
                     if data.get("@type") in ("LocalBusiness", "Restaurant", "Store"):
                         phone = data.get("telephone", "")
-                        if phone and re.match(r'^-?\d{1,3}\.\d{4,}$', phone):
+                        if phone and _is_gps_coord(phone):
                             phone = ""
                         leads.append({
                             "name": data.get("name", ""),
@@ -1044,28 +1058,29 @@ def scrape_tumblr(
         logger.warning("Tumblr dorking failed: %s", exc)
 
     # Visit Tumblr blogs directly (public pages, reuse session)
+    # V7-fix: normalized 4-space indentation throughout
     seen_blogs: set[str] = set()
     with AdSession(timeout=10.0, min_delay=2.0) as session:
-      for url in discovered_blogs[:5]:
-        try:
-            domain = urlparse(url).netloc.lower()
-            if domain in seen_blogs:
-                continue
-            seen_blogs.add(domain)
+        for url in discovered_blogs[:5]:
+            try:
+                domain = urlparse(url).netloc.lower()
+                if domain in seen_blogs:
+                    continue
+                seen_blogs.add(domain)
 
-            resp = session.get(url)
-            if resp.status_code != 200:
-                continue
+                resp = session.get(url)
+                if resp.status_code != 200:
+                    continue
 
-            page_text = _strip_tags(resp.text[:100_000])
-            for email in extract_emails(page_text):
-                leads.append({
-                    "email": email, "phone": "", "name": "",
-                    "platform": "tumblr",
-                    "source_url": url,
-                })
-        except Exception as exc:
-            logger.debug("Tumblr blog scrape error: %s", exc)
+                page_text = _strip_tags(resp.text[:100_000])
+                for email in extract_emails(page_text):
+                    leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "tumblr",
+                        "source_url": url,
+                    })
+            except Exception as exc:
+                logger.debug("Tumblr blog scrape error: %s", exc)
 
     logger.info("Tumblr live scrape: %d leads", len(leads))
     return _dedup_leads(leads)[:max_results]
@@ -1102,6 +1117,8 @@ def scrape_linkedin(
             # Phase 1: URL discovery (broad, finds more profiles)
             f'site:linkedin.com/in "{query}" "{location}"',
             f'site:linkedin.com/company "{query}" "{location}"',
+            # Phase 1b: V7-fix — unquoted fallback for niche queries
+            f'site:linkedin.com/in {query} {location}',
             # Phase 2: Email-specific
             f'site:linkedin.com/in "{query}" "{location}" "@gmail.com" OR "@yahoo.com"',
         ]
@@ -1110,6 +1127,8 @@ def scrape_linkedin(
             # Phase 1: URL discovery
             f'site:linkedin.com/in "{query}"',
             f'site:linkedin.com/company "{query}"',
+            # Phase 1b: V7-fix — unquoted fallback for niche queries
+            f'site:linkedin.com/in {query}',
             # Phase 2: Email-specific
             f'site:linkedin.com/in "{query}" "@gmail.com" OR "@yahoo.com"',
             f'site:linkedin.com/in "{query}" "founder" OR "CEO" email',
@@ -1117,7 +1136,7 @@ def scrape_linkedin(
 
     discovered_urls: list[str] = []
     try:
-        for dork in dork_queries[:3]:
+        for dork in dork_queries[:4]:  # V7-fix: include unquoted fallback
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
                 text = f"{r.get('title', '')} {r.get('snippet', '')}"
@@ -1195,17 +1214,21 @@ def scrape_reddit(
         future = _THREAD_POOL.submit(_run_async)
         result = future.result(timeout=30)  # 30s max
 
+        # V7-fix: safely extract source_url to avoid KeyError
+        sources = result.get("sources") or []
+        primary_source = sources[0] if sources else ""
+
         for email in result.get("emails", []):
             leads.append({
                 "email": email, "phone": "", "name": "",
                 "platform": "reddit",
-                "source_url": result["sources"][0] if result.get("sources") else "",
+                "source_url": primary_source,
             })
         for phone in result.get("phones", []):
             leads.append({
                 "email": "", "phone": phone, "name": "",
                 "platform": "reddit",
-                "source_url": result["sources"][0] if result.get("sources") else "",
+                "source_url": primary_source,
             })
     except Exception as exc:
         logger.warning("Reddit scrape failed: %s", exc)

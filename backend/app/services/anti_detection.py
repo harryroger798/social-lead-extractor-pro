@@ -193,10 +193,12 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
         if elapsed < min_delay:
             jitter = random.uniform(0.1, 0.5)
             sleep_time = min_delay - elapsed + jitter
-        # Reserve this time slot so concurrent threads see the updated timestamp
-        _domain_last_request[domain] = min(now + sleep_time, now + _MAX_QUEUE_DELAY)
+        # V7-fix: store the expected completion time (now + sleep_time).
+        # This correctly serializes concurrent threads: the next caller sees
+        # a future timestamp, computes negative elapsed, and queues behind us.
+        _domain_last_request[domain] = now + max(sleep_time, 0.0)
     if sleep_time > 0:
-        time.sleep(min(sleep_time, 10.0))
+        time.sleep(min(sleep_time, _MAX_QUEUE_DELAY))
 
 
 # R3-B14 / R4-B08/B09 fix: comprehensive SSRF protection

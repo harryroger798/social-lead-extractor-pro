@@ -101,11 +101,15 @@ class _EngineHealth:
             self.cooldown_until = time.time() + 300
 
     def try_reset(self) -> bool:
-        """Attempt to reset cooldown if expired. Returns True if available."""
+        """Attempt to reset cooldown if expired. Returns True if available.
+
+        V7-fix: Do NOT reset consecutive_failures here — let record_success()
+        do that after a confirmed success. This prevents a repeatedly-failing
+        engine from escaping its cooldown on every waterfall call.
+        """
         if self.consecutive_failures >= 2:
             if time.time() > self.cooldown_until:
-                self.consecutive_failures = 0
-                return True
+                return True   # allow one probe; reset only on confirmed success
             return False
         return True
 

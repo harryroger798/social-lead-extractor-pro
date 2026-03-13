@@ -28,15 +28,26 @@ logger = logging.getLogger(__name__)
 def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
 
-    Removes all characters except alphanumeric, spaces, hyphens, and dots.
-    Also removes SQL wildcards (% and _) to prevent injection via LIKE patterns.
+    Removes all characters except alphanumeric, spaces, hyphens, dots, and
+    underscores. V7-fix: allow underscores because CSV industry/category
+    fields use them (e.g., "information_technology", "real_estate").
+    Also removes SQL LIKE wildcard % to prevent injection.
     """
-    # Only allow safe characters in search terms
-    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
-    # Also strip SQL LIKE wildcards that survived (% and _ are already stripped
-    # by the regex above, but belt-and-suspenders)
-    cleaned = cleaned.replace("%", "").replace("_", "")
+    # Only allow safe characters in search terms (including underscores)
+    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\._]", "", term)
+    # Strip SQL LIKE wildcard %
+    cleaned = cleaned.replace("%", "")
     return cleaned.strip().lower()
+
+
+def _escape_like(term: str) -> str:
+    """Escape SQL LIKE wildcard characters in a search term.
+
+    V7-fix R3: In SQL LIKE, _ matches any single char and % matches any string.
+    Both must be escaped when used as literal characters in search patterns.
+    Uses backslash escaping with ESCAPE '\\' clause in the query.
+    """
+    return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 def _sanitize_location_term(location: str) -> str:
@@ -378,7 +389,8 @@ def _build_linkedin_query(
     where_parts: list[str] = []
     for term in search_terms:
         for fld in searchable_fields:
-            where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
+            escaped = _escape_like(term)
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\'")
 
     # Also filter by city/state if location looks like a city/state
     # R5-B03/B06 fix: use _sanitize_location_term (preserves spaces, no dots)
@@ -451,7 +463,8 @@ def _build_instagram_query(
     where_parts: list[str] = []
     for term in search_terms:
         for fld in searchable_fields:
-            where_parts.append(f"LOWER({fld}) LIKE '%{term}%'")
+            escaped = _escape_like(term)
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\'")
 
     where_clause = " OR ".join(where_parts)
 
