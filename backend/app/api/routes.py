@@ -255,93 +255,120 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         await _update_progress(session_id, 2, "Initializing extraction...", "", 0, 0, 0)
 
+        # ── v3.5.8: Detect B2B-only extractions to skip slow DB search ──
+        # The S3 database only contains LinkedIn (86.9M) and Instagram (2.45M)
+        # data.  When user selects ONLY B2B platforms (IndiaMART, Apollo, etc.)
+        # there is zero relevant data in the DB — scanning 50 S3 CSV files
+        # (~3.5 GB) wastes 60-120+ seconds and makes the UI appear frozen at 5%.
+        _B2B_ONLY_PLATFORMS = {
+            "indiamart", "apollo", "tradeindia", "exportersindia",
+            "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
+        }
+        _has_social_platforms = any(
+            p not in _B2B_ONLY_PLATFORMS for p in config.platforms
+        )
+
         # ── v3.4.0: Database Hybrid Search (tier-gated limits) ──────────
         # Query 89M+ pre-extracted leads from S3 database FIRST for instant results.
         # All tiers get access; limits differ:
         #   Free    → 10 leads max per search
         #   Starter → 25 leads max per search
         #   Pro/Unlimited → 50+ leads (unlimited)
+        # v3.5.8: SKIP entirely when only B2B platforms selected (no relevant data)
         db_leads: list[dict] = []
-        try:
-            # Determine tier based on active license
-            db_max_results = 10  # Free tier default
-            tier_label = "free"
-            async with get_db() as db:
-                cursor = await db.execute(
-                    "SELECT key, status FROM licenses WHERE status = 'active' "
-                    "AND current_activations > 0 ORDER BY activated_at DESC LIMIT 1"
+
+        # v3.5.0: Parse keywords FIRST (needed by both DB search and later stages)
+        for kw in config.keywords:
+            parsed = parse_keyword(kw)
+            parsed_keywords.append(parsed)
+            cleaned_keywords.append(parsed.keyword)
+            if parsed.location and not location_hint:
+                location_hint = parsed.location.lower()
+            if parsed.is_hinglish:
+                logger.info(
+                    "Hinglish detected: '%s' -> keyword='%s', location='%s'",
+                    kw, parsed.keyword, parsed.location,
                 )
-                active_license = await cursor.fetchone()
-                if active_license:
-                    # Check if it's a lifetime/long license (Pro) vs short (Starter)
-                    cursor2 = await db.execute(
-                        "SELECT expires_at FROM licenses WHERE key = ?",
-                        (active_license[0],),
-                    )
-                    lic_row = await cursor2.fetchone()
-                    if lic_row and lic_row[0]:
-                        try:
-                            exp = datetime.fromisoformat(str(lic_row[0]))
-                            remaining_days = (exp - datetime.now()).days
-                            if remaining_days > 365:
-                                # Pro/Unlimited (lifetime or annual+)
-                                db_max_results = 50
-                                tier_label = "pro"
-                            else:
-                                # Starter (shorter license)
-                                db_max_results = 25
-                                tier_label = "starter"
-                        except (ValueError, TypeError):
-                            db_max_results = 25
-                            tier_label = "starter"
-                    else:
-                        db_max_results = 25
-                        tier_label = "starter"
 
-            logger.info("Database search tier: %s (max %d results/keyword)", tier_label, db_max_results)
-
-            await _update_progress(
-                session_id, 5,
-                "Searching 89M+ leads database...", "database", *_count_leads(),
+        if not _has_social_platforms:
+            # v3.5.8: Skip database search for B2B-only platform selections.
+            # S3 database only has LinkedIn/Instagram — no B2B platform data.
+            logger.info(
+                "Skipping database search — B2B-only platforms selected: %s",
+                config.platforms,
             )
-
-            # v3.5.0: Use smart KeywordParser with Hinglish support
-            # Handles: "Startups in India", "daktar dilli mein",
-            #          "restaurants mere samne", "cafes near Bangalore"
-            for kw in config.keywords:
-                parsed = parse_keyword(kw)
-                parsed_keywords.append(parsed)
-                cleaned_keywords.append(parsed.keyword)
-                if parsed.location and not location_hint:
-                    location_hint = parsed.location.lower()
-                if parsed.is_hinglish:
-                    logger.info(
-                        "Hinglish detected: '%s' -> keyword='%s', location='%s'",
-                        kw, parsed.keyword, parsed.location,
-                    )
-
-            # v3.5.1: Build expanded_terms_map for OR-based DB queries
-            expanded_terms_map: dict[str, list[str]] = {}
-            for pk in parsed_keywords:
-                if pk.expanded_terms:
-                    expanded_terms_map[pk.keyword] = pk.expanded_terms
-
-            db_leads = await search_database_hybrid(
-                keywords=cleaned_keywords,
-                platforms=config.platforms,
-                location=location_hint,
-                max_results_per_keyword=db_max_results,
-                expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
-            )
-            all_leads.extend(db_leads)
             await _update_progress(
                 session_id, 10,
-                f"Database: {len(db_leads)} instant leads ({tier_label})",
+                "Skipped DB search (B2B-only) — proceeding to scrapers...",
                 "database", *_count_leads(),
             )
-            logger.info("Database hybrid search returned %d leads (tier=%s)", len(db_leads), tier_label)
-        except Exception as e:
-            logger.warning("Database search failed (non-fatal): %s", e, exc_info=True)
+        else:
+            try:
+                # Determine tier based on active license
+                db_max_results = 10  # Free tier default
+                tier_label = "free"
+                async with get_db() as db:
+                    cursor = await db.execute(
+                        "SELECT key, status FROM licenses WHERE status = 'active' "
+                        "AND current_activations > 0 ORDER BY activated_at DESC LIMIT 1"
+                    )
+                    active_license = await cursor.fetchone()
+                    if active_license:
+                        # Check if it's a lifetime/long license (Pro) vs short (Starter)
+                        cursor2 = await db.execute(
+                            "SELECT expires_at FROM licenses WHERE key = ?",
+                            (active_license[0],),
+                        )
+                        lic_row = await cursor2.fetchone()
+                        if lic_row and lic_row[0]:
+                            try:
+                                exp = datetime.fromisoformat(str(lic_row[0]))
+                                remaining_days = (exp - datetime.now()).days
+                                if remaining_days > 365:
+                                    # Pro/Unlimited (lifetime or annual+)
+                                    db_max_results = 50
+                                    tier_label = "pro"
+                                else:
+                                    # Starter (shorter license)
+                                    db_max_results = 25
+                                    tier_label = "starter"
+                            except (ValueError, TypeError):
+                                db_max_results = 25
+                                tier_label = "starter"
+                        else:
+                            db_max_results = 25
+                            tier_label = "starter"
+
+                logger.info("Database search tier: %s (max %d results/keyword)", tier_label, db_max_results)
+
+                await _update_progress(
+                    session_id, 5,
+                    "Searching 89M+ leads database...", "database", *_count_leads(),
+                )
+
+                # v3.5.1: Build expanded_terms_map for OR-based DB queries
+                expanded_terms_map: dict[str, list[str]] = {}
+                for pk in parsed_keywords:
+                    if pk.expanded_terms:
+                        expanded_terms_map[pk.keyword] = pk.expanded_terms
+
+                db_leads = await search_database_hybrid(
+                    keywords=cleaned_keywords,
+                    platforms=config.platforms,
+                    location=location_hint,
+                    max_results_per_keyword=db_max_results,
+                    expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
+                    tier=tier_label,
+                )
+                all_leads.extend(db_leads)
+                await _update_progress(
+                    session_id, 10,
+                    f"Database: {len(db_leads)} instant leads ({tier_label})",
+                    "database", *_count_leads(),
+                )
+                logger.info("Database hybrid search returned %d leads (tier=%s)", len(db_leads), tier_label)
+            except Exception as e:
+                logger.warning("Database search failed (non-fatal): %s", e, exc_info=True)
 
         # Load proxy pool if proxies are enabled
         if config.use_proxies:

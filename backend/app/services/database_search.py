@@ -583,11 +583,15 @@ def _instagram_row_to_lead(row: tuple, keyword: str) -> dict:
     }
 
 
+# v3.5.8: timeout for S3 queries — prevents UI freezing on slow connections
+_DB_QUERY_TIMEOUT_SECS = 30
+
+
 async def search_database_linkedin(
     keyword: str,
     location: str = "",
     max_results: int = 50,
-    dataset_limit: int = 10,
+    dataset_limit: int = 3,
     expanded_terms: list[str] | None = None,
 ) -> list[dict]:
     """Search the LinkedIn leads database for matching records.
@@ -642,7 +646,18 @@ async def search_database_linkedin(
             finally:
                 con.close()
 
-        rows = await loop.run_in_executor(None, _execute_query)
+        # v3.5.8: wrap query execution with timeout to prevent UI freezing
+        try:
+            rows = await asyncio.wait_for(
+                loop.run_in_executor(None, _execute_query),
+                timeout=_DB_QUERY_TIMEOUT_SECS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "LinkedIn database query timed out after %ds for '%s' (%d files)",
+                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
+            )
+            rows = []
 
         for row in rows:
             lead = _linkedin_row_to_lead(row, keyword)
@@ -664,7 +679,7 @@ async def search_database_linkedin(
 async def search_database_instagram(
     keyword: str,
     max_results: int = 30,
-    dataset_limit: int = 5,
+    dataset_limit: int = 3,
     expanded_terms: list[str] | None = None,
 ) -> list[dict]:
     """Search the Instagram leads database for matching records.
@@ -706,7 +721,18 @@ async def search_database_instagram(
             finally:
                 con.close()
 
-        rows = await loop.run_in_executor(None, _execute_query)
+        # v3.5.8: wrap query execution with timeout to prevent UI freezing
+        try:
+            rows = await asyncio.wait_for(
+                loop.run_in_executor(None, _execute_query),
+                timeout=_DB_QUERY_TIMEOUT_SECS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "Instagram database query timed out after %ds for '%s' (%d files)",
+                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
+            )
+            rows = []
 
         for row in rows:
             lead = _instagram_row_to_lead(row, keyword)
@@ -731,6 +757,7 @@ async def search_database_hybrid(
     location: str = "",
     max_results_per_keyword: int = 50,
     expanded_terms_map: dict[str, list[str]] | None = None,
+    tier: str = "free",
 ) -> list[dict]:
     """Search the pre-built database across multiple platforms and keywords.
 
@@ -742,6 +769,8 @@ async def search_database_hybrid(
         platforms: List of platform names to search
         location: Optional location filter
         max_results_per_keyword: Max results per keyword per platform
+        tier: User subscription tier — controls dataset scan depth
+              (v3.5.8: free=3, starter=5, pro/unlimited=8)
 
     Returns:
         Combined deduplicated lead list
@@ -749,6 +778,16 @@ async def search_database_hybrid(
     all_leads: list[dict] = []
     seen_emails: set[str] = set()
     seen_phones: set[str] = set()
+
+    # v3.5.8: tier-aware dataset_limit — balances speed vs coverage
+    # Free tier scans fewer files (faster), paid tiers scan more (broader)
+    _tier_dataset_limits = {
+        "free": 3,
+        "starter": 5,
+        "pro": 8,
+        "unlimited": 8,
+    }
+    ds_limit = _tier_dataset_limits.get(tier, 3)
 
     # Determine which databases to search based on requested platforms
     search_linkedin = any(p in ("linkedin", "all") for p in platforms)
@@ -773,6 +812,7 @@ async def search_database_hybrid(
             tasks.append(
                 search_database_linkedin(
                     keyword, location, max_results_per_keyword,
+                    dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
             )
@@ -780,6 +820,7 @@ async def search_database_hybrid(
             tasks.append(
                 search_database_instagram(
                     keyword, max_results_per_keyword // 2,
+                    dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
             )
