@@ -11,8 +11,16 @@ EMAIL_PATTERN = re.compile(
     r'\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b'
 )
 
+# v3.5.9: Tightened phone regex — requires separators or tel:/+ prefix to avoid
+# matching tracking IDs, timestamps, CSS values, and other garbage digit strings.
+# Real phones have digit groups separated by spaces, dashes, dots, or parens.
 PHONE_PATTERN = re.compile(
-    r'(?:\+?\d{1,3}[\s\-.]?)?\(?\d{2,4}\)?[\s\-.]?\d{3,4}[\s\-.]?\d{3,4}'
+    r'(?:\+\d{1,3}[\s\-.]?)?'
+    r'\(?\d{2,4}\)?'
+    r'[\s\-.]+'
+    r'\d{3,4}'
+    r'[\s\-.]+'
+    r'\d{3,4}'
 )
 
 # Pages most likely to contain contact info
@@ -73,21 +81,60 @@ def _extract_emails_from_html(html: str) -> list[str]:
     return list(set(valid))
 
 
-def _extract_phones_from_html(html: str) -> list[str]:
-    """Extract phone numbers from HTML content."""
-    # Check tel: links
-    tel_pattern = re.compile(r'tel:([+\d\-\(\)\s]+)')
-    phones = set()
-    for match in tel_pattern.findall(html):
-        cleaned = re.sub(r'[^\d+]', '', match)
-        if 7 <= len(cleaned) <= 15:
-            phones.add(match.strip())
+# v3.5.9: patterns that look like phones but aren't (tracking IDs, hex, timestamps)
+# v3.5.9-R2: single-line alternation to avoid implicit concatenation issues
+# Only reject 13+ unbroken digits (10-12 can be valid phones like US 1234567890)
+_PHONE_FALSE_POSITIVE = re.compile(
+    r'^\d{13,}$|^0x[0-9a-fA-F]+|^\d{4}[01]\d[0-3]\d'
+)
 
-    # Plain text phones
+# v3.5.9-R2: pre-compiled regex for phone extraction (moved from inside function)
+_RE_TEL_LINK = re.compile(r'tel:([+\d\-\(\)\s]+)')
+_RE_SCHEMA_PHONE = re.compile(r'"telephone"\s*:\s*"([^"]+)"')
+_RE_ITEMPROP_PHONE = re.compile(r'itemprop="telephone"[^>]*>([^<]+)<')
+
+
+def _is_valid_phone(raw: str) -> bool:
+    """v3.5.9: Validate a phone candidate is a real phone number."""
+    cleaned = re.sub(r'[^\d+]', '', raw)
+    if len(cleaned) < 7 or len(cleaned) > 15:
+        return False
+    # Reject if it matches known false-positive patterns (13+ digits, hex, dates)
+    if _PHONE_FALSE_POSITIVE.match(cleaned.lstrip('+')):
+        return False
+    return True
+
+
+def _extract_phones_from_html(html: str) -> list[str]:
+    """Extract phone numbers from HTML content.
+
+    v3.5.9: Prioritizes tel: links (most reliable), then structured data,
+    then regex with strict validation to reject garbage digit strings.
+    """
+    phones: set[str] = set()
+    seen_cleaned: set[str] = set()
+
+    def _add_phone(raw: str) -> None:
+        cleaned = re.sub(r'[^\d+]', '', raw)
+        if cleaned not in seen_cleaned and _is_valid_phone(raw):
+            seen_cleaned.add(cleaned)
+            phones.add(raw.strip())
+
+    # Priority 1: tel: links (most reliable — website explicitly marks as phone)
+    for match in _RE_TEL_LINK.findall(html):
+        _add_phone(match)
+
+    # Priority 2: Schema.org / JSON-LD telephone fields
+    for match in _RE_SCHEMA_PHONE.findall(html):
+        _add_phone(match)
+
+    # Priority 3: itemprop="telephone" in HTML
+    for match in _RE_ITEMPROP_PHONE.findall(html):
+        _add_phone(match)
+
+    # Priority 4: Regex fallback (with strict validation)
     for phone in PHONE_PATTERN.findall(html):
-        cleaned = re.sub(r'[^\d+]', '', phone)
-        if 7 <= len(cleaned) <= 15:
-            phones.add(phone.strip())
+        _add_phone(phone)
 
     return list(phones)
 

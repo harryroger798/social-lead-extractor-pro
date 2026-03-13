@@ -132,12 +132,12 @@ def scrape_indiamart(
     pages. Company listings include names, cities, products, and sometimes
     GST numbers and employee counts.
 
-    Strategy (v3.5.8 enhanced):
-    1. Search dir.indiamart.com directory pages (up to 200 results, 8 pages)
+    Strategy (v3.5.9 enhanced):
+    1. Search dir.indiamart.com + www.indiamart.com/search (dual endpoint)
     2. Parse JSON-LD structured data from listing pages
     3. Extract company details from search result cards
     4. Follow company microsites for additional contact info (emails/phones)
-    5. Multiple Google dorking queries for deeper coverage
+    5. Expanded Google dorking queries (8 variations) for deeper coverage
 
     Rate limit: 8 req/min, 3-7s delay, max 500 pages/day
     Anti-bot: Akamai Bot Manager — curl_cffi TLS fingerprinting helps
@@ -147,98 +147,104 @@ def scrape_indiamart(
     search_term = f"{query} {location}".strip() if location else query
     encoded_query = quote_plus(search_term)
 
-    # Method 1: Direct directory search — v3.5.8: scan up to 200 results
+    # Method 1: Direct directory search — v3.5.9: dual endpoint strategy
+    # Try both dir.indiamart.com and www.indiamart.com/search — different
+    # Akamai rules mean one may work even if the other is blocked.
+    _IM_SEARCH_URLS = [
+        "https://dir.indiamart.com/search.mp?ss={q}&prdsrc=1&start={off}",
+        "https://www.indiamart.com/search.html?ss={q}&start={off}",
+    ]
     with AdSession(timeout=15.0, min_delay=4.0) as session:
-        for page_offset in range(0, min(max_results * 4, 200), 25):
-            try:
-                url = (
-                    f"https://dir.indiamart.com/search.mp"
-                    f"?ss={encoded_query}&prdsrc=1&start={page_offset}"
-                )
-                if location:
-                    url += f"&cq={quote_plus(location)}"
-
-                resp = session.get(url)
-                if resp.status_code != 200:
-                    logger.debug("IndiaMART HTTP %d for offset %d", resp.status_code, page_offset)
-                    break
-
-                page_html = _safe_response_text(resp)
-                if not page_html:
-                    break
-
-                page_lead_count = len(leads)
-
-                # Parse JSON-LD structured data (most reliable)
-                jsonld_blocks = re.findall(
-                    r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
-                    page_html,
-                    re.DOTALL,
-                )
-                for block in jsonld_blocks[:50]:
-                    try:
-                        data = _json_mod.loads(block)
-                        ld_type = data.get("@type", "")
-
-                        if ld_type in ("Organization", "LocalBusiness"):
-                            lead = _parse_indiamart_jsonld(data)
-                            if lead:
-                                leads.append(lead)
-                                # v3.5.8: collect microsite URLs for contact extraction
-                                src = lead.get("source_url", "")
-                                if src and "indiamart.com" in src:
-                                    microsite_urls.append(src)
-                        elif ld_type == "ItemList":
-                            for item in data.get("itemListElement", []):
-                                item_data = item.get("item", {})
-                                if item_data:
-                                    lead = _parse_indiamart_jsonld(item_data)
-                                    if lead:
-                                        leads.append(lead)
-                                        src = lead.get("source_url", "")
-                                        if src and "indiamart.com" in src:
-                                            microsite_urls.append(src)
-                    except (_json_mod.JSONDecodeError, KeyError, TypeError):
-                        continue
-
-                # Parse HTML cards as fallback
-                _parse_indiamart_html_cards(page_html, leads)
-
-                # v3.5.8: also collect company profile links from HTML
-                profile_links = re.findall(
-                    r'href="(https?://[^"]*\.indiamart\.com/[^"]*)"',
-                    page_html,
-                )
-                for link in profile_links[:20]:
-                    parsed_url = urlparse(link)
-                    # Only company microsites (subdomain pattern)
-                    if (parsed_url.hostname
-                            and parsed_url.hostname != "dir.indiamart.com"
-                            and parsed_url.hostname != "www.indiamart.com"
-                            and parsed_url.hostname.endswith(".indiamart.com")):
-                        if link not in microsite_urls:
-                            microsite_urls.append(link)
-
-                if len(leads) >= max_results:
-                    break
-
-                # v3.5.8: stop paginating if page returned 0 new leads
-                if len(leads) == page_lead_count:
-                    logger.debug("IndiaMART: no new leads on offset %d, stopping", page_offset)
-                    break
-
-            except Exception as exc:
-                logger.warning("IndiaMART page scrape error at offset %d: %s", page_offset, exc)
+        for search_tpl in _IM_SEARCH_URLS:
+            if len(leads) >= max_results:
                 break
+            for page_offset in range(0, min(max_results * 4, 200), 25):
+                try:
+                    url = search_tpl.format(q=encoded_query, off=page_offset)
+                    if location and "cq=" not in url:
+                        url += f"&cq={quote_plus(location)}"
 
-    # v3.5.8 Method 2: Follow company microsites for emails/phones
+                    resp = session.get(url)
+                    if resp.status_code != 200:
+                        logger.debug("IndiaMART HTTP %d for offset %d", resp.status_code, page_offset)
+                        break
+
+                    page_html = _safe_response_text(resp)
+                    if not page_html:
+                        break
+
+                    page_lead_count = len(leads)
+
+                    # Parse JSON-LD structured data (most reliable)
+                    jsonld_blocks = re.findall(
+                        r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
+                        page_html,
+                        re.DOTALL,
+                    )
+                    for block in jsonld_blocks[:50]:
+                        try:
+                            data = _json_mod.loads(block)
+                            ld_type = data.get("@type", "")
+
+                            if ld_type in ("Organization", "LocalBusiness"):
+                                lead = _parse_indiamart_jsonld(data)
+                                if lead:
+                                    leads.append(lead)
+                                    # v3.5.8: collect microsite URLs for contact extraction
+                                    src = lead.get("source_url", "")
+                                    if src and "indiamart.com" in src:
+                                        microsite_urls.append(src)
+                            elif ld_type == "ItemList":
+                                for item in data.get("itemListElement", []):
+                                    item_data = item.get("item", {})
+                                    if item_data:
+                                        lead = _parse_indiamart_jsonld(item_data)
+                                        if lead:
+                                            leads.append(lead)
+                                            src = lead.get("source_url", "")
+                                            if src and "indiamart.com" in src:
+                                                microsite_urls.append(src)
+                        except (_json_mod.JSONDecodeError, KeyError, TypeError):
+                            continue
+
+                    # Parse HTML cards as fallback
+                    _parse_indiamart_html_cards(page_html, leads)
+
+                    # v3.5.8: also collect company profile links from HTML
+                    profile_links = re.findall(
+                        r'href="(https?://[^"]*\.indiamart\.com/[^"]*)"',
+                        page_html,
+                    )
+                    for link in profile_links[:20]:
+                        parsed_url = urlparse(link)
+                        # Only company microsites (subdomain pattern)
+                        if (parsed_url.hostname
+                                and parsed_url.hostname != "dir.indiamart.com"
+                                and parsed_url.hostname != "www.indiamart.com"
+                                and parsed_url.hostname.endswith(".indiamart.com")):
+                            if link not in microsite_urls:
+                                microsite_urls.append(link)
+
+                    if len(leads) >= max_results:
+                        break
+
+                    # v3.5.8: stop paginating if page returned 0 new leads
+                    if len(leads) == page_lead_count:
+                        logger.debug("IndiaMART: no new leads on offset %d, stopping", page_offset)
+                        break
+
+                except Exception as exc:
+                    logger.warning("IndiaMART page scrape error at offset %d: %s", page_offset, exc)
+                    break
+
+    # v3.5.9 Method 2: Follow company microsites for emails/phones
     # Only visit sites for leads that are missing contact info
-    # v3.5.8-R2: capped at 5 visits per Claude Sonnet 4.6 review to stay ban-free
+    # v3.5.9: increased cap from 5→15 for better contact coverage
     leads_missing_contact = [
         i for i, ld in enumerate(leads)
         if not ld.get("email") and not ld.get("phone")
     ]
-    urls_to_visit = microsite_urls[:min(len(leads_missing_contact), 5)]
+    urls_to_visit = microsite_urls[:min(len(leads_missing_contact), 15)]
 
     if urls_to_visit:
         with AdSession(timeout=12.0, min_delay=3.0) as session:
@@ -282,15 +288,21 @@ def scrape_indiamart(
                     continue
 
     # Method 3: Google dorking for additional IndiaMART listings
-    # v3.5.8: expanded dorking with more query variations
+    # v3.5.9: expanded to 8 dork queries for maximum coverage when
+    # direct directory search is blocked by Akamai
     dork_queries = [
         f'site:indiamart.com "{search_term}" contact OR email',
         f'site:dir.indiamart.com "{search_term}"',
         f'site:indiamart.com "{query}" "{location}" phone OR mobile' if location else f'site:indiamart.com "{query}" phone OR mobile',
         f'site:indiamart.com inurl:proddetail "{query}"',
+        # v3.5.9: additional queries for broader coverage
+        f'site:indiamart.com "{query}" manufacturer OR supplier OR dealer',
+        f'site:indiamart.com "{query}" inurl:company',
+        f'indiamart.com "{search_term}" email OR phone OR contact',
+        f'site:indiamart.com "{query}" GST OR GSTIN' if not location else f'site:indiamart.com "{query}" "{location}"',
     ]
     try:
-        for dork in dork_queries[:4]:
+        for dork in dork_queries[:8]:
             if len(leads) >= max_results:
                 break
             results = free_search_waterfall(dork, num_results=10, min_results=2)
@@ -1543,15 +1555,40 @@ def b2b_scrape_platform(
         return []
 
 
+# v3.5.9: Platform priority order for maximum lead yield.
+# Higher-yield platforms are scraped first so users get results faster.
+# Indian market: JustDial/IndiaMART → Google Maps → TradeIndia → ExportersIndia
+# Global market: Apollo → Google Maps → RocketReach → Crunchbase
+_B2B_PRIORITY_ORDER = {
+    "justdial": 1,
+    "indiamart": 2,
+    "google_maps_b2b": 3,
+    "apollo": 4,
+    "tradeindia": 5,
+    "exportersindia": 6,
+    "rocketreach": 7,
+    "crunchbase": 8,
+}
+
+
 def b2b_scrape_all_platforms(
     platforms: list[str],
     query: str,
     location: str = "",
     max_per_platform: int = 50,
 ) -> list[dict]:
-    """Scrape all requested B2B platforms and combine results."""
+    """Scrape all requested B2B platforms and combine results.
+
+    v3.5.9: Platforms are sorted by priority order so high-yield sources
+    (JustDial, IndiaMART, Apollo) are scraped first for faster results.
+    """
     all_leads: list[dict] = []
-    for platform in platforms:
+    # Sort platforms by priority (lower number = higher priority)
+    sorted_platforms = sorted(
+        platforms,
+        key=lambda p: _B2B_PRIORITY_ORDER.get(p.lower(), 99),
+    )
+    for platform in sorted_platforms:
         platform_leads = b2b_scrape_platform(
             platform, query, location, max_per_platform,
         )
@@ -1561,22 +1598,35 @@ def b2b_scrape_all_platforms(
 
 
 def get_available_b2b_platforms() -> list[dict]:
-    """Return list of available B2B platform scrapers with metadata."""
+    """Return list of available B2B platform scrapers with metadata.
+
+    v3.5.9: Added priority field for lead maximization strategy.
+    Indian market: JustDial (#1) → IndiaMART (#2) → Google Maps (#3)
+    Global market: Apollo (#4) → Google Maps (#3) → RocketReach (#7)
+    """
     return [
+        {"id": "justdial", "name": "JustDial", "region": "india", "tier": 1,
+         "priority": 1,
+         "description": "Local business directory — names, addresses, ratings, phones"},
         {"id": "indiamart", "name": "IndiaMART", "region": "india", "tier": 1,
+         "priority": 2,
          "description": "India's largest B2B marketplace — suppliers, manufacturers, exporters"},
+        {"id": "google_maps_b2b", "name": "Google Maps B2B", "region": "global", "tier": 1,
+         "priority": 3,
+         "description": "Local business listings with phone, website, address"},
         {"id": "apollo", "name": "Apollo.io", "region": "global", "tier": 1,
+         "priority": 4,
          "description": "B2B people & company search — names, titles, emails, LinkedIn"},
         {"id": "tradeindia", "name": "TradeIndia", "region": "india", "tier": 1,
+         "priority": 5,
          "description": "Indian B2B portal — GST, IEC, company profiles"},
         {"id": "exportersindia", "name": "ExportersIndia", "region": "india", "tier": 1,
+         "priority": 6,
          "description": "Indian exporters & manufacturers directory"},
-        {"id": "justdial", "name": "JustDial", "region": "india", "tier": 1,
-         "description": "Local business directory — names, addresses, ratings"},
-        {"id": "google_maps_b2b", "name": "Google Maps B2B", "region": "global", "tier": 1,
-         "description": "Local business listings with phone, website, address"},
         {"id": "rocketreach", "name": "RocketReach", "region": "global", "tier": 2,
+         "priority": 7,
          "description": "Professional profiles — names, titles, companies via dorking"},
         {"id": "crunchbase", "name": "Crunchbase", "region": "global", "tier": 2,
+         "priority": 8,
          "description": "Startup & company data — founders, funding, employee counts"},
     ]
