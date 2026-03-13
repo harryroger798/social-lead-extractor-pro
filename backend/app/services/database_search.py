@@ -28,14 +28,15 @@ logger = logging.getLogger(__name__)
 def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
 
-    Removes all characters except alphanumeric, spaces, hyphens, and dots.
-    Also removes SQL wildcards (% and _) to prevent injection via LIKE patterns.
+    Removes all characters except alphanumeric, spaces, hyphens, dots, and
+    underscores. V7-fix: allow underscores because CSV industry/category
+    fields use them (e.g., "information_technology", "real_estate").
+    Also removes SQL LIKE wildcard % to prevent injection.
     """
-    # Only allow safe characters in search terms
-    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\.]", "", term)
-    # Also strip SQL LIKE wildcards that survived (% and _ are already stripped
-    # by the regex above, but belt-and-suspenders)
-    cleaned = cleaned.replace("%", "").replace("_", "")
+    # Only allow safe characters in search terms (including underscores)
+    cleaned = re.sub(r"[^a-zA-Z0-9\s\-\._]", "", term)
+    # Strip SQL LIKE wildcard % (underscore is intentionally kept)
+    cleaned = cleaned.replace("%", "")
     return cleaned.strip().lower()
 
 

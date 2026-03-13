@@ -349,6 +349,15 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
                 if is_known_location or starts_with_capital:
                     keyword = candidate_kw
                     location = candidate_loc
+                elif (
+                    candidate_loc
+                    and candidate_loc.replace(" ", "").isalpha()
+                    and len(candidate_loc) >= 3
+                ):
+                    # V7-fix: treat plausible place names as locations even
+                    # without capitalization ("startups in berlin", "shops in paris")
+                    keyword = candidate_kw
+                    location = candidate_loc
                 else:
                     # "in" is probably part of the keyword (e.g. "inn", "interior")
                     keyword = text

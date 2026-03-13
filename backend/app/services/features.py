@@ -1004,7 +1004,7 @@ def export_leads_pdf(leads: list[dict], title: str = "SnapLeads Export") -> byte
 
     pdf.set_font(_font_family, "B", 10)
     # Table header
-    col_widths = [40, 55, 35, 25, 35]
+    col_widths = [38, 52, 34, 24, 32]   # V7-fix: sum=180mm, 10mm safety margin
     headers = ["Name", "Email", "Phone", "Platform", "Location"]
     for i, header in enumerate(headers):
         pdf.cell(col_widths[i], 8, header, border=1, align="C")
