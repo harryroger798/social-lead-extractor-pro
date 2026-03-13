@@ -958,6 +958,7 @@ async def search_database_googlemaps(
     v3.5.10: Queries PhantomBuster-extracted Google Maps data on S3.
     Returns list of standardized lead dicts with platform='google_maps'.
     """
+    start_time = time.time()
     leads: list[dict] = []
     if not keyword or not keyword.strip():
         return leads
@@ -967,31 +968,41 @@ async def search_database_googlemaps(
         expanded_terms=expanded_terms,
     )
 
-    conn = _get_duckdb_connection()
-    if conn is None:
-        return leads
+    # Run DuckDB query in thread pool to avoid blocking async loop
+    loop = asyncio.get_running_loop()
 
-    async def _execute_query() -> list[tuple]:
-        loop = asyncio.get_event_loop()
-        try:
-            return await asyncio.wait_for(
-                loop.run_in_executor(None, conn.execute(sql).fetchall),
-                timeout=30.0,
-            )
-        except asyncio.TimeoutError:
-            logger.warning("Google Maps DB query timed out for '%s'", keyword)
+    def _execute_query() -> list[tuple]:
+        con = _get_duckdb_connection()
+        if not con:
             return []
+        try:
+            return con.execute(sql).fetchall()
+        except Exception as e:
+            logger.warning("Google Maps database query failed: %s", e)
+            return []
+        finally:
+            con.close()
 
     try:
-        start = asyncio.get_event_loop().time()
-        rows = await _execute_query()
-        elapsed = asyncio.get_event_loop().time() - start
+        # v3.5.10: wrap query execution with timeout to prevent UI freezing
+        try:
+            rows = await asyncio.wait_for(
+                loop.run_in_executor(None, _execute_query),
+                timeout=_DB_QUERY_TIMEOUT_SECS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "Google Maps database query timed out after %ds for '%s' (%d files)",
+                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
+            )
+            rows = []
 
         for row in rows:
             lead = _googlemaps_row_to_lead(row, keyword)
             if lead:
                 leads.append(lead)
 
+        elapsed = time.time() - start_time
         logger.info(
             "Database Google Maps search: '%s' → %d leads (%.1fs, scanned %d files)",
             keyword, len(leads), elapsed, len(s3_paths),
@@ -1014,6 +1025,7 @@ async def search_database_pan_india(
     v3.5.10: Queries standardized Indian business database on S3.
     Returns list of standardized lead dicts with platform='pan_india'.
     """
+    start_time = time.time()
     leads: list[dict] = []
     if not keyword or not keyword.strip():
         return leads
@@ -1023,31 +1035,41 @@ async def search_database_pan_india(
         expanded_terms=expanded_terms,
     )
 
-    conn = _get_duckdb_connection()
-    if conn is None:
-        return leads
+    # Run DuckDB query in thread pool to avoid blocking async loop
+    loop = asyncio.get_running_loop()
 
-    async def _execute_query() -> list[tuple]:
-        loop = asyncio.get_event_loop()
-        try:
-            return await asyncio.wait_for(
-                loop.run_in_executor(None, conn.execute(sql).fetchall),
-                timeout=30.0,
-            )
-        except asyncio.TimeoutError:
-            logger.warning("PAN India DB query timed out for '%s'", keyword)
+    def _execute_query() -> list[tuple]:
+        con = _get_duckdb_connection()
+        if not con:
             return []
+        try:
+            return con.execute(sql).fetchall()
+        except Exception as e:
+            logger.warning("PAN India database query failed: %s", e)
+            return []
+        finally:
+            con.close()
 
     try:
-        start = asyncio.get_event_loop().time()
-        rows = await _execute_query()
-        elapsed = asyncio.get_event_loop().time() - start
+        # v3.5.10: wrap query execution with timeout to prevent UI freezing
+        try:
+            rows = await asyncio.wait_for(
+                loop.run_in_executor(None, _execute_query),
+                timeout=_DB_QUERY_TIMEOUT_SECS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "PAN India database query timed out after %ds for '%s' (%d files)",
+                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
+            )
+            rows = []
 
         for row in rows:
             lead = _pan_india_row_to_lead(row, keyword)
             if lead:
                 leads.append(lead)
 
+        elapsed = time.time() - start_time
         logger.info(
             "Database PAN India search: '%s' → %d leads (%.1fs, scanned %d files)",
             keyword, len(leads), elapsed, len(s3_paths),
