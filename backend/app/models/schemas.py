@@ -45,7 +45,7 @@ class ExtractionRequest(BaseModel):
     exclude_domains: list[str] = []
     country_codes: list[str] = []
     export_format: str = "excel"
-    auto_verify: bool = True
+    auto_verify: bool = False  # v3.5.9: default False — SMTP checks hang on slow connections
     use_google_dorking: bool = True
     use_direct_scraping: bool = True
     use_firecrawl_enrichment: bool = False
@@ -160,7 +160,7 @@ class ScheduleCreateRequest(BaseModel):
     use_proxies: bool = False
     use_google_dorking: bool = True
     use_firecrawl_enrichment: bool = False
-    auto_verify: bool = True
+    auto_verify: bool = False  # v3.5.9: default False — SMTP checks hang on slow connections
 
 
 class ScheduleResponse(BaseModel):
