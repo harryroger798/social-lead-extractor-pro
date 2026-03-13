@@ -278,6 +278,22 @@ class ParsedKeyword:
     expanded_terms: list[str] = field(default_factory=list)  # Synonym-expanded terms for DB
 
 
+# V7-fix: words that look like locations but are actually industries/occupations.
+# Prevents "developers in sales" from treating "sales" as a location.
+_NON_LOCATION_WORDS = {
+    "sales", "tech", "management", "marketing", "finance", "engineering",
+    "design", "operations", "recruiting", "healthcare", "education", "legal",
+    "consulting", "accounting", "retail", "logistics", "manufacturing",
+    "hospitality", "insurance", "banking", "construction", "media",
+    "advertising", "analytics", "development", "research", "security",
+    "compliance", "procurement", "supply chain", "real estate",
+    "human resources", "customer service", "public relations",
+    "information technology", "data science", "product management",
+    "general", "particular", "detail", "practice", "charge", "progress",
+    "demand", "bulk", "person", "house", "addition", "common", "advance",
+    "total", "full", "short", "brief",
+}
+
 # ---------------------------------------------------------------------------
 # Main parser
 # ---------------------------------------------------------------------------
@@ -353,9 +369,11 @@ def parse_keyword(raw_input: str) -> ParsedKeyword:
                     candidate_loc
                     and candidate_loc.replace(" ", "").isalpha()
                     and len(candidate_loc) >= 3
+                    and candidate_loc.lower() not in _NON_LOCATION_WORDS
                 ):
                     # V7-fix: treat plausible place names as locations even
                     # without capitalization ("startups in berlin", "shops in paris")
+                    # but exclude common industry/occupation words
                     keyword = candidate_kw
                     location = candidate_loc
                 else:

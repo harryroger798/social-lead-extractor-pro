@@ -103,7 +103,9 @@ def _dedup_leads(leads: list[dict]) -> list[dict]:
         elif name and src:
             key = f"ns:{name}|{src}"
         elif name:
-            key = f"name:{name}"
+            # V7-fix R2: use name+company composite to avoid cross-company collisions
+            company = (lead.get("company") or "").strip().lower()
+            key = f"name:{name}|{company}" if company else f"name:{name}"
         elif phone:
             key = f"phone:{phone}"
         else:
