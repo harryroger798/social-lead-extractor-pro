@@ -1,4 +1,5 @@
 """API routes for SnapLeads."""
+import asyncio
 import json
 import logging
 import uuid
@@ -702,15 +703,26 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
 
         # Process leads: classify, score, verify, and store
+        # v3.5.9: added per-lead progress updates + 3s verification timeout
         async with get_db() as db:
             emails_found = 0
             phones_found = 0
+            total_to_save = len(all_leads)
 
-            for lead_data in all_leads:
+            for save_idx, lead_data in enumerate(all_leads):
                 lead_id = str(uuid.uuid4())
                 email = lead_data.get("email", "")
                 phone = lead_data.get("phone", "")
                 name = lead_data.get("name", "")
+
+                # v3.5.9: progress updates during save so UI doesn't appear stuck
+                if total_to_save > 0 and save_idx % max(1, total_to_save // 4) == 0:
+                    save_pct = 96 + int((save_idx / total_to_save) * 3)  # 96-99%
+                    await _update_progress(
+                        session_id, save_pct,
+                        f"Saving lead {save_idx + 1}/{total_to_save}...",
+                        "", *_count_leads(),
+                    )
 
                 # Check blacklist
                 if email:
@@ -724,7 +736,15 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 email_type = classify_email(email) if email else "unknown"
                 verified = False
                 if email and config.auto_verify:
-                    verified = await verify_email(email)
+                    # v3.5.9: 3-second timeout per email verification to prevent
+                    # stuck-at-96% when SMTP connections hang (port 25 blocked by ISP)
+                    try:
+                        verified = await asyncio.wait_for(
+                            verify_email(email), timeout=3.0,
+                        )
+                    except asyncio.TimeoutError:
+                        logger.debug("Email verification timed out for %s", email)
+                        verified = False
 
                 quality = score_lead(email, phone, name, verified)
 
