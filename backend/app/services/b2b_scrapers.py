@@ -1,4 +1,4 @@
-"""B2B platform scrapers for SnapLeads v3.5.4.
+"""B2B platform scrapers for SnapLeads v3.5.8.
 
 Dedicated scrapers for high-value B2B lead sources identified by Claude Opus 4.6:
 
@@ -132,24 +132,25 @@ def scrape_indiamart(
     pages. Company listings include names, cities, products, and sometimes
     GST numbers and employee counts.
 
-    Strategy:
-    1. Search dir.indiamart.com directory pages
+    Strategy (v3.5.8 enhanced):
+    1. Search dir.indiamart.com directory pages (up to 200 results, 8 pages)
     2. Parse JSON-LD structured data from listing pages
     3. Extract company details from search result cards
-    4. Follow company microsites for additional contact info
+    4. Follow company microsites for additional contact info (emails/phones)
+    5. Multiple Google dorking queries for deeper coverage
 
     Rate limit: 8 req/min, 3-7s delay, max 500 pages/day
     Anti-bot: Akamai Bot Manager — curl_cffi TLS fingerprinting helps
     """
     leads: list[dict] = []
+    microsite_urls: list[str] = []
     search_term = f"{query} {location}".strip() if location else query
     encoded_query = quote_plus(search_term)
 
-    # Method 1: Direct directory search
+    # Method 1: Direct directory search — v3.5.8: scan up to 200 results
     with AdSession(timeout=15.0, min_delay=4.0) as session:
-        for page_offset in range(0, min(max_results, 100), 25):
+        for page_offset in range(0, min(max_results * 4, 200), 25):
             try:
-                # R4 fix: use correct IndiaMART search URL
                 url = (
                     f"https://dir.indiamart.com/search.mp"
                     f"?ss={encoded_query}&prdsrc=1&start={page_offset}"
@@ -166,58 +167,138 @@ def scrape_indiamart(
                 if not page_html:
                     break
 
+                page_lead_count = len(leads)
+
                 # Parse JSON-LD structured data (most reliable)
-                # Match both objects ({...}) and arrays ([...]) — previous regex
-                # only matched objects, missing ItemList arrays.
                 jsonld_blocks = re.findall(
                     r'<script\s+type="application/ld\+json">\s*([\{\[].+?[\}\]])\s*</script>',
                     page_html,
                     re.DOTALL,
                 )
-                for block in jsonld_blocks[:50]:  # Limit blocks to prevent unbounded loops
+                for block in jsonld_blocks[:50]:
                     try:
                         data = _json_mod.loads(block)
                         ld_type = data.get("@type", "")
 
-                        if ld_type == "Organization" or ld_type == "LocalBusiness":
+                        if ld_type in ("Organization", "LocalBusiness"):
                             lead = _parse_indiamart_jsonld(data)
                             if lead:
                                 leads.append(lead)
+                                # v3.5.8: collect microsite URLs for contact extraction
+                                src = lead.get("source_url", "")
+                                if src and "indiamart.com" in src:
+                                    microsite_urls.append(src)
                         elif ld_type == "ItemList":
-                            # ItemList contains multiple listings
                             for item in data.get("itemListElement", []):
                                 item_data = item.get("item", {})
                                 if item_data:
                                     lead = _parse_indiamart_jsonld(item_data)
                                     if lead:
                                         leads.append(lead)
+                                        src = lead.get("source_url", "")
+                                        if src and "indiamart.com" in src:
+                                            microsite_urls.append(src)
                     except (_json_mod.JSONDecodeError, KeyError, TypeError):
                         continue
 
                 # Parse HTML cards as fallback
                 _parse_indiamart_html_cards(page_html, leads)
 
+                # v3.5.8: also collect company profile links from HTML
+                profile_links = re.findall(
+                    r'href="(https?://[^"]*\.indiamart\.com/[^"]*)"',
+                    page_html,
+                )
+                for link in profile_links[:20]:
+                    parsed_url = urlparse(link)
+                    # Only company microsites (subdomain pattern)
+                    if (parsed_url.hostname
+                            and parsed_url.hostname != "dir.indiamart.com"
+                            and parsed_url.hostname != "www.indiamart.com"
+                            and parsed_url.hostname.endswith(".indiamart.com")):
+                        if link not in microsite_urls:
+                            microsite_urls.append(link)
+
                 if len(leads) >= max_results:
+                    break
+
+                # v3.5.8: stop paginating if page returned 0 new leads
+                if len(leads) == page_lead_count:
+                    logger.debug("IndiaMART: no new leads on offset %d, stopping", page_offset)
                     break
 
             except Exception as exc:
                 logger.warning("IndiaMART page scrape error at offset %d: %s", page_offset, exc)
                 break
 
-    # Method 2: Google dorking for additional IndiaMART listings
+    # v3.5.8 Method 2: Follow company microsites for emails/phones
+    # Only visit sites for leads that are missing contact info
+    # v3.5.8-R2: capped at 5 visits per Claude Sonnet 4.6 review to stay ban-free
+    leads_missing_contact = [
+        i for i, ld in enumerate(leads)
+        if not ld.get("email") and not ld.get("phone")
+    ]
+    urls_to_visit = microsite_urls[:min(len(leads_missing_contact), 5)]
+
+    if urls_to_visit:
+        with AdSession(timeout=12.0, min_delay=3.0) as session:
+            for ms_url in urls_to_visit:
+                try:
+                    resp = session.get(ms_url)
+                    if resp.status_code != 200:
+                        continue
+                    ms_html = _safe_response_text(resp)
+                    ms_emails = extract_emails(ms_html)
+                    ms_phones = extract_phones(ms_html)
+
+                    if ms_emails or ms_phones:
+                        # Try to match back to an existing lead by URL
+                        matched = False
+                        for idx in leads_missing_contact:
+                            if idx < len(leads) and leads[idx].get("source_url", "") == ms_url:
+                                if ms_emails:
+                                    leads[idx]["email"] = ms_emails[0]
+                                if ms_phones:
+                                    leads[idx]["phone"] = ms_phones[0]
+                                matched = True
+                                break
+                        if not matched:
+                            # Extract company name from page title
+                            title_match = re.search(r'<title>([^<]+)</title>', ms_html)
+                            comp_name = ""
+                            if title_match:
+                                comp_name = title_match.group(1).split(" - ")[0].strip()
+                                comp_name = comp_name.split(" | ")[0].strip()
+                            leads.append({
+                                "name": comp_name,
+                                "email": ms_emails[0] if ms_emails else "",
+                                "phone": ms_phones[0] if ms_phones else "",
+                                "platform": "indiamart",
+                                "source_url": ms_url,
+                                "location": location,
+                                "company": comp_name,
+                            })
+                except Exception:
+                    continue
+
+    # Method 3: Google dorking for additional IndiaMART listings
+    # v3.5.8: expanded dorking with more query variations
     dork_queries = [
         f'site:indiamart.com "{search_term}" contact OR email',
         f'site:dir.indiamart.com "{search_term}"',
+        f'site:indiamart.com "{query}" "{location}" phone OR mobile' if location else f'site:indiamart.com "{query}" phone OR mobile',
+        f'site:indiamart.com inurl:proddetail "{query}"',
     ]
     try:
-        for dork in dork_queries[:2]:
+        for dork in dork_queries[:4]:
+            if len(leads) >= max_results:
+                break
             results = free_search_waterfall(dork, num_results=10, min_results=2)
             for r in results:
                 text = f"{r.get('title', '')} {r.get('snippet', '')}"
                 link = r.get("link", "")
                 title = r.get("title", "")
 
-                # Extract company name from IndiaMART title format
                 company_name = ""
                 if " - " in title:
                     company_name = title.split(" - ")[0].strip()
@@ -830,13 +911,16 @@ def scrape_exportersindia(
 def scrape_justdial(
     query: str,
     location: str = "",
-    max_results: int = 30,
+    max_results: int = 50,
 ) -> list[dict]:
     """Scrape JustDial for local business leads.
 
     JustDial has business names, addresses, and ratings visible publicly.
     Phone numbers use CSS sprite obfuscation (custom font encoding) — we
     extract what's available without trying to decode the font obfuscation.
+
+    v3.5.8: increased pages from 2→4, increased default max_results 30→50,
+    added extended dorking for email/phone recovery.
 
     Rate limit: 4-8s delay, max 100 pages/day
     Anti-bot: Custom font obfuscation, strict header checking, CAPTCHA after ~50 req
@@ -849,7 +933,7 @@ def scrape_justdial(
     category = query.lower().replace(" ", "-")
 
     with AdSession(timeout=15.0, min_delay=6.0) as session:
-        for page_num in range(1, 3):  # Max 2 pages (conservative due to HIGH ban risk)
+        for page_num in range(1, 5):  # v3.5.8: up from 2 to 4 pages
             try:
                 if page_num == 1:
                     url = f"https://www.justdial.com/{city}/{category}"
