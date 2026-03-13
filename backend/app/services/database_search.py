@@ -1,4 +1,4 @@
-"""Seamless hybrid database search — queries 89M+ pre-extracted leads from S3.
+"""Seamless hybrid database search — queries 93M+ pre-extracted leads from S3.
 
 Uses DuckDB to query CSV files stored on iDrive E2 (S3-compatible) without
 downloading them. Results are merged transparently with live scraping results
@@ -8,11 +8,15 @@ Data sources:
   - LinkedIn: 86.9M records across 187 countries
   - Instagram: 2.45M records (49 datasets)
   - Technology Lookup: 4.3M records across 21 technologies
+  - Google Maps: PhantomBuster-extracted business data (v3.5.10)
+  - PAN India: 3M+ Indian business records across 30+ categories (v3.5.10)
 
 S3 Location: s3://crop-spray-uploads/leads-cm-database/
   linkedin/{Country}/dataset_N.csv
   instagram/dataset_N.csv
   technology_lookup/{technology}.csv
+  googlemaps/dataset_N.csv
+  pan_india/dataset_N.csv
 """
 
 import asyncio
@@ -166,6 +170,17 @@ _LINKEDIN_COLS = [
 _INSTAGRAM_COLS = [
     "bio", "category", "email", "followerCount", "followingCount",
     "name", "phone", "username", "website", "status",
+]
+
+# Google Maps schema columns (PhantomBuster output, standardized)
+_GOOGLEMAPS_COLS = [
+    "name", "category", "address", "phone", "website",
+    "rating", "reviewCount", "sourceUrl", "query", "currentStatus",
+]
+
+# PAN India schema columns (standardized from heterogeneous sources)
+_PAN_INDIA_COLS = [
+    "name", "phone", "email", "company", "city", "state", "category",
 ]
 
 
@@ -482,6 +497,114 @@ def _build_instagram_query(
     return sql, s3_paths
 
 
+def _build_googlemaps_query(
+    keyword: str,
+    max_results: int,
+    dataset_limit: int = 5,
+    expanded_terms: list[str] | None = None,
+) -> tuple[str, list[str]]:
+    """Build DuckDB SQL to query Google Maps CSVs on S3.
+
+    v3.5.10: Queries PhantomBuster-extracted Google Maps business data.
+    Schema: name, category, address, phone, website, rating, reviewCount,
+            sourceUrl, query, currentStatus
+    """
+    s3_paths = []
+    for i in range(1, dataset_limit + 1):
+        s3_paths.append(
+            f"s3://{_S3_BUCKET}/{_S3_PREFIX}/googlemaps/dataset_{i}.csv"
+        )
+
+    all_terms: list[str] = []
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in all_terms:
+            all_terms.append(word)
+    if expanded_terms:
+        for term in expanded_terms:
+            safe_term = _sanitize_sql_term(term)
+            if safe_term and safe_term not in all_terms:
+                all_terms.append(safe_term)
+    search_terms = all_terms[:10]
+
+    searchable_fields = ['name', 'category', 'query']
+    where_parts: list[str] = []
+    for term in search_terms:
+        for fld in searchable_fields:
+            escaped = _escape_like(term)
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\\\'")
+
+    where_clause = " OR ".join(where_parts)
+    unions = []
+    for path in s3_paths:
+        unions.append(
+            f"SELECT name, category, address, phone, website, rating, "
+            f"reviewCount, sourceUrl, query, currentStatus "
+            f"FROM read_csv_auto('{path}', ignore_errors=true) "
+            f"WHERE {where_clause}"
+        )
+
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
+    return sql, s3_paths
+
+
+def _build_pan_india_query(
+    keyword: str,
+    max_results: int,
+    dataset_limit: int = 10,
+    expanded_terms: list[str] | None = None,
+) -> tuple[str, list[str]]:
+    """Build DuckDB SQL to query PAN India CSVs on S3.
+
+    v3.5.10: Queries standardized Indian business database.
+    Schema: name, phone, email, company, city, state, category
+    """
+    s3_paths = []
+    for i in range(1, dataset_limit + 1):
+        s3_paths.append(
+            f"s3://{_S3_BUCKET}/{_S3_PREFIX}/pan_india/dataset_{i}.csv"
+        )
+
+    all_terms: list[str] = []
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in all_terms:
+            all_terms.append(word)
+    if expanded_terms:
+        for term in expanded_terms:
+            safe_term = _sanitize_sql_term(term)
+            if safe_term and safe_term not in all_terms:
+                all_terms.append(safe_term)
+    search_terms = all_terms[:10]
+
+    searchable_fields = ['name', 'company', 'category']
+    where_parts: list[str] = []
+    for term in search_terms:
+        for fld in searchable_fields:
+            escaped = _escape_like(term)
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\\\'")
+
+    where_clause = " OR ".join(where_parts)
+    unions = []
+    for path in s3_paths:
+        unions.append(
+            f"SELECT name, phone, email, company, city, state, category "
+            f"FROM read_csv_auto('{path}', ignore_errors=true) "
+            f"WHERE {where_clause}"
+        )
+
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
+    return sql, s3_paths
+
+
 def _clean_field(val: str) -> str:
     """Clean a database field — return empty string for null-like values."""
     return "" if val.lower() in ("none", "nan", "null", "") else val
@@ -580,6 +703,79 @@ def _instagram_row_to_lead(row: tuple, keyword: str) -> dict:
         "industry": _clean_field(category),
         "location": "",
         "website": _clean_field(website),
+    }
+
+
+def _googlemaps_row_to_lead(row: tuple, keyword: str) -> dict:
+    """Convert a Google Maps DuckDB row to a standard lead dict.
+
+    v3.5.10: Row schema = (name, category, address, phone, website, rating,
+                           reviewCount, sourceUrl, query, currentStatus)
+    """
+    name = str(row[0] or "").strip()
+    category = str(row[1] or "").strip()
+    address = str(row[2] or "").strip()
+    phone = str(row[3] or "").strip()
+    website = str(row[4] or "").strip()
+    _rating = str(row[5] or "").strip()  # noqa: F841
+    _review_count = str(row[6] or "").strip()  # noqa: F841
+    source_url = str(row[7] or "").strip()
+    _query = str(row[8] or "").strip()  # noqa: F841
+    _status = str(row[9] or "").strip()  # noqa: F841
+
+    phone = _clean_field(phone)
+    website = _clean_field(website)
+
+    if not phone and not website:
+        return {}
+
+    return {
+        "email": "",
+        "phone": phone,
+        "name": _clean_field(name),
+        "platform": "google_maps",
+        "source_url": _clean_field(source_url),
+        "keyword": keyword,
+        "company": _clean_field(name),
+        "industry": _clean_field(category),
+        "location": _clean_field(address),
+        "website": website,
+    }
+
+
+def _pan_india_row_to_lead(row: tuple, keyword: str) -> dict:
+    """Convert a PAN India DuckDB row to a standard lead dict.
+
+    v3.5.10: Row schema = (name, phone, email, company, city, state, category)
+    """
+    name = str(row[0] or "").strip()
+    phone = str(row[1] or "").strip()
+    email = str(row[2] or "").strip()
+    company = str(row[3] or "").strip()
+    city = str(row[4] or "").strip()
+    state = str(row[5] or "").strip()
+    category = str(row[6] or "").strip()
+
+    phone = _clean_field(phone)
+    email = _clean_field(email)
+
+    if not phone and not email:
+        return {}
+
+    location_parts = [p for p in [_clean_field(city), _clean_field(state)] if p]
+    location_str = ", ".join(location_parts)
+
+    return {
+        "email": email,
+        "phone": phone,
+        "name": _clean_field(name),
+        "platform": "pan_india",
+        "source_url": "",
+        "keyword": keyword,
+        "company": _clean_field(company),
+        "industry": _clean_field(category),
+        "location": location_str,
+        "website": "",
     }
 
 
@@ -751,6 +947,118 @@ async def search_database_instagram(
     return leads
 
 
+async def search_database_googlemaps(
+    keyword: str,
+    max_results: int = 50,
+    dataset_limit: int = 5,
+    expanded_terms: list[str] | None = None,
+) -> list[dict]:
+    """Search Google Maps database for business leads.
+
+    v3.5.10: Queries PhantomBuster-extracted Google Maps data on S3.
+    Returns list of standardized lead dicts with platform='google_maps'.
+    """
+    leads: list[dict] = []
+    if not keyword or not keyword.strip():
+        return leads
+
+    sql, s3_paths = _build_googlemaps_query(
+        keyword, max_results, dataset_limit=dataset_limit,
+        expanded_terms=expanded_terms,
+    )
+
+    conn = _get_duckdb_connection()
+    if conn is None:
+        return leads
+
+    async def _execute_query() -> list[tuple]:
+        loop = asyncio.get_event_loop()
+        try:
+            return await asyncio.wait_for(
+                loop.run_in_executor(None, conn.execute(sql).fetchall),
+                timeout=30.0,
+            )
+        except asyncio.TimeoutError:
+            logger.warning("Google Maps DB query timed out for '%s'", keyword)
+            return []
+
+    try:
+        start = asyncio.get_event_loop().time()
+        rows = await _execute_query()
+        elapsed = asyncio.get_event_loop().time() - start
+
+        for row in rows:
+            lead = _googlemaps_row_to_lead(row, keyword)
+            if lead:
+                leads.append(lead)
+
+        logger.info(
+            "Database Google Maps search: '%s' → %d leads (%.1fs, scanned %d files)",
+            keyword, len(leads), elapsed, len(s3_paths),
+        )
+
+    except Exception as e:
+        logger.warning("Database Google Maps search failed for '%s': %s", keyword, e)
+
+    return leads
+
+
+async def search_database_pan_india(
+    keyword: str,
+    max_results: int = 50,
+    dataset_limit: int = 10,
+    expanded_terms: list[str] | None = None,
+) -> list[dict]:
+    """Search PAN India database for business leads.
+
+    v3.5.10: Queries standardized Indian business database on S3.
+    Returns list of standardized lead dicts with platform='pan_india'.
+    """
+    leads: list[dict] = []
+    if not keyword or not keyword.strip():
+        return leads
+
+    sql, s3_paths = _build_pan_india_query(
+        keyword, max_results, dataset_limit=dataset_limit,
+        expanded_terms=expanded_terms,
+    )
+
+    conn = _get_duckdb_connection()
+    if conn is None:
+        return leads
+
+    async def _execute_query() -> list[tuple]:
+        loop = asyncio.get_event_loop()
+        try:
+            return await asyncio.wait_for(
+                loop.run_in_executor(None, conn.execute(sql).fetchall),
+                timeout=30.0,
+            )
+        except asyncio.TimeoutError:
+            logger.warning("PAN India DB query timed out for '%s'", keyword)
+            return []
+
+    try:
+        start = asyncio.get_event_loop().time()
+        rows = await _execute_query()
+        elapsed = asyncio.get_event_loop().time() - start
+
+        for row in rows:
+            lead = _pan_india_row_to_lead(row, keyword)
+            if lead:
+                leads.append(lead)
+
+        logger.info(
+            "Database PAN India search: '%s' → %d leads (%.1fs, scanned %d files)",
+            keyword, len(leads), elapsed, len(s3_paths),
+        )
+
+    except Exception as e:
+        logger.warning("Database PAN India search failed for '%s': %s", keyword, e)
+
+    return leads
+
+
 async def search_database_hybrid(
     keywords: list[str],
     platforms: list[str],
@@ -762,7 +1070,8 @@ async def search_database_hybrid(
     """Search the pre-built database across multiple platforms and keywords.
 
     This is the main entry point for the hybrid search system.
-    Searches LinkedIn and Instagram databases in parallel for each keyword.
+    Searches LinkedIn, Instagram, Google Maps, and PAN India databases
+    in parallel for each keyword.
 
     Args:
         keywords: List of search keywords
@@ -792,14 +1101,24 @@ async def search_database_hybrid(
     # Determine which databases to search based on requested platforms
     search_linkedin = any(p in ("linkedin", "all") for p in platforms)
     search_instagram = any(p in ("instagram", "all") for p in platforms)
+    # v3.5.10: Google Maps and PAN India database search
+    search_googlemaps = any(
+        p in ("google_maps", "googlemaps", "google maps", "all") for p in platforms
+    )
+    search_pan_india = any(
+        p in ("pan_india", "indiamart", "justdial", "all") for p in platforms
+    )
 
-    # If no specific social platforms requested but general platforms are,
-    # still search the database since results are transparent
-    if not search_linkedin and not search_instagram:
-        # Search both databases for any platform request — results appear
-        # as linkedin/instagram leads transparently mixed with live results
+    # v3.5.9: Only search social databases when social platforms requested
+    _has_social = search_linkedin or search_instagram
+    _has_maps_or_india = search_googlemaps or search_pan_india
+
+    # If no specific platforms matched, search all databases transparently
+    if not _has_social and not _has_maps_or_india:
         search_linkedin = True
         search_instagram = True
+        search_googlemaps = True
+        search_pan_india = True
 
     for keyword in keywords:
         tasks = []
@@ -820,6 +1139,22 @@ async def search_database_hybrid(
             tasks.append(
                 search_database_instagram(
                     keyword, max_results_per_keyword // 2,
+                    dataset_limit=ds_limit,
+                    expanded_terms=kw_expanded,
+                )
+            )
+        if search_googlemaps:
+            tasks.append(
+                search_database_googlemaps(
+                    keyword, max_results_per_keyword,
+                    dataset_limit=ds_limit,
+                    expanded_terms=kw_expanded,
+                )
+            )
+        if search_pan_india:
+            tasks.append(
+                search_database_pan_india(
+                    keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
