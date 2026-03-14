@@ -628,22 +628,21 @@ def _linkedin_row_to_lead(row: tuple, keyword: str) -> dict:
     _employees = str(row[13] or "").strip()  # noqa: F841
     _revenue = str(row[14] or "").strip()  # noqa: F841
 
-    # Skip rows without usable contact info
-    if not email and not phone:
-        return {}
-
-    # Clean up email and phone (skip "None" or invalid)
+    # v3.5.12: Keep leads even without email/phone — name/title/company/URL
+    # are still valuable for outreach (LinkedIn profile, company website, etc.)
+    # Previously this discarded ~80% of LinkedIn DB results.
     email = _clean_field(email)
     phone = _clean_field(phone)
-
-    if not email and not phone:
-        return {}
 
     # Build source URL from LinkedIn ID
     source_url = ""
     linkedin_id = _clean_field(linkedin_id)
     if linkedin_id:
         source_url = f"https://linkedin.com/in/{linkedin_id}"
+
+    # Skip rows that have NO useful data at all (not even a name or company)
+    if not email and not phone and not name and not _clean_field(company) and not source_url:
+        return {}
 
     # Build display name with title
     display_name = name
@@ -679,18 +678,16 @@ def _instagram_row_to_lead(row: tuple, keyword: str) -> dict:
     website = str(row[6] or "").strip()
     _followers = str(row[7] or "").strip()  # noqa: F841
 
-    # Skip rows without usable contact info
-    if not email and not phone:
-        return {}
-
+    # v3.5.12: Keep leads even without email/phone (username/bio still valuable)
     email = _clean_field(email)
     phone = _clean_field(phone)
 
-    if not email and not phone:
-        return {}
-
     username = _clean_field(username)
     source_url = f"https://instagram.com/{username}" if username else ""
+
+    # Skip only if there's truly no useful data
+    if not email and not phone and not username and not _clean_field(name):
+        return {}
 
     return {
         "email": email,
@@ -1110,15 +1107,16 @@ async def search_database_hybrid(
     seen_emails: set[str] = set()
     seen_phones: set[str] = set()
 
-    # v3.5.8: tier-aware dataset_limit — balances speed vs coverage
-    # Free tier scans fewer files (faster), paid tiers scan more (broader)
+    # v3.5.12: tier-aware dataset_limit — raised for much broader coverage
+    # Previously free=3, starter=5, pro=8 — scanning <1% of available data.
+    # Now free=10, starter=15, pro=25 for meaningful coverage.
     _tier_dataset_limits = {
-        "free": 3,
-        "starter": 5,
-        "pro": 8,
-        "unlimited": 8,
+        "free": 10,
+        "starter": 15,
+        "pro": 25,
+        "unlimited": 25,
     }
-    ds_limit = _tier_dataset_limits.get(tier, 3)
+    ds_limit = _tier_dataset_limits.get(tier, 10)
 
     # Determine which databases to search based on requested platforms
     search_linkedin = any(p in ("linkedin", "all") for p in platforms)
@@ -1158,9 +1156,10 @@ async def search_database_hybrid(
                 )
             )
         if search_instagram:
+            # v3.5.12: Use full max_results for Instagram (was halved with // 2)
             tasks.append(
                 search_database_instagram(
-                    keyword, max_results_per_keyword // 2,
+                    keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )

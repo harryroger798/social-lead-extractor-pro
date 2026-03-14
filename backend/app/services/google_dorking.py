@@ -457,13 +457,13 @@ async def dorking_search_multi(
     use_patchright: bool = True,
     headless: bool = True,
     proxy: Optional[dict] = None,
-    max_total_queries: int = 8,
+    max_total_queries: int = 30,
 ) -> list[dict]:
     """Search multiple keywords across multiple platforms.
 
     v3.5.1: Added query budgeting (max_total_queries) and anti-bot delays.
-    Limits total queries to prevent Google rate-limiting / bans.
-    Default: 8 queries per search session (safe limit for free engines).
+    v3.5.12: Raised default from 8 to 30 — covers all 20 platforms with
+    multiple keywords while still staying within safe rate limits.
     """
     all_results = []
     total_queries = 0
