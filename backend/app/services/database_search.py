@@ -777,7 +777,9 @@ def _pan_india_row_to_lead(row: tuple, keyword: str) -> dict:
 
 
 # v3.5.8: timeout for S3 queries — prevents UI freezing on slow connections
-_DB_QUERY_TIMEOUT_SECS = 30
+# v3.5.13: raised from 30→90s; per-country parallel strategy keeps actual
+# wall-clock time low while preventing premature timeout on large scans.
+_DB_QUERY_TIMEOUT_SECS = 90
 
 
 async def search_database_linkedin(
@@ -790,6 +792,9 @@ async def search_database_linkedin(
     """Search the LinkedIn leads database for matching records.
 
     v3.5.1: Accepts expanded_terms from KeywordParser for OR-based search.
+    v3.5.13: Per-country parallel queries — each country runs its own
+    DuckDB query in a separate thread so results stream in fast.
+    Previously one giant UNION ALL across 125 files timed out at 30s.
 
     Args:
         keyword: Industry/job/company keyword to search for
@@ -806,53 +811,77 @@ async def search_database_linkedin(
 
     try:
         countries = _resolve_country(location)
+        is_global = not countries
         # R5-B15 fix: if no country resolved, use top 5 countries for global search
-        if not countries:
+        if is_global:
             countries = ["United_States", "United_Kingdom", "India", "Canada", "Australia"]
             logger.info("No country resolved for '%s' — using global search across top 5", location)
 
+        # v3.5.13: cap per-country datasets for global search to keep query fast
+        # Global: scan 5 datasets/country (25 files total) — fits well within timeout
+        # Targeted (single country): use full dataset_limit for deep coverage
+        effective_ds_limit = min(dataset_limit, 5) if is_global else dataset_limit
+
         logger.info(
-            "DB search params: keyword=%r, location=%r, countries=%r, expanded_terms=%r",
-            keyword, location, countries, (expanded_terms or [])[:5],
+            "DB search params: keyword=%r, location=%r, countries=%r, "
+            "ds_limit=%d (effective=%d), expanded_terms=%r",
+            keyword, location, countries, dataset_limit, effective_ds_limit,
+            (expanded_terms or [])[:5],
         )
 
-        sql, s3_paths = _build_linkedin_query(
-            keyword, countries, location, max_results, dataset_limit,
-            expanded_terms=expanded_terms,
-        )
-
-        if not sql:
-            return []
-
-        # Run DuckDB query in thread pool to avoid blocking async loop
+        # v3.5.13: per-country parallel queries — much faster than one giant UNION ALL
+        # Each country gets its own DuckDB connection + query in a separate thread.
         loop = asyncio.get_running_loop()
+        per_country_results_limit = max(1, max_results // len(countries)) if countries else max_results
+        total_files = 0
 
-        def _execute_query() -> list[tuple]:
-            con = _get_duckdb_connection()
-            if not con:
+        async def _search_one_country(country: str) -> list[tuple]:
+            """Run a single-country query in the thread pool."""
+            sql, paths = _build_linkedin_query(
+                keyword, [country], location, per_country_results_limit,
+                effective_ds_limit, expanded_terms=expanded_terms,
+            )
+            if not sql:
                 return []
+
+            def _run():
+                con = _get_duckdb_connection()
+                if not con:
+                    return []
+                try:
+                    return con.execute(sql).fetchall()
+                except Exception as e:
+                    logger.warning("LinkedIn DB query failed for %s: %s", country, e)
+                    return []
+                finally:
+                    con.close()
+
             try:
-                return con.execute(sql).fetchall()
-            except Exception as e:
-                logger.warning("LinkedIn database query failed: %s", e)
+                return await asyncio.wait_for(
+                    loop.run_in_executor(None, _run),
+                    timeout=_DB_QUERY_TIMEOUT_SECS,
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    "LinkedIn DB query timed out after %ds for '%s' in %s (%d files)",
+                    _DB_QUERY_TIMEOUT_SECS, keyword, country, len(paths),
+                )
                 return []
-            finally:
-                con.close()
 
-        # v3.5.8: wrap query execution with timeout to prevent UI freezing
-        try:
-            rows = await asyncio.wait_for(
-                loop.run_in_executor(None, _execute_query),
-                timeout=_DB_QUERY_TIMEOUT_SECS,
-            )
-        except asyncio.TimeoutError:
-            logger.warning(
-                "LinkedIn database query timed out after %ds for '%s' (%d files)",
-                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
-            )
-            rows = []
+        # Fire all country queries in parallel
+        country_tasks = [_search_one_country(c) for c in countries]
+        country_results = await asyncio.gather(*country_tasks, return_exceptions=True)
 
-        for row in rows:
+        all_rows: list[tuple] = []
+        for i, result in enumerate(country_results):
+            if isinstance(result, Exception):
+                logger.warning("LinkedIn DB query exception for %s: %s", countries[i], result)
+                continue
+            all_rows.extend(result)
+            total_files += effective_ds_limit
+
+        # Trim to max_results
+        for row in all_rows[:max_results]:
             lead = _linkedin_row_to_lead(row, keyword)
             if lead:
                 leads.append(lead)
@@ -860,7 +889,7 @@ async def search_database_linkedin(
         elapsed = time.time() - start_time
         logger.info(
             "Database LinkedIn search: '%s' in %s → %d leads (%.1fs, scanned %d files)",
-            keyword, countries, len(leads), elapsed, len(s3_paths),
+            keyword, countries, len(leads), elapsed, total_files,
         )
 
     except Exception as e:
