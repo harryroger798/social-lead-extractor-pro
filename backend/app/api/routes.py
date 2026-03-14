@@ -2,6 +2,7 @@
 import asyncio
 import json
 import logging
+import os
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
@@ -221,6 +222,63 @@ import atexit as _atexit_routes  # noqa: E402
 _atexit_routes.register(_LIVE_SCRAPE_POOL.shutdown, wait=False)
 
 
+def _read_electron_license_tier() -> Optional[str]:
+    """v3.5.12: Read the user's license tier from Electron's license.json.
+
+    The Electron app saves ``{userData}/license.json`` after online activation.
+    This file contains ``{"tier": "pro"|"starter", "expires_at": ..., ...}``.
+    The backend needs to read this to apply the correct DB-search limits.
+
+    Returns ``"pro"``, ``"starter"``, or ``None`` (file missing / expired).
+    """
+    import platform as _platform
+
+    # Determine Electron userData path per OS
+    _home = os.path.expanduser("~")
+    _sys = _platform.system()
+    if _sys == "Windows":
+        _app_data = os.environ.get("APPDATA", os.path.join(_home, "AppData", "Roaming"))
+        _user_data = os.path.join(_app_data, "snapleads")
+    elif _sys == "Darwin":
+        _user_data = os.path.join(_home, "Library", "Application Support", "snapleads")
+    else:
+        _user_data = os.path.join(_home, ".config", "snapleads")
+
+    # Also check DATABASE_PATH parent (PyInstaller sets this)
+    _db_path = os.environ.get("DATABASE_PATH", "")
+    _candidates = [_user_data]
+    if _db_path:
+        _candidates.insert(0, os.path.dirname(_db_path))
+
+    for _dir in _candidates:
+        _lic_path = os.path.join(_dir, "license.json")
+        if not os.path.isfile(_lic_path):
+            continue
+        try:
+            with open(_lic_path, "r", encoding="utf-8") as f:
+                data = json.loads(f.read())
+            tier = data.get("tier", "").lower()
+            if tier not in ("pro", "starter"):
+                continue
+            # Check expiry
+            expires_at = data.get("expires_at")
+            if expires_at:
+                try:
+                    exp = datetime.fromisoformat(str(expires_at).replace("Z", "+00:00"))
+                    if exp.replace(tzinfo=None) < datetime.now():
+                        logger.info("Electron license expired: %s", expires_at)
+                        continue
+                except (ValueError, TypeError):
+                    pass  # Can't parse expiry — treat as valid (lifetime)
+            logger.info("Electron license detected: tier=%s, expires=%s", tier, expires_at)
+            return tier
+        except (OSError, json.JSONDecodeError, KeyError) as exc:
+            logger.debug("Could not read %s: %s", _lic_path, exc)
+            continue
+
+    return None
+
+
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     """Background task to run extraction.
 
@@ -305,40 +363,59 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             )
         else:
             try:
-                # Determine tier based on active license
-                db_max_results = 10  # Free tier default
+                # ── v3.5.12: Unified license detection ──────────────────────
+                # The Electron app saves the license to {userData}/license.json
+                # via IPC after online activation.  The backend must read this
+                # file to know the user's actual tier.  Previously only the
+                # local SQLite `licenses` table was checked — which was NEVER
+                # populated during the normal Electron activation flow,
+                # causing Pro users to always fall back to free tier (10 leads).
+                #
+                # Priority: Electron license.json → SQLite licenses table → free
+                # Limits raised: Pro = 500, Starter = 200, Free = 100
+                db_max_results = 100  # Free tier default (raised from 10)
                 tier_label = "free"
-                async with get_db() as db:
-                    cursor = await db.execute(
-                        "SELECT key, status FROM licenses WHERE status = 'active' "
-                        "AND current_activations > 0 ORDER BY activated_at DESC LIMIT 1"
-                    )
-                    active_license = await cursor.fetchone()
-                    if active_license:
-                        # Check if it's a lifetime/long license (Pro) vs short (Starter)
-                        cursor2 = await db.execute(
-                            "SELECT expires_at FROM licenses WHERE key = ?",
-                            (active_license[0],),
+
+                # Step 1: Try reading Electron's license.json
+                _electron_tier = _read_electron_license_tier()
+                if _electron_tier:
+                    tier_label = _electron_tier
+                    if tier_label == "pro":
+                        db_max_results = 500
+                    elif tier_label == "starter":
+                        db_max_results = 200
+                    else:
+                        db_max_results = 100
+                else:
+                    # Step 2: Fallback to local SQLite licenses table
+                    async with get_db() as db:
+                        cursor = await db.execute(
+                            "SELECT key, status FROM licenses WHERE status = 'active' "
+                            "AND current_activations > 0 ORDER BY activated_at DESC LIMIT 1"
                         )
-                        lic_row = await cursor2.fetchone()
-                        if lic_row and lic_row[0]:
-                            try:
-                                exp = datetime.fromisoformat(str(lic_row[0]))
-                                remaining_days = (exp - datetime.now()).days
-                                if remaining_days > 365:
-                                    # Pro/Unlimited (lifetime or annual+)
-                                    db_max_results = 50
-                                    tier_label = "pro"
-                                else:
-                                    # Starter (shorter license)
-                                    db_max_results = 25
+                        active_license = await cursor.fetchone()
+                        if active_license:
+                            cursor2 = await db.execute(
+                                "SELECT expires_at FROM licenses WHERE key = ?",
+                                (active_license[0],),
+                            )
+                            lic_row = await cursor2.fetchone()
+                            if lic_row and lic_row[0]:
+                                try:
+                                    exp = datetime.fromisoformat(str(lic_row[0]))
+                                    remaining_days = (exp - datetime.now()).days
+                                    if remaining_days > 365:
+                                        db_max_results = 500
+                                        tier_label = "pro"
+                                    else:
+                                        db_max_results = 200
+                                        tier_label = "starter"
+                                except (ValueError, TypeError):
+                                    db_max_results = 200
                                     tier_label = "starter"
-                            except (ValueError, TypeError):
-                                db_max_results = 25
+                            else:
+                                db_max_results = 200
                                 tier_label = "starter"
-                        else:
-                            db_max_results = 25
-                            tier_label = "starter"
 
                 logger.info("Database search tier: %s (max %d results/keyword)", tier_label, db_max_results)
 
