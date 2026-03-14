@@ -506,8 +506,10 @@ def _build_googlemaps_query(
     """Build DuckDB SQL to query Google Maps CSVs on S3.
 
     v3.5.10: Queries PhantomBuster-extracted Google Maps business data.
-    Schema: name, category, address, phone, website, rating, reviewCount,
-            sourceUrl, query, currentStatus
+    v3.5.13: Handle two PhantomBuster CSV schemas:
+      Schema A (datasets 1-3): name, category, address, phone, website, ...
+      Schema B (datasets 4+):  title, category, address, phoneNumber, website, ...
+    We use COALESCE + TRY_CAST to normalize both schemas into one.
     """
     s3_paths = []
     for i in range(1, dataset_limit + 1):
@@ -530,22 +532,56 @@ def _build_googlemaps_query(
                 all_terms.append(safe_term)
     search_terms = all_terms[:10]
 
-    searchable_fields = ['name', 'category', 'query']
-    where_parts: list[str] = []
+    # v3.5.13: Build two sets of WHERE clauses for the two schemas.
+    # Schema A (datasets 1-3): columns = name, category, query
+    # Schema B (datasets 4+):  columns = title, category, query
+    where_a_parts: list[str] = []
+    where_b_parts: list[str] = []
     for term in search_terms:
-        for fld in searchable_fields:
-            escaped = _escape_like(term)
-            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\\\'")
+        escaped = _escape_like(term)
+        where_a_parts.append(f"LOWER(name) LIKE '%{escaped}%' ESCAPE '\\'")
+        where_a_parts.append(f"LOWER(category) LIKE '%{escaped}%' ESCAPE '\\'")
+        where_a_parts.append(f"LOWER(query) LIKE '%{escaped}%' ESCAPE '\\'")
+        where_b_parts.append(f"LOWER(title) LIKE '%{escaped}%' ESCAPE '\\'")
+        where_b_parts.append(f"LOWER(category) LIKE '%{escaped}%' ESCAPE '\\'")
+        where_b_parts.append(f"LOWER(query) LIKE '%{escaped}%' ESCAPE '\\'")
 
-    where_clause = " OR ".join(where_parts)
+    where_a = " OR ".join(where_a_parts)
+    where_b = " OR ".join(where_b_parts)
+
+    # v3.5.13: Schema A SELECT (name, phone, sourceUrl)
+    select_a = (
+        "name, category, address, phone, website, rating, "
+        "CAST(reviewCount AS VARCHAR) AS reviewCount, sourceUrl, query, currentStatus"
+    )
+    # v3.5.13: Schema B SELECT (title→name, phoneNumber→phone, placeUrl→sourceUrl)
+    select_b = (
+        "title AS name, category, address, phoneNumber AS phone, website, rating, "
+        "CAST(reviewCount AS VARCHAR) AS reviewCount, placeUrl AS sourceUrl, query, currentStatus"
+    )
+
     unions = []
     for path in s3_paths:
-        unions.append(
-            f"SELECT name, category, address, phone, website, rating, "
-            f"reviewCount, sourceUrl, query, currentStatus "
-            f"FROM read_csv_auto('{path}', ignore_errors=true) "
-            f"WHERE {where_clause}"
-        )
+        # Detect schema by dataset number — datasets 1-3 use Schema A, 4+ use Schema B
+        # Extract dataset number from path
+        ds_num = 0
+        try:
+            ds_num = int(path.split("dataset_")[1].split(".")[0])
+        except (IndexError, ValueError):
+            pass
+
+        if ds_num <= 3:
+            unions.append(
+                f"SELECT {select_a} "
+                f"FROM read_csv_auto('{path}', ignore_errors=true) "
+                f"WHERE {where_a}"
+            )
+        else:
+            unions.append(
+                f"SELECT {select_b} "
+                f"FROM read_csv_auto('{path}', ignore_errors=true) "
+                f"WHERE {where_b}"
+            )
 
     safe_limit = max(1, min(int(max_results), 500))
     sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
@@ -589,14 +625,15 @@ def _build_pan_india_query(
     for term in search_terms:
         for fld in searchable_fields:
             escaped = _escape_like(term)
-            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\\\'")
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\'")
 
     where_clause = " OR ".join(where_parts)
     unions = []
     for path in s3_paths:
+        # v3.5.13: strict_mode=false handles malformed CSV rows in PAN India data
         unions.append(
             f"SELECT name, phone, email, company, city, state, category "
-            f"FROM read_csv_auto('{path}', ignore_errors=true) "
+            f"FROM read_csv_auto('{path}', ignore_errors=true, strict_mode=false) "
             f"WHERE {where_clause}"
         )
 
