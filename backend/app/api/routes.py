@@ -715,13 +715,19 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 phone = lead_data.get("phone", "")
                 name = lead_data.get("name", "")
 
-                # v3.5.9: progress updates during save so UI doesn't appear stuck
+                # v3.5.10: use existing db connection for progress updates
+                # to avoid opening a second connection that causes
+                # "database is locked" errors
                 if total_to_save > 0 and save_idx % max(1, total_to_save // 4) == 0:
                     save_pct = 96 + int((save_idx / total_to_save) * 3)  # 96-99%
-                    await _update_progress(
-                        session_id, save_pct,
-                        f"Saving lead {save_idx + 1}/{total_to_save}...",
-                        "", *_count_leads(),
+                    _lc = _count_leads()
+                    await db.execute(
+                        """UPDATE sessions SET progress=?, status_message=?,
+                           current_platform=?, total_leads=?, emails_found=?,
+                           phones_found=? WHERE id=?""",
+                        (save_pct,
+                         f"Saving lead {save_idx + 1}/{total_to_save}...",
+                         "", _lc[0], _lc[1], _lc[2], session_id),
                     )
 
                 # Check blacklist
