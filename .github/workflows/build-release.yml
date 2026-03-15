@@ -46,18 +46,23 @@ jobs:
         working-directory: backend
         run: |
           python - <<'PYEOF'
-          import duckdb, os
+          import duckdb, os, zipfile
           con = duckdb.connect()
           ext_dir = os.path.join(os.getcwd(), 'duckdb_extensions')
           os.makedirs(ext_dir, exist_ok=True)
           con.execute("SET extension_directory='%s'" % ext_dir)
           con.execute('INSTALL httpfs')
           print('httpfs installed to ' + ext_dir)
-          for root, dirs, files in os.walk(ext_dir):
-              for f in files:
-                  path = os.path.join(root, f)
-                  rel = os.path.relpath(path, ext_dir)
-                  print('  ' + rel + ' (' + str(os.path.getsize(path)) + ' bytes)')
+          # Zip extension files so PyInstaller does not try to codesign them
+          zip_path = os.path.join(os.getcwd(), 'httpfs_bundle.zip')
+          with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+              for root, dirs, files in os.walk(ext_dir):
+                  for f in files:
+                      path = os.path.join(root, f)
+                      arcname = os.path.relpath(path, ext_dir)
+                      zf.write(path, arcname)
+                      print('  zipped: ' + arcname + ' (' + str(os.path.getsize(path)) + ' bytes)')
+          print('bundle zip: ' + zip_path + ' (' + str(os.path.getsize(zip_path)) + ' bytes)')
           PYEOF
         shell: bash
 
@@ -107,7 +112,7 @@ jobs:
             --hidden-import=app.services.database_search \
             --hidden-import=app.services.multi_engine_search \
             --hidden-import=duckdb \
-            --add-data "duckdb_extensions:duckdb_extensions" \
+            --add-data "httpfs_bundle.zip:." \
             --hidden-import=httpx \
             --hidden-import=fpdf --collect-all fpdf2 \
             --collect-all fastapi --collect-all uvicorn \
