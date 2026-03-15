@@ -45,20 +45,20 @@ jobs:
       - name: Pre-install DuckDB httpfs extension for bundling
         working-directory: backend
         run: |
-          python -c "
-import duckdb, os
-con = duckdb.connect()
-ext_dir = os.path.join(os.getcwd(), 'duckdb_extensions')
-os.makedirs(ext_dir, exist_ok=True)
-con.execute(f\"SET extension_directory='{ext_dir}'\")
-con.execute('INSTALL httpfs')
-print(f'httpfs installed to {ext_dir}')
-for root, dirs, files in os.walk(ext_dir):
-    for f in files:
-        path = os.path.join(root, f)
-        rel = os.path.relpath(path, ext_dir)
-        print(f'  {rel} ({os.path.getsize(path)} bytes)')
-"
+          python - <<'PYEOF'
+          import duckdb, os
+          con = duckdb.connect()
+          ext_dir = os.path.join(os.getcwd(), 'duckdb_extensions')
+          os.makedirs(ext_dir, exist_ok=True)
+          con.execute("SET extension_directory='%s'" % ext_dir)
+          con.execute('INSTALL httpfs')
+          print('httpfs installed to ' + ext_dir)
+          for root, dirs, files in os.walk(ext_dir):
+              for f in files:
+                  path = os.path.join(root, f)
+                  rel = os.path.relpath(path, ext_dir)
+                  print('  ' + rel + ' (' + str(os.path.getsize(path)) + ' bytes)')
+          PYEOF
         shell: bash
 
       - name: Build PyInstaller backend binary
