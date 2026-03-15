@@ -30,6 +30,9 @@ import time
 
 logger = logging.getLogger(__name__)
 
+# v3.5.18: Track whether SSL certificates have been configured
+_SSL_CERTS_CONFIGURED = False
+
 
 def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
@@ -303,6 +306,113 @@ _HTTPFS_LOCK = threading.Lock()
 
 # v3.5.17: Track whether we've added _MEIPASS to DLL search path
 _DLL_PATH_FIXED = False
+
+
+def _configure_ssl_certificates():
+    """v3.5.18: Ensure DuckDB's native OpenSSL can find CA certificates.
+
+    ROOT CAUSE of the 0-leads bug that persisted through v3.5.12-v3.5.17:
+    DuckDB's httpfs extension uses OpenSSL directly (NOT Python's ssl module)
+    to make HTTPS requests to S3. In a PyInstaller --onefile bundle, the
+    compiled-in CA certificate path points to the CI build machine's location
+    which doesn't exist on the user's machine.
+
+    Result: Every S3 HTTPS request fails with an SSL certificate verification
+    error. The exception is caught by _run() and returns [] — giving 0 leads.
+
+    Fix: Set SSL_CERT_FILE environment variable pointing to certifi's CA bundle
+    BEFORE any DuckDB connection is created.
+    """
+    global _SSL_CERTS_CONFIGURED
+    if _SSL_CERTS_CONFIGURED:
+        return
+
+    # Only needed in frozen (PyInstaller) environment
+    is_frozen = getattr(sys, "frozen", False)
+    meipass = getattr(sys, "_MEIPASS", None)
+
+    logger.info(
+        "SSL cert setup: frozen=%s, _MEIPASS=%s, SSL_CERT_FILE=%s",
+        is_frozen, meipass, os.environ.get("SSL_CERT_FILE", "NOT SET"),
+    )
+
+    # If SSL_CERT_FILE is already set and points to a real file, trust it
+    existing = os.environ.get("SSL_CERT_FILE", "")
+    if existing and os.path.isfile(existing) and os.path.getsize(existing) > 1000:
+        logger.info("SSL_CERT_FILE already set and valid: %s", existing)
+        _SSL_CERTS_CONFIGURED = True
+        return
+
+    cert_file = None
+
+    # Strategy 1: Use certifi package (most reliable — bundled by --collect-all certifi)
+    try:
+        import certifi
+        candidate = certifi.where()
+        if os.path.isfile(candidate) and os.path.getsize(candidate) > 1000:
+            cert_file = candidate
+            logger.info("SSL: Using certifi bundle: %s (%d bytes)", candidate, os.path.getsize(candidate))
+    except ImportError:
+        logger.warning("SSL: certifi package not available")
+
+    # Strategy 2: Look for bundled cacert.pem in _MEIPASS
+    if cert_file is None and meipass:
+        for name in ("cacert.pem", "cert.pem", "ca-bundle.crt", "certifi/cacert.pem"):
+            candidate = os.path.join(meipass, name)
+            if os.path.isfile(candidate) and os.path.getsize(candidate) > 1000:
+                cert_file = candidate
+                logger.info("SSL: Using bundled cert from _MEIPASS: %s", candidate)
+                break
+
+    # Strategy 3: Copy certifi's cacert.pem to a stable location outside _MEIPASS
+    if cert_file is None:
+        try:
+            import certifi
+            src = os.path.join(os.path.dirname(certifi.__file__), "cacert.pem")
+            if os.path.isfile(src):
+                home = os.path.expanduser("~")
+                import platform as _plat
+                if _plat.system() == "Windows":
+                    appdata = os.environ.get("APPDATA", os.path.join(home, "AppData", "Roaming"))
+                    stable_cert = os.path.join(appdata, "snapleads", "certs", "cacert.pem")
+                else:
+                    stable_cert = os.path.join(home, ".snapleads", "certs", "cacert.pem")
+                os.makedirs(os.path.dirname(stable_cert), exist_ok=True)
+                shutil.copy2(src, stable_cert)
+                cert_file = stable_cert
+                logger.info("SSL: Copied certifi bundle to stable path: %s", stable_cert)
+        except Exception as e:
+            logger.warning("SSL: Failed to copy certifi bundle: %s", e)
+
+    # Strategy 4: Common system locations (Windows)
+    if cert_file is None:
+        import platform as _plat
+        if _plat.system() == "Windows":
+            for candidate in (
+                os.path.join(os.environ.get("ProgramFiles", r"C:\Program Files"),
+                             "Common Files", "SSL", "cert.pem"),
+                r"C:\Windows\System32\curl-ca-bundle.crt",
+            ):
+                if os.path.isfile(candidate):
+                    cert_file = candidate
+                    logger.info("SSL: Using system cert: %s", candidate)
+                    break
+
+    if cert_file:
+        # Set ALL environment variables that OpenSSL / libcurl / httpfs may check
+        os.environ["SSL_CERT_FILE"] = cert_file
+        os.environ["CURL_CA_BUNDLE"] = cert_file
+        os.environ["REQUESTS_CA_BUNDLE"] = cert_file
+        os.environ["SSL_CERT_DIR"] = os.path.dirname(cert_file)
+        logger.info("SSL: Environment configured — SSL_CERT_FILE=%s", cert_file)
+    else:
+        logger.error(
+            "SSL: CRITICAL — No CA certificate bundle found! "
+            "HTTPS requests from DuckDB httpfs WILL FAIL silently. "
+            "This is the root cause of the 0-leads bug."
+        )
+
+    _SSL_CERTS_CONFIGURED = True
 
 
 def _fix_dll_search_path():
@@ -592,9 +702,13 @@ def _get_duckdb_connection():
         logger.warning("DuckDB not installed — database search unavailable")
         return None
 
+    # v3.5.18 FIX #0: Configure SSL certificates BEFORE anything else.
+    # This is the ROOT CAUSE of the 0-leads bug through v3.5.12-v3.5.17.
+    # DuckDB's httpfs uses OpenSSL directly for HTTPS. In PyInstaller bundles,
+    # OpenSSL can't find CA certificates → S3 requests fail silently → 0 leads.
+    _configure_ssl_certificates()
+
     # v3.5.17 FIX #1: Fix DLL search path BEFORE any extension loading.
-    # httpfs is a native DLL that depends on OpenSSL. In PyInstaller --onefile,
-    # OpenSSL DLLs are in sys._MEIPASS which isn't on the default DLL search path.
     _fix_dll_search_path()
 
     con = duckdb.connect()
@@ -613,66 +727,77 @@ def _get_duckdb_connection():
         bundled = _ensure_bundled_httpfs(ext_dir)
         logger.info("Bundled httpfs extraction result: %s", bundled)
 
-        # Step 3: INSTALL httpfs once (thread-safe), then LOAD on every connection.
-        # v3.5.17 FIX #4: The _HTTPFS_INSTALLED flag only gates the INSTALL step.
-        # LOAD must happen on EVERY connection because DuckDB connections are
-        # independent — loading in one does NOT make it available in another.
+        # Step 3: Load httpfs with multiple fallback strategies.
+        # v3.5.18: Simplified loading — try autoload first (lets DuckDB handle it),
+        # then bundled, then runtime install. Each connection needs its own LOAD.
         global _HTTPFS_INSTALLED  # noqa: PLW0603
+        httpfs_loaded = False
+
+        # Strategy A: Enable autoload (DuckDB >= 0.9.0 can auto-install + load)
+        try:
+            con.execute("SET autoinstall_known_extensions = true;")
+            con.execute("SET autoload_known_extensions = true;")
+            logger.debug("Autoload extensions enabled")
+        except Exception as e:
+            logger.debug("Autoload setting failed (older DuckDB?): %s", e)
+
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
-                # First time: try LOAD (bundled), then INSTALL, then FORCE INSTALL
-                try:
-                    con.execute("LOAD httpfs;")
-                    _HTTPFS_INSTALLED = True
-                    logger.info("httpfs loaded directly (bundled, dir=%s)", safe_ext_dir)
-                except Exception as load_err:
-                    logger.warning("Direct LOAD httpfs failed: %s — trying INSTALL", load_err)
+                # First connection: try each strategy in order
+                strategies = [
+                    ("LOAD (bundled)", ["LOAD httpfs;"]),
+                    ("INSTALL+LOAD (network)", ["INSTALL httpfs;", "LOAD httpfs;"]),
+                    ("FORCE INSTALL+LOAD", ["FORCE INSTALL httpfs;", "LOAD httpfs;"]),
+                ]
+                last_err = None
+                for name, stmts in strategies:
                     try:
-                        con.execute("INSTALL httpfs;")
-                        con.execute("LOAD httpfs;")
-                    except Exception as install_err:
-                        logger.warning("INSTALL httpfs failed: %s — trying FORCE", install_err)
-                        try:
-                            con.execute("FORCE INSTALL httpfs;")
-                            con.execute("LOAD httpfs;")
-                        except Exception as force_err:
-                            logger.error(
-                                "ALL httpfs install methods failed — "
-                                "LOAD: %s | INSTALL: %s | FORCE: %s | ext_dir=%s",
-                                load_err, install_err, force_err, safe_ext_dir,
-                            )
-                            # Log what files actually exist in ext_dir for diagnosis
-                            try:
-                                for root, _d, files in os.walk(ext_dir):
-                                    for f in files:
-                                        fp = os.path.join(root, f)
-                                        logger.error(
-                                            "  ext_dir file: %s (%d bytes)",
-                                            os.path.relpath(fp, ext_dir),
-                                            os.path.getsize(fp),
-                                        )
-                            except Exception:
-                                pass
-                            raise
-                    _HTTPFS_INSTALLED = True
-                    logger.info("httpfs installed+loaded via network (dir=%s)", safe_ext_dir)
+                        for stmt in stmts:
+                            con.execute(stmt)
+                        _HTTPFS_INSTALLED = True
+                        httpfs_loaded = True
+                        logger.info("httpfs loaded via '%s' (dir=%s)", name, safe_ext_dir)
+                        break
+                    except Exception as e:
+                        last_err = e
+                        logger.warning("httpfs strategy '%s' failed: %s", name, e)
+
+                if not httpfs_loaded:
+                    logger.error(
+                        "ALL httpfs strategies failed — last error: %s | ext_dir=%s | "
+                        "SSL_CERT_FILE=%s",
+                        last_err, safe_ext_dir,
+                        os.environ.get("SSL_CERT_FILE", "NOT SET"),
+                    )
+                    # Log ext_dir contents for diagnosis
+                    try:
+                        for root, _d, files in os.walk(ext_dir):
+                            for f in files:
+                                fp = os.path.join(root, f)
+                                logger.error(
+                                    "  ext_dir file: %s (%d bytes)",
+                                    os.path.relpath(fp, ext_dir),
+                                    os.path.getsize(fp),
+                                )
+                    except Exception:
+                        pass
+                    raise last_err  # type: ignore[arg-type]
             else:
-                # v3.5.17 FIX #5: LOAD httpfs on THIS connection (not just first).
-                # Previous versions had `except Exception: pass` here which silently
-                # swallowed failures, leaving the connection without httpfs.
-                # Now we properly LOAD and raise on failure.
+                # Subsequent connection: LOAD on THIS connection
                 try:
                     con.execute("LOAD httpfs;")
+                    httpfs_loaded = True
                     logger.debug("httpfs loaded on existing connection (dir=%s)", safe_ext_dir)
                 except Exception as reload_err:
                     logger.error(
-                        "httpfs LOAD failed on connection (already installed): %s | ext_dir=%s",
+                        "httpfs LOAD failed on connection: %s | ext_dir=%s",
                         reload_err, safe_ext_dir,
                     )
-                    # Try INSTALL + LOAD as recovery
+                    # Recovery: INSTALL + LOAD
                     try:
                         con.execute("INSTALL httpfs;")
                         con.execute("LOAD httpfs;")
+                        httpfs_loaded = True
                         logger.info("httpfs recovery INSTALL+LOAD succeeded")
                     except Exception as recovery_err:
                         logger.error("httpfs recovery also failed: %s", recovery_err)
@@ -695,6 +820,13 @@ def _get_duckdb_connection():
                 logger.warning("httpfs not found in duckdb_extensions() output")
         except Exception as verify_err:
             logger.debug("Could not verify httpfs state: %s", verify_err)
+
+        # v3.5.18: Log SSL certificate status for diagnosis
+        logger.info(
+            "SSL env: SSL_CERT_FILE=%s, CURL_CA_BUNDLE=%s",
+            os.environ.get("SSL_CERT_FILE", "NOT SET"),
+            os.environ.get("CURL_CA_BUNDLE", "NOT SET"),
+        )
 
         # Configure S3 credentials
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
