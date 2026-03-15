@@ -821,9 +821,41 @@ def _get_duckdb_connection():
         except Exception as verify_err:
             logger.debug("Could not verify httpfs state: %s", verify_err)
 
-        # v3.5.18: Log SSL certificate status for diagnosis
+        # v3.5.19 FIX — THE REAL ROOT CAUSE:
+        # DuckDB's httpfs uses cpp-httplib for HTTPS, which reads CA certs from
+        # DuckDB's own `ca_cert_file` setting — NOT from the SSL_CERT_FILE env var.
+        # All v3.5.12-v3.5.18 set the env var but never told DuckDB directly.
+        # In PyInstaller bundles, the compiled-in OpenSSL cert path doesn't exist
+        # on the user's machine, so httpfs HTTPS requests fail silently → 0 leads.
+        #
+        # Fix: SET ca_cert_file = '<certifi_path>' AFTER httpfs is loaded
+        # (the setting is registered by the httpfs extension).
+        # Ref: https://github.com/duckdb/duckdb/pull/10704
+        try:
+            cert_path = os.environ.get("SSL_CERT_FILE", "")
+            if not cert_path:
+                try:
+                    import certifi
+                    cert_path = certifi.where()
+                except ImportError:
+                    pass
+            if cert_path and os.path.isfile(cert_path):
+                safe_cert = cert_path.replace("\\", "/")
+                con.execute(f"SET ca_cert_file='{safe_cert}';")
+                logger.info("DuckDB ca_cert_file set to: %s", safe_cert)
+            else:
+                logger.warning(
+                    "No CA cert file found for DuckDB ca_cert_file setting. "
+                    "cert_path=%s, SSL_CERT_FILE=%s",
+                    cert_path, os.environ.get("SSL_CERT_FILE", "NOT SET"),
+                )
+        except Exception as ca_err:
+            # ca_cert_file may not exist in older DuckDB versions — log but continue
+            logger.debug("SET ca_cert_file failed (older DuckDB?): %s", ca_err)
+
+        # Log SSL certificate status for diagnosis
         logger.info(
-            "SSL env: SSL_CERT_FILE=%s, CURL_CA_BUNDLE=%s",
+            "SSL env: SSL_CERT_FILE=%s, CURL_CA_BUNDLE=%s, ca_cert_file=SET",
             os.environ.get("SSL_CERT_FILE", "NOT SET"),
             os.environ.get("CURL_CA_BUNDLE", "NOT SET"),
         )
