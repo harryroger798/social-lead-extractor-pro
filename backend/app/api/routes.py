@@ -179,6 +179,136 @@ async def get_dashboard_stats() -> DashboardStats:
         )
 
 
+# ─── v3.5.15: Diagnostic endpoint ─────────────────────────────────────────────
+
+@router.get("/diagnostic/duckdb")
+async def diagnostic_duckdb() -> dict:
+    """Test each step of DuckDB + httpfs + S3 setup and report results.
+
+    Helps diagnose why database search returns 0 leads in packaged builds.
+    Each step reports pass/fail with detailed error info.
+    """
+    import sys as _sys
+
+    results: dict[str, dict] = {}
+
+    # Step 1: DuckDB import
+    try:
+        import duckdb
+        results["1_duckdb_import"] = {
+            "status": "pass",
+            "version": duckdb.__version__,
+        }
+    except ImportError as e:
+        results["1_duckdb_import"] = {"status": "fail", "error": str(e)}
+        return results
+
+    # Step 2: Check PyInstaller environment
+    meipass = getattr(_sys, "_MEIPASS", None)
+    results["2_environment"] = {
+        "frozen": getattr(_sys, "frozen", False),
+        "meipass": meipass,
+        "executable": _sys.executable,
+    }
+
+    # Step 3: Extension directory
+    try:
+        from app.services.database_search import _get_extension_directory
+        ext_dir = _get_extension_directory()
+        results["3_extension_dir"] = {
+            "status": "pass",
+            "path": ext_dir,
+            "exists": os.path.isdir(ext_dir),
+        }
+    except Exception as e:
+        results["3_extension_dir"] = {"status": "fail", "error": str(e)}
+
+    # Step 4: Bundled extension check
+    try:
+        from app.services.database_search import _ensure_bundled_httpfs
+        bundled_ok = _ensure_bundled_httpfs(ext_dir)
+        # List extension files in ext_dir
+        ext_files = []
+        for root, _dirs, files in os.walk(ext_dir):
+            for f in files:
+                fp = os.path.join(root, f)
+                ext_files.append({
+                    "path": os.path.relpath(fp, ext_dir),
+                    "size": os.path.getsize(fp),
+                })
+        results["4_bundled_httpfs"] = {
+            "status": "pass" if bundled_ok else "no_bundle",
+            "files_in_ext_dir": ext_files,
+        }
+    except Exception as e:
+        results["4_bundled_httpfs"] = {"status": "fail", "error": str(e)}
+
+    # Step 5: DuckDB connection + httpfs load
+    try:
+        con = duckdb.connect()
+        con.execute(f"SET extension_directory='{ext_dir}';")
+        # Try LOAD directly (should work if bundled extension is present)
+        try:
+            con.execute("LOAD httpfs;")
+            results["5_httpfs_load"] = {"status": "pass", "method": "direct_load"}
+        except Exception as load_err:
+            # Try INSTALL + LOAD
+            try:
+                con.execute("INSTALL httpfs;")
+                con.execute("LOAD httpfs;")
+                results["5_httpfs_load"] = {"status": "pass", "method": "install_then_load"}
+            except Exception as install_err:
+                results["5_httpfs_load"] = {
+                    "status": "fail",
+                    "load_error": str(load_err),
+                    "install_error": str(install_err),
+                }
+                con.close()
+                return results
+    except Exception as e:
+        results["5_httpfs_load"] = {"status": "fail", "error": str(e)}
+        return results
+
+    # Step 6: S3 configuration
+    try:
+        from app.services.database_search import (
+            _S3_ACCESS_KEY, _S3_ENDPOINT, _S3_REGION, _S3_SECRET_KEY,
+        )
+        con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
+        con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
+        con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
+        con.execute(f"SET s3_region='{_S3_REGION}';")
+        con.execute("SET s3_url_style='path';")
+        results["6_s3_config"] = {"status": "pass", "endpoint": _S3_ENDPOINT}
+    except Exception as e:
+        results["6_s3_config"] = {"status": "fail", "error": str(e)}
+        con.close()
+        return results
+
+    # Step 7: Test query (single small file)
+    try:
+        test_sql = (
+            "SELECT COUNT(*) FROM read_csv_auto("
+            "'s3://crop-spray-uploads/leads-cm-database/linkedin/United_States/dataset_1.csv',"
+            " ignore_errors=true) LIMIT 1"
+        )
+        row = con.execute(test_sql).fetchone()
+        results["7_test_query"] = {
+            "status": "pass",
+            "row_count": row[0] if row else 0,
+        }
+    except Exception as e:
+        results["7_test_query"] = {"status": "fail", "error": str(e)}
+    finally:
+        con.close()
+
+    # Step 8: License tier
+    tier = _read_electron_license_tier()
+    results["8_license_tier"] = {"tier": tier or "free (no electron license found)"}
+
+    return results
+
+
 # ─── Extraction ───────────────────────────────────────────────────────────────
 
 async def _load_proxy_pool() -> None:

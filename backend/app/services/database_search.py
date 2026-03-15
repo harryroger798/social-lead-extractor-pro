@@ -23,6 +23,8 @@ import asyncio
 import logging
 import os
 import re
+import shutil
+import sys
 import threading
 import time
 
@@ -301,7 +303,7 @@ _HTTPFS_LOCK = threading.Lock()
 
 
 def _get_extension_directory() -> str:
-    """v3.5.14: Return a writable directory for DuckDB extensions.
+    """v3.5.15: Return a writable directory for DuckDB extensions.
 
     PyInstaller bundles run from a temporary directory that may not be
     writable for extension downloads.  We explicitly set a known-good
@@ -343,6 +345,64 @@ def _get_extension_directory() -> str:
         return fallback
 
 
+def _ensure_bundled_httpfs(ext_dir: str) -> bool:
+    """v3.5.15: Copy bundled httpfs extension to the writable extension dir.
+
+    PyInstaller builds bundle pre-installed httpfs extension files under
+    ``duckdb_extensions/`` in the frozen app directory.  This function copies
+    them to the writable *ext_dir* so ``LOAD httpfs`` can find them without
+    any network download.
+
+    Returns True if bundled extension was found and copied (or already present).
+    """
+    try:
+        import duckdb
+        duckdb_version = duckdb.__version__
+    except ImportError:
+        return False
+
+    # Locate bundled extension directory
+    bundled_base = None
+    # PyInstaller frozen: check sys._MEIPASS
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        candidate = os.path.join(meipass, "duckdb_extensions")
+        if os.path.isdir(candidate):
+            bundled_base = candidate
+    # Also check next to the executable (for --onedir builds)
+    if not bundled_base:
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        candidate = os.path.join(exe_dir, "duckdb_extensions")
+        if os.path.isdir(candidate):
+            bundled_base = candidate
+
+    if not bundled_base:
+        logger.debug("No bundled duckdb_extensions directory found")
+        return False
+
+    # Walk the bundled directory and copy extension files to ext_dir
+    copied = 0
+    for root, _dirs, files in os.walk(bundled_base):
+        for fname in files:
+            if fname.endswith(".duckdb_extension") or fname.endswith(".duckdb_extension.info"):
+                src = os.path.join(root, fname)
+                # Preserve the subdirectory structure (e.g. v1.5.0/linux_amd64/httpfs.duckdb_extension)
+                rel_path = os.path.relpath(src, bundled_base)
+                dst = os.path.join(ext_dir, rel_path)
+                # Only copy if destination doesn't exist or is smaller (corrupt)
+                if not os.path.exists(dst) or os.path.getsize(dst) < os.path.getsize(src):
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy2(src, dst)
+                    copied += 1
+                    logger.info("Copied bundled extension: %s -> %s", rel_path, dst)
+
+    if copied > 0:
+        logger.info("Copied %d bundled extension file(s) to %s", copied, ext_dir)
+    else:
+        logger.debug("Bundled extensions already present in %s", ext_dir)
+    return True
+
+
 def _get_duckdb_connection():
     """Create a DuckDB connection configured for S3 access.
 
@@ -350,13 +410,13 @@ def _get_duckdb_connection():
     desktop app distribution.  They are **read-only** and scoped exclusively to
     the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
 
-    v3.5.14: Explicit extension directory for PyInstaller compatibility.
-    Previously INSTALL httpfs would fail silently in packaged builds because
-    the default extension directory was not writable, causing ALL database
-    searches to return 0 leads.  Now we:
+    v3.5.15: Bundle-first extension loading for PyInstaller compatibility.
+    The httpfs extension is now pre-installed during the CI build and bundled
+    inside the PyInstaller binary.  At runtime we:
       1. Set an explicit writable extension directory
-      2. Retry INSTALL with FORCE INSTALL on first failure
-      3. Log detailed errors for diagnosis
+      2. Copy bundled httpfs files into it (no network download needed)
+      3. Try LOAD httpfs directly (skip INSTALL entirely)
+      4. Only fall back to INSTALL/FORCE INSTALL if bundled copy is missing
     """
     try:
         import duckdb
@@ -366,31 +426,54 @@ def _get_duckdb_connection():
 
     con = duckdb.connect()
     try:
-        # v3.5.14: Set explicit writable extension directory BEFORE install
+        # v3.5.15: Set explicit writable extension directory BEFORE anything
         ext_dir = _get_extension_directory()
         con.execute(f"SET extension_directory='{ext_dir}';")
+
+        # v3.5.15: Copy bundled extension to writable dir (PyInstaller builds)
+        _ensure_bundled_httpfs(ext_dir)
 
         # R5-B08 fix: thread-safe httpfs installation
         global _HTTPFS_INSTALLED  # noqa: PLW0603
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
+                # v3.5.15: Try LOAD first — if bundled extension was copied,
+                # this succeeds without any network download.
                 try:
-                    con.execute("INSTALL httpfs;")
-                except Exception as install_err:
-                    logger.warning(
-                        "INSTALL httpfs failed (retrying with FORCE): %s", install_err
+                    con.execute("LOAD httpfs;")
+                    _HTTPFS_INSTALLED = True
+                    logger.info(
+                        "httpfs loaded directly (bundled/pre-installed, dir=%s)", ext_dir
                     )
+                except Exception as load_err:
+                    logger.warning(
+                        "Direct LOAD httpfs failed: %s — trying INSTALL", load_err
+                    )
+                    # Fall back to INSTALL (downloads from CDN)
                     try:
-                        con.execute("FORCE INSTALL httpfs;")
-                    except Exception as force_err:
-                        logger.error(
-                            "FORCE INSTALL httpfs also failed: %s (ext_dir=%s)",
-                            force_err, ext_dir,
+                        con.execute("INSTALL httpfs;")
+                        con.execute("LOAD httpfs;")
+                    except Exception as install_err:
+                        logger.warning(
+                            "INSTALL httpfs failed (retrying FORCE): %s", install_err
                         )
-                        raise
-                _HTTPFS_INSTALLED = True
-                logger.info("httpfs extension installed successfully (dir=%s)", ext_dir)
-        con.execute("LOAD httpfs;")
+                        try:
+                            con.execute("FORCE INSTALL httpfs;")
+                            con.execute("LOAD httpfs;")
+                        except Exception as force_err:
+                            logger.error(
+                                "ALL httpfs install methods failed: %s (ext_dir=%s)",
+                                force_err, ext_dir,
+                            )
+                            raise
+                    _HTTPFS_INSTALLED = True
+                    logger.info("httpfs installed+loaded via network (dir=%s)", ext_dir)
+        # If already installed by another thread, still need to load in THIS connection
+        if _HTTPFS_INSTALLED:
+            try:
+                con.execute("LOAD httpfs;")
+            except Exception:
+                pass  # Already loaded above in the same connection
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
         con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
         con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
