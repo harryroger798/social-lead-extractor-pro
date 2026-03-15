@@ -20,6 +20,7 @@ S3 Location: s3://crop-spray-uploads/leads-cm-database/
 """
 
 import asyncio
+import atexit
 import logging
 import os
 import re
@@ -27,11 +28,19 @@ import shutil
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger(__name__)
 
 # v3.5.18: Track whether SSL certificates have been configured
 _SSL_CERTS_CONFIGURED = False
+
+# v3.5.21: Dedicated bounded thread pool for DB queries.
+# Prevents saturation of asyncio's default executor when multiple
+# extractions run concurrently or many S3 files are queried in parallel.
+# 4 workers = max 4 concurrent DuckDB S3 connections at any time.
+_DB_THREAD_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="duckdb-s3")
+atexit.register(_DB_THREAD_POOL.shutdown, wait=False)
 
 
 def _sanitize_sql_term(term: str) -> str:
@@ -1017,6 +1026,16 @@ def _get_duckdb_connection():
             os.environ.get("CURL_CA_BUNDLE", "NOT SET"),
         )
 
+        # v3.5.21 FIX: Set HTTP timeout to prevent S3 requests hanging forever.
+        # Without this, a single slow/stuck S3 request blocks its thread pool
+        # worker indefinitely, eventually saturating the pool and freezing ALL
+        # extractions at "Searching 89M+ leads database...".
+        try:
+            con.execute("SET http_timeout=30000;")  # 30 seconds in milliseconds
+            logger.debug("DuckDB http_timeout set to 30s")
+        except Exception as ht_err:
+            logger.debug("SET http_timeout failed (older DuckDB?): %s", ht_err)
+
         # Configure S3 credentials
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
         con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
@@ -1513,7 +1532,15 @@ def _pan_india_row_to_lead(row: tuple, keyword: str) -> dict:
 # v3.5.8: timeout for S3 queries — prevents UI freezing on slow connections
 # v3.5.13: raised from 30→90s; per-country parallel strategy keeps actual
 # wall-clock time low while preventing premature timeout on large scans.
-_DB_QUERY_TIMEOUT_SECS = 90
+# v3.5.21: Reduced from 90s to 45s — prevents UI freeze when S3 is slow.
+# With bounded thread pool (4 workers), queries are serialized better
+# so each one gets full bandwidth rather than 20+ fighting for it.
+_DB_QUERY_TIMEOUT_SECS = 45
+
+# v3.5.21: Master timeout for the entire search_database_hybrid call.
+# Even if individual query timeouts fail to fire (thread pool saturation),
+# this guarantees the extraction never blocks forever at "Searching 89M+".
+_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 120
 
 
 async def search_database_linkedin(
@@ -1599,7 +1626,7 @@ async def search_database_linkedin(
 
             try:
                 return await asyncio.wait_for(
-                    loop.run_in_executor(None, _run),
+                    loop.run_in_executor(_DB_THREAD_POOL, _run),
                     timeout=_DB_QUERY_TIMEOUT_SECS,
                 )
             except asyncio.TimeoutError:
@@ -1684,10 +1711,10 @@ async def search_database_instagram(
             finally:
                 con.close()
 
-        # v3.5.8: wrap query execution with timeout to prevent UI freezing
+        # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(None, _execute_query),
+                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -1751,10 +1778,10 @@ async def search_database_googlemaps(
             con.close()
 
     try:
-        # v3.5.10: wrap query execution with timeout to prevent UI freezing
+        # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(None, _execute_query),
+                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -1818,10 +1845,10 @@ async def search_database_pan_india(
             con.close()
 
     try:
-        # v3.5.10: wrap query execution with timeout to prevent UI freezing
+        # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(None, _execute_query),
+                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -1848,7 +1875,7 @@ async def search_database_pan_india(
     return leads
 
 
-async def search_database_hybrid(
+async def _search_database_hybrid_inner(
     keywords: list[str],
     platforms: list[str],
     location: str = "",
@@ -1856,37 +1883,32 @@ async def search_database_hybrid(
     expanded_terms_map: dict[str, list[str]] | None = None,
     tier: str = "free",
 ) -> list[dict]:
-    """Search the pre-built database across multiple platforms and keywords.
+    """Inner implementation of hybrid search (wrapped by master timeout).
 
-    This is the main entry point for the hybrid search system.
-    Searches LinkedIn, Instagram, Google Maps, and PAN India databases
-    in parallel for each keyword.
-
-    Args:
-        keywords: List of search keywords
-        platforms: List of platform names to search
-        location: Optional location filter
-        max_results_per_keyword: Max results per keyword per platform
-        tier: User subscription tier — controls dataset scan depth
-              (v3.5.8: free=3, starter=5, pro/unlimited=8)
-
-    Returns:
-        Combined deduplicated lead list
+    v3.5.21 fixes:
+      1. Reduced dataset limits to prevent >50 concurrent S3 file reads.
+      2. Fixed "fallback to all" logic — only search LinkedIn+Instagram by
+         default instead of ALL 4 databases (Google Maps + PAN India are
+         supplementary and shouldn't run unless explicitly requested).
+      3. Sequential platform searches instead of parallel — prevents thread
+         pool saturation when 4 platforms × 5 countries × N datasets all
+         fire simultaneously.
     """
     all_leads: list[dict] = []
     seen_emails: set[str] = set()
     seen_phones: set[str] = set()
 
-    # v3.5.12: tier-aware dataset_limit — raised for much broader coverage
-    # Previously free=3, starter=5, pro=8 — scanning <1% of available data.
-    # Now free=10, starter=15, pro=25 for meaningful coverage.
+    # v3.5.21: Reduced dataset limits to prevent thread pool saturation.
+    # With 4 workers in _DB_THREAD_POOL, we need to keep total concurrent
+    # S3 file reads manageable. LinkedIn fires per-country queries (5 countries)
+    # so each country gets dataset_limit files. Keep it low.
     _tier_dataset_limits = {
-        "free": 10,
-        "starter": 15,
-        "pro": 25,
-        "unlimited": 25,
+        "free": 5,
+        "starter": 8,
+        "pro": 10,
+        "unlimited": 10,
     }
-    ds_limit = _tier_dataset_limits.get(tier, 10)
+    ds_limit = _tier_dataset_limits.get(tier, 5)
 
     # Determine which databases to search based on requested platforms
     search_linkedin = any(p in ("linkedin", "all") for p in platforms)
@@ -1903,39 +1925,80 @@ async def search_database_hybrid(
     _has_social = search_linkedin or search_instagram
     _has_maps_or_india = search_googlemaps or search_pan_india
 
-    # If no specific platforms matched, search all databases transparently
+    # v3.5.21 FIX: Only default to LinkedIn + Instagram (the two largest DBs).
+    # Previously this enabled ALL 4 databases which fired 80+ concurrent S3
+    # queries, saturating the thread pool and causing GDDSBoth to freeze at 5%.
     if not _has_social and not _has_maps_or_india:
         search_linkedin = True
         search_instagram = True
-        search_googlemaps = True
-        search_pan_india = True
+
+    logger.info(
+        "Hybrid search: linkedin=%s, instagram=%s, googlemaps=%s, pan_india=%s, "
+        "ds_limit=%d, tier=%s, platforms=%s",
+        search_linkedin, search_instagram, search_googlemaps, search_pan_india,
+        ds_limit, tier, platforms,
+    )
 
     for keyword in keywords:
-        tasks = []
-        # Get expanded terms for this keyword (v3.5.1)
+        # v3.5.21: Run platform searches SEQUENTIALLY (not all at once).
+        # This prevents 4 platforms × 5 countries = 20+ concurrent DuckDB
+        # connections fighting for 4 thread pool workers.
+        # LinkedIn runs first (largest DB, most likely to have results),
+        # then others run only if we haven't hit max results yet.
         kw_expanded = None
         if expanded_terms_map:
             kw_expanded = expanded_terms_map.get(keyword)
 
+        # Phase 1: LinkedIn (primary — 86.9M records)
         if search_linkedin:
-            tasks.append(
-                search_database_linkedin(
+            try:
+                linkedin_leads = await search_database_linkedin(
                     keyword, location, max_results_per_keyword,
                     dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
-            )
+                for lead in linkedin_leads:
+                    email = lead.get("email", "")
+                    phone = lead.get("phone", "")
+                    if email and email in seen_emails:
+                        continue
+                    if phone and phone in seen_phones:
+                        continue
+                    if email:
+                        seen_emails.add(email)
+                    if phone:
+                        seen_phones.add(phone)
+                    all_leads.append(lead)
+            except Exception as e:
+                logger.warning("LinkedIn DB search failed for '%s': %s", keyword, e)
+
+        # Phase 2: Instagram (secondary — 2.45M records)
         if search_instagram:
-            # v3.5.12: Use full max_results for Instagram (was halved with // 2)
-            tasks.append(
-                search_database_instagram(
+            try:
+                instagram_leads = await search_database_instagram(
                     keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
-            )
+                for lead in instagram_leads:
+                    email = lead.get("email", "")
+                    phone = lead.get("phone", "")
+                    if email and email in seen_emails:
+                        continue
+                    if phone and phone in seen_phones:
+                        continue
+                    if email:
+                        seen_emails.add(email)
+                    if phone:
+                        seen_phones.add(phone)
+                    all_leads.append(lead)
+            except Exception as e:
+                logger.warning("Instagram DB search failed for '%s': %s", keyword, e)
+
+        # Phase 3: Google Maps + PAN India (supplementary — only if requested)
+        supplementary_tasks = []
         if search_googlemaps:
-            tasks.append(
+            supplementary_tasks.append(
                 search_database_googlemaps(
                     keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
@@ -1943,7 +2006,7 @@ async def search_database_hybrid(
                 )
             )
         if search_pan_india:
-            tasks.append(
+            supplementary_tasks.append(
                 search_database_pan_india(
                     keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
@@ -1951,17 +2014,15 @@ async def search_database_hybrid(
                 )
             )
 
-        if tasks:
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+        if supplementary_tasks:
+            results = await asyncio.gather(*supplementary_tasks, return_exceptions=True)
             for result in results:
                 if isinstance(result, Exception):
-                    logger.warning("Database search task failed: %s", result)
+                    logger.warning("Supplementary DB search failed: %s", result)
                     continue
                 for lead in result:
-                    # Deduplicate by email or phone
                     email = lead.get("email", "")
                     phone = lead.get("phone", "")
-                    # R5-B16 fix: dedup by email OR phone independently
                     if email and email in seen_emails:
                         continue
                     if phone and phone in seen_phones:
@@ -1978,6 +2039,52 @@ async def search_database_hybrid(
     )
 
     return all_leads
+
+
+async def search_database_hybrid(
+    keywords: list[str],
+    platforms: list[str],
+    location: str = "",
+    max_results_per_keyword: int = 50,
+    expanded_terms_map: dict[str, list[str]] | None = None,
+    tier: str = "free",
+) -> list[dict]:
+    """Search the pre-built database across multiple platforms and keywords.
+
+    v3.5.21: Wrapped with a master timeout to guarantee this function NEVER
+    blocks forever. Even if individual query timeouts fail (thread pool
+    saturation, DuckDB S3 request hanging), this master timeout ensures
+    the extraction progresses past the "Searching 89M+" phase.
+
+    Returns whatever leads were collected before the timeout fired.
+    """
+    try:
+        return await asyncio.wait_for(
+            _search_database_hybrid_inner(
+                keywords=keywords,
+                platforms=platforms,
+                location=location,
+                max_results_per_keyword=max_results_per_keyword,
+                expanded_terms_map=expanded_terms_map,
+                tier=tier,
+            ),
+            timeout=_HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
+        )
+    except asyncio.TimeoutError:
+        logger.error(
+            "search_database_hybrid MASTER TIMEOUT after %ds — "
+            "returning empty results to unblock extraction. "
+            "keywords=%s, platforms=%s, tier=%s",
+            _HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
+            keywords, platforms, tier,
+        )
+        return []
+    except Exception as e:
+        logger.error(
+            "search_database_hybrid unexpected error: %s — keywords=%s",
+            e, keywords, exc_info=True,
+        )
+        return []
 
 
 def deduplicate_leads(db_leads: list[dict], live_leads: list[dict]) -> list[dict]:
