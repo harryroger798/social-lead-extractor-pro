@@ -175,7 +175,26 @@ def tail_log(lines: int = 200) -> str:
 
 
 def clear_logs() -> int:
-    """Delete all log files. Returns number of files deleted."""
+    """Delete all log files. Returns number of files deleted.
+
+    On Windows the active log file is held open by the RotatingFileHandler,
+    so a plain ``os.remove()`` fails silently.  We close every handler on the
+    root logger first, delete everything, then re-initialise logging so the
+    app keeps writing to a fresh file.
+    """
+    global _INITIALIZED
+
+    # Step 1: Close all file handlers so Windows releases the file locks
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            try:
+                handler.close()
+            except Exception:
+                pass
+            root_logger.removeHandler(handler)
+
+    # Step 2: Delete all files in the log directory
     log_dir = get_log_dir()
     count = 0
     for filepath in glob.glob(os.path.join(log_dir, "*")):
@@ -184,6 +203,11 @@ def clear_logs() -> int:
             count += 1
         except OSError:
             continue
+
+    # Step 3: Re-initialise logging so new entries go to a fresh file
+    _INITIALIZED = False
+    init_logging()
+
     return count
 
 

@@ -30,6 +30,11 @@ try:
 except ImportError:
     _httpx = None  # type: ignore[assignment]
 
+try:
+    from bs4 import BeautifulSoup as _BS
+except ImportError:
+    _BS = None  # type: ignore[assignment]
+
 from app.services.extractor import extract_emails, extract_phones
 
 logger = logging.getLogger(__name__)
@@ -254,6 +259,78 @@ async def _search_google_patchright(
                 pass
 
 
+# ─── Method 1b: HTTP fallback for Google dorking (no browser needed) ─────────
+
+def _search_google_http(query: str, num_results: int = 10) -> list[dict]:
+    """Scrape Google search results using plain HTTP + BeautifulSoup.
+
+    This is the non-Patchright fallback for Google dorking.  It sends a
+    standard HTTP GET to Google with a realistic User-Agent and parses the
+    returned HTML with BeautifulSoup.  No browser, no API key required.
+
+    Returns a list of dicts with keys: title, snippet, link.
+    Returns an empty list on any error (graceful degradation).
+    """
+    if _httpx is None or _BS is None:
+        logger.info("httpx or beautifulsoup4 not available — skipping HTTP Google dorking")
+        return []
+
+    try:
+        from urllib.parse import quote_plus
+
+        url = f"https://www.google.com/search?q={quote_plus(query)}&num={num_results}"
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate",
+        }
+
+        response = _httpx.get(url, headers=headers, timeout=15.0, follow_redirects=True)
+        if response.status_code != 200:
+            logger.warning("HTTP Google dorking got status %d", response.status_code)
+            return []
+
+        soup = _BS(response.text, "html.parser")
+        results: list[dict] = []
+
+        # Google wraps each organic result in a <div class="g"> or similar
+        for g_div in soup.select("div.g, div.MjjYud"):
+            link_tag = g_div.find("a", href=True)
+            title_tag = g_div.find("h3")
+            if not link_tag or not title_tag:
+                continue
+
+            href = link_tag.get("href", "")
+            if not href.startswith("http") or "google.com/search" in href:
+                continue
+
+            # Extract snippet from common Google snippet containers
+            snippet = ""
+            for sel in ["div.VwiC3b", "span.st", "div[data-sncf]"]:
+                snippet_el = g_div.select_one(sel)
+                if snippet_el:
+                    snippet = snippet_el.get_text(separator=" ", strip=True)
+                    break
+
+            results.append({
+                "title": title_tag.get_text(strip=True),
+                "snippet": snippet,
+                "link": href,
+            })
+
+        logger.info("HTTP Google dorking: %d results for query", len(results))
+        return results
+
+    except Exception as e:
+        logger.warning("HTTP Google dorking error: %s", e)
+        return []
+
+
 # ─── Method 2: Serper.dev API (FALLBACK) ─────────────────────────────────────
 
 def _search_serper(query: str, num_results: int = 10) -> list[dict]:
@@ -401,14 +478,29 @@ async def dorking_search(
         except Exception as exc:
             logger.warning("Multi-engine search error: %s", exc)
 
-    # Method 3: Patchright (OPTIONAL — only if nothing found yet)
+    # Method 3: Patchright OR HTTP fallback (OPTIONAL — only if nothing found yet)
     if not all_emails and not all_phones and use_patchright:
         primary_query = queries[0] if queries else _build_dork_query(keyword, platform)
+
+        # Try Patchright first (anti-detection browser)
         results = await _search_google_patchright(
             primary_query, num_results, headless=headless, proxy=proxy
         )
+
+        # If Patchright returned nothing (not installed / no browser),
+        # fall back to plain HTTP + BeautifulSoup scraping
+        if not results:
+            logger.info("Patchright unavailable or returned no results — trying HTTP fallback")
+            loop = asyncio.get_running_loop()
+            results = await loop.run_in_executor(
+                None, _search_google_http, primary_query, num_results
+            )
+            if results and "http_dorking" not in methods_used:
+                methods_used.append("http_dorking")
+
         if results:
-            methods_used.append("patchright")
+            if "patchright" not in methods_used and "http_dorking" not in methods_used:
+                methods_used.append("patchright")
             for result in results:
                 text = f"{result.get('title', '')} {result.get('snippet', '')}"
                 all_emails.extend(extract_emails(text))

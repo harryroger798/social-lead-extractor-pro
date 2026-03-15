@@ -16,9 +16,22 @@ Usage on user's machine (Electron desktop app):
 
 import asyncio
 import logging
+import os
+import sys
 from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+# ── Set PLAYWRIGHT_BROWSERS_PATH for PyInstaller bundles ─────────────────────
+# When the app runs from a PyInstaller --onefile bundle, Chromium lives under
+# ``sys._MEIPASS/patchright_browsers``.  We must tell Patchright where to find
+# it *before* the first launch.
+_MEIPASS = getattr(sys, "_MEIPASS", None)
+if _MEIPASS:
+    _bundled_browsers = os.path.join(_MEIPASS, "patchright_browsers")
+    if os.path.isdir(_bundled_browsers):
+        os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", _bundled_browsers)
+        logger.info("Patchright: using bundled browsers at %s", _bundled_browsers)
 
 # Singleton browser context
 _browser = None
@@ -27,15 +40,24 @@ _install_attempted = False
 
 
 async def _try_auto_install() -> bool:
-    """Try to auto-install Patchright Chromium (max 2 attempts)."""
+    """Try to auto-install Patchright Chromium (max 2 attempts).
+
+    Skipped when running inside a PyInstaller bundle because
+    ``sys.executable`` points to the frozen exe, not Python.
+    """
     global _install_attempted
     if _install_attempted:
         return False
 
     _install_attempted = True
+
+    # Skip auto-install in frozen PyInstaller builds — it would fail
+    if getattr(sys, "frozen", False):
+        logger.info("Skipping Patchright auto-install inside PyInstaller bundle")
+        return False
+
     try:
         import subprocess
-        import sys
 
         logger.info("Attempting to auto-install Patchright Chromium...")
         proc = subprocess.run(
