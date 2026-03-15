@@ -32,6 +32,15 @@ if _MEIPASS:
     if os.path.isdir(_bundled_browsers):
         os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", _bundled_browsers)
         logger.info("Patchright: using bundled browsers at %s", _bundled_browsers)
+        # Log directory contents for debugging
+        try:
+            for entry in os.listdir(_bundled_browsers):
+                entry_path = os.path.join(_bundled_browsers, entry)
+                if os.path.isdir(entry_path):
+                    sub_entries = os.listdir(entry_path)
+                    logger.info("  %s/ -> %s", entry, sub_entries[:5])
+        except Exception as exc:
+            logger.warning("Could not list bundled browsers: %s", exc)
 
 # Singleton browser context
 _browser = None
