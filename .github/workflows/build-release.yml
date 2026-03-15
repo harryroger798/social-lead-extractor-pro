@@ -81,8 +81,15 @@ jobs:
         working-directory: backend
         run: |
           PATCHRIGHT_DATA=""
+          PATCHRIGHT_COLLECT=""
           if [ -d "patchright_browsers" ]; then
             PATCHRIGHT_DATA='--add-data patchright_browsers:patchright_browsers'
+            # --collect-all patchright bundles the driver binary (node + package/)
+            # which is required for Patchright to spawn the browser process
+            PATCHRIGHT_COLLECT='--collect-all patchright'
+          else
+            # macOS: no Patchright bundling, just import the Python modules
+            PATCHRIGHT_COLLECT='--hidden-import=patchright --hidden-import=patchright.async_api'
           fi
           pyinstaller --onefile --name snapleads-backend \
             --hidden-import=app --hidden-import=app.main \
@@ -128,8 +135,7 @@ jobs:
             --hidden-import=app.services.multi_engine_search \
             --hidden-import=app.services.log_service \
             --hidden-import=app.services.patchright_engine \
-            --hidden-import=patchright \
-            --hidden-import=patchright.async_api \
+            $PATCHRIGHT_COLLECT \
             --hidden-import=bs4 \
             --hidden-import=duckdb \
             --add-data "httpfs_bundle.zip:." \
