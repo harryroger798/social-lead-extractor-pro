@@ -21,6 +21,7 @@ S3 Location: s3://crop-spray-uploads/leads-cm-database/
 
 import asyncio
 import atexit
+import json
 import logging
 import os
 import re
@@ -29,11 +30,20 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 
 logger = logging.getLogger(__name__)
 
 # v3.5.18: Track whether SSL certificates have been configured
 _SSL_CERTS_CONFIGURED = False
+
+# v3.5.25: Render API server URL for fast server-side S3 queries.
+# On Render (US region), DuckDB queries to iDrive E2 complete in ~2-9s
+# instead of ~100s from residential internet. Desktop app calls this API
+# first and falls back to direct S3 queries if the API is unreachable.
+_RENDER_API_URL = "https://snapleads-search-api.onrender.com"
+_RENDER_API_TIMEOUT_SECS = 30  # Max time to wait for API response
 
 # v3.5.21: Dedicated bounded thread pool for DB queries.
 # Prevents saturation of asyncio's default executor when multiple
@@ -1543,7 +1553,10 @@ _DB_QUERY_TIMEOUT_SECS = 120
 # this guarantees the extraction never blocks forever at "Searching 89M+".
 # v3.5.24: Raised to 180s to accommodate slower per-query timeouts (120s)
 # plus serialization delay from semaphore-limited concurrency.
-_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 180
+# v3.5.25: Raised to 600s — on residential internet (India → iDrive E2
+# us-west-1), each country query takes ~100s. With semaphore(3) and
+# 5 countries, total wall-clock is ~200s. 600s gives 3× safety margin.
+_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 600
 
 
 async def search_database_linkedin(
@@ -1601,10 +1614,11 @@ async def search_database_linkedin(
 
         # v3.5.24: Limit concurrent country queries to avoid thread pool
         # saturation. With 4 workers, firing 5 queries simultaneously means
-        # 1 queues and all workers block on slow S3 I/O. Semaphore of 2
-        # ensures at most 2 threads are blocked on S3, leaving workers free
-        # for Instagram queries and allowing each query more bandwidth.
-        _country_semaphore = asyncio.Semaphore(2)
+        # 1 queues and all workers block on slow S3 I/O.
+        # v3.5.25: Raised from 2→3 to reduce total wall-clock time.
+        # With 3 concurrent: 5 countries finish in ceil(5/3)=2 rounds ≈ 200s
+        # vs semaphore(2) needing ceil(5/2)=3 rounds ≈ 300s.
+        _country_semaphore = asyncio.Semaphore(3)
 
         async def _search_one_country(country: str) -> list[tuple]:
             """Run a single-country query in the thread pool (semaphore-gated)."""
@@ -2053,6 +2067,56 @@ async def _search_database_hybrid_inner(
     return all_leads
 
 
+async def _search_via_render_api(
+    keyword: str,
+    platforms: list[str],
+    location: str = "",
+    max_results: int = 500,
+    tier: str = "pro",
+    expanded_terms: list[str] | None = None,
+) -> list[dict]:
+    """v3.5.25: Call the Render-hosted search API for fast server-side queries.
+
+    The API server runs on Render (US region) and queries iDrive E2 S3
+    directly with ~2-9s latency instead of ~100s from residential internet.
+
+    Returns list of lead dicts on success, raises on any failure.
+    """
+    payload = {
+        "keyword": keyword,
+        "platforms": platforms,
+        "location": location,
+        "max_results": max_results,
+        "tier": tier,
+    }
+    if expanded_terms:
+        payload["expanded_terms"] = expanded_terms
+
+    body = json.dumps(payload).encode("utf-8")
+    req = Request(
+        f"{_RENDER_API_URL}/api/search",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    loop = asyncio.get_event_loop()
+    # Run blocking HTTP call in thread pool to avoid blocking the event loop
+    response = await loop.run_in_executor(
+        _DB_THREAD_POOL,
+        lambda: urlopen(req, timeout=_RENDER_API_TIMEOUT_SECS),
+    )
+
+    resp_data = json.loads(response.read().decode("utf-8"))
+    leads = resp_data.get("leads", [])
+    query_time = resp_data.get("query_time_ms", 0)
+    logger.info(
+        "Render API returned %d leads in %dms for keyword=%r",
+        len(leads), query_time, keyword,
+    )
+    return leads
+
+
 async def search_database_hybrid(
     keywords: list[str],
     platforms: list[str],
@@ -2063,6 +2127,9 @@ async def search_database_hybrid(
 ) -> list[dict]:
     """Search the pre-built database across multiple platforms and keywords.
 
+    v3.5.25: NEW — tries Render API first (fast ~2-9s server-side queries),
+    falls back to direct S3 DuckDB queries if the API is unreachable.
+
     v3.5.21: Wrapped with a master timeout to guarantee this function NEVER
     blocks forever. Even if individual query timeouts fail (thread pool
     saturation, DuckDB S3 request hanging), this master timeout ensures
@@ -2070,33 +2137,73 @@ async def search_database_hybrid(
 
     Returns whatever leads were collected before the timeout fired.
     """
+    # v3.5.25: Try Render API first — much faster than direct S3 from
+    # residential internet. Falls back to direct S3 on any failure.
     try:
-        return await asyncio.wait_for(
-            _search_database_hybrid_inner(
-                keywords=keywords,
+        api_leads: list[dict] = []
+        for keyword in keywords:
+            kw_expanded = None
+            if expanded_terms_map:
+                kw_expanded = expanded_terms_map.get(keyword)
+            leads = await _search_via_render_api(
+                keyword=keyword,
                 platforms=platforms,
                 location=location,
-                max_results_per_keyword=max_results_per_keyword,
-                expanded_terms_map=expanded_terms_map,
+                max_results=max_results_per_keyword,
                 tier=tier,
-            ),
+                expanded_terms=kw_expanded,
+            )
+            api_leads.extend(leads)
+
+        if api_leads:
+            logger.info(
+                "Render API success: %d total leads for %d keywords",
+                len(api_leads), len(keywords),
+            )
+            return api_leads
+        # API returned 0 leads — fall through to direct S3 as backup
+        logger.warning("Render API returned 0 leads — falling back to direct S3")
+    except Exception as e:
+        logger.warning(
+            "Render API unavailable (%s) — falling back to direct S3 queries",
+            e,
+        )
+
+    # Fallback: direct S3 queries (original approach)
+    _partial_results: list[dict] = []
+
+    async def _inner_with_partial():
+        results = await _search_database_hybrid_inner(
+            keywords=keywords,
+            platforms=platforms,
+            location=location,
+            max_results_per_keyword=max_results_per_keyword,
+            expanded_terms_map=expanded_terms_map,
+            tier=tier,
+        )
+        _partial_results.extend(results)
+        return results
+
+    try:
+        return await asyncio.wait_for(
+            _inner_with_partial(),
             timeout=_HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
         )
     except asyncio.TimeoutError:
         logger.error(
             "search_database_hybrid MASTER TIMEOUT after %ds — "
-            "returning empty results to unblock extraction. "
+            "returning %d partial results collected before timeout. "
             "keywords=%s, platforms=%s, tier=%s",
             _HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
-            keywords, platforms, tier,
+            len(_partial_results), keywords, platforms, tier,
         )
-        return []
+        return _partial_results
     except Exception as e:
         logger.error(
             "search_database_hybrid unexpected error: %s — keywords=%s",
             e, keywords, exc_info=True,
         )
-        return []
+        return _partial_results if _partial_results else []
 
 
 def deduplicate_leads(db_leads: list[dict], live_leads: list[dict]) -> list[dict]:
