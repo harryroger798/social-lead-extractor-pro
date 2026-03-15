@@ -301,6 +301,64 @@ def _resolve_country(location: str) -> list[str]:
 _HTTPFS_INSTALLED = False
 _HTTPFS_LOCK = threading.Lock()
 
+# v3.5.17: Track whether we've added _MEIPASS to DLL search path
+_DLL_PATH_FIXED = False
+
+
+def _fix_dll_search_path():
+    """v3.5.17: Ensure PyInstaller's _MEIPASS is on the DLL search path.
+
+    Claude Opus 4.6 identified this as the root cause of the 0-leads bug:
+    DuckDB's httpfs extension is a native DLL that depends on OpenSSL
+    (libssl, libcrypto). In PyInstaller --onefile bundles, these DLLs are
+    extracted to sys._MEIPASS but DuckDB's LoadLibrary call can't find them
+    because _MEIPASS isn't in the DLL search path.
+
+    This function fixes the search path BEFORE DuckDB tries to load httpfs.
+    """
+    global _DLL_PATH_FIXED
+    if _DLL_PATH_FIXED:
+        return
+
+    meipass = getattr(sys, "_MEIPASS", None)
+    if not meipass:
+        _DLL_PATH_FIXED = True
+        return
+
+    import platform as _plat
+    if _plat.system() == "Windows":
+        # Method 1: os.add_dll_directory (Python 3.8+, Windows 10+)
+        # This is the most reliable way to add DLL search paths
+        try:
+            os.add_dll_directory(meipass)
+            logger.info("Added _MEIPASS to DLL search path via os.add_dll_directory: %s", meipass)
+        except (OSError, AttributeError) as e:
+            logger.debug("os.add_dll_directory failed: %s", e)
+
+        # Method 2: Prepend to PATH as fallback (older Windows)
+        current_path = os.environ.get("PATH", "")
+        if meipass not in current_path:
+            os.environ["PATH"] = meipass + os.pathsep + current_path
+            logger.info("Prepended _MEIPASS to PATH: %s", meipass)
+
+        # Method 3: ctypes SetDllDirectoryW as additional fallback
+        try:
+            import ctypes
+            ctypes.windll.kernel32.SetDllDirectoryW(meipass)
+            logger.info("Set DLL directory via SetDllDirectoryW: %s", meipass)
+        except Exception as e:
+            logger.debug("SetDllDirectoryW failed: %s", e)
+    else:
+        # On macOS/Linux, ensure _MEIPASS is in LD_LIBRARY_PATH / DYLD_LIBRARY_PATH
+        ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+        if meipass not in ld_path:
+            os.environ["LD_LIBRARY_PATH"] = meipass + os.pathsep + ld_path
+        dyld_path = os.environ.get("DYLD_LIBRARY_PATH", "")
+        if meipass not in dyld_path:
+            os.environ["DYLD_LIBRARY_PATH"] = meipass + os.pathsep + dyld_path
+
+    _DLL_PATH_FIXED = True
+
 
 def _get_duckdb_platform() -> str:
     """v3.5.16: Determine the platform string DuckDB uses for extension lookup.
@@ -518,13 +576,15 @@ def _get_duckdb_connection():
     desktop app distribution.  They are **read-only** and scoped exclusively to
     the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
 
-    v3.5.16: Three-bug fix for PyInstaller compatibility (Claude Opus 4.6 analysis):
-      1. **Backslash escaping**: Windows paths use backslashes which DuckDB SQL
-         interprets as escape sequences -- now normalised to forward slashes before SET.
-      2. **Version-aware extraction**: Bundled extension is placed at the exact
-         ``v{runtime_version}/{platform}/`` path DuckDB expects.
-      3. **Real error surfacing**: Extension state is verified after LOAD;
-         query failures are logged with full diagnostics.
+    v3.5.17: Five-point fix for PyInstaller compatibility (Claude Opus 4.6 analysis):
+      1. **DLL search path**: _MEIPASS added to Windows DLL search path so
+         OpenSSL libs are found when DuckDB loads the httpfs native extension.
+      2. **Backslash escaping**: Windows paths normalised to forward slashes.
+      3. **Version-aware extraction**: Bundled extension placed at exact runtime path.
+      4. **Per-connection LOAD**: httpfs loaded on EVERY connection independently;
+         the _HTTPFS_INSTALLED flag only gates INSTALL, not LOAD.
+      5. **No silent swallowing**: Removed ``except Exception: pass`` that hid
+         LOAD failures on 2nd+ connections.
     """
     try:
         import duckdb
@@ -532,12 +592,17 @@ def _get_duckdb_connection():
         logger.warning("DuckDB not installed — database search unavailable")
         return None
 
+    # v3.5.17 FIX #1: Fix DLL search path BEFORE any extension loading.
+    # httpfs is a native DLL that depends on OpenSSL. In PyInstaller --onefile,
+    # OpenSSL DLLs are in sys._MEIPASS which isn't on the default DLL search path.
+    _fix_dll_search_path()
+
     con = duckdb.connect()
     try:
         # Step 1: Get writable extension directory
         ext_dir = _get_extension_directory()
 
-        # v3.5.16 FIX #1: Normalise Windows backslashes to forward slashes.
+        # v3.5.16 FIX #2: Normalise Windows backslashes to forward slashes.
         # DuckDB's SQL parser treats \U, \A, etc. as escape sequences,
         # silently corrupting the path. Forward slashes work on all platforms.
         safe_ext_dir = ext_dir.replace("\\", "/")
@@ -548,10 +613,14 @@ def _get_duckdb_connection():
         bundled = _ensure_bundled_httpfs(ext_dir)
         logger.info("Bundled httpfs extraction result: %s", bundled)
 
-        # Step 3: Load httpfs with full error chain logging
+        # Step 3: INSTALL httpfs once (thread-safe), then LOAD on every connection.
+        # v3.5.17 FIX #4: The _HTTPFS_INSTALLED flag only gates the INSTALL step.
+        # LOAD must happen on EVERY connection because DuckDB connections are
+        # independent — loading in one does NOT make it available in another.
         global _HTTPFS_INSTALLED  # noqa: PLW0603
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
+                # First time: try LOAD (bundled), then INSTALL, then FORCE INSTALL
                 try:
                     con.execute("LOAD httpfs;")
                     _HTTPFS_INSTALLED = True
@@ -572,7 +641,7 @@ def _get_duckdb_connection():
                                 "LOAD: %s | INSTALL: %s | FORCE: %s | ext_dir=%s",
                                 load_err, install_err, force_err, safe_ext_dir,
                             )
-                            # Log what files actually exist in ext_dir
+                            # Log what files actually exist in ext_dir for diagnosis
                             try:
                                 for root, _d, files in os.walk(ext_dir):
                                     for f in files:
@@ -587,15 +656,29 @@ def _get_duckdb_connection():
                             raise
                     _HTTPFS_INSTALLED = True
                     logger.info("httpfs installed+loaded via network (dir=%s)", safe_ext_dir)
+            else:
+                # v3.5.17 FIX #5: LOAD httpfs on THIS connection (not just first).
+                # Previous versions had `except Exception: pass` here which silently
+                # swallowed failures, leaving the connection without httpfs.
+                # Now we properly LOAD and raise on failure.
+                try:
+                    con.execute("LOAD httpfs;")
+                    logger.debug("httpfs loaded on existing connection (dir=%s)", safe_ext_dir)
+                except Exception as reload_err:
+                    logger.error(
+                        "httpfs LOAD failed on connection (already installed): %s | ext_dir=%s",
+                        reload_err, safe_ext_dir,
+                    )
+                    # Try INSTALL + LOAD as recovery
+                    try:
+                        con.execute("INSTALL httpfs;")
+                        con.execute("LOAD httpfs;")
+                        logger.info("httpfs recovery INSTALL+LOAD succeeded")
+                    except Exception as recovery_err:
+                        logger.error("httpfs recovery also failed: %s", recovery_err)
+                        raise reload_err from recovery_err
 
-        # If already installed by another thread, still LOAD in THIS connection
-        if _HTTPFS_INSTALLED:
-            try:
-                con.execute("LOAD httpfs;")
-            except Exception:
-                pass  # Already loaded in this connection above
-
-        # v3.5.16 FIX #3: Verify httpfs is truly loaded before proceeding
+        # Verify httpfs is truly loaded before proceeding
         try:
             ext_state = con.execute(
                 "SELECT extension_name, loaded, installed, install_path "
