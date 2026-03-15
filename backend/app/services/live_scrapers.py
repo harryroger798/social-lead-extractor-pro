@@ -535,51 +535,199 @@ def scrape_instagram(
 # 5. FACEBOOK — Dorking ONLY (NEVER touch facebook.com directly)
 # ===========================================================================
 
+def _search_bing_for_facebook(query: str, max_results: int = 10) -> list[dict]:
+    """v3.5.28 Bug 2: Bing indexes Facebook far better than other engines."""
+    results: list[dict] = []
+    try:
+        session = AdSession()
+        resp = session.get(
+            "https://www.bing.com/search",
+            params={"q": f'site:facebook.com "{query}"', "count": str(max_results)},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            return []
+        html = resp.text
+        # Bing result selectors
+        import re as _re
+        for match in _re.finditer(
+            r'<li[^>]*class="b_algo"[^>]*>(.*?)</li>', html, _re.DOTALL
+        ):
+            block = match.group(1)
+            link_m = _re.search(r'href="(https?://[^"]+)"', block)
+            title_m = _re.search(r'<h2[^>]*>(.*?)</h2>', block, _re.DOTALL)
+            snippet_m = _re.search(r'<p[^>]*>(.*?)</p>', block, _re.DOTALL)
+            if link_m:
+                results.append({
+                    "title": _strip_tags(title_m.group(1)) if title_m else "",
+                    "snippet": _strip_tags(snippet_m.group(1)) if snippet_m else "",
+                    "link": link_m.group(1),
+                })
+            if len(results) >= max_results:
+                break
+    except Exception as exc:
+        logger.debug("Bing Facebook search error: %s", exc)
+    return results
+
+
+def _search_web_archive_facebook(query: str, max_results: int = 10) -> list[dict]:
+    """v3.5.28 Bug 2: Web Archive CDX API for cached Facebook pages (free, no rate limits)."""
+    results: list[dict] = []
+    try:
+        session = AdSession()
+        # Search for cached facebook.com pages matching query terms
+        cdx_url = (
+            f"https://web.archive.org/cdx/search/cdx"
+            f"?url=facebook.com/*{query.replace(' ', '*')}*"
+            f"&output=json&limit={max_results}&fl=original,timestamp"
+            f"&filter=statuscode:200&collapse=urlkey"
+        )
+        resp = session.get(cdx_url, timeout=15)
+        if resp.status_code != 200:
+            return []
+        rows = resp.json()
+        for row in rows[1:]:  # skip header row
+            if len(row) >= 2:
+                original_url = row[0]
+                timestamp = row[1]
+                wayback_url = f"https://web.archive.org/web/{timestamp}/{original_url}"
+                results.append({
+                    "title": original_url.split("/")[-1].replace("-", " ") if "/" in original_url else query,
+                    "snippet": "",
+                    "link": wayback_url,
+                    "original_url": original_url,
+                })
+    except Exception as exc:
+        logger.debug("Web Archive Facebook search error: %s", exc)
+    return results
+
+
+def _search_justdial(query: str, max_results: int = 10) -> list[dict]:
+    """v3.5.28 Bug 2: JustDial — India's largest business directory."""
+    results: list[dict] = []
+    try:
+        session = AdSession()
+        # JustDial search via dorking (don't access justdial.com directly)
+        dork = f'site:justdial.com "{query}" "phone" OR "email" OR "address"'
+        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
+    except Exception as exc:
+        logger.debug("JustDial search error: %s", exc)
+    return results
+
+
+def _search_indiamart(query: str, max_results: int = 10) -> list[dict]:
+    """v3.5.28 Bug 2: IndiaMART — best for B2B Indian leads."""
+    results: list[dict] = []
+    try:
+        dork = f'site:indiamart.com "{query}" "contact" OR "email" OR "phone"'
+        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
+    except Exception as exc:
+        logger.debug("IndiaMART search error: %s", exc)
+    return results
+
+
+def _search_google_organic_facebook(query: str, max_results: int = 10) -> list[dict]:
+    """v3.5.28 Bug 2: Google organic without site: operator surfaces FB pages naturally."""
+    results: list[dict] = []
+    try:
+        dork = f'"{query}" facebook.com email contact phone'
+        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
+    except Exception as exc:
+        logger.debug("Google organic Facebook search error: %s", exc)
+    return results
+
+
+def _extract_location_from_keyword(query: str) -> str:
+    """Extract location hint from keyword (e.g. 'Real Estate in India' -> 'India')."""
+    import re as _re
+    m = _re.search(r'\b(?:in|from|at|near)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)', query)
+    return m.group(1) if m else ""
+
+
 def scrape_facebook(
     query: str,
     max_results: int = 20,
 ) -> list[dict]:
-    """Find Facebook business contacts via search engine dorking ONLY.
+    """v3.5.28 Bug 2 fix: Multi-source Facebook lead discovery pipeline.
 
     NEVER directly access facebook.com — it aggressively blocks all
-    automated access and will flag your IP. Instead, we find Facebook
-    business pages indexed by search engines and extract contact info
-    from the cached/indexed data.
+    automated access. Instead, uses a multi-source pipeline:
+      1. Bing site:facebook.com (Bing indexes FB better than others)
+      2. JustDial (India's largest directory, rich contact data)
+      3. IndiaMART (best for B2B Indian leads)
+      4. Google organic (no site: operator, surfaces FB pages naturally)
+      5. Web Archive CDX API (cached Facebook snapshots, free)
+      6. Original site:facebook.com dorking as final fallback
     """
     leads: list[dict] = []
+    location = _extract_location_from_keyword(query)
+    is_indian_query = any(
+        loc in query.lower()
+        for loc in ["india", "delhi", "mumbai", "bangalore", "chennai",
+                    "kolkata", "hyderabad", "pune", "jaipur", "lucknow"]
+    )
 
-    dork_queries = [
-        f'site:facebook.com "{query}" "contact us" OR "email" OR "@"',
-        f'site:facebook.com "{query}" "business page" "phone" OR "email"',
-        f'site:facebook.com "{query}" "about" "founded" "contact"',
-        f'"{query}" facebook.com email contact phone',
-    ]
+    def _extract_leads_from_results(results: list[dict]) -> None:
+        for r in results:
+            text = f"{r.get('title', '')} {r.get('snippet', '')}"
+            link = r.get("link", "")
+            name = r.get("title", "").replace(" | Facebook", "").replace(" - Facebook", "").strip()
+
+            for email in extract_emails(text):
+                leads.append({
+                    "email": email, "phone": "",
+                    "name": name, "platform": "facebook",
+                    "source_url": link,
+                })
+            for phone in extract_phones(text):
+                leads.append({
+                    "email": "", "phone": phone,
+                    "name": name, "platform": "facebook",
+                    "source_url": link,
+                })
 
     try:
-        for dork in dork_queries[:3]:
-            results = free_search_waterfall(dork, num_results=10, min_results=2)
-            for r in results:
-                text = f"{r.get('title', '')} {r.get('snippet', '')}"
-                link = r.get("link", "")
+        # Source 1: Bing (best Facebook indexer)
+        bing_results = _search_bing_for_facebook(query, max_results=10)
+        _extract_leads_from_results(bing_results)
+        logger.info("Facebook Bing source: %d raw results", len(bing_results))
 
-                for email in extract_emails(text):
-                    leads.append({
-                        "email": email, "phone": "",
-                        "name": r.get("title", "").replace(" | Facebook", "").strip(),
-                        "platform": "facebook",
-                        "source_url": link,
-                    })
-                for phone in extract_phones(text):
-                    leads.append({
-                        "email": "", "phone": phone,
-                        "name": r.get("title", "").replace(" | Facebook", "").strip(),
-                        "platform": "facebook",
-                        "source_url": link,
-                    })
+        # Source 2: JustDial (for Indian queries)
+        if is_indian_query:
+            jd_results = _search_justdial(query, max_results=10)
+            _extract_leads_from_results(jd_results)
+            logger.info("Facebook JustDial source: %d raw results", len(jd_results))
+
+        # Source 3: IndiaMART (for Indian B2B queries)
+        if is_indian_query:
+            im_results = _search_indiamart(query, max_results=10)
+            _extract_leads_from_results(im_results)
+            logger.info("Facebook IndiaMART source: %d raw results", len(im_results))
+
+        # Source 4: Google organic (no site: operator)
+        organic_results = _search_google_organic_facebook(query, max_results=10)
+        _extract_leads_from_results(organic_results)
+        logger.info("Facebook organic source: %d raw results", len(organic_results))
+
+        # Source 5: Web Archive (cached FB pages)
+        archive_results = _search_web_archive_facebook(query, max_results=8)
+        _extract_leads_from_results(archive_results)
+        logger.info("Facebook Web Archive source: %d raw results", len(archive_results))
+
+        # Source 6: Original site:facebook.com dorking as fallback
+        if len(leads) < max_results:
+            fallback_dorks = [
+                f'site:facebook.com "{query}" "contact us" OR "email" OR "@"',
+                f'site:facebook.com "{query}" "business page" "phone" OR "email"',
+            ]
+            for dork in fallback_dorks:
+                fb_results = free_search_waterfall(dork, num_results=10, min_results=2)
+                _extract_leads_from_results(fb_results)
+
     except Exception as exc:
-        logger.warning("Facebook dorking failed: %s", exc)
+        logger.warning("Facebook multi-source scrape failed: %s", exc)
 
-    logger.info("Facebook live scrape: %d leads", len(leads))
+    logger.info("Facebook live scrape (multi-source): %d leads", len(leads))
     return _dedup_leads(leads)[:max_results]
 
 
