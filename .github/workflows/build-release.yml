@@ -111,6 +111,7 @@ jobs:
             --hidden-import=app.services.verifier \
             --hidden-import=app.services.database_search \
             --hidden-import=app.services.multi_engine_search \
+            --hidden-import=app.services.log_service \
             --hidden-import=duckdb \
             --add-data "httpfs_bundle.zip:." \
             --collect-all certifi \

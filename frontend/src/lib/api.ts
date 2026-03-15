@@ -1,22 +1,38 @@
+import { logger } from '@/lib/logger';
+
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || `API error: ${res.status}`);
+  const method = options?.method || 'GET';
+  const start = Date.now();
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+    const elapsed = Date.now() - start;
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      logger.api(method, path, res.status, elapsed);
+      throw new Error(text || `API error: ${res.status}`);
+    }
+    logger.api(method, path, res.status, elapsed);
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return res.json();
+    }
+    return undefined as T;
+  } catch (err) {
+    const elapsed = Date.now() - start;
+    if (err instanceof TypeError) {
+      // Network error (backend down, CORS, etc.)
+      logger.error('api', `${method} ${path} NETWORK ERROR (${elapsed}ms): ${err.message}`);
+    }
+    throw err;
   }
-  const contentType = res.headers.get('content-type') || '';
-  if (contentType.includes('application/json')) {
-    return res.json();
-  }
-  return undefined as T;
 }
 
 async function requestBlob(path: string, options?: RequestInit): Promise<Blob> {

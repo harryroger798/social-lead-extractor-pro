@@ -35,6 +35,10 @@ from app.models.schemas import (
     TelegramScrapeRequest,
     WhatsAppScrapeRequest,
 )
+from app.services.log_service import (
+    init_logging, list_log_files, tail_log, clear_logs,
+    export_logs_zip, write_frontend_log,
+)
 from app.services.extractor import extract_emails, extract_phones, classify_email, score_lead
 from app.services.verifier import verify_email
 from app.services.google_dorking import dorking_search_multi
@@ -3148,3 +3152,58 @@ async def get_extended_templates() -> list[dict]:
          "subject": "One thing that could double {{company}}'s leads",
          "body": "Hi {{name}},\n\nThere's one simple change that could potentially double the leads {{company}} generates from its website.\n\nI've seen it work for dozens of businesses in your industry. Want me to share the strategy?\n\nBest,\n{{from_name}}"},
     ]
+
+
+# ─── v3.5.22: Log Management Endpoints ──────────────────────────────────────
+
+@router.post("/logs/write")
+async def log_write(body: dict) -> dict:
+    """Receive a log entry from the frontend / Electron renderer."""
+    level = body.get("level", "info")
+    module = body.get("module", "frontend")
+    message = body.get("message", "")
+    write_frontend_log(level, module, message)
+    return {"status": "ok"}
+
+
+@router.post("/logs/write-batch")
+async def log_write_batch(entries: list[dict]) -> dict:
+    """Receive a batch of log entries from the frontend."""
+    for entry in entries:
+        write_frontend_log(
+            entry.get("level", "info"),
+            entry.get("module", "frontend"),
+            entry.get("message", ""),
+        )
+    return {"status": "ok", "count": len(entries)}
+
+
+@router.get("/logs/list")
+async def log_list() -> list[dict]:
+    """List all log files with their sizes."""
+    return list_log_files()
+
+
+@router.get("/logs/tail")
+async def log_tail(lines: int = 200) -> dict:
+    """Get the last N lines from the current log file."""
+    return {"content": tail_log(lines)}
+
+
+@router.delete("/logs/clear")
+async def log_clear() -> dict:
+    """Delete all log files. Only triggered from Settings page."""
+    count = clear_logs()
+    logger.info("Logs cleared by user (%d files deleted)", count)
+    return {"status": "ok", "files_deleted": count}
+
+
+@router.get("/logs/export")
+async def log_export() -> Response:
+    """Download all log files as a .zip archive."""
+    zip_bytes = export_logs_zip()
+    return Response(
+        content=zip_bytes,
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=snapleads-logs.zip"},
+    )
