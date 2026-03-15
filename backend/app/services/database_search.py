@@ -346,30 +346,61 @@ def _get_extension_directory() -> str:
 
 
 def _ensure_bundled_httpfs(ext_dir: str) -> bool:
-    """v3.5.15: Copy bundled httpfs extension to the writable extension dir.
+    """v3.5.15: Extract bundled httpfs extension zip to the writable extension dir.
 
-    PyInstaller builds bundle pre-installed httpfs extension files under
-    ``duckdb_extensions/`` in the frozen app directory.  This function copies
-    them to the writable *ext_dir* so ``LOAD httpfs`` can find them without
-    any network download.
+    PyInstaller builds bundle ``httpfs_bundle.zip`` (a zip of the pre-installed
+    httpfs extension tree) in the frozen app directory.  This avoids macOS
+    codesign failures that occur when PyInstaller processes raw ``.duckdb_extension``
+    files.  At runtime we extract the zip into *ext_dir* so ``LOAD httpfs`` works
+    without any network download.
 
-    Returns True if bundled extension was found and copied (or already present).
+    Also supports a fallback ``duckdb_extensions/`` directory for --onedir builds.
+
+    Returns True if bundled extension was found and extracted (or already present).
     """
-    try:
-        import duckdb
-        duckdb_version = duckdb.__version__
-    except ImportError:
-        return False
+    import zipfile
 
-    # Locate bundled extension directory
-    bundled_base = None
-    # PyInstaller frozen: check sys._MEIPASS
+    # --- Strategy 1: Look for httpfs_bundle.zip (preferred, avoids codesign) ---
+    zip_path = None
     meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        candidate = os.path.join(meipass, "httpfs_bundle.zip")
+        if os.path.isfile(candidate):
+            zip_path = candidate
+    if not zip_path:
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        candidate = os.path.join(exe_dir, "httpfs_bundle.zip")
+        if os.path.isfile(candidate):
+            zip_path = candidate
+
+    if zip_path:
+        try:
+            extracted = 0
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                for info in zf.infolist():
+                    if info.is_dir():
+                        continue
+                    dst = os.path.join(ext_dir, info.filename)
+                    # Only extract if missing or smaller (corrupt)
+                    if not os.path.exists(dst) or os.path.getsize(dst) < info.file_size:
+                        os.makedirs(os.path.dirname(dst), exist_ok=True)
+                        zf.extract(info, ext_dir)
+                        extracted += 1
+                        logger.info("Extracted bundled extension: %s -> %s", info.filename, dst)
+            if extracted > 0:
+                logger.info("Extracted %d file(s) from %s to %s", extracted, zip_path, ext_dir)
+            else:
+                logger.debug("Bundled extensions already present in %s", ext_dir)
+            return True
+        except Exception as exc:
+            logger.warning("Failed to extract httpfs_bundle.zip: %s", exc)
+
+    # --- Strategy 2: Fallback — look for raw duckdb_extensions/ directory ---
+    bundled_base = None
     if meipass:
         candidate = os.path.join(meipass, "duckdb_extensions")
         if os.path.isdir(candidate):
             bundled_base = candidate
-    # Also check next to the executable (for --onedir builds)
     if not bundled_base:
         exe_dir = os.path.dirname(os.path.abspath(sys.executable))
         candidate = os.path.join(exe_dir, "duckdb_extensions")
@@ -377,19 +408,16 @@ def _ensure_bundled_httpfs(ext_dir: str) -> bool:
             bundled_base = candidate
 
     if not bundled_base:
-        logger.debug("No bundled duckdb_extensions directory found")
+        logger.debug("No bundled httpfs_bundle.zip or duckdb_extensions/ found")
         return False
 
-    # Walk the bundled directory and copy extension files to ext_dir
     copied = 0
     for root, _dirs, files in os.walk(bundled_base):
         for fname in files:
             if fname.endswith(".duckdb_extension") or fname.endswith(".duckdb_extension.info"):
                 src = os.path.join(root, fname)
-                # Preserve the subdirectory structure (e.g. v1.5.0/linux_amd64/httpfs.duckdb_extension)
                 rel_path = os.path.relpath(src, bundled_base)
                 dst = os.path.join(ext_dir, rel_path)
-                # Only copy if destination doesn't exist or is smaller (corrupt)
                 if not os.path.exists(dst) or os.path.getsize(dst) < os.path.getsize(src):
                     os.makedirs(os.path.dirname(dst), exist_ok=True)
                     shutil.copy2(src, dst)
