@@ -546,6 +546,118 @@ def _get_extension_directory() -> str:
         return fallback
 
 
+def _python_download_httpfs(ext_dir: str) -> bool:
+    """v3.5.20: Download httpfs extension using Python's own HTTP client.
+
+    ROOT CAUSE FIX for the persistent 0-leads bug (v3.5.12-v3.5.19):
+
+    The chicken-and-egg problem:
+    1. Bundled httpfs has ABI mismatch → LOAD fails
+    2. DuckDB's INSTALL httpfs needs HTTPS to download from extensions.duckdb.org
+    3. DuckDB's internal HTTP client (cpp-httplib) may not find CA certificates
+       in PyInstaller bundles on Windows — SSL_CERT_FILE env var is not always
+       respected by DuckDB's compiled-in OpenSSL
+    4. ca_cert_file setting is registered BY httpfs, so can't be set before load
+    5. Result: INSTALL fails silently → all strategies fail → 0 leads
+
+    Solution: Use Python's urllib (which correctly uses certifi via ssl module)
+    to download the httpfs extension binary, place it at the exact path DuckDB
+    expects, then let the caller LOAD it. This completely bypasses DuckDB's
+    internal SSL configuration.
+
+    DuckDB extension URL pattern:
+      https://extensions.duckdb.org/v{version}/{platform}/httpfs.duckdb_extension.gz
+
+    Returns True if extension was downloaded and placed successfully.
+    """
+    import gzip
+    import urllib.request
+    import ssl
+
+    try:
+        import duckdb
+        runtime_version = duckdb.__version__
+    except ImportError:
+        return False
+
+    runtime_platform = _get_duckdb_platform()
+    target_dir = os.path.join(ext_dir, f"v{runtime_version}", runtime_platform)
+    target_path = os.path.join(target_dir, "httpfs.duckdb_extension")
+
+    # If extension already exists and is valid, skip
+    if os.path.exists(target_path) and os.path.getsize(target_path) > 100_000:
+        logger.info(
+            "Python download: httpfs already present at %s (%d bytes)",
+            target_path, os.path.getsize(target_path),
+        )
+        return True
+
+    # Build the download URL
+    url = (
+        f"https://extensions.duckdb.org/"
+        f"v{runtime_version}/{runtime_platform}/httpfs.duckdb_extension.gz"
+    )
+    logger.info("Python download: fetching httpfs from %s", url)
+
+    # Create SSL context that uses certifi's CA bundle
+    ssl_ctx = ssl.create_default_context()
+    try:
+        import certifi
+        ssl_ctx.load_verify_locations(certifi.where())
+        logger.info("Python download: using certifi CA bundle: %s", certifi.where())
+    except ImportError:
+        logger.warning("Python download: certifi not available, using system certs")
+    except Exception as cert_err:
+        logger.warning("Python download: certifi load failed: %s", cert_err)
+
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "SnapLeads/3.5.20"})
+        with urllib.request.urlopen(req, context=ssl_ctx, timeout=60) as resp:
+            compressed_data = resp.read()
+
+        logger.info(
+            "Python download: received %d bytes (compressed)",
+            len(compressed_data),
+        )
+
+        # Decompress gzip
+        try:
+            ext_data = gzip.decompress(compressed_data)
+        except gzip.BadGzipFile:
+            # Some versions serve uncompressed — try using directly
+            ext_data = compressed_data
+
+        if len(ext_data) < 100_000:
+            logger.warning(
+                "Python download: extension too small (%d bytes), likely invalid",
+                len(ext_data),
+            )
+            return False
+
+        # Write to the exact path DuckDB expects
+        os.makedirs(target_dir, exist_ok=True)
+        with open(target_path, "wb") as f:
+            f.write(ext_data)
+
+        logger.info(
+            "Python download: httpfs extension saved to %s (%d bytes)",
+            target_path, len(ext_data),
+        )
+        return True
+
+    except urllib.error.HTTPError as http_err:
+        logger.warning(
+            "Python download: HTTP %d for %s — %s",
+            http_err.code, url, http_err.reason,
+        )
+    except urllib.error.URLError as url_err:
+        logger.warning("Python download: URL error for %s — %s", url, url_err.reason)
+    except Exception as dl_err:
+        logger.warning("Python download: failed — %s", dl_err, exc_info=True)
+
+    return False
+
+
 def _ensure_bundled_httpfs(ext_dir: str) -> bool:
     """v3.5.16: Extract bundled httpfs extension to the EXACT path DuckDB expects.
 
@@ -743,7 +855,12 @@ def _get_duckdb_connection():
 
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
-                # First connection: try each strategy in order
+                # First connection: try each strategy in order.
+                # v3.5.20: Added Strategy 4 — Python-based download.
+                # The chicken-and-egg problem:
+                #   DuckDB's INSTALL needs HTTPS → but its internal SSL may
+                #   not find CA certs in PyInstaller bundles → INSTALL fails.
+                #   Python's urllib uses certifi correctly → always works.
                 strategies = [
                     ("LOAD (bundled)", ["LOAD httpfs;"]),
                     ("INSTALL+LOAD (network)", ["INSTALL httpfs;", "LOAD httpfs;"]),
@@ -762,10 +879,50 @@ def _get_duckdb_connection():
                         last_err = e
                         logger.warning("httpfs strategy '%s' failed: %s", name, e)
 
+                # v3.5.20 FIX: Strategy 4 — Python-based download fallback
+                # If all DuckDB-native strategies failed, download httpfs
+                # using Python's urllib (certifi-aware) and then LOAD it.
+                if not httpfs_loaded:
+                    logger.warning(
+                        "All DuckDB-native httpfs strategies failed. "
+                        "Trying Python-based download fallback..."
+                    )
+                    try:
+                        # Delete any stale/corrupt cached extension first
+                        import duckdb as _ddb
+                        _stale_path = os.path.join(
+                            ext_dir, f"v{_ddb.__version__}",
+                            _get_duckdb_platform(),
+                            "httpfs.duckdb_extension",
+                        )
+                        if os.path.exists(_stale_path):
+                            os.remove(_stale_path)
+                            logger.info("Removed stale cached extension: %s", _stale_path)
+                    except Exception as rm_err:
+                        logger.debug("Could not remove stale extension: %s", rm_err)
+
+                    if _python_download_httpfs(ext_dir):
+                        try:
+                            con.execute("LOAD httpfs;")
+                            _HTTPFS_INSTALLED = True
+                            httpfs_loaded = True
+                            logger.info(
+                                "httpfs loaded via 'Python download + LOAD' (dir=%s)",
+                                safe_ext_dir,
+                            )
+                        except Exception as py_load_err:
+                            last_err = py_load_err
+                            logger.error(
+                                "httpfs LOAD after Python download failed: %s",
+                                py_load_err,
+                            )
+                    else:
+                        logger.error("Python download of httpfs also failed")
+
                 if not httpfs_loaded:
                     logger.error(
-                        "ALL httpfs strategies failed — last error: %s | ext_dir=%s | "
-                        "SSL_CERT_FILE=%s",
+                        "ALL httpfs strategies failed (including Python download) — "
+                        "last error: %s | ext_dir=%s | SSL_CERT_FILE=%s",
                         last_err, safe_ext_dir,
                         os.environ.get("SSL_CERT_FILE", "NOT SET"),
                     )
