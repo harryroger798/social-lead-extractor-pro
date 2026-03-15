@@ -184,16 +184,16 @@ def _build_all_dork_queries(keyword: str, platform: str, max_queries: int = 5) -
 
 # ─── Method 1: Patchright (FREE) ─────────────────────────────────────────────
 
-async def _search_google_patchright(
+async def _search_ddg_patchright(
     query: str,
     num_results: int = 10,
     headless: bool = True,
     proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """Search Google directly using Patchright (anti-detection browser).
+    """v3.5.28 Bug 3 fix: Search DuckDuckGo using Patchright (ZERO CAPTCHA).
 
-    OPTIONAL fallback — only used if Serper API returns no results.
-    Scrapes Google search results directly and extracts emails/phones from snippets.
+    Previously targeted Google which always triggers CAPTCHA. DuckDuckGo
+    never shows CAPTCHAs and supports site:/OR operators natively.
     Returns empty list if Patchright is not available (graceful degradation).
     """
     try:
@@ -210,32 +210,42 @@ async def _search_google_patchright(
             return []
         from urllib.parse import quote_plus
 
-        url = f"https://www.google.com/search?q={quote_plus(query)}&num={num_results}"
+        # v3.5.28: Target DuckDuckGo instead of Google — zero CAPTCHA risk
+        url = f"https://duckduckgo.com/?q={quote_plus(query)}&t=h_&ia=web"
         success = await safe_goto(page, url)
         if not success:
             return []
 
-        await random_delay(1.5, 3.0)
+        await random_delay(2.0, 4.0)
 
-        # Check for CAPTCHA — if detected, skip immediately (no Whisper needed)
-        has_captcha = await _check_google_captcha(page)
-        if has_captcha:
-            logger.warning("Google CAPTCHA detected — skipping to Serper API")
-            return []
-
-        # Extract search results from Google page
+        # Extract search results from DuckDuckGo page
         results = await page.evaluate("""() => {
             const items = [];
-            const containers = document.querySelectorAll('div.g, div.MjjYud');
+            // DDG organic results: <article> with data-testid="result"
+            // or <div class="result"> or <a class="result__a">
+            const containers = document.querySelectorAll(
+                'article[data-testid="result"], div.result, li.b_algo'
+            );
             containers.forEach(el => {
                 const linkEl = el.querySelector('a[href]');
-                const titleEl = el.querySelector('h3');
-                const snippetEl = el.querySelector('div[data-sncf], span.st, div.VwiC3b, div[style*="line-clamp"]');
-                if (linkEl && titleEl) {
-                    const href = linkEl.href || '';
-                    if (href.startsWith('http') && !href.includes('google.com/search')) {
+                const titleEl = el.querySelector('h2, h3, a.result__a');
+                const snippetEl = el.querySelector(
+                    'span[data-testid="result-snippet"], '
+                    + 'div.result__snippet, '
+                    + 'a.result__snippet'
+                );
+                if (linkEl) {
+                    let href = linkEl.href || '';
+                    // DDG may wrap URLs — extract real URL from uddg= param
+                    if (href.includes('uddg=')) {
+                        try {
+                            const u = new URL(href);
+                            href = decodeURIComponent(u.searchParams.get('uddg') || href);
+                        } catch(e) {}
+                    }
+                    if (href.startsWith('http') && !href.includes('duckduckgo.com')) {
                         items.push({
-                            title: titleEl.innerText || '',
+                            title: titleEl ? titleEl.innerText : '',
                             snippet: snippetEl ? snippetEl.innerText : '',
                             link: href
                         });
@@ -245,11 +255,11 @@ async def _search_google_patchright(
             return items;
         }""")
 
-        logger.info("Patchright Google dorking: %d results for query", len(results or []))
+        logger.info("Patchright DDG dorking: %d results for query", len(results or []))
         return results or []
 
     except Exception as e:
-        logger.error("Patchright Google search error: %s", e)
+        logger.error("Patchright DDG search error: %s", e)
         return []
     finally:
         if page:
@@ -257,6 +267,10 @@ async def _search_google_patchright(
                 await page.context.close()
             except Exception:
                 pass
+
+
+# Legacy alias for backward compatibility
+_search_google_patchright = _search_ddg_patchright
 
 
 # ─── Method 1b: HTTP fallback for Google dorking (no browser needed) ─────────
@@ -478,19 +492,21 @@ async def dorking_search(
         except Exception as exc:
             logger.warning("Multi-engine search error: %s", exc)
 
-    # Method 3: Patchright OR HTTP fallback (OPTIONAL — only if nothing found yet)
+    # Method 3: Patchright→DDG OR HTTP fallback (OPTIONAL — only if nothing found yet)
+    # v3.5.28 Bug 3 fix: Patchright now targets DuckDuckGo instead of Google
+    # (zero CAPTCHA). HTTP fallback still tries Google as last resort.
     if not all_emails and not all_phones and use_patchright:
         primary_query = queries[0] if queries else _build_dork_query(keyword, platform)
 
-        # Try Patchright first (anti-detection browser)
-        results = await _search_google_patchright(
+        # Try Patchright→DuckDuckGo first (zero CAPTCHA, anti-detection browser)
+        results = await _search_ddg_patchright(
             primary_query, num_results, headless=headless, proxy=proxy
         )
 
         # If Patchright returned nothing (not installed / no browser),
         # fall back to plain HTTP + BeautifulSoup scraping
         if not results:
-            logger.info("Patchright unavailable or returned no results — trying HTTP fallback")
+            logger.info("Patchright DDG unavailable or returned no results — trying HTTP fallback")
             loop = asyncio.get_running_loop()
             results = await loop.run_in_executor(
                 None, _search_google_http, primary_query, num_results
@@ -499,8 +515,8 @@ async def dorking_search(
                 methods_used.append("http_dorking")
 
         if results:
-            if "patchright" not in methods_used and "http_dorking" not in methods_used:
-                methods_used.append("patchright")
+            if "patchright_ddg" not in methods_used and "http_dorking" not in methods_used:
+                methods_used.append("patchright_ddg")
             for result in results:
                 text = f"{result.get('title', '')} {result.get('snippet', '')}"
                 all_emails.extend(extract_emails(text))

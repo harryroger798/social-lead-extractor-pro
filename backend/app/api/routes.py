@@ -995,16 +995,33 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
                 quality = score_lead(email, phone, name, verified)
 
+                # v3.5.28 Bug 1 fix: Re-tag leads with user's requested platform.
+                # DB search returns leads tagged with their SOURCE platform
+                # (linkedin/instagram) but user selected e.g. "facebook".
+                # Store original as source_platform, set platform to what user requested.
+                original_platform = lead_data.get("platform", "")
+                # Determine the user-facing platform tag:
+                # If the lead's source platform doesn't match ANY of the user's
+                # selected platforms, re-tag it with the first user-selected platform.
+                _user_platforms = config.platforms if config.platforms else []
+                if original_platform and original_platform in _user_platforms:
+                    display_platform = original_platform  # already matches
+                elif _user_platforms:
+                    display_platform = _user_platforms[0]  # re-tag to user's selection
+                else:
+                    display_platform = original_platform  # fallback
+
                 try:
                     await db.execute(
                         """INSERT OR IGNORE INTO leads
                         (id, email, phone, name, platform, source_url, keyword, country,
-                         email_type, verified, quality_score, extracted_at, session_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                        (lead_id, email, phone, name, lead_data.get("platform", ""),
+                         email_type, verified, quality_score, extracted_at, session_id,
+                         source_platform)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, email, phone, name, display_platform,
                          lead_data.get("source_url", ""), lead_data.get("keyword", ""),
                          "", email_type, 1 if verified else 0, quality,
-                         datetime.now().isoformat(), session_id),
+                         datetime.now().isoformat(), session_id, original_platform),
                     )
                     if email:
                         emails_found += 1
@@ -1135,7 +1152,13 @@ async def get_results(
         if session_id:
             conditions.append("session_id = ?")
             params.append(session_id)
-        if platform:
+        # v3.5.28 Bug 1 fix: When viewing results for a specific session,
+        # do NOT filter by platform. The session_id alone correctly scopes
+        # results. Previously, selecting "facebook" would filter by
+        # platform='facebook' but DB leads were tagged 'linkedin'/'instagram'
+        # (their source), causing 0 results despite 515 leads existing.
+        # Platform filter is only applied when browsing ALL leads (no session_id).
+        if platform and not session_id:
             conditions.append("platform = ?")
             params.append(platform)
         if search:
