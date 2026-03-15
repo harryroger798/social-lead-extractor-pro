@@ -300,12 +300,63 @@ _HTTPFS_INSTALLED = False
 _HTTPFS_LOCK = threading.Lock()
 
 
+def _get_extension_directory() -> str:
+    """v3.5.14: Return a writable directory for DuckDB extensions.
+
+    PyInstaller bundles run from a temporary directory that may not be
+    writable for extension downloads.  We explicitly set a known-good
+    writable path so ``INSTALL httpfs`` always succeeds.
+
+    Priority:
+      1. %APPDATA%/duckdb/extensions  (Windows)
+      2. ~/Library/Application Support/duckdb/extensions  (macOS)
+      3. ~/.duckdb/extensions  (Linux / fallback)
+      4. %TEMP%/duckdb_extensions  (last resort)
+    """
+    import platform as _plat
+
+    home = os.path.expanduser("~")
+    system = _plat.system()
+
+    if system == "Windows":
+        appdata = os.environ.get("APPDATA", os.path.join(home, "AppData", "Roaming"))
+        ext_dir = os.path.join(appdata, "duckdb", "extensions")
+    elif system == "Darwin":
+        ext_dir = os.path.join(home, "Library", "Application Support", "duckdb", "extensions")
+    else:
+        ext_dir = os.path.join(home, ".duckdb", "extensions")
+
+    try:
+        os.makedirs(ext_dir, exist_ok=True)
+        # Verify writable
+        test_file = os.path.join(ext_dir, ".write_test")
+        with open(test_file, "w") as f:
+            f.write("ok")
+        os.remove(test_file)
+        return ext_dir
+    except OSError:
+        # Fallback to temp directory
+        import tempfile
+        fallback = os.path.join(tempfile.gettempdir(), "duckdb_extensions")
+        os.makedirs(fallback, exist_ok=True)
+        logger.info("Using temp extension dir: %s", fallback)
+        return fallback
+
+
 def _get_duckdb_connection():
     """Create a DuckDB connection configured for S3 access.
 
     NOTE: S3 credentials are intentionally embedded (base64-obfuscated) for the
     desktop app distribution.  They are **read-only** and scoped exclusively to
     the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
+
+    v3.5.14: Explicit extension directory for PyInstaller compatibility.
+    Previously INSTALL httpfs would fail silently in packaged builds because
+    the default extension directory was not writable, causing ALL database
+    searches to return 0 leads.  Now we:
+      1. Set an explicit writable extension directory
+      2. Retry INSTALL with FORCE INSTALL on first failure
+      3. Log detailed errors for diagnosis
     """
     try:
         import duckdb
@@ -315,12 +366,30 @@ def _get_duckdb_connection():
 
     con = duckdb.connect()
     try:
+        # v3.5.14: Set explicit writable extension directory BEFORE install
+        ext_dir = _get_extension_directory()
+        con.execute(f"SET extension_directory='{ext_dir}';")
+
         # R5-B08 fix: thread-safe httpfs installation
         global _HTTPFS_INSTALLED  # noqa: PLW0603
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
-                con.execute("INSTALL httpfs;")
+                try:
+                    con.execute("INSTALL httpfs;")
+                except Exception as install_err:
+                    logger.warning(
+                        "INSTALL httpfs failed (retrying with FORCE): %s", install_err
+                    )
+                    try:
+                        con.execute("FORCE INSTALL httpfs;")
+                    except Exception as force_err:
+                        logger.error(
+                            "FORCE INSTALL httpfs also failed: %s (ext_dir=%s)",
+                            force_err, ext_dir,
+                        )
+                        raise
                 _HTTPFS_INSTALLED = True
+                logger.info("httpfs extension installed successfully (dir=%s)", ext_dir)
         con.execute("LOAD httpfs;")
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
         con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
@@ -328,7 +397,8 @@ def _get_duckdb_connection():
         con.execute(f"SET s3_region='{_S3_REGION}';")
         con.execute("SET s3_url_style='path';")
         return con
-    except Exception:
+    except Exception as exc:
+        logger.error("DuckDB connection setup failed: %s", exc, exc_info=True)
         con.close()
         raise
 

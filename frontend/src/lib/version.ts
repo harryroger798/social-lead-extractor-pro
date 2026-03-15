@@ -1,2 +1,2 @@
 /** Application version — single source of truth for the frontend UI. */
-export const APP_VERSION = '3.5.13';
+export const APP_VERSION = '3.5.14';
