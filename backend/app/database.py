@@ -151,6 +151,21 @@ async def init_db() -> None:
             "UPDATE settings SET value = 'SnapLeads' WHERE key = 'app_name' AND value = 'Social Lead Extractor Pro'"
         )
 
+        # Recover orphaned sessions: mark any "running" sessions as completed
+        # This handles the case where the app was killed mid-extraction
+        cursor = await db.execute(
+            "UPDATE sessions SET status='completed', progress=100, "
+            "completed_at=COALESCE(completed_at, datetime('now')), "
+            "status_message='Recovered after restart' "
+            "WHERE status='running'"
+        )
+        recovered = cursor.rowcount
+        if recovered > 0:
+            import logging
+            logging.getLogger("snapleads.database").info(
+                "Recovered %d orphaned running session(s) on startup", recovered
+            )
+
         await db.commit()
 
 
