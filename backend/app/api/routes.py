@@ -446,7 +446,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 )
                 logger.info("Database hybrid search returned %d leads (tier=%s)", len(db_leads), tier_label)
             except Exception as e:
-                logger.warning("Database search failed (non-fatal): %s", e, exc_info=True)
+                # v3.5.14: Log full exception chain for diagnosis — this was
+                # silently swallowing DuckDB/httpfs failures in packaged builds
+                logger.error(
+                    "Database search FAILED: %s — keywords=%s, platforms=%s, tier=%s",
+                    e, cleaned_keywords, config.platforms, tier_label,
+                    exc_info=True,
+                )
+                await _update_progress(
+                    session_id, 10,
+                    f"Database search failed: {type(e).__name__} — trying other methods...",
+                    "database", *_count_leads(),
+                )
 
         # Load proxy pool if proxies are enabled
         if config.use_proxies:
@@ -489,8 +500,10 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # ── v3.5.0: LIVE scraping for all platforms ──────────────────────
         # Uses curl_cffi anti-detection + search engine dorking + page visiting
         # Replaces Selenium/Patchright — 100% ban-free, no browser automation
+        # v3.5.14: Only run when use_direct_scraping is ON — previously ran
+        # unconditionally even when both toggles were off, wasting time.
         live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
-        if live_platforms:
+        if live_platforms and config.use_direct_scraping:
             # V-R1 fix: import asyncio at block top, not inside loop
             import asyncio as _aio_live  # noqa: E402
             loop = _aio_live.get_running_loop()
@@ -850,16 +863,25 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     logger.debug("Lead insert failed: %s", exc)
 
             # Update session
-            total = emails_found + phones_found
+            # v3.5.14: total_leads = actual leads saved (not emails+phones count)
+            # Previously: total = emails_found + phones_found (double-counted leads
+            # with both email AND phone, showed 0 for leads with only name/URL)
+            total_saved = emails_found + phones_found  # leads with contact info
+            # Count actual rows inserted for this session
+            count_cursor = await db.execute(
+                "SELECT COUNT(*) FROM leads WHERE session_id=?", (session_id,)
+            )
+            count_row = await count_cursor.fetchone()
+            actual_total = count_row[0] if count_row else total_saved
             await db.execute(
                 """UPDATE sessions SET
                     status='completed', total_leads=?, emails_found=?, phones_found=?,
                     completed_at=?, duration=?, progress=100,
                     status_message=?, current_platform=''
                 WHERE id=?""",
-                (total, emails_found, phones_found,
+                (actual_total, emails_found, phones_found,
                  datetime.now().isoformat(),
-                 0, f"Extraction complete — {total} leads found", session_id),
+                 0, f"Extraction complete — {actual_total} leads found", session_id),
             )
             await db.commit()
 
