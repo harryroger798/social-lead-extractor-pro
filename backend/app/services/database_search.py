@@ -10,6 +10,7 @@ Data sources:
   - Technology Lookup: 4.3M records across 21 technologies
   - Google Maps: PhantomBuster-extracted business data (v3.5.10)
   - PAN India: 3M+ Indian business records across 30+ categories (v3.5.10)
+  - YouTube: 1,085 channels across 53 job categories (v3.5.26)
 
 S3 Location: s3://crop-spray-uploads/leads-cm-database/
   linkedin/{Country}/dataset_N.csv
@@ -17,6 +18,7 @@ S3 Location: s3://crop-spray-uploads/leads-cm-database/
   technology_lookup/{technology}.csv
   googlemaps/dataset_N.csv
   pan_india/dataset_N.csv
+  youtube/dataset_N.parquet
 """
 
 import asyncio
@@ -205,6 +207,12 @@ _GOOGLEMAPS_COLS = [
 # PAN India schema columns (standardized from heterogeneous sources)
 _PAN_INDIA_COLS = [
     "name", "phone", "email", "company", "city", "state", "category",
+]
+
+# YouTube schema columns (v3.5.26: public YouTube channel data)
+_YOUTUBE_COLS = [
+    "name", "channel_id", "profile_url", "subscribers", "video_count",
+    "description", "thumbnail_url", "platform", "category", "scraped_at",
 ]
 
 
@@ -1368,6 +1376,62 @@ def _build_pan_india_query(
     return sql, s3_paths
 
 
+def _build_youtube_query(
+    keyword: str,
+    max_results: int,
+    dataset_limit: int = 1,
+    expanded_terms: list[str] | None = None,
+) -> tuple[str, list[str]]:
+    """Build DuckDB SQL to query YouTube parquet files on S3.
+
+    v3.5.26: Queries YouTube channel database (1,085 channels across 53 categories).
+    Schema: name, channel_id, profile_url, subscribers, video_count,
+            description, thumbnail_url, platform, category, scraped_at
+    Uses parquet format (not CSV) for efficient columnar reads.
+    """
+    s3_paths = []
+    for i in range(1, dataset_limit + 1):
+        s3_paths.append(
+            f"s3://{_S3_BUCKET}/{_S3_PREFIX}/youtube/dataset_{i}.parquet"
+        )
+
+    all_terms: list[str] = []
+    kw_safe = _sanitize_sql_term(keyword)
+    if kw_safe:
+        all_terms.append(kw_safe)
+    for word in kw_safe.split():
+        word = word.strip()
+        if len(word) > 2 and word not in all_terms:
+            all_terms.append(word)
+    if expanded_terms:
+        for term in expanded_terms:
+            safe_term = _sanitize_sql_term(term)
+            if safe_term and safe_term not in all_terms:
+                all_terms.append(safe_term)
+    search_terms = all_terms[:10]
+
+    searchable_fields = ['name', 'category', 'description']
+    where_parts: list[str] = []
+    for term in search_terms:
+        for fld in searchable_fields:
+            escaped = _escape_like(term)
+            where_parts.append(f"LOWER({fld}) LIKE '%{escaped}%' ESCAPE '\\'")
+
+    where_clause = " OR ".join(where_parts)
+    unions = []
+    for path in s3_paths:
+        unions.append(
+            f"SELECT name, channel_id, profile_url, subscribers, video_count, "
+            f"description, category "
+            f"FROM read_parquet('{path}') "
+            f"WHERE {where_clause}"
+        )
+
+    safe_limit = max(1, min(int(max_results), 500))
+    sql = " UNION ALL ".join(unions) + f" LIMIT {safe_limit}"
+    return sql, s3_paths
+
+
 def _clean_field(val: str) -> str:
     """Clean a database field — return empty string for null-like values."""
     return "" if val.lower() in ("none", "nan", "null", "") else val
@@ -1536,6 +1600,42 @@ def _pan_india_row_to_lead(row: tuple, keyword: str) -> dict:
         "industry": _clean_field(category),
         "location": location_str,
         "website": "",
+    }
+
+
+def _youtube_row_to_lead(row: tuple, keyword: str) -> dict:
+    """Convert a YouTube DuckDB row to a standard lead dict.
+
+    v3.5.26: Row schema = (name, channel_id, profile_url, subscribers,
+                           video_count, description, category)
+    YouTube leads have profile URLs but no email/phone (public data only).
+    """
+    name = str(row[0] or "").strip()
+    channel_id = str(row[1] or "").strip()
+    profile_url = str(row[2] or "").strip()
+    subscribers = str(row[3] or "").strip()
+    video_count = str(row[4] or "").strip()
+    description = str(row[5] or "").strip()
+    category = str(row[6] or "").strip()
+
+    if not _clean_field(name) and not _clean_field(channel_id):
+        return {}
+
+    source_url = _clean_field(profile_url)
+    if not source_url and channel_id:
+        source_url = f"https://www.youtube.com/channel/{channel_id}"
+
+    return {
+        "email": "",
+        "phone": "",
+        "name": _clean_field(name),
+        "platform": "youtube",
+        "source_url": source_url,
+        "keyword": keyword,
+        "company": _clean_field(subscribers),
+        "industry": _clean_field(category),
+        "location": "",
+        "website": source_url,
     }
 
 
@@ -1900,6 +2000,72 @@ async def search_database_pan_india(
     return leads
 
 
+async def search_database_youtube(
+    keyword: str,
+    max_results: int = 50,
+    dataset_limit: int = 1,
+    expanded_terms: list[str] | None = None,
+) -> list[dict]:
+    """Search YouTube channel database for matching records.
+
+    v3.5.26: Queries 1,085 YouTube channels across 53 job categories.
+    Uses parquet format on S3 for efficient reads.
+    Returns profile-only leads (name, channel URL, category) — no email/phone.
+    """
+    start_time = time.time()
+    leads: list[dict] = []
+    if not keyword or not keyword.strip():
+        return leads
+
+    sql, s3_paths = _build_youtube_query(
+        keyword, max_results, dataset_limit=dataset_limit,
+        expanded_terms=expanded_terms,
+    )
+
+    loop = asyncio.get_running_loop()
+
+    def _execute_query() -> list[tuple]:
+        con = _get_duckdb_connection()
+        if not con:
+            return []
+        try:
+            return con.execute(sql).fetchall()
+        except Exception as e:
+            logger.warning("YouTube database query failed: %s", e)
+            return []
+        finally:
+            con.close()
+
+    try:
+        try:
+            rows = await asyncio.wait_for(
+                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
+                timeout=_DB_QUERY_TIMEOUT_SECS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "YouTube database query timed out after %ds for '%s' (%d files)",
+                _DB_QUERY_TIMEOUT_SECS, keyword, len(s3_paths),
+            )
+            rows = []
+
+        for row in rows:
+            lead = _youtube_row_to_lead(row, keyword)
+            if lead:
+                leads.append(lead)
+
+        elapsed = time.time() - start_time
+        logger.info(
+            "Database YouTube search: '%s' → %d leads (%.1fs, scanned %d files)",
+            keyword, len(leads), elapsed, len(s3_paths),
+        )
+
+    except Exception as e:
+        logger.warning("Database YouTube search failed for '%s': %s", keyword, e)
+
+    return leads
+
+
 async def _search_database_hybrid_inner(
     keywords: list[str],
     platforms: list[str],
@@ -1918,6 +2084,7 @@ async def _search_database_hybrid_inner(
       3. Sequential platform searches instead of parallel — prevents thread
          pool saturation when 4 platforms × 5 countries × N datasets all
          fire simultaneously.
+    v3.5.26: Added YouTube platform support.
     """
     all_leads: list[dict] = []
     seen_emails: set[str] = set()
@@ -1946,6 +2113,8 @@ async def _search_database_hybrid_inner(
     search_pan_india = any(
         p in ("pan_india", "indiamart", "justdial", "all") for p in platforms
     )
+    # v3.5.26: YouTube database search
+    search_youtube = any(p in ("youtube", "all") for p in platforms)
 
     # v3.5.9: Only search social databases when social platforms requested
     _has_social = search_linkedin or search_instagram
@@ -1954,15 +2123,15 @@ async def _search_database_hybrid_inner(
     # v3.5.21 FIX: Only default to LinkedIn + Instagram (the two largest DBs).
     # Previously this enabled ALL 4 databases which fired 80+ concurrent S3
     # queries, saturating the thread pool and causing GDDSBoth to freeze at 5%.
-    if not _has_social and not _has_maps_or_india:
+    if not _has_social and not _has_maps_or_india and not search_youtube:
         search_linkedin = True
         search_instagram = True
 
     logger.info(
         "Hybrid search: linkedin=%s, instagram=%s, googlemaps=%s, pan_india=%s, "
-        "ds_limit=%d, tier=%s, platforms=%s",
+        "youtube=%s, ds_limit=%d, tier=%s, platforms=%s",
         search_linkedin, search_instagram, search_googlemaps, search_pan_india,
-        ds_limit, tier, platforms,
+        search_youtube, ds_limit, tier, platforms,
     )
 
     for keyword in keywords:
@@ -2021,7 +2190,7 @@ async def _search_database_hybrid_inner(
             except Exception as e:
                 logger.warning("Instagram DB search failed for '%s': %s", keyword, e)
 
-        # Phase 3: Google Maps + PAN India (supplementary — only if requested)
+        # Phase 3: Google Maps + PAN India + YouTube (supplementary — only if requested)
         supplementary_tasks = []
         if search_googlemaps:
             supplementary_tasks.append(
@@ -2036,6 +2205,14 @@ async def _search_database_hybrid_inner(
                 search_database_pan_india(
                     keyword, max_results_per_keyword,
                     dataset_limit=ds_limit,
+                    expanded_terms=kw_expanded,
+                )
+            )
+        if search_youtube:
+            supplementary_tasks.append(
+                search_database_youtube(
+                    keyword, max_results_per_keyword,
+                    dataset_limit=1,
                     expanded_terms=kw_expanded,
                 )
             )
