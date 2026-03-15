@@ -3,6 +3,7 @@ import asyncio
 import json
 import logging
 import os
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
@@ -923,22 +924,40 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
 
         # Process leads: classify, score, verify, and store
-        # v3.5.9: added per-lead progress updates + 3s verification timeout
+        # v3.5.22: Skip per-lead email verification for large batches (>50)
+        # to prevent stuck-at-96%. With 498 leads × 3s timeout = 25 min hang.
+        # Verification can be triggered later via the "Verify" button in Results.
         async with get_db() as db:
             emails_found = 0
             phones_found = 0
             total_to_save = len(all_leads)
+            # v3.5.22: Only verify emails during save for small batches
+            should_verify = config.auto_verify and total_to_save <= 50
+            if not should_verify and config.auto_verify and total_to_save > 50:
+                logger.info(
+                    "Session %s: Skipping per-lead email verification for %d leads "
+                    "(too many — would block save phase). Use Results > Verify later.",
+                    session_id, total_to_save,
+                )
+            save_start = time.monotonic()
+            _SAVE_PHASE_TIMEOUT = 120  # seconds — hard cap on entire save loop
 
             for save_idx, lead_data in enumerate(all_leads):
+                # v3.5.22: hard timeout for entire save phase
+                if time.monotonic() - save_start > _SAVE_PHASE_TIMEOUT:
+                    logger.warning(
+                        "Session %s: Save phase timeout after %ds, saved %d/%d leads",
+                        session_id, _SAVE_PHASE_TIMEOUT, save_idx, total_to_save,
+                    )
+                    break
+
                 lead_id = str(uuid.uuid4())
                 email = lead_data.get("email", "")
                 phone = lead_data.get("phone", "")
                 name = lead_data.get("name", "")
 
                 # v3.5.10: use existing db connection for progress updates
-                # to avoid opening a second connection that causes
-                # "database is locked" errors
-                if total_to_save > 0 and save_idx % max(1, total_to_save // 4) == 0:
+                if total_to_save > 0 and save_idx % max(1, total_to_save // 10) == 0:
                     save_pct = 96 + int((save_idx / total_to_save) * 3)  # 96-99%
                     _lc = _count_leads()
                     await db.execute(
@@ -961,9 +980,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
                 email_type = classify_email(email) if email else "unknown"
                 verified = False
-                if email and config.auto_verify:
-                    # v3.5.9: 3-second timeout per email verification to prevent
-                    # stuck-at-96% when SMTP connections hang (port 25 blocked by ISP)
+                if email and should_verify:
                     try:
                         verified = await asyncio.wait_for(
                             verify_email(email), timeout=3.0,
