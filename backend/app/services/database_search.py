@@ -302,8 +302,41 @@ _HTTPFS_INSTALLED = False
 _HTTPFS_LOCK = threading.Lock()
 
 
+def _get_duckdb_platform() -> str:
+    """v3.5.16: Determine the platform string DuckDB uses for extension lookup.
+
+    DuckDB organises extensions as ``{ext_dir}/v{version}/{platform}/ext.duckdb_extension``.
+    This helper returns the *platform* component so we can place bundled
+    extensions exactly where DuckDB expects them.
+    """
+    import platform as _plat
+
+    system = _plat.system().lower()
+    machine = _plat.machine().lower()
+
+    _map = {
+        ("windows", "amd64"): "windows_amd64",
+        ("windows", "x86_64"): "windows_amd64",
+        ("linux", "x86_64"): "linux_amd64_gcc4",
+        ("linux", "aarch64"): "linux_arm64",
+        ("darwin", "x86_64"): "osx_amd64",
+        ("darwin", "arm64"): "osx_arm64",
+    }
+    result = _map.get((system, machine))
+    if not result:
+        # Ask DuckDB directly as a fallback
+        try:
+            import duckdb
+            result = duckdb.execute("PRAGMA platform").fetchone()[0]
+        except Exception:
+            # Last resort: construct from system/machine
+            result = f"{system}_{machine}"
+    logger.debug("DuckDB platform resolved to: %s", result)
+    return result
+
+
 def _get_extension_directory() -> str:
-    """v3.5.15: Return a writable directory for DuckDB extensions.
+    """v3.5.16: Return a writable directory for DuckDB extensions.
 
     PyInstaller bundles run from a temporary directory that may not be
     writable for extension downloads.  We explicitly set a known-good
@@ -346,19 +379,44 @@ def _get_extension_directory() -> str:
 
 
 def _ensure_bundled_httpfs(ext_dir: str) -> bool:
-    """v3.5.15: Extract bundled httpfs extension zip to the writable extension dir.
+    """v3.5.16: Extract bundled httpfs extension to the EXACT path DuckDB expects.
 
-    PyInstaller builds bundle ``httpfs_bundle.zip`` (a zip of the pre-installed
-    httpfs extension tree) in the frozen app directory.  This avoids macOS
-    codesign failures that occur when PyInstaller processes raw ``.duckdb_extension``
-    files.  At runtime we extract the zip into *ext_dir* so ``LOAD httpfs`` works
-    without any network download.
+    Root-cause fix for the 0-leads bug that persisted through v3.5.12–v3.5.15.
+    Claude Opus 4.6 analysis identified three interacting failures:
 
-    Also supports a fallback ``duckdb_extensions/`` directory for --onedir builds.
+    1. **Version mismatch**: The zip contains extensions under the CI build's
+       DuckDB version path (e.g. ``v1.1.3/windows_amd64/``) but the runtime
+       DuckDB may be a different version and looks under ``v{runtime}/...``.
+    2. **Path structure**: DuckDB expects ``{ext_dir}/v{version}/{platform}/httpfs.duckdb_extension``
+       and will NOT find it if the subdirectory structure doesn't match exactly.
 
-    Returns True if bundled extension was found and extracted (or already present).
+    This function now:
+    - Reads the RUNTIME DuckDB version to determine the correct target path
+    - Finds the ``.duckdb_extension`` file in the zip regardless of its stored path
+    - Places it at the exact location DuckDB will look for it
+
+    Returns True if bundled extension was found and placed correctly.
     """
     import zipfile
+
+    try:
+        import duckdb
+        runtime_version = duckdb.__version__
+    except ImportError:
+        return False
+
+    runtime_platform = _get_duckdb_platform()
+    # This is the exact path DuckDB will look for when we do LOAD httpfs
+    target_dir = os.path.join(ext_dir, f"v{runtime_version}", runtime_platform)
+    target_path = os.path.join(target_dir, "httpfs.duckdb_extension")
+
+    # If extension already exists and is a reasonable size (>100KB), skip
+    if os.path.exists(target_path) and os.path.getsize(target_path) > 100_000:
+        logger.debug(
+            "Bundled httpfs already present: %s (%d bytes)",
+            target_path, os.path.getsize(target_path),
+        )
+        return True
 
     # --- Strategy 1: Look for httpfs_bundle.zip (preferred, avoids codesign) ---
     zip_path = None
@@ -375,25 +433,49 @@ def _ensure_bundled_httpfs(ext_dir: str) -> bool:
 
     if zip_path:
         try:
-            extracted = 0
             with zipfile.ZipFile(zip_path, "r") as zf:
-                for info in zf.infolist():
-                    if info.is_dir():
-                        continue
-                    dst = os.path.join(ext_dir, info.filename)
-                    # Only extract if missing or smaller (corrupt)
-                    if not os.path.exists(dst) or os.path.getsize(dst) < info.file_size:
-                        os.makedirs(os.path.dirname(dst), exist_ok=True)
-                        zf.extract(info, ext_dir)
-                        extracted += 1
-                        logger.info("Extracted bundled extension: %s -> %s", info.filename, dst)
-            if extracted > 0:
-                logger.info("Extracted %d file(s) from %s to %s", extracted, zip_path, ext_dir)
-            else:
-                logger.debug("Bundled extensions already present in %s", ext_dir)
-            return True
+                all_names = zf.namelist()
+                logger.info("httpfs_bundle.zip contents: %s", all_names)
+
+                # Find the httpfs extension file regardless of its stored path
+                ext_files = [n for n in all_names if n.endswith("httpfs.duckdb_extension")]
+                if not ext_files:
+                    logger.warning("No httpfs.duckdb_extension found in zip!")
+                    # Fall through to Strategy 2
+                else:
+                    source_name = ext_files[0]
+                    bundled_version_dir = source_name.split("/")[0] if "/" in source_name else ""
+                    if bundled_version_dir != f"v{runtime_version}":
+                        logger.warning(
+                            "VERSION MISMATCH: bundled=%s, runtime=v%s — "
+                            "extracting to runtime path anyway",
+                            bundled_version_dir, runtime_version,
+                        )
+
+                    # Extract to the EXACT path DuckDB expects for THIS runtime version
+                    os.makedirs(target_dir, exist_ok=True)
+                    with zf.open(source_name) as src:
+                        data = src.read()
+                    with open(target_path, "wb") as dst:
+                        dst.write(data)
+
+                    logger.info(
+                        "Extracted httpfs extension: %s -> %s (%d bytes)",
+                        source_name, target_path, len(data),
+                    )
+
+                    # Also extract .info file if present
+                    info_files = [n for n in all_names if n.endswith("httpfs.duckdb_extension.info")]
+                    if info_files:
+                        info_target = target_path + ".info"
+                        with zf.open(info_files[0]) as src:
+                            info_data = src.read()
+                        with open(info_target, "wb") as dst:
+                            dst.write(info_data)
+
+                    return True
         except Exception as exc:
-            logger.warning("Failed to extract httpfs_bundle.zip: %s", exc)
+            logger.warning("Failed to extract httpfs_bundle.zip: %s", exc, exc_info=True)
 
     # --- Strategy 2: Fallback — look for raw duckdb_extensions/ directory ---
     bundled_base = None
@@ -411,24 +493,22 @@ def _ensure_bundled_httpfs(ext_dir: str) -> bool:
         logger.debug("No bundled httpfs_bundle.zip or duckdb_extensions/ found")
         return False
 
-    copied = 0
+    # Find the .duckdb_extension file regardless of directory structure
     for root, _dirs, files in os.walk(bundled_base):
         for fname in files:
-            if fname.endswith(".duckdb_extension") or fname.endswith(".duckdb_extension.info"):
+            if fname == "httpfs.duckdb_extension":
                 src = os.path.join(root, fname)
-                rel_path = os.path.relpath(src, bundled_base)
-                dst = os.path.join(ext_dir, rel_path)
-                if not os.path.exists(dst) or os.path.getsize(dst) < os.path.getsize(src):
-                    os.makedirs(os.path.dirname(dst), exist_ok=True)
-                    shutil.copy2(src, dst)
-                    copied += 1
-                    logger.info("Copied bundled extension: %s -> %s", rel_path, dst)
+                os.makedirs(target_dir, exist_ok=True)
+                shutil.copy2(src, target_path)
+                logger.info("Copied bundled extension: %s -> %s", src, target_path)
+                # Also copy .info if present
+                info_src = src + ".info"
+                if os.path.isfile(info_src):
+                    shutil.copy2(info_src, target_path + ".info")
+                return True
 
-    if copied > 0:
-        logger.info("Copied %d bundled extension file(s) to %s", copied, ext_dir)
-    else:
-        logger.debug("Bundled extensions already present in %s", ext_dir)
-    return True
+    logger.debug("No httpfs.duckdb_extension found in bundled directory")
+    return False
 
 
 def _get_duckdb_connection():
@@ -438,13 +518,13 @@ def _get_duckdb_connection():
     desktop app distribution.  They are **read-only** and scoped exclusively to
     the ``leads-cm-database/`` prefix on iDrive E2.  No write/delete access.
 
-    v3.5.15: Bundle-first extension loading for PyInstaller compatibility.
-    The httpfs extension is now pre-installed during the CI build and bundled
-    inside the PyInstaller binary.  At runtime we:
-      1. Set an explicit writable extension directory
-      2. Copy bundled httpfs files into it (no network download needed)
-      3. Try LOAD httpfs directly (skip INSTALL entirely)
-      4. Only fall back to INSTALL/FORCE INSTALL if bundled copy is missing
+    v3.5.16: Three-bug fix for PyInstaller compatibility (Claude Opus 4.6 analysis):
+      1. **Backslash escaping**: Windows paths use backslashes which DuckDB SQL
+         interprets as escape sequences -- now normalised to forward slashes before SET.
+      2. **Version-aware extraction**: Bundled extension is placed at the exact
+         ``v{runtime_version}/{platform}/`` path DuckDB expects.
+      3. **Real error surfacing**: Extension state is verified after LOAD;
+         query failures are logged with full diagnostics.
     """
     try:
         import duckdb
@@ -454,54 +534,86 @@ def _get_duckdb_connection():
 
     con = duckdb.connect()
     try:
-        # v3.5.15: Set explicit writable extension directory BEFORE anything
+        # Step 1: Get writable extension directory
         ext_dir = _get_extension_directory()
-        con.execute(f"SET extension_directory='{ext_dir}';")
 
-        # v3.5.15: Copy bundled extension to writable dir (PyInstaller builds)
-        _ensure_bundled_httpfs(ext_dir)
+        # v3.5.16 FIX #1: Normalise Windows backslashes to forward slashes.
+        # DuckDB's SQL parser treats \U, \A, etc. as escape sequences,
+        # silently corrupting the path. Forward slashes work on all platforms.
+        safe_ext_dir = ext_dir.replace("\\", "/")
+        con.execute(f"SET extension_directory='{safe_ext_dir}';")
+        logger.info("extension_directory set to: %s (raw: %s)", safe_ext_dir, ext_dir)
 
-        # R5-B08 fix: thread-safe httpfs installation
+        # Step 2: Extract bundled extension to version-correct path
+        bundled = _ensure_bundled_httpfs(ext_dir)
+        logger.info("Bundled httpfs extraction result: %s", bundled)
+
+        # Step 3: Load httpfs with full error chain logging
         global _HTTPFS_INSTALLED  # noqa: PLW0603
         with _HTTPFS_LOCK:
             if not _HTTPFS_INSTALLED:
-                # v3.5.15: Try LOAD first — if bundled extension was copied,
-                # this succeeds without any network download.
                 try:
                     con.execute("LOAD httpfs;")
                     _HTTPFS_INSTALLED = True
-                    logger.info(
-                        "httpfs loaded directly (bundled/pre-installed, dir=%s)", ext_dir
-                    )
+                    logger.info("httpfs loaded directly (bundled, dir=%s)", safe_ext_dir)
                 except Exception as load_err:
-                    logger.warning(
-                        "Direct LOAD httpfs failed: %s — trying INSTALL", load_err
-                    )
-                    # Fall back to INSTALL (downloads from CDN)
+                    logger.warning("Direct LOAD httpfs failed: %s — trying INSTALL", load_err)
                     try:
                         con.execute("INSTALL httpfs;")
                         con.execute("LOAD httpfs;")
                     except Exception as install_err:
-                        logger.warning(
-                            "INSTALL httpfs failed (retrying FORCE): %s", install_err
-                        )
+                        logger.warning("INSTALL httpfs failed: %s — trying FORCE", install_err)
                         try:
                             con.execute("FORCE INSTALL httpfs;")
                             con.execute("LOAD httpfs;")
                         except Exception as force_err:
                             logger.error(
-                                "ALL httpfs install methods failed: %s (ext_dir=%s)",
-                                force_err, ext_dir,
+                                "ALL httpfs install methods failed — "
+                                "LOAD: %s | INSTALL: %s | FORCE: %s | ext_dir=%s",
+                                load_err, install_err, force_err, safe_ext_dir,
                             )
+                            # Log what files actually exist in ext_dir
+                            try:
+                                for root, _d, files in os.walk(ext_dir):
+                                    for f in files:
+                                        fp = os.path.join(root, f)
+                                        logger.error(
+                                            "  ext_dir file: %s (%d bytes)",
+                                            os.path.relpath(fp, ext_dir),
+                                            os.path.getsize(fp),
+                                        )
+                            except Exception:
+                                pass
                             raise
                     _HTTPFS_INSTALLED = True
-                    logger.info("httpfs installed+loaded via network (dir=%s)", ext_dir)
-        # If already installed by another thread, still need to load in THIS connection
+                    logger.info("httpfs installed+loaded via network (dir=%s)", safe_ext_dir)
+
+        # If already installed by another thread, still LOAD in THIS connection
         if _HTTPFS_INSTALLED:
             try:
                 con.execute("LOAD httpfs;")
             except Exception:
-                pass  # Already loaded above in the same connection
+                pass  # Already loaded in this connection above
+
+        # v3.5.16 FIX #3: Verify httpfs is truly loaded before proceeding
+        try:
+            ext_state = con.execute(
+                "SELECT extension_name, loaded, installed, install_path "
+                "FROM duckdb_extensions() WHERE extension_name = 'httpfs'"
+            ).fetchone()
+            if ext_state:
+                logger.info(
+                    "httpfs state: loaded=%s, installed=%s, path=%s",
+                    ext_state[1], ext_state[2], ext_state[3],
+                )
+                if not ext_state[1]:  # loaded == False
+                    logger.error("httpfs reports NOT loaded despite LOAD succeeding!")
+            else:
+                logger.warning("httpfs not found in duckdb_extensions() output")
+        except Exception as verify_err:
+            logger.debug("Could not verify httpfs state: %s", verify_err)
+
+        # Configure S3 credentials
         con.execute(f"SET s3_endpoint='{_S3_ENDPOINT}';")
         con.execute(f"SET s3_access_key_id='{_S3_ACCESS_KEY}';")
         con.execute(f"SET s3_secret_access_key='{_S3_SECRET_KEY}';")
@@ -1065,11 +1177,18 @@ async def search_database_linkedin(
             def _run():
                 con = _get_duckdb_connection()
                 if not con:
+                    logger.error("LinkedIn DB: _get_duckdb_connection() returned None for %s", country)
                     return []
                 try:
-                    return con.execute(sql).fetchall()
+                    rows = con.execute(sql).fetchall()
+                    logger.info("LinkedIn DB query for %s returned %d rows", country, len(rows))
+                    return rows
                 except Exception as e:
-                    logger.warning("LinkedIn DB query failed for %s: %s", country, e)
+                    # v3.5.16: Log full error with SQL for diagnosis
+                    logger.error(
+                        "LinkedIn DB query FAILED for %s: %s | SQL prefix: %.200s",
+                        country, e, sql,
+                    )
                     return []
                 finally:
                     con.close()
