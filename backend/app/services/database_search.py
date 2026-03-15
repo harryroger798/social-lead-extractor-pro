@@ -1031,8 +1031,8 @@ def _get_duckdb_connection():
         # worker indefinitely, eventually saturating the pool and freezing ALL
         # extractions at "Searching 89M+ leads database...".
         try:
-            con.execute("SET http_timeout=30000;")  # 30 seconds in milliseconds
-            logger.debug("DuckDB http_timeout set to 30s")
+            con.execute("SET http_timeout=90000;")  # 90 seconds in milliseconds — residential/international links need more time
+            logger.debug("DuckDB http_timeout set to 90s")
         except Exception as ht_err:
             logger.debug("SET http_timeout failed (older DuckDB?): %s", ht_err)
 
@@ -1533,14 +1533,17 @@ def _pan_india_row_to_lead(row: tuple, keyword: str) -> dict:
 # v3.5.13: raised from 30→90s; per-country parallel strategy keeps actual
 # wall-clock time low while preventing premature timeout on large scans.
 # v3.5.21: Reduced from 90s to 45s — prevents UI freeze when S3 is slow.
-# With bounded thread pool (4 workers), queries are serialized better
-# so each one gets full bandwidth rather than 20+ fighting for it.
-_DB_QUERY_TIMEOUT_SECS = 45
+# v3.5.24: Raised to 120s — 45s was too aggressive for residential internet
+# (India → iDrive E2 us-west-1). Must exceed http_timeout (90s) so DuckDB
+# can finish naturally instead of leaving orphaned threads blocked on S3 I/O.
+_DB_QUERY_TIMEOUT_SECS = 120
 
 # v3.5.21: Master timeout for the entire search_database_hybrid call.
 # Even if individual query timeouts fail to fire (thread pool saturation),
 # this guarantees the extraction never blocks forever at "Searching 89M+".
-_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 120
+# v3.5.24: Raised to 180s to accommodate slower per-query timeouts (120s)
+# plus serialization delay from semaphore-limited concurrency.
+_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 180
 
 
 async def search_database_linkedin(
@@ -1596,47 +1599,55 @@ async def search_database_linkedin(
         per_country_results_limit = max(1, max_results // len(countries)) if countries else max_results
         total_files = 0
 
-        async def _search_one_country(country: str) -> list[tuple]:
-            """Run a single-country query in the thread pool."""
-            sql, paths = _build_linkedin_query(
-                keyword, [country], location, per_country_results_limit,
-                effective_ds_limit, expanded_terms=expanded_terms,
-            )
-            if not sql:
-                return []
+        # v3.5.24: Limit concurrent country queries to avoid thread pool
+        # saturation. With 4 workers, firing 5 queries simultaneously means
+        # 1 queues and all workers block on slow S3 I/O. Semaphore of 2
+        # ensures at most 2 threads are blocked on S3, leaving workers free
+        # for Instagram queries and allowing each query more bandwidth.
+        _country_semaphore = asyncio.Semaphore(2)
 
-            def _run():
-                con = _get_duckdb_connection()
-                if not con:
-                    logger.error("LinkedIn DB: _get_duckdb_connection() returned None for %s", country)
+        async def _search_one_country(country: str) -> list[tuple]:
+            """Run a single-country query in the thread pool (semaphore-gated)."""
+            async with _country_semaphore:
+                sql, paths = _build_linkedin_query(
+                    keyword, [country], location, per_country_results_limit,
+                    effective_ds_limit, expanded_terms=expanded_terms,
+                )
+                if not sql:
                     return []
+
+                def _run():
+                    con = _get_duckdb_connection()
+                    if not con:
+                        logger.error("LinkedIn DB: _get_duckdb_connection() returned None for %s", country)
+                        return []
+                    try:
+                        rows = con.execute(sql).fetchall()
+                        logger.info("LinkedIn DB query for %s returned %d rows", country, len(rows))
+                        return rows
+                    except Exception as e:
+                        # v3.5.16: Log full error with SQL for diagnosis
+                        logger.error(
+                            "LinkedIn DB query FAILED for %s: %s | SQL prefix: %.200s",
+                            country, e, sql,
+                        )
+                        return []
+                    finally:
+                        con.close()
+
                 try:
-                    rows = con.execute(sql).fetchall()
-                    logger.info("LinkedIn DB query for %s returned %d rows", country, len(rows))
-                    return rows
-                except Exception as e:
-                    # v3.5.16: Log full error with SQL for diagnosis
-                    logger.error(
-                        "LinkedIn DB query FAILED for %s: %s | SQL prefix: %.200s",
-                        country, e, sql,
+                    return await asyncio.wait_for(
+                        loop.run_in_executor(_DB_THREAD_POOL, _run),
+                        timeout=_DB_QUERY_TIMEOUT_SECS,
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning(
+                        "LinkedIn DB query timed out after %ds for '%s' in %s (%d files)",
+                        _DB_QUERY_TIMEOUT_SECS, keyword, country, len(paths),
                     )
                     return []
-                finally:
-                    con.close()
 
-            try:
-                return await asyncio.wait_for(
-                    loop.run_in_executor(_DB_THREAD_POOL, _run),
-                    timeout=_DB_QUERY_TIMEOUT_SECS,
-                )
-            except asyncio.TimeoutError:
-                logger.warning(
-                    "LinkedIn DB query timed out after %ds for '%s' in %s (%d files)",
-                    _DB_QUERY_TIMEOUT_SECS, keyword, country, len(paths),
-                )
-                return []
-
-        # Fire all country queries in parallel
+        # Fire all country queries with semaphore-limited concurrency
         country_tasks = [_search_one_country(c) for c in countries]
         country_results = await asyncio.gather(*country_tasks, return_exceptions=True)
 
@@ -1898,15 +1909,16 @@ async def _search_database_hybrid_inner(
     seen_emails: set[str] = set()
     seen_phones: set[str] = set()
 
-    # v3.5.21: Reduced dataset limits to prevent thread pool saturation.
-    # With 4 workers in _DB_THREAD_POOL, we need to keep total concurrent
-    # S3 file reads manageable. LinkedIn fires per-country queries (5 countries)
-    # so each country gets dataset_limit files. Keep it low.
+    # v3.5.24: Aggressive dataset limits for slow-link resilience.
+    # Each file = 1+ S3 range request. LinkedIn fires per-country queries
+    # (up to 5 countries × ds_limit files × concurrent threads).
+    # On residential internet (India → us-west-1), each S3 round-trip
+    # can take 5-15s. Fewer files = dramatically less wall-clock time.
     _tier_dataset_limits = {
-        "free": 5,
-        "starter": 8,
-        "pro": 10,
-        "unlimited": 10,
+        "free": 3,
+        "starter": 5,
+        "pro": 5,
+        "unlimited": 8,
     }
     ds_limit = _tier_dataset_limits.get(tier, 5)
 
