@@ -6,11 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
 from app.api.routes import router
+from app.services.log_service import init_logging
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
-    """Initialize database on startup."""
+    """Initialize logging and database on startup."""
+    init_logging()
     await init_db()
     yield
 

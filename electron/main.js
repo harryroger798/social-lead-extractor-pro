@@ -13,6 +13,77 @@ let isQuitting = false;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
+// ─── v3.5.22: Persistent Electron-side file logging ────────────────────────
+const LOG_MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const LOG_BACKUP_COUNT = 5;
+let _logDir = null;
+let _logFile = null;
+
+function _ensureLogDir() {
+  if (_logDir) return _logDir;
+  try {
+    _logDir = path.join(app.getPath('userData'), 'logs');
+  } catch {
+    // app not ready yet — use fallback
+    const home = process.env.APPDATA || process.env.HOME || '';
+    _logDir = path.join(home, 'snapleads', 'logs');
+  }
+  if (!fs.existsSync(_logDir)) {
+    fs.mkdirSync(_logDir, { recursive: true });
+  }
+  _logFile = path.join(_logDir, 'electron.log');
+  return _logDir;
+}
+
+function _rotateElectronLog() {
+  try {
+    if (!_logFile || !fs.existsSync(_logFile)) return;
+    for (let i = LOG_BACKUP_COUNT - 1; i > 0; i--) {
+      const cur = `${_logFile}.${i}`;
+      const nxt = `${_logFile}.${i + 1}`;
+      if (fs.existsSync(cur)) fs.renameSync(cur, nxt);
+    }
+    fs.renameSync(_logFile, `${_logFile}.1`);
+  } catch { /* best effort */ }
+}
+
+function electronLog(level, message) {
+  _ensureLogDir();
+  const ts = new Date().toISOString();
+  const entry = `${ts} | ${level.toUpperCase().padEnd(7)} | ${message}\n`;
+  try {
+    if (fs.existsSync(_logFile)) {
+      const stats = fs.statSync(_logFile);
+      if (stats.size > LOG_MAX_SIZE) _rotateElectronLog();
+    }
+    fs.appendFileSync(_logFile, entry);
+  } catch { /* best effort */ }
+  // Also print to console
+  if (level === 'error') console.error(entry.trimEnd());
+  else console.log(entry.trimEnd());
+}
+
+// Override console.log and console.error to also write to file
+const _origLog = console.log.bind(console);
+const _origErr = console.error.bind(console);
+console.log = (...args) => {
+  _origLog(...args);
+  try {
+    _ensureLogDir();
+    const ts = new Date().toISOString();
+    fs.appendFileSync(_logFile, `${ts} | INFO    | ${args.map(String).join(' ')}\n`);
+  } catch { /* best effort */ }
+};
+console.error = (...args) => {
+  _origErr(...args);
+  try {
+    _ensureLogDir();
+    const ts = new Date().toISOString();
+    fs.appendFileSync(_logFile, `${ts} | ERROR   | ${args.map(String).join(' ')}\n`);
+  } catch { /* best effort */ }
+};
+// ─── End v3.5.22 Electron logging ──────────────────────────────────────────
+
 // Handle NSIS installer lifecycle — quit immediately during install/uninstall/update
 if (process.platform === 'win32') {
   const args = process.argv.slice(1);

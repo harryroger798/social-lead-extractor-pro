@@ -4,6 +4,7 @@ import {
   Key, Globe, Shield, Bell, Database, RefreshCw,
   Wifi, Plus, Trash2, Play, Upload, X, CheckCircle, XCircle,
   Info, ChevronDown, ChevronRight, LogOut, Crown,
+  FileText, Download,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { fetchSettings, updateSetting, fetchProxies, addProxy, bulkImportProxies, testProxy, testAllProxies, deleteProxy, deleteAllProxies, checkFirecrawlCredits } from '@/lib/api';
@@ -20,6 +21,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'storage', label: 'Storage', icon: Database },
   { id: 'security', label: 'Security', icon: Shield },
+  { id: 'logs', label: 'Logs', icon: FileText },
 ];
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -68,6 +70,13 @@ export default function Settings() {
   const [testingAll, setTestingAll] = useState(false);
   const [firecrawlCredits, setFirecrawlCredits] = useState<number | null>(null);
   const [checkingCredits, setCheckingCredits] = useState(false);
+
+  // Logs state
+  const [logContent, setLogContent] = useState('');
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logFiles, setLogFiles] = useState<{name: string; size: number; modified: string}[]>([]);
+  const [clearingLogs, setClearingLogs] = useState(false);
+  const [exportingLogs, setExportingLogs] = useState(false);
 
   const loadSettings = useCallback(async () => {
     try {
@@ -151,6 +160,48 @@ export default function Settings() {
       toast('success', `Deleted ${result.count} proxies`);
       await loadProxies();
     } catch { toast('error', 'Failed to delete proxies'); }
+  };
+
+  const loadLogs = useCallback(async () => {
+    try {
+      setLogsLoading(true);
+      const [tailRes, listRes] = await Promise.all([
+        fetch('http://127.0.0.1:8000/api/logs/tail?lines=500').then(r => r.json()),
+        fetch('http://127.0.0.1:8000/api/logs/list').then(r => r.json()),
+      ]);
+      setLogContent(tailRes.content || '(no logs yet)');
+      setLogFiles(listRes || []);
+    } catch {
+      setLogContent('Failed to load logs — backend may not be running');
+    } finally {
+      setLogsLoading(false);
+    }
+  }, []);
+
+  const handleClearLogs = async () => {
+    if (!confirm('Delete all log files? This cannot be undone.')) return;
+    try {
+      setClearingLogs(true);
+      await fetch('http://127.0.0.1:8000/api/logs/clear', { method: 'DELETE' });
+      toast('success', 'All logs cleared');
+      await loadLogs();
+    } catch { toast('error', 'Failed to clear logs'); } finally { setClearingLogs(false); }
+  };
+
+  const handleExportLogs = async () => {
+    try {
+      setExportingLogs(true);
+      const res = await fetch('http://127.0.0.1:8000/api/logs/export');
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `snapleads-logs-${new Date().toISOString().slice(0,10)}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('success', 'Logs exported');
+    } catch { toast('error', 'Failed to export logs'); } finally { setExportingLogs(false); }
   };
 
   const handleCheckCredits = async () => {
@@ -680,6 +731,56 @@ export default function Settings() {
               </div>
               <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during extraction. Configure your proxies in the Proxies tab. Google Dorking does not require proxies.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'logs' && (
+            <div className="max-w-none">
+              <div className="flex items-center justify-between pb-6">
+                <div>
+                  <h3 className="text-base font-semibold text-text-primary pb-1">Application Logs</h3>
+                  <p className="text-xs text-text-muted">View, export, or clear all captured logs (backend, DuckDB, Electron, frontend)</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={loadLogs} disabled={logsLoading}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg text-xs font-medium text-accent hover:bg-accent/20 transition-all disabled:opacity-50">
+                    {logsLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    Refresh
+                  </button>
+                  <button onClick={handleExportLogs} disabled={exportingLogs}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg text-xs font-medium text-accent hover:bg-accent/20 transition-all disabled:opacity-50">
+                    {exportingLogs ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                    Export .zip
+                  </button>
+                  <button onClick={handleClearLogs} disabled={clearingLogs}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-error/10 border border-error/20 rounded-lg text-xs font-medium text-error hover:bg-error/20 transition-all disabled:opacity-50">
+                    {clearingLogs ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                    Clear Logs
+                  </button>
+                </div>
+              </div>
+
+              {/* Log Files Summary */}
+              {logFiles.length > 0 && (
+                <div className="text-xs text-text-muted pb-3">
+                  {logFiles.length} log file{logFiles.length !== 1 ? 's' : ''} · {(logFiles.reduce((s, f) => s + f.size, 0) / 1024).toFixed(1)} KB total
+                </div>
+              )}
+
+              {/* Log Viewer */}
+              {logsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 text-accent animate-spin" />
+                </div>
+              ) : (
+                <pre className="w-full max-h-[500px] overflow-auto p-4 bg-zinc-900 border border-[#3f3f46] rounded-xl text-[11px] leading-relaxed text-green-400 font-mono whitespace-pre-wrap break-words">
+                  {logContent || 'Click "Refresh" to load logs'}
+                </pre>
+              )}
+
+              <div className="pt-5 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46] mt-4">
+                <p className="text-xs text-text-muted">Logs are stored in your AppData/snapleads/logs directory. They persist until you click "Clear Logs". Max 10 MB per file, 20 backup files (200 MB total). Export as .zip to share for debugging.</p>
               </div>
             </div>
           )}
