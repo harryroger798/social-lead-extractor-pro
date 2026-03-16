@@ -94,6 +94,7 @@ jobs:
           pyinstaller --onefile --name snapleads-backend \
             --hidden-import=app --hidden-import=app.main \
             --hidden-import=app.api --hidden-import=app.api.routes \
+            --hidden-import=app.api.test_runner \
             --hidden-import=app.database --hidden-import=app.models \
             --hidden-import=app.services --hidden-import=fastapi \
             --hidden-import=uvicorn --hidden-import=aiosqlite \
@@ -136,6 +137,19 @@ jobs:
             --hidden-import=app.services.log_service \
             --hidden-import=app.services.patchright_engine \
             --hidden-import=app.services.auto_discovery \
+            --hidden-import=app.services.enhanced_direct_scraper \
+            --hidden-import=app.services.waterfall_enrichment \
+            --hidden-import=app.services.b2b_scrapers \
+            --hidden-import=app.services.crm_export \
+            --hidden-import=app.services.duplicate_detector \
+            --hidden-import=app.services.email_outreach \
+            --hidden-import=app.services.gmaps_scraper \
+            --hidden-import=app.services.lead_scorer \
+            --hidden-import=app.services.scheduler_service \
+            --hidden-import=app.services.telegram_scraper \
+            --hidden-import=app.services.website_email_finder \
+            --hidden-import=app.services.whatsapp_scraper \
+            --hidden-import=app.services.youtube_api \
             $PATCHRIGHT_COLLECT \
             --hidden-import=bs4 \
             --hidden-import=duckdb \
