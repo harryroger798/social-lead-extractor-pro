@@ -895,11 +895,13 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     platform, *_count_leads())
             current_step += 1
         elif _skip_dorking and config.use_google_dorking:
-            logger.info("v3.5.36: Skipped dorking (short-circuit with %d leads)", _current_lead_count)
+            logger.info("v3.5.36: Skipped dorking (short-circuit with %d unique emails)", _unique_emails)
             current_step += 1
 
-        # ── Direct platform scraping (Patchright) ────────────────────────
-        if config.use_direct_scraping and non_reddit_platforms:
+        # ── Direct platform scraping (Patchright) — LEGACY ─────────────
+        # v3.5.36: Skip if parallel live scraping already ran (same gate)
+        _ran_parallel_live = bool(live_platforms and config.use_direct_scraping)
+        if config.use_direct_scraping and non_reddit_platforms and not _ran_parallel_live:
             try:
                 from app.services.platform_scrapers import scrape_all_platforms_direct
                 for idx, platform in enumerate(non_reddit_platforms):
