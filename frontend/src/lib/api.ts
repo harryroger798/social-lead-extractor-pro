@@ -25,8 +25,9 @@ export async function waitForBackend(): Promise<void> {
     const maxAttempts = 15; // 15 * 2s = 30s
     const interval = setInterval(async () => {
       if (_backendReady) {
-        // Already resolved by IPC signal
+        // Already resolved by IPC signal or markBackendReady()
         clearInterval(interval);
+        _backendReadyResolve?.();
         return;
       }
       attempts++;
@@ -81,7 +82,11 @@ export function isBackendReady(): boolean {
 
 /** v3.5.34: Mark backend as ready (called from UI after splash) */
 export function markBackendReady(): void {
-  _backendReady = true;
+  if (_backendReadyResolve) {
+    _backendReadyResolve();
+  } else {
+    _backendReady = true;
+  }
 }
 
 /**
