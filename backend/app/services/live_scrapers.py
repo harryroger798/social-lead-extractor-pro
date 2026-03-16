@@ -1869,11 +1869,11 @@ def scrape_facebook(
             for term in ["wedding", "photographer", "planner", "decorator",
                          "caterer", "makeup", "mehndi", "sangeet", "shaadi"]
         )
-        if is_indian_query or is_wedding:
+        if is_wedding:
             _collect_leads(_search_wedmegood(query, location), "wedmegood")
 
         # Source 11: ShaadiSaga (v3.5.30 Fix 5 — NEW)
-        if is_indian_query or is_wedding:
+        if is_wedding:
             _collect_leads(_search_shaadisaga(query, location), "shaadisaga")
 
         # Source 12: JustDial XHR paginated (v3.5.30 Fix 5 — NEW)
