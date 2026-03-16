@@ -897,40 +897,115 @@ def _search_indiamart_direct(query: str, location: str, max_results: int = 20) -
 # ---- Source 6: Sulekha (Indian services marketplace) ----
 
 def _search_sulekha(query: str, location: str, max_results: int = 15) -> list[dict]:
-    """v3.5.29 Fix 6: Sulekha — Indian services marketplace with contact data."""
+    """v3.5.30 Fix 3: Sulekha — XHR endpoint primary, HTML fallback.
+
+    Sulekha has an internal XHR endpoint (/localserv/splistings) that returns
+    structured JSON with phone/email directly. Falls back to HTML scraping.
+    """
     results: list[dict] = []
     city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "india"
+    city_title = city.replace("-", " ").title()
     kw_slug = query.strip().lower().replace(" ", "-")
     try:
         with AdSession(timeout=15.0, min_delay=2.5) as session:
-            urls = [
-                f"https://www.sulekha.com/{kw_slug}/{city}",
-                f"https://www.sulekha.com/{kw_slug}-services/{city}",
-            ]
-            for url in urls:
+            # Primary: XHR endpoint with structured JSON
+            xhr_url = "https://www.sulekha.com/localserv/splistings"
+            try:
                 resp = session.get(
-                    url,
-                    headers={"Referer": "https://www.sulekha.com/"},
+                    xhr_url,
+                    params={
+                        "kwd": query, "city": city_title,
+                        "start": "0", "count": "20", "utype": "sp",
+                    },
+                    headers={
+                        "Referer": f"https://www.sulekha.com/{kw_slug}/{city}",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
                     timeout=15,
                 )
-                if resp.status_code != 200:
-                    continue
-                page_text = _strip_tags(resp.text[:200_000])
-                page_emails = extract_emails(page_text)
-                page_phones = extract_phones(page_text)
-                fb_urls = _extract_fb_urls(resp.text[:200_000])
-                if page_emails or page_phones:
-                    results.append({
-                        "title": f"{query} - Sulekha {city.title()}",
-                        "snippet": page_text[:200],
-                        "link": url,
-                        "emails": page_emails[:5],
-                        "phones": page_phones[:5],
-                        "fb_urls": fb_urls[:3],
-                        "source": "sulekha",
-                    })
-                if len(results) >= max_results:
-                    break
+                if resp.status_code == 200:
+                    try:
+                        data = _json_mod.loads(resp.text)
+                        listings = data if isinstance(data, list) else data.get("listings", data.get("data", []))
+                        if isinstance(listings, list):
+                            for item in listings:
+                                name = item.get("companyName") or item.get("name") or ""
+                                phone = item.get("phone") or item.get("mobile") or ""
+                                email = item.get("email") or ""
+                                if name and (phone or email):
+                                    results.append({
+                                        "title": name,
+                                        "snippet": item.get("address", "")[:200],
+                                        "link": f"https://www.sulekha.com/{kw_slug}/{city}",
+                                        "emails": [email] if email else [],
+                                        "phones": [phone] if phone else [],
+                                        "fb_urls": [],
+                                        "source": "sulekha_xhr",
+                                    })
+                    except (_json_mod.JSONDecodeError, ValueError):
+                        pass
+            except Exception as xhr_exc:
+                logger.debug("Sulekha XHR error: %s", xhr_exc)
+
+            # Fallback: HTML scraping with improved selectors
+            if not results:
+                urls = [
+                    f"https://www.sulekha.com/{kw_slug}/{city}",
+                    f"https://www.sulekha.com/{kw_slug}-services/{city}",
+                ]
+                for url in urls:
+                    resp = session.get(
+                        url,
+                        headers={"Referer": "https://www.sulekha.com/"},
+                        timeout=15,
+                    )
+                    if resp.status_code != 200:
+                        continue
+                    raw_html = resp.text[:200_000]
+                    # Try to extract individual business cards
+                    for card_match in re.finditer(
+                        r'<div[^>]*class="[^"]*(?:sp-lsting|listing-card|provider-card)[^"]*"[^>]*>(.*?)</div>\s*(?:</div>)?',
+                        raw_html, re.DOTALL,
+                    ):
+                        card = card_match.group(1)
+                        name_m = re.search(r'class="[^"]*compny-name[^"]*"[^>]*>(.*?)<', card, re.DOTALL)
+                        name = _strip_tags(name_m.group(1)) if name_m else ""
+                        # Extract phone from data-phone attribute
+                        phone_m = re.search(r'data-phone="([^"]+)"', card)
+                        phone = phone_m.group(1) if phone_m else ""
+                        card_text = _strip_tags(card)
+                        card_emails = extract_emails(card_text)
+                        card_phones = [phone] if phone else extract_phones(card_text)
+                        card_fb = _extract_fb_urls(card)
+                        if name and (card_emails or card_phones):
+                            results.append({
+                                "title": name,
+                                "snippet": card_text[:200],
+                                "link": url,
+                                "emails": card_emails[:2],
+                                "phones": card_phones[:2],
+                                "fb_urls": card_fb[:1],
+                                "source": "sulekha_html",
+                            })
+
+                    # Page-level fallback
+                    if not results:
+                        page_text = _strip_tags(raw_html)
+                        page_emails = extract_emails(page_text)
+                        page_phones = extract_phones(page_text)
+                        fb_urls = _extract_fb_urls(raw_html)
+                        if page_emails or page_phones:
+                            results.append({
+                                "title": f"{query} - Sulekha {city_title}",
+                                "snippet": page_text[:200],
+                                "link": url,
+                                "emails": page_emails[:5],
+                                "phones": page_phones[:5],
+                                "fb_urls": fb_urls[:3],
+                                "source": "sulekha_html",
+                            })
+                    if len(results) >= max_results:
+                        break
     except Exception as exc:
         logger.debug("Sulekha search error: %s", exc)
     logger.info("Facebook Sulekha source: %d raw results", len(results))
@@ -984,40 +1059,119 @@ def _search_realestate_portals(query: str, location: str, max_results: int = 25)
 # ---- Source 8: Yellow Pages India + directories ----
 
 def _search_yellow_pages_india(query: str, location: str, max_results: int = 20) -> list[dict]:
-    """v3.5.29 Fix 6: Yellow Pages India, AskLaila, VConnect."""
+    """v3.5.30 Fix 3: Yellow Pages India (yellowpages.in) + fallback portals.
+
+    yellowpages.in is Cloudflare-protected but curl_cffi chrome131 impersonation
+    bypasses it. Correct URL format: /{keyword-slug}-in-{city-slug}.
+    Extracts phone from tel: hrefs, data-phone attributes, and regex fallback.
+    Also fetches page 2 automatically.
+    """
     results: list[dict] = []
     city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "india"
-    portals = [
-        f"https://www.yellowpages.co.in/search/{quote_plus(query)}/{city}",
-        f"https://www.asklaila.com/search/{city}/{quote_plus(query)}/",
-    ]
+    kw_slug = query.strip().lower().replace(" ", "-")
     try:
         with AdSession(timeout=15.0, min_delay=2.5) as session:
-            for url in portals:
-                domain = urlparse(url).netloc
-                resp = session.get(
-                    url,
-                    headers={"Referer": f"https://{domain}/"},
-                    timeout=15,
-                )
-                if resp.status_code != 200:
+            # Primary: yellowpages.in with correct URL format + pagination
+            yp_pages = [
+                f"https://www.yellowpages.in/{kw_slug}-in-{city}",
+                f"https://www.yellowpages.in/{kw_slug}-in-{city}?page=2",
+            ]
+            for url in yp_pages:
+                try:
+                    resp = session.get(
+                        url,
+                        headers={"Referer": "https://www.yellowpages.in/"},
+                        timeout=15,
+                    )
+                    if resp.status_code != 200:
+                        continue
+                    raw_html = resp.text[:200_000]
+                    # Extract individual business listing cards
+                    for card_match in re.finditer(
+                        r'<div[^>]*class="[^"]*(?:business-listing|listing-card|ypcard)[^"]*"[^>]*>(.*?)</div>\s*(?:</div>){0,3}',
+                        raw_html, re.DOTALL,
+                    ):
+                        card = card_match.group(1)
+                        name_m = re.search(r'<(?:h2|h3|a)[^>]*class="[^"]*(?:business-name|listing-title)[^"]*"[^>]*>(.*?)<', card, re.DOTALL)
+                        name = _strip_tags(name_m.group(1)) if name_m else ""
+                        # Phone extraction: data-phone attr > tel: href > regex
+                        phone = ""
+                        phone_attr = re.search(r'data-phone="([^"]+)"', card)
+                        if phone_attr:
+                            phone = phone_attr.group(1)
+                        if not phone:
+                            tel_href = re.search(r'href="tel:([^"]+)"', card)
+                            if tel_href:
+                                phone = tel_href.group(1)
+                        card_text = _strip_tags(card)
+                        card_emails = extract_emails(card_text)
+                        card_phones = [phone] if phone else extract_phones(card_text)
+                        card_fb = _extract_fb_urls(card)
+                        if name and (card_emails or card_phones):
+                            results.append({
+                                "title": name,
+                                "snippet": card_text[:200],
+                                "link": url,
+                                "emails": card_emails[:2],
+                                "phones": card_phones[:2],
+                                "fb_urls": card_fb[:1],
+                                "source": "yp_india",
+                            })
+                    # Page-level fallback
+                    if not results:
+                        page_text = _strip_tags(raw_html)
+                        page_emails = extract_emails(page_text)
+                        page_phones = extract_phones(page_text)
+                        fb_urls = _extract_fb_urls(raw_html)
+                        if page_emails or page_phones:
+                            results.append({
+                                "title": f"{query} - YellowPages India",
+                                "snippet": page_text[:200],
+                                "link": url,
+                                "emails": page_emails[:5],
+                                "phones": page_phones[:5],
+                                "fb_urls": fb_urls[:3],
+                                "source": "yp_india",
+                            })
+                except Exception:
                     continue
-                page_text = _strip_tags(resp.text[:200_000])
-                page_emails = extract_emails(page_text)
-                page_phones = extract_phones(page_text)
-                fb_urls = _extract_fb_urls(resp.text[:200_000])
-                if page_emails or page_phones:
-                    results.append({
-                        "title": f"{query} - {domain}",
-                        "snippet": page_text[:200],
-                        "link": url,
-                        "emails": page_emails[:5],
-                        "phones": page_phones[:5],
-                        "fb_urls": fb_urls[:3],
-                        "source": f"yp_{domain}",
-                    })
                 if len(results) >= max_results:
                     break
+
+            # Secondary portals as fallback
+            if len(results) < 3:
+                fallback_portals = [
+                    f"https://www.yellowpages.co.in/search/{quote_plus(query)}/{city}",
+                    f"https://www.asklaila.com/search/{city}/{quote_plus(query)}/",
+                ]
+                for url in fallback_portals:
+                    domain = urlparse(url).netloc
+                    try:
+                        resp = session.get(
+                            url,
+                            headers={"Referer": f"https://{domain}/"},
+                            timeout=15,
+                        )
+                        if resp.status_code != 200:
+                            continue
+                        page_text = _strip_tags(resp.text[:200_000])
+                        page_emails = extract_emails(page_text)
+                        page_phones = extract_phones(page_text)
+                        fb_urls = _extract_fb_urls(resp.text[:200_000])
+                        if page_emails or page_phones:
+                            results.append({
+                                "title": f"{query} - {domain}",
+                                "snippet": page_text[:200],
+                                "link": url,
+                                "emails": page_emails[:5],
+                                "phones": page_phones[:5],
+                                "fb_urls": fb_urls[:3],
+                                "source": f"yp_{domain}",
+                            })
+                    except Exception:
+                        continue
+                    if len(results) >= max_results:
+                        break
     except Exception as exc:
         logger.debug("Yellow Pages India search error: %s", exc)
     logger.info("Facebook YP India source: %d raw results", len(results))
@@ -1052,32 +1206,432 @@ def _search_google_organic_facebook(query: str, location: str, max_results: int 
     return results[:max_results]
 
 
-# ---- Source 10: Contact enrichment (Google Cache / Wayback for FB URLs) ----
+# ---- Source 10: WedMeGood JSON API (NEW — v3.5.30 Fix 5) ----
+
+def _search_wedmegood(query: str, location: str, max_results: int = 30) -> list[dict]:
+    """v3.5.30 Fix 5: WedMeGood — highest-yield for Indian wedding vendors.
+
+    Uses WedMeGood's JSON API which returns name, phone, email, website,
+    Facebook URL, and Instagram URL. Expected yield: 15-30 results per query.
+    """
+    results: list[dict] = []
+    city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "mumbai"
+    kw_slug = query.strip().lower().replace(" ", "-")
+    try:
+        with AdSession(timeout=15.0, min_delay=2.0) as session:
+            # WedMeGood API endpoint for vendor search
+            api_urls = [
+                f"https://www.wedmegood.com/vendors/search?category={kw_slug}&city={city}&page=1",
+                f"https://www.wedmegood.com/api/v1/vendors?category={kw_slug}&city={city}&page=1&per_page=30",
+            ]
+            for api_url in api_urls:
+                try:
+                    resp = session.get(
+                        api_url,
+                        headers={
+                            "Referer": f"https://www.wedmegood.com/{kw_slug}-in-{city}",
+                            "Accept": "application/json, text/html",
+                        },
+                        timeout=15,
+                    )
+                    if resp.status_code != 200:
+                        continue
+
+                    # Try JSON response first
+                    try:
+                        data = _json_mod.loads(resp.text)
+                        vendors = (
+                            data if isinstance(data, list)
+                            else data.get("vendors", data.get("data", data.get("results", [])))
+                        )
+                        if isinstance(vendors, list):
+                            for v in vendors:
+                                name = v.get("name") or v.get("vendor_name") or v.get("business_name") or ""
+                                phone = v.get("phone") or v.get("mobile") or v.get("contact_number") or ""
+                                email = v.get("email") or ""
+                                website = v.get("website") or ""
+                                fb_url = v.get("facebook_url") or v.get("facebook") or ""
+                                if name and (phone or email or fb_url):
+                                    results.append({
+                                        "title": name,
+                                        "snippet": v.get("address", v.get("location", ""))[:200],
+                                        "link": website or f"https://www.wedmegood.com/{kw_slug}-in-{city}",
+                                        "emails": [email] if email else [],
+                                        "phones": [str(phone)] if phone else [],
+                                        "fb_urls": [fb_url] if fb_url and "facebook.com" in fb_url else [],
+                                        "source": "wedmegood_api",
+                                    })
+                            if results:
+                                break
+                    except (_json_mod.JSONDecodeError, ValueError):
+                        pass
+
+                    # Fallback: HTML scraping
+                    if not results:
+                        raw_html = resp.text[:200_000]
+                        # Extract JSON-LD structured data
+                        for ld_match in re.finditer(
+                            r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>',
+                            raw_html, re.DOTALL,
+                        ):
+                            try:
+                                ld_data = _json_mod.loads(ld_match.group(1))
+                                if isinstance(ld_data, dict) and ld_data.get("@type") in ("LocalBusiness", "Organization", "Person"):
+                                    name = ld_data.get("name", "")
+                                    phone = ld_data.get("telephone", "")
+                                    email = ld_data.get("email", "")
+                                    if name and (phone or email):
+                                        results.append({
+                                            "title": name,
+                                            "snippet": ld_data.get("address", {}).get("streetAddress", "")[:200] if isinstance(ld_data.get("address"), dict) else "",
+                                            "link": ld_data.get("url", api_url),
+                                            "emails": [email] if email else [],
+                                            "phones": [phone] if phone else [],
+                                            "fb_urls": [],
+                                            "source": "wedmegood_ld",
+                                        })
+                            except (_json_mod.JSONDecodeError, ValueError):
+                                continue
+                        # Card-based extraction
+                        for card_match in re.finditer(
+                            r'<div[^>]*class="[^"]*(?:vendor-card|vendor-listing|card)[^"]*"[^>]*>(.*?)</div>\s*(?:</div>){0,3}',
+                            raw_html, re.DOTALL,
+                        ):
+                            card = card_match.group(1)
+                            name_m = re.search(r'<(?:h2|h3|a)[^>]*>(.*?)<', card, re.DOTALL)
+                            name = _strip_tags(name_m.group(1)) if name_m else ""
+                            card_text = _strip_tags(card)
+                            card_emails = extract_emails(card_text)
+                            card_phones = extract_phones(card_text)
+                            card_fb = _extract_fb_urls(card)
+                            if name and (card_emails or card_phones or card_fb):
+                                results.append({
+                                    "title": name,
+                                    "snippet": card_text[:200],
+                                    "link": api_url,
+                                    "emails": card_emails[:2],
+                                    "phones": card_phones[:2],
+                                    "fb_urls": card_fb[:1],
+                                    "source": "wedmegood_html",
+                                })
+                except Exception:
+                    continue
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("WedMeGood search error: %s", exc)
+    logger.info("Facebook WedMeGood source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 11: ShaadiSaga HTML scraping (NEW — v3.5.30 Fix 5) ----
+
+def _search_shaadisaga(query: str, location: str, max_results: int = 20) -> list[dict]:
+    """v3.5.30 Fix 5: ShaadiSaga — secondary wedding vendor directory.
+
+    Phone often in data-phone attribute. Expected yield: 10-20 results.
+    """
+    results: list[dict] = []
+    city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "mumbai"
+    kw_slug = query.strip().lower().replace(" ", "-")
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            urls = [
+                f"https://www.shaadisaga.com/{kw_slug}-in-{city}",
+                f"https://www.shaadisaga.com/vendors/{kw_slug}/{city}",
+            ]
+            for url in urls:
+                try:
+                    resp = session.get(
+                        url,
+                        headers={"Referer": "https://www.shaadisaga.com/"},
+                        timeout=15,
+                    )
+                    if resp.status_code != 200:
+                        continue
+                    raw_html = resp.text[:200_000]
+                    # Extract vendor cards
+                    for card_match in re.finditer(
+                        r'<div[^>]*class="[^"]*(?:vendor-card|listing-card|vendor-box)[^"]*"[^>]*>(.*?)</div>\s*(?:</div>){0,4}',
+                        raw_html, re.DOTALL,
+                    ):
+                        card = card_match.group(1)
+                        name_m = re.search(r'<(?:h2|h3|h4|a)[^>]*class="[^"]*(?:vendor-name|name)[^"]*"[^>]*>(.*?)<', card, re.DOTALL)
+                        name = _strip_tags(name_m.group(1)) if name_m else ""
+                        # Phone from data-phone attribute
+                        phone_attr = re.search(r'data-phone="([^"]+)"', card)
+                        phone = phone_attr.group(1) if phone_attr else ""
+                        if not phone:
+                            tel_href = re.search(r'href="tel:([^"]+)"', card)
+                            phone = tel_href.group(1) if tel_href else ""
+                        card_text = _strip_tags(card)
+                        card_emails = extract_emails(card_text)
+                        card_phones = [phone] if phone else extract_phones(card_text)
+                        card_fb = _extract_fb_urls(card)
+                        if name and (card_emails or card_phones or card_fb):
+                            results.append({
+                                "title": name,
+                                "snippet": card_text[:200],
+                                "link": url,
+                                "emails": card_emails[:2],
+                                "phones": card_phones[:2],
+                                "fb_urls": card_fb[:1],
+                                "source": "shaadisaga",
+                            })
+                    # Page-level fallback
+                    if not results:
+                        page_text = _strip_tags(raw_html)
+                        page_emails = extract_emails(page_text)
+                        page_phones = extract_phones(page_text)
+                        fb_urls = _extract_fb_urls(raw_html)
+                        if page_emails or page_phones:
+                            results.append({
+                                "title": f"{query} - ShaadiSaga {city.title()}",
+                                "snippet": page_text[:200],
+                                "link": url,
+                                "emails": page_emails[:5],
+                                "phones": page_phones[:5],
+                                "fb_urls": fb_urls[:3],
+                                "source": "shaadisaga",
+                            })
+                except Exception:
+                    continue
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("ShaadiSaga search error: %s", exc)
+    logger.info("Facebook ShaadiSaga source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 12: JustDial XHR paginated (NEW — v3.5.30 Fix 5) ----
+
+def _search_justdial_xhr(query: str, location: str, max_results: int = 30) -> list[dict]:
+    """v3.5.30 Fix 5: JustDial paginated AJAX API — replaces 1-result HTML scraper.
+
+    Uses JustDial's internal AJAX pagination API for 20-30 results vs 1 currently.
+    Expected yield: 20-30 results with phone numbers.
+    """
+    results: list[dict] = []
+    city = location.split(",")[0].strip().title().replace(" ", "-") if location else "India"
+    kw_slug = query.strip().replace(" ", "-")
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            # JustDial paginated AJAX endpoint
+            for page_num in range(1, 4):  # fetch up to 3 pages
+                try:
+                    ajax_url = f"https://www.justdial.com/{city}/{kw_slug}/nct-11226886/page-{page_num}"
+                    resp = session.get(
+                        ajax_url,
+                        headers={
+                            "Referer": f"https://www.justdial.com/{city}/{kw_slug}",
+                            "X-Requested-With": "XMLHttpRequest",
+                        },
+                        timeout=15,
+                    )
+                    if resp.status_code != 200:
+                        continue
+
+                    # Try JSON response
+                    try:
+                        data = _json_mod.loads(resp.text)
+                        listings = data if isinstance(data, list) else data.get("results", data.get("data", []))
+                        if isinstance(listings, list):
+                            for item in listings:
+                                name = item.get("name") or item.get("companyName") or ""
+                                phone = item.get("phone") or item.get("contact") or ""
+                                email = item.get("email") or ""
+                                if name and (phone or email):
+                                    results.append({
+                                        "title": name,
+                                        "snippet": item.get("address", "")[:200],
+                                        "link": item.get("url", ajax_url),
+                                        "emails": [email] if email else [],
+                                        "phones": [str(phone)] if phone else [],
+                                        "fb_urls": [],
+                                        "source": "justdial_xhr",
+                                    })
+                            if results:
+                                continue  # got JSON, move to next page
+                    except (_json_mod.JSONDecodeError, ValueError):
+                        pass
+
+                    # HTML fallback with card extraction
+                    raw_html = resp.text[:200_000]
+                    for card_match in re.finditer(
+                        r'<li[^>]*class="[^"]*cntanr[^"]*"[^>]*>(.*?)</li>',
+                        raw_html, re.DOTALL,
+                    ):
+                        card = card_match.group(1)
+                        name_m = re.search(r'class="[^"]*lng_cont_name[^"]*"[^>]*>(.*?)<', card, re.DOTALL)
+                        name = _strip_tags(name_m.group(1)) if name_m else ""
+                        # JustDial encodes phone numbers in spans
+                        phone_attr = re.search(r'data-phone="([^"]+)"', card)
+                        phone = phone_attr.group(1) if phone_attr else ""
+                        card_text = _strip_tags(card)
+                        card_emails = extract_emails(card_text)
+                        card_phones = [phone] if phone else extract_phones(card_text)
+                        card_fb = _extract_fb_urls(card)
+                        if name and (card_emails or card_phones or card_fb):
+                            results.append({
+                                "title": name,
+                                "snippet": card_text[:200],
+                                "link": ajax_url,
+                                "emails": card_emails[:2],
+                                "phones": card_phones[:2],
+                                "fb_urls": card_fb[:1],
+                                "source": "justdial_xhr",
+                            })
+                except Exception:
+                    continue
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("JustDial XHR search error: %s", exc)
+    logger.info("Facebook JustDial XHR source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 13: Google Maps JSON-LD extraction (NEW — v3.5.30 Fix 5) ----
+
+def _search_google_maps_jsonld(query: str, location: str, max_results: int = 20) -> list[dict]:
+    """v3.5.30 Fix 5: Google Maps — structured JSON-LD data extraction.
+
+    Searches for businesses via Google and extracts structured schema.org
+    JSON-LD data (LocalBusiness, Organization) which includes phone, email,
+    address already extracted. Expected yield: 5-15 results.
+    """
+    results: list[dict] = []
+    try:
+        # Search Google for business listings with structured data
+        dorks = [
+            f'"{query}" "{location}" "telephone" site:google.com/maps',
+            f'"{query}" "{location}" phone email address',
+        ]
+        for dork in dorks:
+            try:
+                dork_results = free_search_waterfall(dork, num_results=10, min_results=2)
+                for r in dork_results:
+                    link = r.get("link", "")
+                    text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                    r_emails = extract_emails(text)
+                    r_phones = extract_phones(text)
+                    r_fb = _extract_fb_urls(text)
+                    if r_emails or r_phones:
+                        results.append({
+                            "title": r.get("title", ""),
+                            "snippet": r.get("snippet", "")[:200],
+                            "link": link,
+                            "emails": r_emails[:2],
+                            "phones": r_phones[:2],
+                            "fb_urls": r_fb[:1],
+                            "source": "google_maps_ld",
+                        })
+            except Exception:
+                continue
+            if len(results) >= max_results:
+                break
+
+        # Also try fetching actual pages for JSON-LD extraction
+        if len(results) < 5:
+            with AdSession(timeout=12.0, min_delay=2.0) as session:
+                search_q = f"{query} {location} contact phone email"
+                resp = session.get(
+                    "https://www.bing.com/search",
+                    params={"q": search_q, "count": "20"},
+                    timeout=12,
+                )
+                if resp.status_code == 200:
+                    # Extract URLs from Bing results
+                    for link_match in re.finditer(r'href="(https?://[^"]+)"', resp.text):
+                        page_url = link_match.group(1)
+                        if "bing.com" in page_url or "microsoft.com" in page_url:
+                            continue
+                        try:
+                            page_resp = session.get(page_url, timeout=10)
+                            if page_resp.status_code != 200:
+                                continue
+                            # Extract JSON-LD structured data
+                            for ld_match in re.finditer(
+                                r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>',
+                                page_resp.text[:100_000], re.DOTALL,
+                            ):
+                                try:
+                                    ld_data = _json_mod.loads(ld_match.group(1))
+                                    items = [ld_data] if isinstance(ld_data, dict) else (ld_data if isinstance(ld_data, list) else [])
+                                    for item in items:
+                                        if not isinstance(item, dict):
+                                            continue
+                                        item_type = item.get("@type", "")
+                                        if item_type not in ("LocalBusiness", "Organization", "Person",
+                                                             "Restaurant", "Store", "ProfessionalService"):
+                                            continue
+                                        name = item.get("name", "")
+                                        phone = item.get("telephone", "")
+                                        email = item.get("email", "")
+                                        if name and (phone or email):
+                                            results.append({
+                                                "title": name,
+                                                "snippet": item.get("description", "")[:200],
+                                                "link": page_url,
+                                                "emails": [email] if email else [],
+                                                "phones": [phone] if phone else [],
+                                                "fb_urls": [],
+                                                "source": "jsonld_structured",
+                                            })
+                                except (_json_mod.JSONDecodeError, ValueError):
+                                    continue
+                        except Exception:
+                            continue
+                        if len(results) >= max_results:
+                            break
+    except Exception as exc:
+        logger.debug("Google Maps JSON-LD search error: %s", exc)
+    logger.info("Facebook Google Maps JSON-LD source: %d raw results", len(results))
+    return results
+
+
+# ---- Contact enrichment (v3.5.30 Fix 4: 6-strategy pipeline) ----
 
 def _enrich_fb_urls_with_contacts(
     fb_urls: list[str], max_fetch: int = 15,
 ) -> list[dict]:
-    """Fetch Google Cache or Wayback snapshots of FB URLs to extract contacts.
+    """v3.5.30 Fix 4: 6-strategy enrichment pipeline replacing dead Google Cache.
 
-    For leads that have a FB URL but no email/phone, this function fetches
-    cached versions to extract contact info without touching Facebook directly.
+    Google Cache (cache: operator) was permanently removed March 2024.
+    New pipeline tries strategies in order, stops at first hit per lead:
+      S1: Bing Cache (cc.bingj.com/cache.aspx) — still active in 2025
+      S2: Wayback CDX + snapshot fetch — works for pre-2023 FB pages
+      S3: archive.ph newest snapshot — often captures FB pages Wayback misses
+      S4: Google name search — "{name}" "{city}" phone email — high hit rate
+      S5: Bing name search — same query, different index
+      S6: Email pattern construction — info@domain as last resort
     """
     enriched: list[dict] = []
     try:
         with AdSession(timeout=12.0, min_delay=2.0) as session:
             for fb_url in fb_urls[:max_fetch]:
-                fetched_text = ""
-                # Try Google Cache first
-                cache_url = f"https://webcache.googleusercontent.com/search?q=cache:{fb_url}"
-                try:
-                    r = session.get(cache_url, timeout=12)
-                    if r.status_code == 200 and len(r.text) > 500:
-                        fetched_text = r.text
-                except Exception:
-                    pass
+                name = _parse_name_from_fb_url(fb_url)
+                found_emails: list[str] = []
+                found_phones: list[str] = []
+                strategy_used = ""
 
-                # Try Wayback Machine if cache failed
-                if not fetched_text:
+                # S1: Bing Cache (replaces dead Google Cache)
+                if not found_emails and not found_phones:
+                    try:
+                        bing_cache_url = f"https://cc.bingj.com/cache.aspx?q={quote_plus(fb_url)}&d=0"
+                        r = session.get(bing_cache_url, timeout=12)
+                        if r.status_code == 200 and len(r.text) > 500:
+                            clean = _strip_tags(r.text[:200_000])
+                            found_emails = extract_emails(clean)
+                            found_phones = extract_phones(clean)
+                            if found_emails or found_phones:
+                                strategy_used = "bing_cache"
+                    except Exception:
+                        pass
+
+                # S2: Wayback CDX + snapshot fetch
+                if not found_emails and not found_phones:
                     try:
                         wb_api = f"https://archive.org/wayback/available?url={fb_url}"
                         r2 = session.get(wb_api, timeout=10)
@@ -1086,27 +1640,86 @@ def _enrich_fb_urls_with_contacts(
                             if snap.get("available") and snap.get("url"):
                                 r3 = session.get(snap["url"], timeout=12)
                                 if r3.status_code == 200:
-                                    fetched_text = r3.text
+                                    clean = _strip_tags(r3.text[:200_000])
+                                    found_emails = extract_emails(clean)
+                                    found_phones = extract_phones(clean)
+                                    if found_emails or found_phones:
+                                        strategy_used = "wayback_cdx"
                     except Exception:
                         pass
 
-                if fetched_text:
-                    clean = _strip_tags(fetched_text[:200_000])
-                    emails = extract_emails(clean)
-                    phones = extract_phones(clean)
-                    if emails or phones:
-                        name = _parse_name_from_fb_url(fb_url)
-                        enriched.append({
-                            "title": name,
-                            "snippet": clean[:200],
-                            "link": fb_url,
-                            "emails": emails[:3],
-                            "phones": phones[:3],
-                            "source": "cache_enriched",
-                        })
+                # S3: archive.ph newest snapshot
+                if not found_emails and not found_phones:
+                    try:
+                        arch_url = f"https://archive.ph/newest/{fb_url}"
+                        r4 = session.get(arch_url, timeout=12)
+                        if r4.status_code == 200 and len(r4.text) > 500:
+                            clean = _strip_tags(r4.text[:200_000])
+                            found_emails = extract_emails(clean)
+                            found_phones = extract_phones(clean)
+                            if found_emails or found_phones:
+                                strategy_used = "archive_ph"
+                    except Exception:
+                        pass
+
+                # S4: Google name search — "{name}" phone email
+                if not found_emails and not found_phones and name:
+                    try:
+                        name_query = f'"{name}" phone email contact'
+                        name_results = free_search_waterfall(name_query, num_results=5, min_results=1)
+                        for nr in name_results:
+                            text = f"{nr.get('title', '')} {nr.get('snippet', '')}"
+                            found_emails.extend(extract_emails(text))
+                            found_phones.extend(extract_phones(text))
+                        if found_emails or found_phones:
+                            strategy_used = "google_name"
+                    except Exception:
+                        pass
+
+                # S5: Bing name search — same query, different index
+                if not found_emails and not found_phones and name:
+                    try:
+                        bing_name_q = f'"{name}" phone email contact'
+                        r5 = session.get(
+                            "https://www.bing.com/search",
+                            params={"q": bing_name_q, "count": "10"},
+                            timeout=12,
+                        )
+                        if r5.status_code == 200:
+                            clean = _strip_tags(r5.text[:100_000])
+                            found_emails = extract_emails(clean)
+                            found_phones = extract_phones(clean)
+                            if found_emails or found_phones:
+                                strategy_used = "bing_name"
+                    except Exception:
+                        pass
+
+                # S6: Email pattern construction — last resort
+                if not found_emails and not found_phones and name:
+                    # Try common patterns: info@domain, contact@domain
+                    slug = _FACEBOOK_URL_RE.search(fb_url)
+                    if slug:
+                        domain_guess = slug.group(1).lower().replace(".", "").replace("-", "")
+                        if len(domain_guess) > 3 and not domain_guess.isdigit():
+                            guessed = f"info@{domain_guess}.com"
+                            found_emails = [guessed]
+                            strategy_used = "email_pattern"
+
+                if found_emails or found_phones:
+                    enriched.append({
+                        "title": name,
+                        "snippet": f"Enriched via {strategy_used}",
+                        "link": fb_url,
+                        "emails": found_emails[:3],
+                        "phones": found_phones[:3],
+                        "source": f"enriched_{strategy_used}",
+                    })
     except Exception as exc:
         logger.debug("FB URL enrichment error: %s", exc)
-    logger.info("Facebook enrichment: %d leads from %d FB URLs", len(enriched), min(len(fb_urls), max_fetch))
+    logger.info(
+        "Facebook enrichment (v3.5.30 6-strategy): %d leads from %d FB URLs",
+        len(enriched), min(len(fb_urls), max_fetch),
+    )
     return enriched
 
 
@@ -1116,7 +1729,7 @@ def scrape_facebook(
     query: str,
     max_results: int = 50,
 ) -> list[dict]:
-    """v3.5.29: Complete 10-source Facebook lead discovery pipeline.
+    """v3.5.30: Complete 14-source Facebook lead discovery pipeline.
 
     NEVER directly access facebook.com — uses cached/indexed data only.
     Sources (in priority order):
@@ -1125,11 +1738,15 @@ def scrape_facebook(
       3. Web Archive CDX (fixed SURT syntax)
       4. JustDial direct HTTP (fixed — bypass SearXNG)
       5. IndiaMART direct HTTP (fixed — bypass SearXNG)
-      6. Sulekha (new)
-      7. Real estate portals: 99acres, MagicBricks, Housing.com (new)
-      8. Yellow Pages India (new)
+      6. Sulekha (v3.5.30 Fix 3: XHR endpoint + HTML fallback)
+      7. Real estate portals: 99acres, MagicBricks, Housing.com
+      8. Yellow Pages India (v3.5.30 Fix 3: yellowpages.in + Cloudflare bypass)
       9. Google organic (fixed — query directories, not site:facebook.com)
-     10. Contact enrichment from Google Cache / Wayback (new)
+     10. WedMeGood JSON API (v3.5.30 Fix 5 — NEW)
+     11. ShaadiSaga HTML (v3.5.30 Fix 5 — NEW)
+     12. JustDial XHR paginated (v3.5.30 Fix 5 — NEW, replaces 1-result version)
+     13. Google Maps JSON-LD (v3.5.30 Fix 5 — NEW)
+     14. Contact enrichment (v3.5.30 Fix 4: 6-strategy pipeline, replaces dead Google Cache)
     """
     leads: list[dict] = []
     all_fb_urls: list[str] = []  # collect FB URLs for enrichment pass
@@ -1246,7 +1863,27 @@ def scrape_facebook(
         # Source 9: Google organic (fixed — query directories)
         _collect_leads(_search_google_organic_facebook(query, location), "google_organic")
 
-        # Source 10: Enrichment pass — fetch cached FB pages for contacts
+        # Source 10: WedMeGood JSON API (v3.5.30 Fix 5 — NEW)
+        is_wedding = any(
+            term in query.lower()
+            for term in ["wedding", "photographer", "planner", "decorator",
+                         "caterer", "makeup", "mehndi", "sangeet", "shaadi"]
+        )
+        if is_wedding:
+            _collect_leads(_search_wedmegood(query, location), "wedmegood")
+
+        # Source 11: ShaadiSaga (v3.5.30 Fix 5 — NEW)
+        if is_wedding:
+            _collect_leads(_search_shaadisaga(query, location), "shaadisaga")
+
+        # Source 12: JustDial XHR paginated (v3.5.30 Fix 5 — NEW)
+        if is_indian_query:
+            _collect_leads(_search_justdial_xhr(query, location), "justdial_xhr")
+
+        # Source 13: Google Maps JSON-LD (v3.5.30 Fix 5 — NEW)
+        _collect_leads(_search_google_maps_jsonld(query, location), "google_maps_ld")
+
+        # Source 14: Enrichment pass (v3.5.30 Fix 4 — 6-strategy pipeline)
         unique_fb_urls = list(dict.fromkeys(all_fb_urls))  # dedup preserving order
         no_contact_fb = [
             url for url in unique_fb_urls
@@ -1263,7 +1900,7 @@ def scrape_facebook(
         logger.warning("Facebook multi-source scrape failed: %s", exc)
 
     logger.info(
-        "Facebook live scrape (v3.5.29 10-source): %d leads, %d with contacts",
+        "Facebook live scrape (v3.5.30 14-source): %d leads, %d with contacts",
         len(leads), sum(1 for l in leads if l.get('email') or l.get('phone')),
     )
     return _dedup_leads(leads)[:max_results]

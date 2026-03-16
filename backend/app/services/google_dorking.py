@@ -184,18 +184,49 @@ def _build_all_dork_queries(keyword: str, platform: str, max_queries: int = 5) -
 
 # ─── Method 1: Patchright (FREE) ─────────────────────────────────────────────
 
+def _extract_real_url(href: str) -> str:
+    """v3.5.30 Fix 2: Unwrap DDG redirect URLs.
+
+    DDG wraps all href values in //duckduckgo.com/l/?uddg=<encoded_url>.
+    This function extracts the real destination URL.
+    """
+    if not href:
+        return href
+    if "uddg=" in href:
+        try:
+            from urllib.parse import parse_qs, unquote, urlparse as _urlparse
+            parsed = _urlparse(href)
+            params = parse_qs(parsed.query)
+            real = params.get("uddg", [None])[0]
+            if real:
+                return unquote(real)
+        except Exception:
+            pass
+    # Also handle //duckduckgo.com/l/... without uddg
+    if href.startswith("//"):
+        href = "https:" + href
+    if "duckduckgo.com" in href and "/l/" in href:
+        return ""  # can't unwrap, skip
+    return href
+
+
 async def _search_ddg_patchright(
     query: str,
     num_results: int = 10,
     headless: bool = True,
     proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """v3.5.29 Fix 2: Search DuckDuckGo HTML endpoint using Patchright.
+    """v3.5.30 Fix 2: Search DuckDuckGo using Patchright with cookie priming.
 
-    The JS SPA at duckduckgo.com detects headless Chrome via navigator.webdriver.
-    html.duckduckgo.com/html/ is the pure-HTML accessibility endpoint — no JS
-    gate, no CAPTCHA. Patchright still provides anti-detection TLS fingerprints.
-    Returns empty list if Patchright is not available (graceful degradation).
+    Root cause of 0 results in v3.5.29 — 3 compounding bugs:
+      1. Missing cookies: DDG requires dc= and s= cookies from visiting
+         duckduckgo.com before the HTML endpoint works.
+      2. Wrong wait condition: domcontentloaded fires before results render.
+      3. DDG URL redirect not unwrapped: href values are wrapped in uddg=.
+
+    Fix: Navigate to duckduckgo.com first (primes cookies), type query in
+    search box, press Enter, wait for .results--main or #links selector.
+    Falls back to DDG Lite if main endpoint yields 0.
     """
     try:
         from app.services.patchright_engine import new_page, safe_goto, random_delay
@@ -209,57 +240,91 @@ async def _search_ddg_patchright(
         if page is None:
             logger.info("Patchright page creation returned None — skipping")
             return []
-        from urllib.parse import quote_plus
 
-        # v3.5.29 Fix 2: Use HTML endpoint (not JS SPA)
-        url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
-        success = await safe_goto(page, url)
+        # Step 1: Navigate to duckduckgo.com to prime cookies (dc=, s=)
+        success = await safe_goto(page, "https://duckduckgo.com/")
         if not success:
             return []
+        await random_delay(1.0, 2.0)
 
+        # Step 2: Type query in search box and press Enter (human-like)
+        search_input = await page.query_selector(
+            'input[name="q"], input#searchbox_input, input[type="text"]'
+        )
+        if search_input:
+            await search_input.fill(query)
+            await random_delay(0.3, 0.8)
+            await page.keyboard.press("Enter")
+        else:
+            # Fallback: direct navigation with cookies already set
+            from urllib.parse import quote_plus
+            url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
+            await safe_goto(page, url)
+
+        # Step 3: Wait for results to render (not just DOM loaded)
+        try:
+            await page.wait_for_selector(
+                ".results--main, #links, .web-result, article[data-testid='result']",
+                timeout=12000,
+            )
+        except Exception:
+            logger.debug("DDG wait_for_selector timed out — extracting anyway")
         await random_delay(1.5, 3.0)
 
-        # Extract search results from DDG HTML endpoint
-        # This endpoint uses simple <a rel="nofollow"> links, no JS rendering needed
+        # Step 4: Extract results with URL unwrapping
         results = await page.evaluate("""() => {
             const items = [];
-            // DDG HTML endpoint: results are in <a rel="nofollow"> tags
-            const links = document.querySelectorAll('a[rel="nofollow"]');
-            links.forEach(el => {
-                let href = el.href || '';
-                // DDG wraps URLs with uddg= param
+            // Try multiple selector strategies (SPA vs HTML endpoint)
+            const containers = document.querySelectorAll(
+                'article[data-testid="result"], .web-result, .result, a[rel="nofollow"]'
+            );
+            const seen = new Set();
+            containers.forEach(el => {
+                let linkEl, titleEl, snippetEl;
+                // SPA results
+                linkEl = el.querySelector('a[data-testid="result-title-a"], a.result__a, a[href]');
+                titleEl = el.querySelector('h2, h3, a[data-testid="result-title-a"], a.result__a');
+                snippetEl = el.querySelector(
+                    'span[data-testid="result-snippet"], .result__snippet, .result-snippet'
+                );
+                // If the element itself is an <a> (HTML endpoint)
+                if (!linkEl && el.tagName === 'A') {
+                    linkEl = el;
+                    titleEl = el;
+                    const row = el.closest('tr') || el.parentElement;
+                    if (row) snippetEl = row.querySelector('.result-snippet, td.result-snippet');
+                }
+                if (!linkEl) return;
+                let href = linkEl.href || '';
+                // Unwrap DDG redirect URLs
                 if (href.includes('uddg=')) {
                     try {
                         const u = new URL(href);
                         href = decodeURIComponent(u.searchParams.get('uddg') || href);
                     } catch(e) {}
                 }
-                if (href.startsWith('http') && !href.includes('duckduckgo.com')) {
-                    const title = el.textContent || '';
-                    // Find snippet in next sibling or parent's snippet element
-                    const row = el.closest('tr') || el.parentElement;
-                    let snippet = '';
-                    if (row) {
-                        const snippetEl = row.querySelector('.result-snippet, td.result-snippet');
-                        if (snippetEl) snippet = snippetEl.textContent || '';
-                    }
-                    if (title.trim().length > 3) {
-                        items.push({
-                            title: title.trim(),
-                            snippet: snippet.trim(),
-                            link: href
-                        });
-                    }
+                if (!href.startsWith('http') || href.includes('duckduckgo.com')) return;
+                if (seen.has(href)) return;
+                seen.add(href);
+                const title = (titleEl ? titleEl.textContent : '').trim();
+                const snippet = (snippetEl ? snippetEl.textContent : '').trim();
+                if (title.length > 3) {
+                    items.push({ title, snippet, link: href });
                 }
             });
             return items;
         }""")
 
-        logger.info("Patchright DDG HTML dorking: %d results for query", len(results or []))
-        return results or []
+        logger.info("Patchright DDG dorking: %d results for query", len(results or []))
+
+        # Step 5: If main endpoint yielded 0, try DDG Lite fallback
+        if not results:
+            results = await _search_ddg_lite_patchright(page, query)
+
+        return (results or [])[:num_results]
 
     except Exception as e:
-        logger.error("Patchright DDG HTML search error: %s", e)
+        logger.error("Patchright DDG search error: %s", e)
         return []
     finally:
         if page:
@@ -267,6 +332,60 @@ async def _search_ddg_patchright(
                 await page.context.close()
             except Exception:
                 pass
+
+
+async def _search_ddg_lite_patchright(page, query: str) -> list[dict]:
+    """v3.5.30 Fix 2: DDG Lite fallback — table-based layout, fewer bot checks.
+
+    lite.duckduckgo.com uses a simple HTML table layout that is more
+    reliable for extraction and has minimal bot protection.
+    """
+    try:
+        from app.services.patchright_engine import safe_goto, random_delay
+        from urllib.parse import quote_plus
+
+        url = f"https://lite.duckduckgo.com/lite/?q={quote_plus(query)}"
+        success = await safe_goto(page, url)
+        if not success:
+            return []
+        await random_delay(1.5, 2.5)
+
+        results = await page.evaluate("""() => {
+            const items = [];
+            const seen = new Set();
+            // DDG Lite uses table rows with class="result-link"
+            const links = document.querySelectorAll('a.result-link, td a[href]');
+            links.forEach(el => {
+                let href = el.href || '';
+                if (href.includes('uddg=')) {
+                    try {
+                        const u = new URL(href);
+                        href = decodeURIComponent(u.searchParams.get('uddg') || href);
+                    } catch(e) {}
+                }
+                if (!href.startsWith('http') || href.includes('duckduckgo.com')) return;
+                if (seen.has(href)) return;
+                seen.add(href);
+                const title = el.textContent.trim();
+                // Get snippet from next row
+                const row = el.closest('tr');
+                let snippet = '';
+                if (row && row.nextElementSibling) {
+                    const snippetTd = row.nextElementSibling.querySelector('td.result-snippet');
+                    if (snippetTd) snippet = snippetTd.textContent.trim();
+                }
+                if (title.length > 3) {
+                    items.push({ title, snippet, link: href });
+                }
+            });
+            return items;
+        }""")
+
+        logger.info("Patchright DDG Lite fallback: %d results", len(results or []))
+        return results or []
+    except Exception as e:
+        logger.debug("DDG Lite fallback error: %s", e)
+        return []
 
 
 # Legacy alias for backward compatibility

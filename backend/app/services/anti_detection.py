@@ -65,19 +65,46 @@ if not _HAS_CURL_CFFI and httpx is None:
 # Each profile pairs an impersonate target with a matching User-Agent
 # so TLS fingerprint and UA header always agree (Issue #3 fix).
 
+# v3.5.30 Fix 1: chrome130 was NEVER added to curl_cffi upstream — gap between
+# chrome124 and chrome131.  Removed chrome130 entirely.  Added _best_impersonation()
+# probe so future version gaps never break the app again.
+
+# Ordered fallback chain: newest first, all validated in curl_cffi >= 0.7
+_IMPERSONATION_CHAIN = ["chrome131", "chrome124", "chrome120", "chrome116"]
+
+
+def _best_impersonation() -> str:
+    """Probe curl_cffi for the first supported impersonation string.
+
+    Walks _IMPERSONATION_CHAIN and returns the first one that doesn't raise.
+    Result is cached for the lifetime of the process.
+    """
+    if _best_impersonation._cached:  # type: ignore[attr-defined]
+        return _best_impersonation._cached  # type: ignore[attr-defined]
+    if not _HAS_CURL_CFFI or CffiSession is None:
+        _best_impersonation._cached = "chrome131"  # type: ignore[attr-defined]
+        return "chrome131"
+    for candidate in _IMPERSONATION_CHAIN:
+        try:
+            s = CffiSession(impersonate=candidate)
+            s.close()
+            _best_impersonation._cached = candidate  # type: ignore[attr-defined]
+            logger.info("curl_cffi impersonation probe: using %s", candidate)
+            return candidate
+        except Exception:
+            continue
+    _best_impersonation._cached = "chrome131"  # type: ignore[attr-defined]
+    return "chrome131"
+
+
+_best_impersonation._cached = ""  # type: ignore[attr-defined]
+
 _FINGERPRINT_PROFILES = [
     {
         "impersonate": "chrome131",
         "ua": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-        ),
-    },
-    {
-        "impersonate": "chrome130",
-        "ua": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
         ),
     },
     {
@@ -94,8 +121,14 @@ _FINGERPRINT_PROFILES = [
             "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         ),
     },
+    {
+        "impersonate": "chrome116",
+        "ua": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+        ),
+    },
     # R3-B10/B11 fix: use curl_cffi validated impersonate strings only
-    # safari18_0 is not supported in most curl_cffi versions; use safari17_0
     {
         "impersonate": "safari17_0",
         "ua": (
@@ -315,9 +348,9 @@ class AdSession:
         self._retries = retries
         self._session: Any = None
 
-        # Pick a paired profile for consistent TLS + UA
-        # R3-1 fix: When custom impersonate is provided, look up the matching UA
-        # to avoid TLS fingerprint / User-Agent mismatch
+        # v3.5.30 Fix 1: Use _best_impersonation() probe to select a
+        # validated impersonation string, then look up the matching UA.
+        # This prevents crashes from unsupported strings like chrome130.
         profile = _random_profile()
         if impersonate:
             matched = next(
@@ -328,13 +361,18 @@ class AdSession:
                 self._impersonate = matched["impersonate"]
                 self._ua = matched["ua"]
             else:
-                # N3 fix: unrecognized impersonate target — fall back to random profile
-                # to avoid passing unknown string to curl_cffi which may raise ValueError
-                logger.warning(
-                    "Unknown impersonate target %r — using random profile", impersonate
+                # Unrecognized target — probe for best supported string
+                best = _best_impersonation()
+                best_profile = next(
+                    (p for p in _FINGERPRINT_PROFILES if p["impersonate"] == best),
+                    profile,
                 )
-                self._impersonate = profile["impersonate"]
-                self._ua = profile["ua"]
+                logger.warning(
+                    "Unsupported impersonate target %r — falling back to %s",
+                    impersonate, best_profile["impersonate"],
+                )
+                self._impersonate = best_profile["impersonate"]
+                self._ua = best_profile["ua"]
         else:
             self._impersonate = profile["impersonate"]
             self._ua = profile["ua"]
