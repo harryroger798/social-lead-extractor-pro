@@ -3,6 +3,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -988,16 +989,47 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             except Exception as e:
                 logger.warning("Bio link following failed: %s", e)
 
-        # ── v3.5.4: B2B Platform Scraping ─────────────────────────────────
+        # ── v3.5.34 P4: B2B Platform Scraping with Relevance Gating ───────
         # Dedicated scrapers for IndiaMART, Apollo, TradeIndia, ExportersIndia,
         # JustDial, Google Maps B2B, RocketReach, Crunchbase
-        b2b_platforms = [
-            p for p in config.platforms
-            if p in (
-                "indiamart", "apollo", "tradeindia", "exportersindia",
-                "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
-            )
-        ]
+        # v3.5.34 P4: Skip irrelevant platforms based on location context
+        # e.g. Apollo/Crunchbase/RocketReach are useless for "Plumbers Mumbai"
+        _ALL_B2B = {
+            "indiamart", "apollo", "tradeindia", "exportersindia",
+            "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
+        }
+        # v3.5.34 P4: India-specific platforms (only use when location is Indian)
+        _INDIA_B2B = {"indiamart", "tradeindia", "exportersindia", "justdial"}
+        # v3.5.34 P4: Western/global platforms (skip for clearly local Indian queries)
+        _WESTERN_B2B = {"apollo", "rocketreach", "crunchbase"}
+        # v3.5.34 P4: Known Indian location signals
+        _INDIAN_LOCATIONS = {
+            "india", "mumbai", "delhi", "bangalore", "bengaluru", "kolkata",
+            "chennai", "hyderabad", "pune", "ahmedabad", "jaipur", "lucknow",
+            "kanpur", "nagpur", "indore", "thane", "bhopal", "visakhapatnam",
+            "patna", "vadodara", "ghaziabad", "ludhiana", "agra", "nashik",
+            "faridabad", "meerut", "rajkot", "varanasi", "srinagar", "coimbatore",
+            "noida", "gurgaon", "gurugram", "chandigarh", "kochi", "cochin",
+        }
+
+        b2b_platforms_raw = [p for p in config.platforms if p in _ALL_B2B]
+        # v3.5.34 P4: Filter by relevance
+        loc_lower = location_hint.lower() if location_hint else ""
+        is_indian_query = any(re.search(r'\b' + re.escape(city) + r'\b', loc_lower) for city in _INDIAN_LOCATIONS)
+        is_western_query = loc_lower and not is_indian_query and any(
+            re.search(r'\b' + re.escape(c) + r'\b', loc_lower) for c in ("usa", "uk", "canada", "australia", "europe", "london", "new york")
+        )
+
+        b2b_platforms = []
+        for p in b2b_platforms_raw:
+            if p in _INDIA_B2B and is_western_query:
+                logger.info("P4: Skipping %s — Western query (%s)", p, loc_lower)
+                continue
+            if p in _WESTERN_B2B and is_indian_query:
+                logger.info("P4: Skipping %s — Indian query (%s)", p, loc_lower)
+                continue
+            b2b_platforms.append(p)
+
         if b2b_platforms:
             import asyncio as _aio_b2b
             loop_b2b = _aio_b2b.get_running_loop()

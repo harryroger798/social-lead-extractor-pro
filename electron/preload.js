@@ -11,4 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   licenseRemove: () => ipcRenderer.invoke('license-remove'),
   licenseGetDeviceId: () => ipcRenderer.invoke('license-get-device-id'),
   licenseActivateOnline: (key) => ipcRenderer.invoke('license-activate-online', key),
+  // v3.5.34: Backend readiness callback via IPC
+  onBackendReady: (callback) => ipcRenderer.on('backend-ready', callback),
+  removeBackendReadyListener: (callback) => ipcRenderer.removeListener('backend-ready', callback),
 });
