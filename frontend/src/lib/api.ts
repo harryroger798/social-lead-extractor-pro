@@ -882,3 +882,55 @@ export interface OutreachLogItem {
   error: string;
   sent_at: string;
 }
+
+// ─── v3.5.35: Test Runner API ───────────────────────────────────────────────
+
+export interface TestCasePayload {
+  id: string;
+  keyword: string;
+  hasLocation: boolean;
+  platforms: string[];
+  platformGroup: string;
+  use_google_dorking: boolean;
+  use_direct_scraping: boolean;
+  toggleLabel: string;
+}
+
+export interface StartTestRequest {
+  test_cases: TestCasePayload[];
+  concurrency?: number;
+  timeout_per_case?: number;
+}
+
+export interface TestStatusResponse {
+  status: string;
+  total: number;
+  completed: number;
+  failed: number;
+  current_case: { id: string; keyword: string; group: string; toggle: string } | null;
+  progress_pct: number;
+}
+
+export async function startTestRun(payload: StartTestRequest): Promise<{ session_id: string }> {
+  return request('/api/test/start', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getTestStatus(sessionId: string): Promise<TestStatusResponse> {
+  return request(`/api/test/${sessionId}/status`);
+}
+
+export async function sendFrontendLog(sessionId: string, entry: {
+  ts: string; level: string; session_id: string; msg: string;
+}): Promise<{ ok: boolean }> {
+  return request(`/api/test/${sessionId}/frontend-log`, {
+    method: 'POST',
+    body: JSON.stringify(entry),
+  });
+}
+
+export function getTestBundleUrl(sessionId: string): string {
+  return `${API_BASE}/api/test/${sessionId}/download-bundle`;
+}

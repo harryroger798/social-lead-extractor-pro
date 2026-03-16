@@ -382,6 +382,7 @@ function startBackend() {
 
     backendProcess.stdout.on('data', (data) => {
       const msg = data.toString();
+      _pushBackendLog(msg);
       console.log(`[Backend] ${msg}`);
       if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
         backendReady = true;
@@ -395,6 +396,7 @@ function startBackend() {
 
     backendProcess.stderr.on('data', (data) => {
       const msg = data.toString();
+      _pushBackendLog(msg);
       console.error(`[Backend] ${msg}`);
       if (msg.includes('Application startup complete') || msg.includes('Uvicorn running')) {
         backendReady = true;
@@ -546,6 +548,39 @@ ipcMain.handle('license-remove', () => {
 ipcMain.handle('license-get-device-id', () => {
   return getDeviceId();
 });
+
+// ─── v3.5.35: Test Runner IPC ──────────────────────────────────────────────
+
+// In-memory buffer for backend process stdout/stderr (last 2000 lines)
+const _backendLogBuffer = [];
+const BACKEND_LOG_MAX = 2000;
+
+function _pushBackendLog(line) {
+  _backendLogBuffer.push({ ts: new Date().toISOString(), msg: line });
+  if (_backendLogBuffer.length > BACKEND_LOG_MAX) {
+    _backendLogBuffer.shift();
+  }
+}
+
+ipcMain.handle('get-backend-logs', () => {
+  return _backendLogBuffer.slice();
+});
+
+ipcMain.handle('open-bundle-folder', async (_event, bundlePath) => {
+  try {
+    if (bundlePath && fs.existsSync(bundlePath)) {
+      shell.showItemInFolder(bundlePath);
+      return { success: true };
+    }
+    // Fallback: open user data folder
+    shell.openPath(app.getPath('userData'));
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+// ─── End v3.5.35 Test Runner IPC ───────────────────────────────────────────
 
 ipcMain.handle('license-activate-online', async (_event, licenseKey) => {
   const deviceId = getDeviceId();

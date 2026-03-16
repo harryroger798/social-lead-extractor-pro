@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // v3.5.34: Backend readiness callback via IPC
   onBackendReady: (callback) => ipcRenderer.on('backend-ready', callback),
   removeBackendReadyListener: (callback) => ipcRenderer.removeListener('backend-ready', callback),
+  // v3.5.35: Test runner IPC
+  getBackendLogs: () => ipcRenderer.invoke('get-backend-logs'),
+  openBundleFolder: (bundlePath) => ipcRenderer.invoke('open-bundle-folder', bundlePath),
 });

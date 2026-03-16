@@ -4,8 +4,9 @@ import {
   Key, Globe, Shield, Bell, Database, RefreshCw,
   Wifi, Plus, Trash2, Play, Upload, X, CheckCircle, XCircle,
   Info, ChevronDown, ChevronRight, LogOut, Crown,
-  FileText, Download,
+  FileText, Download, FlaskConical,
 } from 'lucide-react';
+import TestRunner from '@/components/settings/TestRunner';
 import { cn } from '@/lib/utils';
 import { fetchSettings, updateSetting, fetchProxies, addProxy, bulkImportProxies, testProxy, testAllProxies, deleteProxy, deleteAllProxies, checkFirecrawlCredits } from '@/lib/api';
 import type { ProxyItem } from '@/lib/api';
@@ -22,6 +23,7 @@ const TABS = [
   { id: 'storage', label: 'Storage', icon: Database },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'logs', label: 'Logs', icon: FileText },
+  { id: 'testing', label: 'Testing', icon: FlaskConical },
 ];
 
 const DEFAULT_SETTINGS: Record<string, string> = {
@@ -732,6 +734,14 @@ export default function Settings() {
               <div className="pt-6 p-4 bg-zinc-800/30 rounded-xl border border-[#3f3f46]">
                 <p className="text-xs text-text-muted">Proxies help avoid rate limiting and IP bans during extraction. Configure your proxies in the Proxies tab. Google Dorking does not require proxies.</p>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'testing' && (
+            <div className="max-w-none">
+              <h3 className="text-base font-semibold text-text-primary pb-2">Automated Testing</h3>
+              <p className="text-xs text-text-muted pb-6">One-click test runner with comprehensive log collection for developer analysis</p>
+              <TestRunner />
             </div>
           )}
 
