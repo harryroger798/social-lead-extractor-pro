@@ -1,10 +1,12 @@
-"""Enhanced Direct Scraper v3.5.32 — Smart routing for directory scraping.
+"""Enhanced Direct Scraper v3.5.34 — Smart routing for directory scraping.
 
-Uses a two-tier approach:
+Uses a three-tier approach (v3.5.34 P3 fix):
   Tier 1 (curl_cffi — parallel): For static/SSR directory sites that don't
       need JavaScript rendering.  Fast, low resource, can run 5-10 in parallel.
   Tier 2 (Patchright — sequential): For JS-heavy SPAs (React/Angular sites)
       that require full browser rendering.
+  Tier 3 (Dorking fallback): If Tiers 1+2 yield < 3 leads, fall back to
+      platform-specific dorking queries to find additional directory pages.
 
 The router decides which tier to use based on domain heuristics.
 """
@@ -377,6 +379,69 @@ async def run_enhanced_direct_scraping(
             len(all_leads),
         )
 
+    # v3.5.34 P3: Tier 3 — Dorking fallback when Tiers 1+2 yield < 3 leads
+    if len(all_leads) < 3 and keyword and location:
+        logger.info(
+            "  Tier 3 (Dorking fallback): Only %d leads from direct scraping, "
+            "trying dorking to find more directory pages...",
+            len(all_leads),
+        )
+        try:
+            from app.services.google_dorking import build_location_aware_queries
+            from app.services.extractor import extract_emails as _ext_emails
+            from app.services.extractor import extract_phones as _ext_phones
+
+            dork_queries = build_location_aware_queries(keyword, location, max_queries=5)
+            dork_urls: list[str] = []
+
+            # Use HTTP search to find additional directory pages
+            from app.services.google_dorking import _search_google_http
+            loop = asyncio.get_event_loop()
+            for dq in dork_queries[:3]:  # Limit to 3 queries for speed
+                try:
+                    results = await loop.run_in_executor(None, _search_google_http, dq, 5)
+                    for r in results:
+                        link = r.get("link", "")
+                        if link and link not in {u for u in urls}:
+                            dork_urls.append(link)
+                            # Also extract contacts from search snippets
+                            snippet_text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                            for em in _ext_emails(snippet_text):
+                                all_leads.append({
+                                    "name": "", "email": em, "phone": "",
+                                    "source": "dorking_fallback",
+                                    "source_url": link,
+                                    "keyword": keyword, "location": location,
+                                    "platform": "enhanced_direct",
+                                })
+                            for ph in _ext_phones(snippet_text):
+                                all_leads.append({
+                                    "name": "", "email": "", "phone": ph,
+                                    "source": "dorking_fallback",
+                                    "source_url": link,
+                                    "keyword": keyword, "location": location,
+                                    "platform": "enhanced_direct",
+                                })
+                except Exception as dork_exc:
+                    logger.debug("Tier 3 dorking query failed: %s", dork_exc)
+
+            # Scrape the newly discovered URLs
+            if dork_urls:
+                new_curl = [u for u in dork_urls if _classify_url(u) == "curl"]
+                if new_curl:
+                    dork_leads = await _scrape_urls_parallel(
+                        new_curl[:5], keyword, location
+                    )
+                    all_leads.extend(dork_leads)
+                    logger.info(
+                        "  Tier 3: %d additional leads from %d dorking URLs",
+                        len(dork_leads), len(new_curl),
+                    )
+        except ImportError:
+            logger.debug("Dorking fallback unavailable — missing imports")
+        except Exception as exc:
+            logger.debug("Tier 3 dorking fallback error: %s", exc)
+
     # Deduplicate
     seen_phones: set[str] = set()
     seen_emails: set[str] = set()
@@ -396,7 +461,7 @@ async def run_enhanced_direct_scraping(
         unique.append(lead)
 
     logger.info(
-        "=== Enhanced Direct Scraper Complete: %d unique leads ===",
+        "=== Enhanced Direct Scraper Complete: %d unique leads (3-tier) ===",
         len(unique),
     )
     return unique[:max_leads]

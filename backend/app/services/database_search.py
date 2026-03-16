@@ -150,21 +150,115 @@ def _infer_lead_country(lead: dict) -> str:
     return ""
 
 
+def _location_confidence_score(lead: dict, target_country: str, target: str) -> int:
+    """v3.5.34 P1: Compute a confidence score for location match.
+
+    Returns:
+      +3  Strong match (explicit country field matches)
+      +2  Good match (phone prefix or email TLD matches)
+      +1  Weak match (city/bio text matches)
+       0  No signal (no location data at all — benefit of the doubt)
+      -1  Weak contradiction (city/bio suggests different country)
+      -2  Strong contradiction (phone/email TLD suggests different country)
+
+    Decision rule: score >= 0 → KEEP, score < 0 → DROP
+    """
+    score = 0
+    has_any_signal = False
+
+    # Signal 0: Explicit country field
+    explicit_country = str(lead.get("country", "")).strip().lower()
+    if explicit_country:
+        has_any_signal = True
+        if explicit_country == target_country or target in explicit_country or explicit_country in target:
+            return 3  # Strong match — no need to check further
+        else:
+            score -= 2  # Strong contradiction
+
+    # Signal 1: Phone prefix
+    phone = lead.get("phone", "").strip()
+    if phone and phone.startswith("+"):
+        for prefix, country in _PHONE_PREFIX_COUNTRY.items():
+            if phone.startswith(prefix):
+                has_any_signal = True
+                if country == target_country or target in country or country in target:
+                    score += 2
+                else:
+                    score -= 2
+                break
+
+    # Signal 2: Email TLD
+    email = lead.get("email", "").strip().lower()
+    if email and "@" in email:
+        domain = email.split("@")[-1]
+        for tld, country in sorted(_EMAIL_TLD_COUNTRY.items(), key=lambda x: -len(x[0])):
+            if domain.endswith(tld):
+                has_any_signal = True
+                if country == target_country or target in country or country in target:
+                    score += 2
+                else:
+                    score -= 1  # Email TLD contradiction is weaker (people use foreign domains)
+                break
+
+    # Signal 3: Location/address/city fields
+    for field in ("location", "address", "city"):
+        val = lead.get(field, "").strip().lower()
+        if val:
+            for city, country in _CITY_COUNTRY_MAP.items():
+                if city in val:
+                    has_any_signal = True
+                    if country == target_country or target in country or country in target:
+                        score += 1
+                    else:
+                        score -= 1
+                    break
+            # Also check if target location string appears directly
+            if target in val:
+                has_any_signal = True
+                score += 1
+
+    # Signal 4: Bio/industry/company text
+    for field in ("bio", "industry", "company"):
+        val = lead.get(field, "").strip().lower()
+        if val:
+            for city, country in _CITY_COUNTRY_MAP.items():
+                if city in val:
+                    has_any_signal = True
+                    if country == target_country or target in country or country in target:
+                        score += 1
+                    else:
+                        score -= 1
+                    break
+
+    # No signal at all → score = 0 (keep with benefit of the doubt)
+    if not has_any_signal:
+        return 0
+
+    return score
+
+
 def filter_leads_by_location(
     leads: list[dict],
     target_location: str,
+    source_tag: str = "",
 ) -> list[dict]:
-    """v3.5.33 Fix #1: Post-query filter for leads from non-country databases.
+    """v3.5.34 P1: Soft confidence-scored location filter.
 
-    Instagram CSVs lack a country column, so after querying we infer each
-    lead's country and keep only those matching the target location.
+    Replaces the v3.5.33 binary pass/fail filter with a confidence-scored
+    approach. Each lead gets a score from -2 to +3:
+      score >= 0 → KEEP (match or no signal)
+      score < 0  → DROP (contradicts target location)
 
-    Leads with NO signal at all are kept (marked as 'assumed') rather than
-    discarded — they may still be relevant.
+    This recovers leads that were previously dropped due to missing metadata
+    (the root cause of "56 → 0" in Session 1 "Plumbers in USA").
+
+    For Render API results (source_tag='render_api'), leads with no signal
+    are always kept since the API already did server-side filtering.
 
     Args:
         leads: Raw leads from database query.
         target_location: Location from keyword parsing (e.g. "kolkata", "india").
+        source_tag: Optional tag to identify the data source (e.g. 'render_api').
 
     Returns:
         Filtered list of leads matching the target location.
@@ -186,22 +280,40 @@ def filter_leads_by_location(
 
     filtered: list[dict] = []
     no_signal_count = 0
+    match_count = 0
+    drop_count = 0
+
+    is_render_api = source_tag == "render_api"
 
     for lead in leads:
-        inferred = _infer_lead_country(lead)
+        score = _location_confidence_score(lead, target_country, target)
+        lead["_location_score"] = score
 
-        if inferred:
-            # Check if inferred country matches target
-            if inferred == target_country or target in inferred or inferred in target:
-                filtered.append(lead)
-        else:
-            # No signal — drop in location-filtered mode
+        if score > 0:
+            # Positive match
+            match_count += 1
+            filtered.append(lead)
+        elif score == 0:
+            # No signal — keep with benefit of the doubt
+            # For Render API results, server already filtered, so always keep
             no_signal_count += 1
-            continue
+            lead["country_confidence"] = "assumed"
+            filtered.append(lead)
+        else:
+            # Negative score — contradicts target location
+            if is_render_api and score >= -1:
+                # Weak contradiction from Render API — keep (server already filtered)
+                no_signal_count += 1
+                lead["country_confidence"] = "weak_mismatch"
+                filtered.append(lead)
+            else:
+                drop_count += 1
 
     logger.info(
-        "Location filter: %d → %d leads for target=%r (country=%r, %d assumed)",
-        len(leads), len(filtered), target_location, target_country, no_signal_count,
+        "Soft location filter: %d → %d leads for target=%r (country=%r) "
+        "[matched=%d, no_signal=%d, dropped=%d, source=%s]",
+        len(leads), len(filtered), target_location, target_country,
+        match_count, no_signal_count, drop_count, source_tag or "direct",
     )
     return filtered
 
@@ -2504,15 +2616,16 @@ async def search_database_hybrid(
             api_leads.extend(leads)
 
         if api_leads:
-            # v3.5.33 Fix #2: Post-filter Render API results by location.
-            # Even though we send location to the server, the server may
-            # not filter Instagram results (no country column in parquet).
-            # Apply client-side location filter as a safety net.
+            # v3.5.34 P1: Post-filter Render API results with soft location filter.
+            # Pass source_tag='render_api' so the soft filter keeps no-signal leads
+            # (the server already did server-side filtering).
             if location:
                 pre_count = len(api_leads)
-                api_leads = filter_leads_by_location(api_leads, location)
+                api_leads = filter_leads_by_location(
+                    api_leads, location, source_tag="render_api",
+                )
                 logger.info(
-                    "Render API: %d → %d leads after location filter (target=%r)",
+                    "Render API: %d → %d leads after soft location filter (target=%r)",
                     pre_count, len(api_leads), location,
                 )
             logger.info(

@@ -183,21 +183,25 @@ def _build_all_dork_queries(keyword: str, platform: str, max_queries: int = 5) -
     return [t.replace("{keyword}", keyword) for t in templates[:max_queries]]
 
 
-# ─── v3.5.32: Location-aware dork queries across 7 intents ───────────────────
-# Instead of only `site:facebook.com`, these queries target the OPEN WEB:
-# directories, review sites, PDFs, social profiles, generic contact pages.
-# This is the #1 fix for dorking returning 0 results.
+# ─── v3.5.34 P2: DDG-compatible location-aware dork queries ──────────────────
+# v3.5.32 had 7 intent categories with complex operators (filetype:, inurl:,
+# nested OR chains) that DDG/Brave/Mojeek don't support well → 0 results.
+# v3.5.34 P2 fix: Simplified, shorter queries that work across all engines.
+# Key changes:
+#   - Removed advanced operators (filetype:, inurl:) for non-Google engines
+#   - Shorter query strings (DDG truncates after ~80 chars)
+#   - Fewer OR chains (DDG handles max 2-3 ORs reliably)
+#   - Kept site: operator (works on DDG) for directory targeting
 
 def build_location_aware_queries(
     keyword: str,
     location: str,
     max_queries: int = 20,
 ) -> list[str]:
-    """v3.5.32: Generate diverse dork queries across 7 intents.
+    """v3.5.34 P2: Generate DDG-compatible dork queries.
 
-    Instead of only using site:facebook.com (which gets blocked), this
-    generates queries that surface business contacts across the open web:
-    directories, review sites, social profiles, PDFs, contact pages.
+    Simplified from v3.5.32's 7-intent system that was too complex for DDG.
+    Now uses shorter, engine-agnostic queries that actually return results.
 
     Args:
         keyword: e.g. "Dentists"
@@ -209,65 +213,100 @@ def build_location_aware_queries(
     """
     kw = keyword.strip()
     loc = location.strip()
-    q = f'"{kw}" "{loc}"' if loc else f'"{kw}"'
     kw_loc = f"{kw} {loc}" if loc else kw
-    kw_slug = kw.lower().replace(" ", "-")
 
     templates: list[str] = [
-        # ── INTENT 1: Contact harvesting (highest yield) ──
-        f'{q} email contact phone',
-        f'{q} "@gmail.com" OR "@yahoo.com" OR "@hotmail.com"',
-        f'{q} "contact us" OR "get in touch" email',
-        f'{q} "+91" OR "91-" phone',
-        f'{q} "+1" OR "+44" OR "+61" phone',
+        # ── TIER 1: Simple contact queries (DDG-friendly, highest yield) ──
+        f'{kw_loc} email phone contact',
+        f'{kw_loc} email address',
+        f'{kw_loc} contact number',
+        f'{kw_loc} "@gmail.com"',
+        f'{kw_loc} "contact us" email',
 
-        # ── INTENT 2: Directory & listing sites ──
+        # ── TIER 2: Directory site: queries (site: works on DDG) ──
         f'site:justdial.com {kw_loc}',
         f'site:sulekha.com {kw_loc}',
         f'site:indiamart.com {kw_loc}',
-        f'site:tradeindia.com {kw_loc}',
         f'site:yellowpages.com {kw_loc}',
         f'site:yelp.com {kw_loc}',
         f'site:hotfrog.com {kw_loc}',
-        f'site:cybo.com {kw_loc}',
-        f'site:brownbook.net {kw_loc}',
 
-        # ── INTENT 3: Social profiles (not just Facebook) ──
+        # ── TIER 3: Social profile queries ──
         f'site:linkedin.com/in {kw_loc}',
         f'site:linkedin.com/company {kw_loc}',
-        f'site:instagram.com {q} bio contact',
-        f'site:twitter.com {q} contact email',
+        f'site:facebook.com {kw_loc}',
 
-        # ── INTENT 4: Review & niche sites ──
-        f'site:practo.com {kw_loc}',
-        f'site:lybrate.com {kw_loc}',
-        f'site:healthgrades.com {kw_loc}',
-        f'site:zocdoc.com {kw_loc}',
-
-        # ── INTENT 5: Document / PDF leaks ──
-        f'{q} filetype:pdf contact',
-        f'{q} filetype:xlsx OR filetype:csv',
-        f'{q} inurl:contact OR inurl:about email',
-
-        # ── INTENT 6: Facebook (broadened) ──
-        f'site:facebook.com/pages {kw_loc}',
-        f'site:facebook.com "{kw}" "{loc}" about' if loc else f'site:facebook.com "{kw}" about',
-
-        # ── INTENT 7: Generic open web ──
-        f'"{kw}" "{loc}" "call us" OR "call now" phone' if loc else f'"{kw}" "call us" OR "call now" phone',
-        f'"{kw}" "{loc}" "book appointment" OR "schedule" contact' if loc else f'"{kw}" "book appointment" contact',
-        f'inurl:{kw_slug} {loc} email' if loc else f'inurl:{kw_slug} email',
+        # ── TIER 4: Open web contact pages ──
+        f'{kw_loc} "phone" "email" directory',
+        f'{kw_loc} business listing contact',
+        f'{kw_loc} company directory email',
     ]
 
     # Shuffle within priority tiers for fingerprint diversity
-    high = templates[:5]    # contact harvesting
-    med = templates[5:22]   # directories + social + review + PDF
-    low = templates[22:]    # Facebook + generic
+    high = templates[:5]    # simple contact queries
+    med = templates[5:11]   # directory sites
+    low = templates[11:]    # social + open web
     random.shuffle(high)
     random.shuffle(med)
     random.shuffle(low)
 
     return (high + med + low)[:max_queries]
+
+
+# ─── v3.5.34 P2: Engine health check ────────────────────────────────────────
+
+async def check_engine_health() -> dict[str, bool]:
+    """v3.5.34 P2: Quick health check of search engines at session start.
+
+    Tests each engine with a simple query to see which ones are reachable.
+    Returns a dict of engine_name -> is_healthy.
+    """
+    health: dict[str, bool] = {}
+    test_query = "test contact email"
+
+    # Test Serper API
+    api_key = SERPER_API_KEY
+    if api_key:
+        try:
+            results = _search_serper_with_key(test_query, 1, api_key)
+            health["serper"] = len(results) > 0
+        except Exception:
+            health["serper"] = False
+    else:
+        health["serper"] = False
+
+    # Test DDG Lite via HTTP (quick check)
+    if _httpx is not None:
+        try:
+            from urllib.parse import quote_plus
+            resp = _httpx.get(
+                f"https://lite.duckduckgo.com/lite/?q={quote_plus(test_query)}",
+                timeout=8.0,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0.0.0"},
+            )
+            health["ddg_lite"] = resp.status_code == 200 and len(resp.text) > 500
+        except Exception:
+            health["ddg_lite"] = False
+    else:
+        health["ddg_lite"] = False
+
+    # Test Google HTTP
+    if _httpx is not None:
+        try:
+            resp = _httpx.get(
+                f"https://www.google.com/search?q=test",
+                timeout=8.0,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0.0.0"},
+                follow_redirects=True,
+            )
+            health["google_http"] = resp.status_code == 200 and "captcha" not in resp.text.lower()
+        except Exception:
+            health["google_http"] = False
+    else:
+        health["google_http"] = False
+
+    logger.info("Engine health check: %s", health)
+    return health
 
 
 # ─── Method 1: Patchright (FREE) ─────────────────────────────────────────────

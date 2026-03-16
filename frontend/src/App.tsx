@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { LicenseProvider, useLicense } from '@/contexts/LicenseContext';
 import LicenseActivation from '@/components/license/LicenseActivation';
 import LicenseExpired from '@/components/license/LicenseExpired';
+import { isBackendReady, waitForBackend } from '@/lib/api';
 import ProGate from '@/components/license/ProGate';
 import Sidebar from '@/components/layout/Sidebar';
 import Dashboard from '@/components/dashboard/Dashboard';
@@ -40,6 +41,27 @@ function AppContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [resultsSessionFilter, setResultsSessionFilter] = useState<string | undefined>(undefined);
   const { isActivated, isExpired, isLoading } = useLicense();
+  // v3.5.34: Backend startup splash state
+  const [backendStarting, setBackendStarting] = useState(!isBackendReady());
+
+  useEffect(() => {
+    if (!isBackendReady()) {
+      waitForBackend().then(() => setBackendStarting(false));
+    }
+  }, []);
+
+  // v3.5.34: Show "Starting backend..." splash instead of broken UI
+  if (backendStarting) {
+    return (
+      <div className="h-screen w-full bg-bg-primary flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-accent animate-spin" />
+          <p className="text-sm text-text-muted">Starting backend...</p>
+          <p className="text-xs text-text-muted/60">This may take a few seconds on first launch</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading while checking license
   if (isLoading) {

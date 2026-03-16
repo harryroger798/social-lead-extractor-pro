@@ -2,11 +2,99 @@ import { logger } from '@/lib/logger';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
+// v3.5.34: Backend readiness state (set by Electron IPC or health check)
+let _backendReady = false;
+let _backendReadyPromise: Promise<void> | null = null;
+
+/**
+ * v3.5.34: Wait for backend to be ready before making API calls.
+ * Retries health check every 2s for up to 30s.
+ */
+async function waitForBackend(): Promise<void> {
+  if (_backendReady) return;
+  if (_backendReadyPromise) return _backendReadyPromise;
+
+  _backendReadyPromise = new Promise<void>((resolve) => {
+    let attempts = 0;
+    const maxAttempts = 15; // 15 * 2s = 30s
+    const interval = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch(`${API_BASE}/api/dashboard/stats`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(3000),
+        });
+        if (res.ok) {
+          _backendReady = true;
+          clearInterval(interval);
+          logger.info('api', `Backend ready after ${attempts} attempts`);
+          resolve();
+        }
+      } catch {
+        // Backend not ready yet
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          logger.error('api', `Backend not ready after ${maxAttempts * 2}s — proceeding anyway`);
+          _backendReady = true; // Let requests through even if health check fails
+          resolve();
+        }
+      }
+    }, 2000);
+  });
+
+  return _backendReadyPromise;
+}
+
+// v3.5.34: Listen for Electron IPC backend-ready signal
+if (typeof window !== 'undefined' && (window as any).electronAPI?.onBackendReady) {
+  (window as any).electronAPI.onBackendReady(() => {
+    _backendReady = true;
+    logger.info('api', 'Backend ready (IPC signal received)');
+  });
+}
+
+/** v3.5.34: Check if backend is confirmed ready */
+export function isBackendReady(): boolean {
+  return _backendReady;
+}
+
+/** v3.5.34: Mark backend as ready (called from UI after splash) */
+export function markBackendReady(): void {
+  _backendReady = true;
+}
+
+/**
+ * v3.5.34: Retry-with-backoff wrapper for network errors.
+ * Retries every 2s for up to 3 attempts on TypeError (network error).
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit | undefined,
+  maxRetries: number = 3,
+): Promise<Response> {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (attempt < maxRetries && lastError instanceof TypeError) {
+        // Network error — wait and retry
+        const delay = 2000 * (attempt + 1); // 2s, 4s, 6s
+        logger.warn('api', `Network error, retry ${attempt + 1}/${maxRetries} in ${delay}ms`);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const method = options?.method || 'GET';
   const start = Date.now();
   try {
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetchWithRetry(`${API_BASE}${path}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',

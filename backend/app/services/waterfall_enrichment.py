@@ -33,9 +33,14 @@ import html as _html_mod
 import ipaddress
 import logging
 import re
+import signal
 import socket
-from typing import Optional
+import threading
+from typing import Callable, Optional
 from urllib.parse import quote_plus
+
+# v3.5.34 P5: Per-lead enrichment timeout (seconds)
+_PER_LEAD_TIMEOUT_SECS = 8
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -717,14 +722,60 @@ def enrich_lead_waterfall(
     return enriched
 
 
+def _enrich_with_timeout(
+    lead: dict,
+    timeout_secs: int = _PER_LEAD_TIMEOUT_SECS,
+    **kwargs,
+) -> dict:
+    """v3.5.34 P5: Enrich a single lead with a hard per-lead timeout.
+
+    Prevents any single lead from hanging the entire enrichment batch.
+    Uses threading to enforce the timeout (signal-based timeouts don't
+    work in non-main threads).
+    """
+    result: list[dict] = []
+    error: list[Exception] = []
+
+    def _worker():
+        try:
+            enriched = enrich_lead_waterfall(lead, **kwargs)
+            result.append(enriched)
+        except Exception as exc:
+            error.append(exc)
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    thread.join(timeout=timeout_secs)
+
+    if thread.is_alive():
+        # Timeout — thread is still running but we move on
+        logger.warning(
+            "P5: Lead enrichment timed out after %ds for %s",
+            timeout_secs, lead.get("name", "unknown")[:30],
+        )
+        lead["confidence_score"] = calculate_lead_confidence(lead)
+        lead["enrichment_timeout"] = True
+        return lead
+
+    if result:
+        return result[0]
+    if error:
+        logger.debug("Lead enrichment error: %s", error[0])
+    lead["confidence_score"] = calculate_lead_confidence(lead)
+    return lead
+
+
 def enrich_leads_batch_waterfall(
     leads: list[dict],
     max_enrich: int = 50,
     skip_website_crawl: bool = False,
     skip_github: bool = False,
     skip_dorking: bool = False,
+    progress_callback: Optional[Callable[[int, int], None]] = None,
 ) -> list[dict]:
     """Enrich a batch of leads using the waterfall engine.
+
+    v3.5.34 P5: Added per-lead 8-second timeout and granular progress callback.
 
     Prioritizes leads that are most likely to yield results
     (has company_domain or company name).
@@ -735,6 +786,7 @@ def enrich_leads_batch_waterfall(
         skip_website_crawl: Skip website crawl for speed
         skip_github: Skip GitHub enrichment
         skip_dorking: Skip Google dorking
+        progress_callback: Optional (current, total) callback for progress updates
 
     Returns:
         List of enriched lead dicts, sorted by confidence score
@@ -760,21 +812,33 @@ def enrich_leads_batch_waterfall(
             lead["confidence_score"] = calculate_lead_confidence(lead)
             already_complete.append(lead)
 
-    # Enrich the top candidates
+    # Enrich the top candidates with per-lead timeout
     enriched_leads = []
-    for lead in leads_to_enrich[:max_enrich]:
+    total_to_enrich = min(len(leads_to_enrich), max_enrich)
+    for idx, lead in enumerate(leads_to_enrich[:max_enrich]):
+        # v3.5.34 P5: Granular progress callback
+        if progress_callback:
+            try:
+                progress_callback(idx, total_to_enrich)
+            except Exception:
+                pass
+
+        # v3.5.34 P5: Per-lead timeout prevents hanging
+        enriched = _enrich_with_timeout(
+            lead,
+            timeout_secs=_PER_LEAD_TIMEOUT_SECS,
+            skip_website_crawl=skip_website_crawl,
+            skip_github=skip_github,
+            skip_dorking=skip_dorking,
+        )
+        enriched_leads.append(enriched)
+
+    # Final progress callback
+    if progress_callback and total_to_enrich > 0:
         try:
-            enriched = enrich_lead_waterfall(
-                lead,
-                skip_website_crawl=skip_website_crawl,
-                skip_github=skip_github,
-                skip_dorking=skip_dorking,
-            )
-            enriched_leads.append(enriched)
-        except Exception as exc:
-            logger.debug("Lead enrichment error: %s", exc)
-            lead["confidence_score"] = calculate_lead_confidence(lead)
-            enriched_leads.append(lead)
+            progress_callback(total_to_enrich, total_to_enrich)
+        except Exception:
+            pass
 
     # Combine and sort by confidence
     all_leads = enriched_leads + already_complete
