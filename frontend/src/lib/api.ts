@@ -85,8 +85,12 @@ async function fetchWithRetry(
       return await fetch(url, options);
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
-      if (attempt < maxRetries && lastError instanceof TypeError) {
-        // Network error — wait and retry
+      if (!(lastError instanceof TypeError)) {
+        // Non-network error (AbortError, DOMException, etc.) — don't retry
+        break;
+      }
+      if (attempt < maxRetries) {
+        // Network error — wait and retry with backoff
         const delay = 2000 * (attempt + 1); // 2s, 4s, 6s
         logger.warn('api', `Network error, retry ${attempt + 1}/${maxRetries} in ${delay}ms`);
         await new Promise((r) => setTimeout(r, delay));
