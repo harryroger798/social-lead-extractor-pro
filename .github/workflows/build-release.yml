@@ -135,6 +135,7 @@ jobs:
             --hidden-import=app.services.multi_engine_search \
             --hidden-import=app.services.log_service \
             --hidden-import=app.services.patchright_engine \
+            --hidden-import=app.services.auto_discovery \
             $PATCHRIGHT_COLLECT \
             --hidden-import=bs4 \
             --hidden-import=duckdb \

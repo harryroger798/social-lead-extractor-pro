@@ -36,6 +36,7 @@ from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import quote_plus, urlparse
 
 from app.services.anti_detection import AdSession
+from app.services.auto_discovery import run_auto_discovery
 from app.services.extractor import extract_emails, extract_phones
 from app.services.multi_engine_search import free_search_waterfall
 
@@ -2561,6 +2562,62 @@ def scrape_reddit(
 
 
 # ===========================================================================
+# 13. AUTO-DISCOVERY — Automatic directory discovery for ANY keyword (v3.5.31)
+# ===========================================================================
+
+def scrape_auto_discovery(
+    query: str,
+    location: str = "",
+    max_results: int = 50,
+) -> list[dict]:
+    """Automatic directory discovery for ANY keyword.
+
+    Uses the 5-stage pipeline (v3.5.31):
+    1. Source Discovery — queries DDG, Bing, Yahoo for directory pages
+    2. Directory Fingerprinting — scores/filters URLs
+    3. Adaptive Extraction — JSON-LD > Microdata > Heuristic DOM > Regex
+    4. Anti-Bot Handling — rate limiting, retries, pagination
+    5. Deduplication & Export
+
+    Works for any keyword: real estate, wedding photographers, gym instructors,
+    plumbers, dentists, restaurants, etc.
+    """
+    try:
+        raw_leads = run_auto_discovery(
+            keyword=query,
+            location=location,
+            max_leads=max_results * 3,  # over-fetch for dedup
+            max_sources=15,
+        )
+    except Exception as exc:
+        logger.error("Auto-discovery pipeline failed: %s", exc)
+        return []
+
+    # Normalize to standard lead format
+    leads: list[dict] = []
+    for raw in raw_leads:
+        lead: dict = {
+            "email": raw.get("email", ""),
+            "phone": raw.get("phone", ""),
+            "name": raw.get("name", ""),
+            "platform": "auto_discovery",
+            "source_url": raw.get("source_url", raw.get("website", "")),
+        }
+        # Include extra fields if present
+        if raw.get("website"):
+            lead["website"] = raw["website"]
+        if raw.get("address"):
+            lead["address"] = raw["address"]
+        if raw.get("source"):
+            lead["source"] = raw["source"]
+        leads.append(lead)
+
+    logger.info("Auto-discovery live scrape: %d leads for '%s %s'",
+                len(leads), query, location)
+    return _dedup_leads(leads)[:max_results]
+
+
+# ===========================================================================
 # UNIFIED DISPATCHER — Routes one platform to the right scraper
 # ===========================================================================
 
@@ -2577,6 +2634,7 @@ _PLATFORM_SCRAPERS = {
     "tumblr": scrape_tumblr,
     "linkedin": scrape_linkedin,
     "reddit": scrape_reddit,
+    "auto_discovery": scrape_auto_discovery,
 }
 
 
