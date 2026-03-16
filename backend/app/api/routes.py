@@ -234,7 +234,7 @@ def _infer_country_from_lead(
     if existing:
         return existing
 
-    return ""
+    return "Unknown"
 
 
 # ─── Dashboard ────────────────────────────────────────────────────────────────

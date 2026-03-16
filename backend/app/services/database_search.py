@@ -111,11 +111,16 @@ def _infer_lead_country(lead: dict) -> str:
 
     Returns lowercase country name or empty string if no signal found.
     """
-    # Signal 1: Phone prefix
+    # Signal 0: Explicit country field from source payload
+    explicit_country = str(lead.get("country", "")).strip().lower()
+    if explicit_country:
+        return explicit_country
+
+    # Signal 1: Phone prefix (only trust international format with +)
     phone = lead.get("phone", "").strip()
-    if phone:
+    if phone and phone.startswith("+"):
         for prefix, country in _PHONE_PREFIX_COUNTRY.items():
-            if phone.startswith(prefix) or phone.startswith(prefix.lstrip("+")):
+            if phone.startswith(prefix):
                 return country
 
     # Signal 2: Email TLD
@@ -190,10 +195,9 @@ def filter_leads_by_location(
             if inferred == target_country or target in inferred or inferred in target:
                 filtered.append(lead)
         else:
-            # No signal — keep the lead but flag it
-            lead["country_confidence"] = "assumed"
-            filtered.append(lead)
+            # No signal — drop in location-filtered mode
             no_signal_count += 1
+            continue
 
     logger.info(
         "Location filter: %d → %d leads for target=%r (country=%r, %d assumed)",
