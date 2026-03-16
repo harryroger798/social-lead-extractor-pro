@@ -190,10 +190,11 @@ async def _search_ddg_patchright(
     headless: bool = True,
     proxy: Optional[dict] = None,
 ) -> list[dict]:
-    """v3.5.28 Bug 3 fix: Search DuckDuckGo using Patchright (ZERO CAPTCHA).
+    """v3.5.29 Fix 2: Search DuckDuckGo HTML endpoint using Patchright.
 
-    Previously targeted Google which always triggers CAPTCHA. DuckDuckGo
-    never shows CAPTCHAs and supports site:/OR operators natively.
+    The JS SPA at duckduckgo.com detects headless Chrome via navigator.webdriver.
+    html.duckduckgo.com/html/ is the pure-HTML accessibility endpoint — no JS
+    gate, no CAPTCHA. Patchright still provides anti-detection TLS fingerprints.
     Returns empty list if Patchright is not available (graceful degradation).
     """
     try:
@@ -210,43 +211,42 @@ async def _search_ddg_patchright(
             return []
         from urllib.parse import quote_plus
 
-        # v3.5.28: Target DuckDuckGo instead of Google — zero CAPTCHA risk
-        url = f"https://duckduckgo.com/?q={quote_plus(query)}&t=h_&ia=web"
+        # v3.5.29 Fix 2: Use HTML endpoint (not JS SPA)
+        url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
         success = await safe_goto(page, url)
         if not success:
             return []
 
-        await random_delay(2.0, 4.0)
+        await random_delay(1.5, 3.0)
 
-        # Extract search results from DuckDuckGo page
+        # Extract search results from DDG HTML endpoint
+        # This endpoint uses simple <a rel="nofollow"> links, no JS rendering needed
         results = await page.evaluate("""() => {
             const items = [];
-            // DDG organic results: <article> with data-testid="result"
-            // or <div class="result"> or <a class="result__a">
-            const containers = document.querySelectorAll(
-                'article[data-testid="result"], div.result, li.b_algo'
-            );
-            containers.forEach(el => {
-                const linkEl = el.querySelector('a[href]');
-                const titleEl = el.querySelector('h2, h3, a.result__a');
-                const snippetEl = el.querySelector(
-                    'span[data-testid="result-snippet"], '
-                    + 'div.result__snippet, '
-                    + 'a.result__snippet'
-                );
-                if (linkEl) {
-                    let href = linkEl.href || '';
-                    // DDG may wrap URLs — extract real URL from uddg= param
-                    if (href.includes('uddg=')) {
-                        try {
-                            const u = new URL(href);
-                            href = decodeURIComponent(u.searchParams.get('uddg') || href);
-                        } catch(e) {}
+            // DDG HTML endpoint: results are in <a rel="nofollow"> tags
+            const links = document.querySelectorAll('a[rel="nofollow"]');
+            links.forEach(el => {
+                let href = el.href || '';
+                // DDG wraps URLs with uddg= param
+                if (href.includes('uddg=')) {
+                    try {
+                        const u = new URL(href);
+                        href = decodeURIComponent(u.searchParams.get('uddg') || href);
+                    } catch(e) {}
+                }
+                if (href.startsWith('http') && !href.includes('duckduckgo.com')) {
+                    const title = el.textContent || '';
+                    // Find snippet in next sibling or parent's snippet element
+                    const row = el.closest('tr') || el.parentElement;
+                    let snippet = '';
+                    if (row) {
+                        const snippetEl = row.querySelector('.result-snippet, td.result-snippet');
+                        if (snippetEl) snippet = snippetEl.textContent || '';
                     }
-                    if (href.startsWith('http') && !href.includes('duckduckgo.com')) {
+                    if (title.trim().length > 3) {
                         items.push({
-                            title: titleEl ? titleEl.innerText : '',
-                            snippet: snippetEl ? snippetEl.innerText : '',
+                            title: title.trim(),
+                            snippet: snippet.trim(),
                             link: href
                         });
                     }
@@ -255,11 +255,11 @@ async def _search_ddg_patchright(
             return items;
         }""")
 
-        logger.info("Patchright DDG dorking: %d results for query", len(results or []))
+        logger.info("Patchright DDG HTML dorking: %d results for query", len(results or []))
         return results or []
 
     except Exception as e:
-        logger.error("Patchright DDG search error: %s", e)
+        logger.error("Patchright DDG HTML search error: %s", e)
         return []
     finally:
         if page:
