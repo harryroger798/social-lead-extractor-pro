@@ -584,3 +584,109 @@ def ad_post(
     """One-off POST request with anti-detection."""
     with AdSession(timeout=timeout, rate_limit=rate_limit) as s:
         return s.post(url, data=data, json=json, headers=headers)
+
+
+# ---------------------------------------------------------------------------
+# v3.5.32: Enhanced block detection + session warming
+# ---------------------------------------------------------------------------
+
+_BLOCK_INDICATORS = [
+    "just a moment", "checking your browser", "access denied",
+    "403 forbidden", "rate limit exceeded", "captcha",
+    "please verify", "ddos protection", "ray id",
+    "are you a robot", "unusual traffic", "automated requests",
+    "please complete the security check", "blocked",
+    "too many requests", "service unavailable",
+]
+
+
+def detect_block(html: str, status_code: int = 200) -> dict[str, Any]:
+    """Detect if an HTTP response indicates bot blocking.
+
+    v3.5.32: Enhanced detection with categorization and severity scoring.
+
+    Returns:
+        Dict with: blocked (bool), reason (str), severity ('low'|'medium'|'high'),
+        retry_recommended (bool).
+    """
+    if status_code == 429:
+        return {
+            "blocked": True,
+            "reason": "HTTP 429 Too Many Requests",
+            "severity": "high",
+            "retry_recommended": True,
+        }
+    if status_code == 403:
+        return {
+            "blocked": True,
+            "reason": "HTTP 403 Forbidden",
+            "severity": "medium",
+            "retry_recommended": True,
+        }
+    if status_code == 503:
+        return {
+            "blocked": True,
+            "reason": "HTTP 503 Service Unavailable",
+            "severity": "medium",
+            "retry_recommended": True,
+        }
+    if status_code >= 400:
+        return {
+            "blocked": True,
+            "reason": f"HTTP {status_code}",
+            "severity": "low",
+            "retry_recommended": False,
+        }
+
+    html_lower = html[:5000].lower()
+    matched = [ind for ind in _BLOCK_INDICATORS if ind in html_lower]
+    if matched:
+        is_cloudflare = "ray id" in html_lower or "cloudflare" in html_lower
+        return {
+            "blocked": True,
+            "reason": f"Bot detection: {', '.join(matched[:3])}",
+            "severity": "high" if is_cloudflare else "medium",
+            "retry_recommended": not is_cloudflare,
+        }
+
+    # Check for suspiciously short pages (likely blocked/empty)
+    if len(html.strip()) < 500 and status_code == 200:
+        return {
+            "blocked": False,
+            "reason": "Suspiciously short response",
+            "severity": "low",
+            "retry_recommended": True,
+        }
+
+    return {
+        "blocked": False,
+        "reason": "",
+        "severity": "none",
+        "retry_recommended": False,
+    }
+
+
+def warm_session(session: "AdSession", target_domain: str) -> bool:
+    """Warm up a session by visiting a benign page on the target domain.
+
+    v3.5.32: Helps establish cookies/sessions before the main scraping
+    request, reducing the chance of being flagged as a bot.
+
+    Returns True if warmup succeeded, False otherwise.
+    """
+    try:
+        parsed = urlparse(f"https://{target_domain}")
+        warmup_url = f"https://{parsed.netloc}/"
+        if not _validate_url_scheme(warmup_url):
+            return False
+
+        resp = session.get(warmup_url, timeout=10.0)
+        if resp.status_code < 400:
+            logger.debug("Session warmed for %s (HTTP %d)", target_domain, resp.status_code)
+            # Small delay to appear human
+            time.sleep(random.uniform(1.0, 2.5))
+            return True
+        return False
+    except Exception as exc:
+        logger.debug("Session warmup failed for %s: %s", target_domain, exc)
+        return False

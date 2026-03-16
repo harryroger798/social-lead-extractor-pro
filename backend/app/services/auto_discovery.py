@@ -23,7 +23,7 @@ import random
 import re
 import time
 from collections import Counter
-from typing import Optional
+from typing import Callable, Optional
 from urllib.parse import quote_plus, urlparse, parse_qs
 
 from bs4 import BeautifulSoup
@@ -626,10 +626,228 @@ def _full_page_regex_fallback(soup: BeautifulSoup) -> list[dict]:
     return leads
 
 
+# ============================================================================
+# v3.5.32: Site-Specific Extractors (highest yield for known directories)
+# ============================================================================
+
+def _extract_justdial(soup: BeautifulSoup) -> list[dict]:
+    """Extract leads from JustDial listing pages.
+
+    JustDial encodes phone numbers in spans with CSS classes to prevent
+    simple scraping. We extract what's available: name, address, ratings.
+    """
+    leads: list[dict] = []
+    # JustDial listing cards use various class patterns
+    for card in soup.select(".store-details, .resultbox_info, .jsx-s, [class*='resultbox']"):
+        name_el = card.select_one(
+            ".store-name, .resultbox_title_anchor, .lng_cont_name, "
+            "[class*='title'] a, h2 a, .jcn"
+        )
+        name = name_el.get_text(strip=True) if name_el else ""
+        if not name:
+            continue
+
+        # Address
+        addr_el = card.select_one(
+            ".address, .resultbox_address, .cont_sw_addr, "
+            "[class*='address'], .mrehover"
+        )
+        address = addr_el.get_text(strip=True) if addr_el else ""
+
+        # Phone (JustDial obfuscates phones but sometimes exposes them)
+        phone = ""
+        phone_el = card.select_one(
+            ".contact-info, .callcontent, [class*='phone'], "
+            "[class*='mobile'], .telno"
+        )
+        if phone_el:
+            phone_text = phone_el.get_text(strip=True)
+            phone_match = re.search(r'[\+]?[\d\s\-\(\)]{7,15}', phone_text)
+            if phone_match:
+                phone = _clean_phone(phone_match.group())
+
+        # Website
+        website = ""
+        web_el = card.select_one("a[href*='website'], a.website")
+        if web_el and web_el.get("href"):
+            website = web_el["href"]
+
+        leads.append({
+            "name": name,
+            "phone": phone,
+            "email": "",
+            "address": address,
+            "website": website,
+        })
+    return leads
+
+
+def _extract_sulekha(soup: BeautifulSoup) -> list[dict]:
+    """Extract leads from Sulekha listing pages."""
+    leads: list[dict] = []
+    for card in soup.select(
+        ".serviceCard, .merchant-card, [class*='listing-card'], "
+        ".s-card, [data-listingid]"
+    ):
+        name_el = card.select_one(
+            ".merchant-name, .s-card-name, h2 a, h3 a, "
+            "[class*='name'] a, .companyName"
+        )
+        name = name_el.get_text(strip=True) if name_el else ""
+        if not name:
+            continue
+
+        addr_el = card.select_one(
+            ".address, .s-card-address, [class*='location'], "
+            "[class*='address']"
+        )
+        address = addr_el.get_text(strip=True) if addr_el else ""
+
+        phone = ""
+        phone_el = card.select_one("[class*='phone'], [class*='mobile'], .callNow")
+        if phone_el:
+            phone_match = re.search(r'[\+]?[\d\s\-\(\)]{7,15}', phone_el.get_text())
+            if phone_match:
+                phone = _clean_phone(phone_match.group())
+
+        leads.append({
+            "name": name, "phone": phone, "email": "",
+            "address": address, "website": "",
+        })
+    return leads
+
+
+def _extract_indiamart(soup: BeautifulSoup) -> list[dict]:
+    """Extract leads from IndiaMart listing pages."""
+    leads: list[dict] = []
+    for card in soup.select(
+        ".card, .prd-card, [class*='listing'], .lcont, "
+        "[data-supplier-id], .brs_cards"
+    ):
+        name_el = card.select_one(
+            ".lcname, .prd-card-name, h2 a, h3 a, .company-name, "
+            "[class*='supplier'] a, .companyname"
+        )
+        name = name_el.get_text(strip=True) if name_el else ""
+        if not name:
+            continue
+
+        addr_el = card.select_one(
+            ".lcity, [class*='address'], [class*='city'], .prd-card-address"
+        )
+        address = addr_el.get_text(strip=True) if addr_el else ""
+
+        phone = ""
+        phone_el = card.select_one("[class*='phone'], [class*='mobile'], .phn")
+        if phone_el:
+            phone_match = re.search(r'[\+]?[\d\s\-\(\)]{7,15}', phone_el.get_text())
+            if phone_match:
+                phone = _clean_phone(phone_match.group())
+
+        leads.append({
+            "name": name, "phone": phone, "email": "",
+            "address": address, "website": "",
+        })
+    return leads
+
+
+def _extract_yelp(soup: BeautifulSoup) -> list[dict]:
+    """Extract leads from Yelp search/listing pages."""
+    leads: list[dict] = []
+    for card in soup.select(
+        "[class*='businessName'], [data-testid='serp-ia-card'], "
+        ".regular-search-result, .lemon--li, .container__09f24__mpR8_"
+    ):
+        name_el = card.select_one(
+            "a[class*='businessName'], h3 a, h4 a, .link-size--inherit, "
+            "[class*='heading'] a"
+        )
+        name = name_el.get_text(strip=True) if name_el else ""
+        if not name:
+            continue
+
+        addr_el = card.select_one(
+            "[class*='secondaryAttributes'], address, "
+            "[class*='location'], [class*='address']"
+        )
+        address = addr_el.get_text(strip=True) if addr_el else ""
+
+        phone = ""
+        phone_el = card.select_one("[class*='phone'], [data-phone]")
+        if phone_el:
+            phone_text = phone_el.get("data-phone", "") or phone_el.get_text()
+            phone_match = re.search(r'[\+]?[\d\s\-\(\)]{7,15}', phone_text)
+            if phone_match:
+                phone = _clean_phone(phone_match.group())
+
+        leads.append({
+            "name": name, "phone": phone, "email": "",
+            "address": address, "website": "",
+        })
+    return leads
+
+
+def _extract_practo(soup: BeautifulSoup) -> list[dict]:
+    """Extract leads from Practo doctor/clinic listing pages."""
+    leads: list[dict] = []
+    for card in soup.select(
+        ".doctor-card, .listing-doctor-card, [data-qa-id='doctor_card'], "
+        ".c-card, [class*='doctor-profile']"
+    ):
+        name_el = card.select_one(
+            ".doctor-name, [data-qa-id='doctor_name'], h2 a, "
+            ".info-section h2, [class*='doctorName']"
+        )
+        name = name_el.get_text(strip=True) if name_el else ""
+        if not name:
+            continue
+
+        addr_el = card.select_one(
+            ".address, [data-qa-id='practice_locality'], "
+            "[class*='locality'], .clinic-address"
+        )
+        address = addr_el.get_text(strip=True) if addr_el else ""
+
+        phone = ""
+        phone_el = card.select_one("[class*='phone'], [data-qa-id='phone']")
+        if phone_el:
+            phone_match = re.search(r'[\+]?[\d\s\-\(\)]{7,15}', phone_el.get_text())
+            if phone_match:
+                phone = _clean_phone(phone_match.group())
+
+        leads.append({
+            "name": name, "phone": phone, "email": "",
+            "address": address, "website": "",
+        })
+    return leads
+
+
+# Map domain patterns to their site-specific extractor
+_SITE_EXTRACTORS: dict[str, Callable[[BeautifulSoup], list[dict]]] = {
+    "justdial.com": _extract_justdial,
+    "sulekha.com": _extract_sulekha,
+    "indiamart.com": _extract_indiamart,
+    "yelp.com": _extract_yelp,
+    "practo.com": _extract_practo,
+}
+
+
+def _get_site_extractor(url: str) -> Optional[Callable[[BeautifulSoup], list[dict]]]:
+    """Return a site-specific extractor if the URL matches a known directory."""
+    domain = urlparse(url).netloc.lower()
+    for pattern, extractor in _SITE_EXTRACTORS.items():
+        if pattern in domain:
+            return extractor
+    return None
+
+
 def extract_leads_from_html(html: str, url: str) -> list[dict]:
     """Try all extraction layers, merge results, deduplicate.
 
+    v3.5.32: Added Layer 0 — site-specific extractors for known directories.
+
     Layers (in order of reliability):
+    0. Site-specific extractor (v3.5.32 — highest yield for known sites)
     1. JSON-LD structured data (best quality)
     2. Microdata / RDFa
     3. Heuristic DOM pattern recognition
@@ -637,6 +855,16 @@ def extract_leads_from_html(html: str, url: str) -> list[dict]:
     """
     soup = BeautifulSoup(html, "html.parser")
     all_leads: list[dict] = []
+
+    # Layer 0 (v3.5.32): Site-specific extractor for known directories
+    site_extractor = _get_site_extractor(url)
+    if site_extractor:
+        site_leads = site_extractor(soup)
+        if site_leads:
+            all_leads.extend(site_leads)
+            logger.debug(
+                "  Site-specific: %d leads from %s", len(site_leads), url[:60]
+            )
 
     # Layer 1: JSON-LD (highest quality)
     jsonld_leads = _extract_jsonld(html)

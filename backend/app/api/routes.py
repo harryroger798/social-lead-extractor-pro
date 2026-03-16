@@ -671,6 +671,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 await _update_progress(session_id, _calc_progress(),
                     f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                     platform, *_count_leads())
+                # v3.5.32: Pass location to enable location-aware dork queries
                 results = await dorking_search_multi(
                     config.keywords, [platform],
                     pages=config.pages_per_keyword,
@@ -678,6 +679,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     serper_api_key=serper_api_key,
                     use_patchright=True,
                     headless=True,
+                    location=location_hint,
                 )
                 for result in results:
                     for email in result.get("emails", []):
@@ -3264,6 +3266,49 @@ async def auto_discovery_search(body: dict) -> dict:
             location=location,
             max_leads=max_leads,
         ),
+    )
+
+    return {
+        "keyword": keyword,
+        "location": location,
+        "total_leads": len(leads),
+        "leads": leads,
+    }
+
+
+# ─── v3.5.32: Enhanced Direct Scraper ─────────────────────────────────────────
+
+@router.post("/enhanced-direct-scrape")
+async def enhanced_direct_scrape(body: dict) -> dict:
+    """Run the enhanced direct scraper with smart curl/Patchright routing.
+
+    v3.5.32: Two-tier approach — curl_cffi for static sites (parallel),
+    Patchright for JS-heavy sites (sequential).
+
+    Body:
+        urls: list[str] — URLs to scrape
+        keyword: str — search keyword for tagging
+        location: str — optional location
+        max_leads: int — max leads to return (default 200)
+    """
+    urls = body.get("urls", [])
+    keyword = body.get("keyword", "").strip()
+    location = body.get("location", "").strip()
+    max_leads = min(int(body.get("max_leads", 200)), 500)
+
+    if not urls:
+        raise HTTPException(status_code=400, detail="urls list is required")
+    if not keyword:
+        raise HTTPException(status_code=400, detail="keyword is required")
+
+    from app.services.enhanced_direct_scraper import run_enhanced_direct_scraping
+
+    leads = await run_enhanced_direct_scraping(
+        urls=urls,
+        keyword=keyword,
+        location=location,
+        headless=True,
+        max_leads=max_leads,
     )
 
     return {

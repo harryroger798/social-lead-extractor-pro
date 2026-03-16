@@ -20,6 +20,7 @@ for 3-5x higher lead yield from the same search volume.
 """
 
 import os
+import random
 import re
 import asyncio
 import logging
@@ -180,6 +181,93 @@ def _build_all_dork_queries(keyword: str, platform: str, max_queries: int = 5) -
         template = PLATFORM_DORK_TEMPLATES.get(platform, '"{keyword}" email OR contact')
         return [template.replace("{keyword}", keyword)]
     return [t.replace("{keyword}", keyword) for t in templates[:max_queries]]
+
+
+# ─── v3.5.32: Location-aware dork queries across 7 intents ───────────────────
+# Instead of only `site:facebook.com`, these queries target the OPEN WEB:
+# directories, review sites, PDFs, social profiles, generic contact pages.
+# This is the #1 fix for dorking returning 0 results.
+
+def build_location_aware_queries(
+    keyword: str,
+    location: str,
+    max_queries: int = 20,
+) -> list[str]:
+    """v3.5.32: Generate diverse dork queries across 7 intents.
+
+    Instead of only using site:facebook.com (which gets blocked), this
+    generates queries that surface business contacts across the open web:
+    directories, review sites, social profiles, PDFs, contact pages.
+
+    Args:
+        keyword: e.g. "Dentists"
+        location: e.g. "Delhi" (can be empty)
+        max_queries: max queries to return (prioritized)
+
+    Returns:
+        List of dork query strings, highest priority first.
+    """
+    kw = keyword.strip()
+    loc = location.strip()
+    q = f'"{kw}" "{loc}"' if loc else f'"{kw}"'
+    kw_loc = f"{kw} {loc}" if loc else kw
+    kw_slug = kw.lower().replace(" ", "-")
+
+    templates: list[str] = [
+        # ── INTENT 1: Contact harvesting (highest yield) ──
+        f'{q} email contact phone',
+        f'{q} "@gmail.com" OR "@yahoo.com" OR "@hotmail.com"',
+        f'{q} "contact us" OR "get in touch" email',
+        f'{q} "+91" OR "91-" phone',
+        f'{q} "+1" OR "+44" OR "+61" phone',
+
+        # ── INTENT 2: Directory & listing sites ──
+        f'site:justdial.com {kw_loc}',
+        f'site:sulekha.com {kw_loc}',
+        f'site:indiamart.com {kw_loc}',
+        f'site:tradeindia.com {kw_loc}',
+        f'site:yellowpages.com {kw_loc}',
+        f'site:yelp.com {kw_loc}',
+        f'site:hotfrog.com {kw_loc}',
+        f'site:cybo.com {kw_loc}',
+        f'site:brownbook.net {kw_loc}',
+
+        # ── INTENT 3: Social profiles (not just Facebook) ──
+        f'site:linkedin.com/in {kw_loc}',
+        f'site:linkedin.com/company {kw_loc}',
+        f'site:instagram.com {q} bio contact',
+        f'site:twitter.com {q} contact email',
+
+        # ── INTENT 4: Review & niche sites ──
+        f'site:practo.com {kw_loc}',
+        f'site:lybrate.com {kw_loc}',
+        f'site:healthgrades.com {kw_loc}',
+        f'site:zocdoc.com {kw_loc}',
+
+        # ── INTENT 5: Document / PDF leaks ──
+        f'{q} filetype:pdf contact',
+        f'{q} filetype:xlsx OR filetype:csv',
+        f'{q} inurl:contact OR inurl:about email',
+
+        # ── INTENT 6: Facebook (broadened) ──
+        f'site:facebook.com/pages {kw_loc}',
+        f'site:facebook.com "{kw}" "{loc}" about' if loc else f'site:facebook.com "{kw}" about',
+
+        # ── INTENT 7: Generic open web ──
+        f'"{kw}" "{loc}" "call us" OR "call now" phone' if loc else f'"{kw}" "call us" OR "call now" phone',
+        f'"{kw}" "{loc}" "book appointment" OR "schedule" contact' if loc else f'"{kw}" "book appointment" contact',
+        f'inurl:{kw_slug} {loc} email' if loc else f'inurl:{kw_slug} email',
+    ]
+
+    # Shuffle within priority tiers for fingerprint diversity
+    high = templates[:5]    # contact harvesting
+    med = templates[5:22]   # directories + social + review + PDF
+    low = templates[22:]    # Facebook + generic
+    random.shuffle(high)
+    random.shuffle(med)
+    random.shuffle(low)
+
+    return (high + med + low)[:max_queries]
 
 
 # ─── Method 1: Patchright (FREE) ─────────────────────────────────────────────
@@ -538,6 +626,7 @@ async def dorking_search(
     use_duckduckgo: bool = True,
     multi_query: bool = True,
     max_queries: int = 3,
+    location: str = "",
 ) -> dict:
     """Perform multi-engine dorking search for a keyword on a platform.
 
@@ -546,6 +635,7 @@ async def dorking_search(
       2. Try Bing/Brave/DuckDuckGo for additional coverage
       3. If all APIs fail -> try Patchright (if installed)
       4. Use multiple query templates for higher yield
+      5. v3.5.32: Use location-aware queries across 7 intents
 
     Returns:
         Dict with emails, phones, sources, queries, platform, keyword, method.
@@ -556,8 +646,24 @@ async def dorking_search(
     methods_used: list[str] = []
     queries_used: list[str] = []
 
-    # Build query list: multiple templates for higher yield
-    if multi_query:
+    # v3.5.32: Use location-aware queries when location is available
+    # These target directories, review sites, PDFs, and the open web
+    # instead of only site:facebook.com (which gets blocked).
+    if location and multi_query:
+        location_queries = build_location_aware_queries(
+            keyword, location, max_queries=min(max_queries + 2, 8)
+        )
+        # Merge with platform-specific queries for best coverage
+        platform_queries = _build_all_dork_queries(keyword, platform, max_queries)
+        # Interleave: location-aware first (higher yield), then platform-specific
+        seen: set[str] = set()
+        queries: list[str] = []
+        for q in location_queries + platform_queries:
+            if q not in seen:
+                seen.add(q)
+                queries.append(q)
+        queries = queries[:max_queries + 4]  # Allow extra budget for location queries
+    elif multi_query:
         queries = _build_all_dork_queries(keyword, platform, max_queries)
     else:
         queries = [_build_dork_query(keyword, platform)]
@@ -685,12 +791,14 @@ async def dorking_search_multi(
     headless: bool = True,
     proxy: Optional[dict] = None,
     max_total_queries: int = 30,
+    location: str = "",
 ) -> list[dict]:
     """Search multiple keywords across multiple platforms.
 
     v3.5.1: Added query budgeting (max_total_queries) and anti-bot delays.
     v3.5.12: Raised default from 8 to 30 — covers all 20 platforms with
     multiple keywords while still staying within safe rate limits.
+    v3.5.32: Added location parameter for location-aware dork queries.
     """
     all_results = []
     total_queries = 0
@@ -713,6 +821,7 @@ async def dorking_search_multi(
                 headless=headless,
                 proxy=proxy,
                 max_queries=min(3, max_total_queries - total_queries),
+                location=location,
             )
             all_results.append(result)
             total_queries += len(result.get("queries_used", [1]))
