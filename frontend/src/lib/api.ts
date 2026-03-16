@@ -10,7 +10,7 @@ let _backendReadyPromise: Promise<void> | null = null;
  * v3.5.34: Wait for backend to be ready before making API calls.
  * Retries health check every 2s for up to 30s.
  */
-async function waitForBackend(): Promise<void> {
+export async function waitForBackend(): Promise<void> {
   if (_backendReady) return;
   if (_backendReadyPromise) return _backendReadyPromise;
 
@@ -30,9 +30,15 @@ async function waitForBackend(): Promise<void> {
           clearInterval(interval);
           logger.info('api', `Backend ready after ${attempts} attempts`);
           resolve();
+        } else if (attempts >= maxAttempts) {
+          // Non-2xx but reachable — proceed after max attempts
+          clearInterval(interval);
+          logger.error('api', `Backend returned ${res.status} after ${maxAttempts * 2}s — proceeding anyway`);
+          _backendReady = true;
+          resolve();
         }
       } catch {
-        // Backend not ready yet
+        // Backend not reachable yet
         if (attempts >= maxAttempts) {
           clearInterval(interval);
           logger.error('api', `Backend not ready after ${maxAttempts * 2}s — proceeding anyway`);
