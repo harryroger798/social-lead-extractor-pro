@@ -80,6 +80,9 @@ async function fetchWithRetry(
   maxRetries: number = 3,
 ): Promise<Response> {
   let lastError: Error | null = null;
+  const method = (options?.method ?? 'GET').toUpperCase();
+  const isIdempotent = method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await fetch(url, options);
@@ -87,10 +90,14 @@ async function fetchWithRetry(
       lastError = err instanceof Error ? err : new Error(String(err));
       if (!(lastError instanceof TypeError)) {
         // Non-network error (AbortError, DOMException, etc.) — don't retry
-        break;
+        throw lastError;
+      }
+      if (!isIdempotent) {
+        // Mutating method (POST/PUT/DELETE) — don't retry to avoid duplicate writes
+        throw lastError;
       }
       if (attempt < maxRetries) {
-        // Network error — wait and retry with backoff
+        // Network error on idempotent method — wait and retry with backoff
         const delay = 2000 * (attempt + 1); // 2s, 4s, 6s
         logger.warn('api', `Network error, retry ${attempt + 1}/${maxRetries} in ${delay}ms`);
         await new Promise((r) => setTimeout(r, delay));
