@@ -3,6 +3,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -1014,9 +1015,9 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         b2b_platforms_raw = [p for p in config.platforms if p in _ALL_B2B]
         # v3.5.34 P4: Filter by relevance
         loc_lower = location_hint.lower() if location_hint else ""
-        is_indian_query = any(city in loc_lower for city in _INDIAN_LOCATIONS)
+        is_indian_query = any(re.search(r'\b' + re.escape(city) + r'\b', loc_lower) for city in _INDIAN_LOCATIONS)
         is_western_query = loc_lower and not is_indian_query and any(
-            c in loc_lower for c in ("usa", "uk", "canada", "australia", "europe", "london", "new york")
+            re.search(r'\b' + re.escape(c) + r'\b', loc_lower) for c in ("usa", "uk", "canada", "australia", "europe", "london", "new york")
         )
 
         b2b_platforms = []
