@@ -5,6 +5,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 // v3.5.34: Backend readiness state (set by Electron IPC or health check)
 let _backendReady = false;
 let _backendReadyPromise: Promise<void> | null = null;
+let _backendReadyResolve: (() => void) | null = null;
 
 /**
  * v3.5.34: Wait for backend to be ready before making API calls.
@@ -15,9 +16,19 @@ export async function waitForBackend(): Promise<void> {
   if (_backendReadyPromise) return _backendReadyPromise;
 
   _backendReadyPromise = new Promise<void>((resolve) => {
+    _backendReadyResolve = () => {
+      _backendReady = true;
+      _backendReadyResolve = null;
+      resolve();
+    };
     let attempts = 0;
     const maxAttempts = 15; // 15 * 2s = 30s
     const interval = setInterval(async () => {
+      if (_backendReady) {
+        // Already resolved by IPC signal
+        clearInterval(interval);
+        return;
+      }
       attempts++;
       try {
         const res = await fetch(`${API_BASE}/api/dashboard/stats`, {
@@ -26,10 +37,9 @@ export async function waitForBackend(): Promise<void> {
           signal: AbortSignal.timeout(3000),
         });
         if (res.ok) {
-          _backendReady = true;
           clearInterval(interval);
           logger.info('api', `Backend ready after ${attempts} attempts`);
-          resolve();
+          _backendReadyResolve?.();
         } else if (attempts >= maxAttempts) {
           // Non-2xx but reachable — proceed after max attempts
           clearInterval(interval);
@@ -55,8 +65,12 @@ export async function waitForBackend(): Promise<void> {
 // v3.5.34: Listen for Electron IPC backend-ready signal
 if (typeof window !== 'undefined' && (window as any).electronAPI?.onBackendReady) {
   (window as any).electronAPI.onBackendReady(() => {
-    _backendReady = true;
     logger.info('api', 'Backend ready (IPC signal received)');
+    if (_backendReadyResolve) {
+      _backendReadyResolve();
+    } else {
+      _backendReady = true;
+    }
   });
 }
 
