@@ -140,6 +140,7 @@ async def init_db() -> None:
             "ALTER TABLE sessions ADD COLUMN error_message TEXT DEFAULT ''",
             "ALTER TABLE sessions ADD COLUMN current_platform TEXT DEFAULT ''",
             "ALTER TABLE sessions ADD COLUMN status_message TEXT DEFAULT ''",
+            "ALTER TABLE leads ADD COLUMN source_platform TEXT DEFAULT ''",
         ]:
             try:
                 await db.execute(col_sql)
