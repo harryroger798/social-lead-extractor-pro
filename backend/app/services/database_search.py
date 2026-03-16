@@ -55,6 +55,153 @@ _DB_THREAD_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="duckdb-s
 atexit.register(_DB_THREAD_POOL.shutdown, wait=False)
 
 
+# ── v3.5.33 Fix #1: Post-query location filter for Instagram/non-country DBs ─
+# Instagram parquet files lack a country column, so after querying we must
+# infer country from the lead's phone prefix, email TLD, bio text, etc.
+# and filter out leads that don't match the user's target location.
+
+_PHONE_PREFIX_COUNTRY: dict[str, str] = {
+    "+91": "india", "91-": "india",
+    "+1": "united states", "+44": "united kingdom",
+    "+61": "australia", "+81": "japan", "+49": "germany",
+    "+33": "france", "+86": "china", "+55": "brazil",
+    "+82": "south korea", "+39": "italy", "+34": "spain",
+    "+52": "mexico", "+62": "indonesia", "+90": "turkey",
+    "+966": "saudi arabia", "+971": "uae",
+    "+92": "pakistan", "+880": "bangladesh", "+63": "philippines",
+    "+84": "vietnam", "+66": "thailand", "+60": "malaysia",
+    "+65": "singapore", "+64": "new zealand", "+27": "south africa",
+    "+234": "nigeria", "+254": "kenya", "+233": "ghana",
+    "+977": "nepal", "+94": "sri lanka",
+}
+
+_EMAIL_TLD_COUNTRY: dict[str, str] = {
+    ".co.in": "india", ".in": "india",
+    ".co.uk": "united kingdom", ".uk": "united kingdom",
+    ".com.au": "australia", ".au": "australia",
+    ".ca": "canada", ".de": "germany", ".fr": "france",
+    ".jp": "japan", ".br": "brazil", ".it": "italy",
+    ".es": "spain", ".mx": "mexico", ".ru": "russia",
+    ".cn": "china", ".kr": "south korea",
+    ".sg": "singapore", ".my": "malaysia", ".ph": "philippines",
+    ".pk": "pakistan", ".bd": "bangladesh", ".lk": "sri lanka",
+    ".ng": "nigeria", ".ke": "kenya", ".ae": "uae",
+    ".nz": "new zealand", ".za": "south africa",
+}
+
+_CITY_COUNTRY_MAP: dict[str, str] = {
+    "mumbai": "india", "delhi": "india", "bangalore": "india",
+    "bengaluru": "india", "hyderabad": "india", "chennai": "india",
+    "kolkata": "india", "pune": "india", "ahmedabad": "india",
+    "jaipur": "india", "lucknow": "india", "new delhi": "india",
+    "noida": "india", "gurgaon": "india", "gurugram": "india",
+    "surat": "india", "kochi": "india", "indore": "india",
+    "new york": "united states", "los angeles": "united states",
+    "chicago": "united states", "san francisco": "united states",
+    "london": "united kingdom", "manchester": "united kingdom",
+    "toronto": "canada", "vancouver": "canada", "montreal": "canada",
+    "sydney": "australia", "melbourne": "australia",
+    "dubai": "uae", "singapore": "singapore", "tokyo": "japan",
+    "berlin": "germany", "paris": "france",
+}
+
+
+def _infer_lead_country(lead: dict) -> str:
+    """v3.5.33: Infer a lead's country from cascading signals.
+
+    Returns lowercase country name or empty string if no signal found.
+    """
+    # Signal 1: Phone prefix
+    phone = lead.get("phone", "").strip()
+    if phone:
+        for prefix, country in _PHONE_PREFIX_COUNTRY.items():
+            if phone.startswith(prefix) or phone.startswith(prefix.lstrip("+")):
+                return country
+
+    # Signal 2: Email TLD
+    email = lead.get("email", "").strip().lower()
+    if email and "@" in email:
+        domain = email.split("@")[-1]
+        for tld, country in sorted(_EMAIL_TLD_COUNTRY.items(), key=lambda x: -len(x[0])):
+            if domain.endswith(tld):
+                return country
+
+    # Signal 3: Location/address field (city match)
+    for field in ("location", "address", "city"):
+        val = lead.get(field, "").strip().lower()
+        if val:
+            for city, country in _CITY_COUNTRY_MAP.items():
+                if city in val:
+                    return country
+
+    # Signal 4: Bio/industry text (look for city/country names)
+    for field in ("bio", "industry", "company"):
+        val = lead.get(field, "").strip().lower()
+        if val:
+            for city, country in _CITY_COUNTRY_MAP.items():
+                if city in val:
+                    return country
+
+    return ""
+
+
+def filter_leads_by_location(
+    leads: list[dict],
+    target_location: str,
+) -> list[dict]:
+    """v3.5.33 Fix #1: Post-query filter for leads from non-country databases.
+
+    Instagram CSVs lack a country column, so after querying we infer each
+    lead's country and keep only those matching the target location.
+
+    Leads with NO signal at all are kept (marked as 'assumed') rather than
+    discarded — they may still be relevant.
+
+    Args:
+        leads: Raw leads from database query.
+        target_location: Location from keyword parsing (e.g. "kolkata", "india").
+
+    Returns:
+        Filtered list of leads matching the target location.
+    """
+    if not target_location:
+        return leads  # No location filter requested — return all
+
+    target = target_location.lower().strip()
+
+    # Resolve target to a country name
+    target_country = ""
+    for city, country in _CITY_COUNTRY_MAP.items():
+        if city in target or target in city:
+            target_country = country
+            break
+    if not target_country:
+        # Target might be a country name itself
+        target_country = target
+
+    filtered: list[dict] = []
+    no_signal_count = 0
+
+    for lead in leads:
+        inferred = _infer_lead_country(lead)
+
+        if inferred:
+            # Check if inferred country matches target
+            if inferred == target_country or target in inferred or inferred in target:
+                filtered.append(lead)
+        else:
+            # No signal — keep the lead but flag it
+            lead["country_confidence"] = "assumed"
+            filtered.append(lead)
+            no_signal_count += 1
+
+    logger.info(
+        "Location filter: %d → %d leads for target=%r (country=%r, %d assumed)",
+        len(leads), len(filtered), target_location, target_country, no_signal_count,
+    )
+    return filtered
+
+
 def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
 
@@ -2127,6 +2274,19 @@ async def _search_database_hybrid_inner(
         search_linkedin = True
         search_instagram = True
 
+    # v3.5.33 Fix #6: When a location is specified, also search Google Maps
+    # (PhantomBuster data) and PAN India databases since they have richer
+    # location/address fields that improve location-filtered results.
+    if location and not search_googlemaps:
+        search_googlemaps = True
+    if location and not search_pan_india:
+        # PAN India is only relevant for Indian locations
+        _india_indicators = {"india", "mumbai", "delhi", "bangalore", "kolkata",
+                             "chennai", "hyderabad", "pune", "ahmedabad", "jaipur",
+                             "lucknow", "noida", "gurgaon", "surat", "kochi"}
+        if any(ind in location.lower() for ind in _india_indicators):
+            search_pan_india = True
+
     logger.info(
         "Hybrid search: linkedin=%s, instagram=%s, googlemaps=%s, pan_india=%s, "
         "youtube=%s, ds_limit=%d, tier=%s, platforms=%s",
@@ -2175,6 +2335,13 @@ async def _search_database_hybrid_inner(
                     dataset_limit=ds_limit,
                     expanded_terms=kw_expanded,
                 )
+                # v3.5.33 Fix #1: Instagram parquet files lack a country
+                # column, so apply post-query location filter using
+                # cascading signals (phone prefix → email TLD → city name).
+                if location:
+                    instagram_leads = filter_leads_by_location(
+                        instagram_leads, location,
+                    )
                 for lead in instagram_leads:
                     email = lead.get("email", "")
                     phone = lead.get("phone", "")
@@ -2333,6 +2500,17 @@ async def search_database_hybrid(
             api_leads.extend(leads)
 
         if api_leads:
+            # v3.5.33 Fix #2: Post-filter Render API results by location.
+            # Even though we send location to the server, the server may
+            # not filter Instagram results (no country column in parquet).
+            # Apply client-side location filter as a safety net.
+            if location:
+                pre_count = len(api_leads)
+                api_leads = filter_leads_by_location(api_leads, location)
+                logger.info(
+                    "Render API: %d → %d leads after location filter (target=%r)",
+                    pre_count, len(api_leads), location,
+                )
             logger.info(
                 "Render API success: %d total leads for %d keywords",
                 len(api_leads), len(keywords),

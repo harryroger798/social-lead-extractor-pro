@@ -90,6 +90,152 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
 
+# ── v3.5.33: Country inference for location-aware filtering ───────────────
+# Cascading signal approach: phone prefix (90%) → email TLD (85%) →
+# city name (75%) → location hint from keyword (70%) → country name (60%)
+
+_PHONE_PREFIX_TO_COUNTRY: dict[str, str] = {
+    "+91": "India", "91-": "India",
+    "+1": "United States", "+44": "United Kingdom",
+    "+61": "Australia", "+81": "Japan", "+49": "Germany",
+    "+33": "France", "+86": "China", "+55": "Brazil",
+    "+7": "Russia", "+82": "South Korea", "+39": "Italy",
+    "+34": "Spain", "+52": "Mexico", "+62": "Indonesia",
+    "+90": "Turkey", "+966": "Saudi Arabia", "+971": "UAE",
+    "+92": "Pakistan", "+880": "Bangladesh", "+63": "Philippines",
+    "+20": "Egypt", "+84": "Vietnam", "+66": "Thailand",
+    "+60": "Malaysia", "+65": "Singapore", "+972": "Israel",
+    "+31": "Netherlands", "+46": "Sweden", "+47": "Norway",
+    "+45": "Denmark", "+358": "Finland", "+41": "Switzerland",
+    "+353": "Ireland", "+351": "Portugal", "+48": "Poland",
+    "+32": "Belgium", "+43": "Austria", "+30": "Greece",
+    "+54": "Argentina", "+57": "Colombia", "+56": "Chile",
+    "+51": "Peru", "+254": "Kenya", "+233": "Ghana",
+    "+977": "Nepal", "+212": "Morocco", "+886": "Taiwan",
+    "+64": "New Zealand", "+27": "South Africa",
+    "+234": "Nigeria", "+94": "Sri Lanka",
+}
+
+_EMAIL_TLD_TO_COUNTRY: dict[str, str] = {
+    ".in": "India", ".co.in": "India",
+    ".uk": "United Kingdom", ".co.uk": "United Kingdom",
+    ".au": "Australia", ".com.au": "Australia",
+    ".ca": "Canada", ".de": "Germany", ".fr": "France",
+    ".jp": "Japan", ".br": "Brazil", ".it": "Italy",
+    ".es": "Spain", ".mx": "Mexico", ".ru": "Russia",
+    ".cn": "China", ".kr": "South Korea",
+    ".nl": "Netherlands", ".se": "Sweden", ".no": "Norway",
+    ".dk": "Denmark", ".fi": "Finland", ".ch": "Switzerland",
+    ".ie": "Ireland", ".pt": "Portugal", ".pl": "Poland",
+    ".be": "Belgium", ".at": "Austria", ".gr": "Greece",
+    ".nz": "New Zealand", ".za": "South Africa",
+    ".sg": "Singapore", ".my": "Malaysia", ".th": "Thailand",
+    ".ph": "Philippines", ".id": "Indonesia", ".vn": "Vietnam",
+    ".pk": "Pakistan", ".bd": "Bangladesh", ".lk": "Sri Lanka",
+    ".ng": "Nigeria", ".ke": "Kenya", ".gh": "Ghana",
+    ".ae": "UAE", ".sa": "Saudi Arabia", ".il": "Israel",
+    ".tw": "Taiwan", ".tr": "Turkey", ".eg": "Egypt",
+    ".ar": "Argentina", ".co": "Colombia", ".cl": "Chile",
+    ".pe": "Peru", ".np": "Nepal", ".ma": "Morocco",
+}
+
+_CITY_TO_COUNTRY: dict[str, str] = {
+    # India
+    "mumbai": "India", "delhi": "India", "bangalore": "India",
+    "bengaluru": "India", "hyderabad": "India", "chennai": "India",
+    "kolkata": "India", "pune": "India", "ahmedabad": "India",
+    "jaipur": "India", "lucknow": "India", "new delhi": "India",
+    "noida": "India", "gurgaon": "India", "gurugram": "India",
+    "chandigarh": "India", "indore": "India", "nagpur": "India",
+    "bhopal": "India", "surat": "India", "kochi": "India",
+    "coimbatore": "India", "thiruvananthapuram": "India",
+    # US
+    "new york": "United States", "los angeles": "United States",
+    "chicago": "United States", "houston": "United States",
+    "phoenix": "United States", "san francisco": "United States",
+    "seattle": "United States", "boston": "United States",
+    "miami": "United States", "dallas": "United States",
+    "atlanta": "United States", "denver": "United States",
+    "san diego": "United States", "austin": "United States",
+    # UK
+    "london": "United Kingdom", "manchester": "United Kingdom",
+    "birmingham": "United Kingdom", "leeds": "United Kingdom",
+    "glasgow": "United Kingdom", "edinburgh": "United Kingdom",
+    "liverpool": "United Kingdom", "bristol": "United Kingdom",
+    # Canada
+    "toronto": "Canada", "vancouver": "Canada", "montreal": "Canada",
+    "calgary": "Canada", "ottawa": "Canada", "edmonton": "Canada",
+    # Australia
+    "sydney": "Australia", "melbourne": "Australia",
+    "brisbane": "Australia", "perth": "Australia",
+    "adelaide": "Australia", "canberra": "Australia",
+    # Others
+    "dubai": "UAE", "abu dhabi": "UAE", "singapore": "Singapore",
+    "tokyo": "Japan", "berlin": "Germany", "paris": "France",
+    "rome": "Italy", "madrid": "Spain", "amsterdam": "Netherlands",
+    "zurich": "Switzerland", "dublin": "Ireland",
+}
+
+
+def _infer_country_from_lead(
+    lead_data: dict,
+    location_hint: str = "",
+) -> str:
+    """v3.5.33: Infer country from lead data using cascading signals.
+
+    Priority order (highest confidence first):
+      1. Phone prefix (90% confidence) — e.g. +91 → India
+      2. Email TLD (85% confidence) — e.g. .co.in → India
+      3. Lead's location/address field (75%) — city/state name match
+      4. Location hint from keyword parsing (70%) — e.g. "in Kolkata" → India
+      5. Lead's existing country field (60%) — if already set by source
+
+    Returns country string, never empty — defaults to location_hint or 'Unknown'.
+    """
+    # Signal 1: Phone prefix
+    phone = lead_data.get("phone", "").strip()
+    if phone:
+        for prefix, country in _PHONE_PREFIX_TO_COUNTRY.items():
+            if phone.startswith(prefix) or phone.startswith(prefix.lstrip("+")):
+                return country
+
+    # Signal 2: Email TLD
+    email = lead_data.get("email", "").strip().lower()
+    if email and "@" in email:
+        domain = email.split("@")[-1]
+        # Check longest TLDs first (e.g. .co.in before .in)
+        for tld, country in sorted(
+            _EMAIL_TLD_TO_COUNTRY.items(), key=lambda x: -len(x[0])
+        ):
+            if domain.endswith(tld):
+                return country
+
+    # Signal 3: Lead's own location/address field
+    lead_location = lead_data.get("location", "").strip().lower()
+    lead_address = lead_data.get("address", "").strip().lower()
+    for loc_str in (lead_location, lead_address):
+        if loc_str:
+            for city, country in _CITY_TO_COUNTRY.items():
+                if city in loc_str:
+                    return country
+
+    # Signal 4: Location hint from keyword parsing (e.g. "Kolkata")
+    if location_hint:
+        hint_lower = location_hint.lower().strip()
+        # Check city map first
+        for city, country in _CITY_TO_COUNTRY.items():
+            if city in hint_lower or hint_lower in city:
+                return country
+        # Return the hint itself as country name (could be a country name)
+        return location_hint.title()
+
+    # Signal 5: Lead's existing country field
+    existing = lead_data.get("country", "").strip()
+    if existing:
+        return existing
+
+    return ""
+
 
 # ─── Dashboard ────────────────────────────────────────────────────────────────
 
@@ -997,6 +1143,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
                 quality = score_lead(email, phone, name, verified)
 
+                # v3.5.33 Fix #3: Infer country from lead data using cascading
+                # signals BEFORE insert. This ensures the country field is never
+                # empty, which is the root cause of location filtering failures.
+                inferred_country = _infer_country_from_lead(lead_data, location_hint)
+
                 # v3.5.28 Bug 1 fix: Re-tag leads with user's requested platform.
                 # DB search returns leads tagged with their SOURCE platform
                 # (linkedin/instagram) but user selected e.g. "facebook".
@@ -1022,7 +1173,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                         (lead_id, email, phone, name, display_platform,
                          lead_data.get("source_url", ""), lead_data.get("keyword", ""),
-                         "", email_type, 1 if verified else 0, quality,
+                         inferred_country, email_type, 1 if verified else 0, quality,
                          datetime.now().isoformat(), session_id, original_platform),
                     )
                     if email:

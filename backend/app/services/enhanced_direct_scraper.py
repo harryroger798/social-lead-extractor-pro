@@ -26,6 +26,83 @@ from app.services.extractor import extract_emails, extract_phones
 
 logger = logging.getLogger(__name__)
 
+# ── v3.5.33 Fix #5: Location-aware directory URL builder ───────────────────
+# Instead of relying solely on dorking to find directory pages, we
+# pre-build URLs for known directory sites that have predictable URL
+# patterns. This guarantees at least some location-relevant results
+# even when search engines return nothing.
+
+_DIRECTORY_URL_TEMPLATES: dict[str, list[str]] = {
+    # Indian directories
+    "justdial.com": [
+        "https://www.justdial.com/{location}/{keyword}",
+        "https://www.justdial.com/{location}/{keyword}-near-me",
+    ],
+    "sulekha.com": [
+        "https://www.sulekha.com/{keyword}/{location}",
+    ],
+    "indiamart.com": [
+        "https://dir.indiamart.com/{keyword}/{location}.html",
+    ],
+    # International directories
+    "yellowpages.com": [
+        "https://www.yellowpages.com/{location}/{keyword}",
+    ],
+    "yelp.com": [
+        "https://www.yelp.com/search?find_desc={keyword}&find_loc={location}",
+    ],
+    # Niche directories
+    "clutch.co": [
+        "https://clutch.co/directory?q={keyword}&location={location}",
+    ],
+    "bark.com": [
+        "https://www.bark.com/{location}/{keyword}",
+    ],
+}
+
+
+def build_location_aware_urls(
+    keyword: str,
+    location: str,
+    max_urls: int = 15,
+) -> list[str]:
+    """v3.5.33 Fix #5: Build directory URLs with location baked in.
+
+    For known directory sites with predictable URL patterns, we can
+    construct direct URLs instead of relying on search engines.
+
+    Args:
+        keyword: Business type (e.g. "Interior Designers").
+        location: City/region (e.g. "Kolkata").
+        max_urls: Max URLs to return.
+
+    Returns:
+        List of fully-formed directory URLs.
+    """
+    if not keyword or not location:
+        return []
+
+    kw_slug = keyword.lower().strip().replace(" ", "-")
+    loc_slug = location.lower().strip().replace(" ", "-")
+    # URL-encoded versions for query-string based sites
+    kw_enc = keyword.strip().replace(" ", "+")
+    loc_enc = location.strip().replace(" ", "+")
+
+    urls: list[str] = []
+    for _domain, templates in _DIRECTORY_URL_TEMPLATES.items():
+        for tmpl in templates:
+            url = tmpl.replace("{keyword}", kw_slug).replace("{location}", loc_slug)
+            # Some sites use query strings with spaces as +
+            url = url.replace(kw_slug, kw_enc) if "?" in tmpl else url
+            url = url.replace(loc_slug, loc_enc) if "?" in tmpl else url
+            urls.append(url)
+
+    logger.info(
+        "Built %d location-aware directory URLs for '%s' in '%s'",
+        len(urls), keyword, location,
+    )
+    return urls[:max_urls]
+
 # Thread pool for parallel curl_cffi requests (I/O bound)
 _CURL_POOL = ThreadPoolExecutor(max_workers=5, thread_name_prefix="curl_scraper")
 
@@ -241,6 +318,20 @@ async def run_enhanced_direct_scraping(
     Returns:
         Deduplicated list of lead dicts.
     """
+    if not urls:
+        urls = []
+
+    # v3.5.33 Fix #5: Auto-add location-aware directory URLs so we always
+    # have at least some location-relevant scraping targets even when
+    # dorking returns 0 URLs.
+    if location:
+        loc_urls = build_location_aware_urls(keyword, location)
+        existing = set(urls)
+        for u in loc_urls:
+            if u not in existing:
+                urls.append(u)
+                existing.add(u)
+
     if not urls:
         return []
 
