@@ -833,13 +833,14 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             current_step += 1
 
         # ── v3.5.36 Fix 7: Short-circuit — skip dorking if enough leads ──
+        # Use unique email count (not raw rows) to avoid false triggers from dupes
         _skip_dorking = False
-        _current_lead_count = _count_leads()[0]
-        if _current_lead_count >= 50:
+        _unique_emails = len({ld.get("email", "").lower() for ld in all_leads if ld.get("email")})
+        if _unique_emails >= 50:
             _skip_dorking = True
             logger.info(
-                "v3.5.36 Fix 7: Short-circuit dorking — already have %d leads",
-                _current_lead_count,
+                "v3.5.36 Fix 7: Short-circuit dorking — already have %d unique emails",
+                _unique_emails,
             )
 
         # ── Google Dorking for non-Reddit platforms ───────────────────────

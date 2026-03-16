@@ -194,15 +194,20 @@ async def verify_email_detailed(email: str) -> dict:
 
     Returns dict with mx_valid, smtp_accepted, catch_all, and error info.
     Used by the Clean Results feature for comprehensive verification.
+    v3.5.36: Added Layer 1 checks to match verify_email() behavior.
     """
-    if not email or '@' not in email:
+    # v3.5.36 Layer 1: Syntax + Disposable Domain Check (same as verify_email)
+    if not _is_valid_syntax(email):
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
-                "catch_all": False, "error": "Invalid email format"}
+                "catch_all": False, "error": "Invalid email syntax"}
 
     domain = email.split('@')[-1].lower()
     if not domain or '.' not in domain:
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
                 "catch_all": False, "error": "Invalid domain"}
+    if _is_disposable_domain(domain):
+        return {"valid": False, "mx_valid": False, "smtp_accepted": None,
+                "catch_all": False, "error": f"Disposable domain: {domain}"}
 
     loop = asyncio.get_event_loop()
 
