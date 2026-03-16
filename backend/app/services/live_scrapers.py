@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import asyncio
 import atexit
+import hashlib
 import html as _html_mod
 import inspect as _inspect_mod
 import json as _json_mod
@@ -32,7 +33,7 @@ import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from urllib.parse import urlparse
+from urllib.parse import quote_plus, urlparse
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -532,202 +533,739 @@ def scrape_instagram(
 
 
 # ===========================================================================
-# 5. FACEBOOK — Dorking ONLY (NEVER touch facebook.com directly)
+# 5. FACEBOOK — v3.5.29: Complete pipeline rewrite with 10 sources
+# ===========================================================================
+# Root causes of 0 live results (all fixed below):
+#   1. Bing: site: + double-quotes kills results → two-pass query
+#   2. Patchright: JS SPA endpoint → html.duckduckgo.com/html/ (pure HTML)
+#   3. Google: site:facebook.com de-indexed by design → query directories
+#   4. Web Archive CDX: malformed SURT → prefix match + Python filter
+#   5. JustDial/IndiaMART: routed through blocked SearXNG → direct HTTP
+#   6. Missing high-yield sources → 99acres, MagicBricks, Housing.com,
+#      Sulekha, YellowPages India, contact-page enrichment
 # ===========================================================================
 
-def _search_bing_for_facebook(query: str, max_results: int = 10) -> list[dict]:
-    """v3.5.28 Bug 2: Bing indexes Facebook far better than other engines."""
-    results: list[dict] = []
-    try:
-        session = AdSession()
-        resp = session.get(
-            "https://www.bing.com/search",
-            params={"q": f'site:facebook.com "{query}"', "count": str(max_results)},
-            timeout=15,
-        )
-        if resp.status_code != 200:
-            return []
-        html = resp.text
-        # Bing result selectors
-        import re as _re
-        for match in _re.finditer(
-            r'<li[^>]*class="b_algo"[^>]*>(.*?)</li>', html, _re.DOTALL
-        ):
-            block = match.group(1)
-            link_m = _re.search(r'href="(https?://[^"]+)"', block)
-            title_m = _re.search(r'<h2[^>]*>(.*?)</h2>', block, _re.DOTALL)
-            snippet_m = _re.search(r'<p[^>]*>(.*?)</p>', block, _re.DOTALL)
-            if link_m:
-                results.append({
-                    "title": _strip_tags(title_m.group(1)) if title_m else "",
-                    "snippet": _strip_tags(snippet_m.group(1)) if snippet_m else "",
-                    "link": link_m.group(1),
-                })
-            if len(results) >= max_results:
-                break
-    except Exception as exc:
-        logger.debug("Bing Facebook search error: %s", exc)
-    return results
+# Regex for extracting Facebook URLs from HTML/text
+_FACEBOOK_URL_RE = re.compile(
+    r'https?://(?:www\.|m\.|web\.)?facebook\.com/(?:pages?/|groups?/|profile\.php\?id=)?'
+    r'([A-Za-z0-9._\-]{3,80})',
+    re.IGNORECASE,
+)
 
 
-def _search_web_archive_facebook(query: str, max_results: int = 10) -> list[dict]:
-    """v3.5.28 Bug 2: Web Archive CDX API for cached Facebook pages (free, no rate limits)."""
-    results: list[dict] = []
-    try:
-        session = AdSession()
-        # Search for cached facebook.com pages matching query terms
-        cdx_url = (
-            f"https://web.archive.org/cdx/search/cdx"
-            f"?url=facebook.com/*{query.replace(' ', '*')}*"
-            f"&output=json&limit={max_results}&fl=original,timestamp"
-            f"&filter=statuscode:200&collapse=urlkey"
-        )
-        resp = session.get(cdx_url, timeout=15)
-        if resp.status_code != 200:
-            return []
-        rows = resp.json()
-        for row in rows[1:]:  # skip header row
-            if len(row) >= 2:
-                original_url = row[0]
-                timestamp = row[1]
-                wayback_url = f"https://web.archive.org/web/{timestamp}/{original_url}"
-                results.append({
-                    "title": original_url.split("/")[-1].replace("-", " ") if "/" in original_url else query,
-                    "snippet": "",
-                    "link": wayback_url,
-                    "original_url": original_url,
-                })
-    except Exception as exc:
-        logger.debug("Web Archive Facebook search error: %s", exc)
-    return results
+def _extract_fb_urls(text: str) -> list[str]:
+    """Extract Facebook page/group URLs from text, filtering out generic paths."""
+    skip = {'sharer', 'share', 'login', 'dialog', 'tr', 'plugins', 'photo',
+            'watch', 'reel', 'stories', 'help', 'settings', 'privacy'}
+    return list({
+        m.group(0) for m in _FACEBOOK_URL_RE.finditer(text)
+        if m.group(1).lower() not in skip
+    })
 
 
-def _search_justdial(query: str, max_results: int = 10) -> list[dict]:
-    """v3.5.28 Bug 2: JustDial — India's largest business directory."""
-    results: list[dict] = []
-    try:
-        session = AdSession()
-        # JustDial search via dorking (don't access justdial.com directly)
-        dork = f'site:justdial.com "{query}" "phone" OR "email" OR "address"'
-        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
-    except Exception as exc:
-        logger.debug("JustDial search error: %s", exc)
-    return results
+def _parse_name_from_fb_url(fb_url: str) -> str:
+    """Best-effort business name from a Facebook URL slug."""
+    m = _FACEBOOK_URL_RE.search(fb_url)
+    if not m:
+        return ""
+    slug = m.group(1).rstrip('/')
+    if slug.isdigit():
+        return ""
+    return slug.replace('.', ' ').replace('-', ' ').title()
 
 
-def _search_indiamart(query: str, max_results: int = 10) -> list[dict]:
-    """v3.5.28 Bug 2: IndiaMART — best for B2B Indian leads."""
-    results: list[dict] = []
-    try:
-        dork = f'site:indiamart.com "{query}" "contact" OR "email" OR "phone"'
-        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
-    except Exception as exc:
-        logger.debug("IndiaMART search error: %s", exc)
-    return results
-
-
-def _search_google_organic_facebook(query: str, max_results: int = 10) -> list[dict]:
-    """v3.5.28 Bug 2: Google organic without site: operator surfaces FB pages naturally."""
-    results: list[dict] = []
-    try:
-        dork = f'"{query}" facebook.com email contact phone'
-        results = free_search_waterfall(dork, num_results=max_results, min_results=2)
-    except Exception as exc:
-        logger.debug("Google organic Facebook search error: %s", exc)
-    return results
+def _fb_lead_uid(name: str, email: str, phone: str, fb_url: str) -> str:
+    """Stable dedup key for a Facebook lead."""
+    key = f"{name}|{email}|{phone}|{fb_url}"
+    return hashlib.md5(key.lower().encode()).hexdigest()
 
 
 def _extract_location_from_keyword(query: str) -> str:
     """Extract location hint from keyword (e.g. 'Real Estate in India' -> 'India')."""
-    import re as _re
-    m = _re.search(r'\b(?:in|from|at|near)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)', query)
+    m = re.search(r'\b(?:in|from|at|near)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)', query)
     return m.group(1) if m else ""
 
 
+# ---- Source 1: Bing (FIXED two-pass query — no site:+quotes combo) ----
+
+def _search_bing_for_facebook(query: str, location: str, max_results: int = 15) -> list[dict]:
+    """v3.5.29 Fix 1: Two-pass Bing strategy.
+
+    Pass 1: site:facebook.com/pages WITHOUT quotes around keyword.
+    Pass 2: Directory dork — finds pages that LINK to Facebook.
+    """
+    results: list[dict] = []
+    try:
+        with AdSession(timeout=15.0) as session:
+            queries = [
+                f'site:facebook.com/pages {query} {location}',
+                f'site:facebook.com {query} {location} contact',
+                f'"{query}" {location} facebook.com/pages contact email',
+                f'"{query}" {location} "facebook.com" "email" OR "phone" OR "contact"',
+            ]
+            for q in queries:
+                resp = session.get(
+                    "https://www.bing.com/search",
+                    params={"q": q, "count": "50", "mkt": "en-IN", "setlang": "en"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                html = resp.text
+                for match in re.finditer(
+                    r'<li[^>]*class="b_algo"[^>]*>(.*?)</li>', html, re.DOTALL
+                ):
+                    block = match.group(1)
+                    link_m = re.search(r'href="(https?://[^"]+)"', block)
+                    title_m = re.search(r'<h2[^>]*>(.*?)</h2>', block, re.DOTALL)
+                    snippet_m = re.search(r'<p[^>]*>(.*?)</p>', block, re.DOTALL)
+                    if link_m:
+                        results.append({
+                            "title": _strip_tags(title_m.group(1)) if title_m else "",
+                            "snippet": _strip_tags(snippet_m.group(1)) if snippet_m else "",
+                            "link": link_m.group(1),
+                            "source": "bing",
+                        })
+                    if len(results) >= max_results:
+                        break
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("Bing Facebook search error: %s", exc)
+    logger.info("Facebook Bing source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 2: DuckDuckGo HTML endpoint (FIXED — not JS SPA) ----
+
+def _search_ddg_html_facebook(query: str, location: str, max_results: int = 15) -> list[dict]:
+    """v3.5.29 Fix 2: Use html.duckduckgo.com/html/ (pure HTML, no CAPTCHA).
+
+    The JS SPA at duckduckgo.com detects headless Chrome via navigator.webdriver.
+    The HTML endpoint is intended for accessibility/bots and has no JS gate.
+    """
+    results: list[dict] = []
+    try:
+        with AdSession(timeout=15.0, min_delay=1.5) as session:
+            queries = [
+                f'site:facebook.com {query} {location}',
+                f'"{query}" {location} facebook page email phone',
+                f'"{query}" {location} inurl:facebook.com contact',
+            ]
+            for q in queries:
+                resp = session.post(
+                    "https://html.duckduckgo.com/html/",
+                    data={"q": q, "kl": "in-en"},
+                    headers={"Referer": "https://html.duckduckgo.com/"},
+                    timeout=15,
+                )
+                if resp.status_code not in (200, 202):
+                    continue
+                html = resp.text
+                # DDG HTML results: <a rel="nofollow" ...> links
+                for link_match in re.finditer(
+                    r'<a\s+rel=["\']nofollow["\']\s+href=["\']([^"\'>]+)["\'][^>]*>(.*?)</a>',
+                    html, re.DOTALL,
+                ):
+                    href = link_match.group(1)
+                    title = _strip_tags(link_match.group(2))
+                    # DDG wraps URLs with uddg= param
+                    if "uddg=" in href:
+                        from urllib.parse import parse_qs, unquote
+                        parsed = urlparse(href)
+                        params = parse_qs(parsed.query)
+                        href = unquote(params.get("uddg", [href])[0])
+                    if not href.startswith("http") or "duckduckgo" in href:
+                        continue
+                    results.append({
+                        "title": title, "snippet": "",
+                        "link": href, "source": "ddg_html",
+                    })
+                    if len(results) >= max_results:
+                        break
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("DDG HTML Facebook search error: %s", exc)
+    logger.info("Facebook DDG HTML source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 3: Web Archive CDX API (FIXED SURT syntax) ----
+
+def _search_web_archive_facebook(query: str, location: str, max_results: int = 30) -> list[dict]:
+    """v3.5.29 Fix 4: Query CDX with prefix match, filter in Python.
+
+    Previous code used malformed SURT syntax in the filter. Fix: query
+    facebook.com/pages/* with matchType=prefix, then filter by keyword tokens.
+    """
+    results: list[dict] = []
+    kw_tokens = [t.lower() for t in re.split(r'[\s\-_]+', query) if len(t) > 2]
+    loc_lower = location.lower() if location else "india"
+    try:
+        with AdSession(timeout=25.0, rate_limit=False) as session:
+            cdx_url = (
+                "https://web.archive.org/cdx/search/cdx"
+                "?url=facebook.com/pages/*"
+                "&output=json"
+                "&fl=original,timestamp,statuscode"
+                "&filter=statuscode:200"
+                "&limit=500"
+                "&collapse=urlkey"
+                "&matchType=prefix"
+            )
+            resp = session.get(cdx_url, timeout=25)
+            if resp.status_code != 200:
+                return []
+
+            lines = resp.text.strip().splitlines()
+            for line in lines:
+                line = line.strip().rstrip(',')
+                if not line or line in ('[', ']'):
+                    continue
+                try:
+                    obj = _json_mod.loads(line)
+                except _json_mod.JSONDecodeError:
+                    continue
+                if isinstance(obj, list) and obj and obj[0] == "original":
+                    continue  # skip header
+                orig_url = obj[0] if isinstance(obj, list) else obj.get("url", "")
+                timestamp = obj[1] if isinstance(obj, list) and len(obj) > 1 else ""
+                if not orig_url or "facebook.com" not in orig_url:
+                    continue
+                url_lower = orig_url.lower()
+                if not any(tok in url_lower for tok in kw_tokens):
+                    if loc_lower not in url_lower:
+                        continue
+                name = _parse_name_from_fb_url(orig_url)
+                if not name:
+                    slug = orig_url.split("/")[-1].replace("-", " ")
+                    name = slug.title() if len(slug) > 2 else ""
+                if name:
+                    wayback_url = f"https://web.archive.org/web/{timestamp}/{orig_url}" if timestamp else orig_url
+                    results.append({
+                        "title": name, "snippet": "",
+                        "link": wayback_url, "original_url": orig_url,
+                        "source": "cdx_wayback",
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("Web Archive CDX Facebook search error: %s", exc)
+    logger.info("Facebook Web Archive CDX source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 4: JustDial DIRECT HTTP (FIXED — bypass SearXNG) ----
+
+def _search_justdial_direct(query: str, location: str, max_results: int = 20) -> list[dict]:
+    """v3.5.29 Fix 5: Hit JustDial directly with proper Referer header.
+
+    Previous code routed through SearXNG which was blocked by SSRF filter.
+    Direct HTTP with Referer header works fine.
+    """
+    results: list[dict] = []
+    city = location.split(",")[0].strip().title().replace(" ", "-") if location else "India"
+    kw_slug = query.strip().replace(" ", "-")
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            urls = [
+                f"https://www.justdial.com/{city}/{kw_slug}/nct-11226886",
+                f"https://www.justdial.com/{city}/{kw_slug}",
+            ]
+            for url in urls:
+                resp = session.get(
+                    url,
+                    headers={"Referer": "https://www.justdial.com/"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                page_text = _strip_tags(resp.text[:200_000])
+                page_emails = extract_emails(page_text)
+                page_phones = extract_phones(page_text)
+                fb_urls = _extract_fb_urls(resp.text[:200_000])
+
+                # Try to extract individual business cards
+                for card_match in re.finditer(
+                    r'<li[^>]*class="[^"]*cntanr[^"]*"[^>]*>(.*?)</li>', resp.text, re.DOTALL
+                ):
+                    card = card_match.group(1)
+                    name_m = re.search(r'class="[^"]*lng_cont_name[^"]*"[^>]*>(.*?)<', card, re.DOTALL)
+                    name = _strip_tags(name_m.group(1)) if name_m else ""
+                    card_text = _strip_tags(card)
+                    card_emails = extract_emails(card_text)
+                    card_phones = extract_phones(card_text)
+                    card_fb = _extract_fb_urls(card)
+                    if name and (card_emails or card_phones or card_fb):
+                        results.append({
+                            "title": name,
+                            "snippet": card_text[:200],
+                            "link": url,
+                            "emails": card_emails[:2],
+                            "phones": card_phones[:2],
+                            "fb_urls": card_fb[:1],
+                            "source": "justdial",
+                        })
+
+                # Fallback: page-level extraction if no cards found
+                if not results and (page_emails or page_phones):
+                    results.append({
+                        "title": f"{query} - JustDial {city}",
+                        "snippet": page_text[:200],
+                        "link": url,
+                        "emails": page_emails[:5],
+                        "phones": page_phones[:5],
+                        "fb_urls": fb_urls[:3],
+                        "source": "justdial",
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("JustDial direct search error: %s", exc)
+    logger.info("Facebook JustDial direct source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 5: IndiaMART DIRECT HTTP (FIXED — bypass SearXNG) ----
+
+def _search_indiamart_direct(query: str, location: str, max_results: int = 20) -> list[dict]:
+    """v3.5.29 Fix 5: Hit IndiaMART directly with proper Referer header."""
+    results: list[dict] = []
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            kw_encoded = quote_plus(query)
+            urls = [
+                f"https://dir.indiamart.com/search.mp?ss={kw_encoded}&prdsrc=1",
+                f"https://www.indiamart.com/search/{kw_encoded}/",
+            ]
+            for url in urls:
+                resp = session.get(
+                    url,
+                    headers={"Referer": "https://www.indiamart.com/"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                page_text = _strip_tags(resp.text[:200_000])
+                page_emails = extract_emails(page_text)
+                page_phones = extract_phones(page_text)
+                fb_urls = _extract_fb_urls(resp.text[:200_000])
+
+                # Try to parse business cards
+                for card_match in re.finditer(
+                    r'<div[^>]*class="[^"]*(?:prd-card|listing|flx-cntnr)[^"]*"[^>]*>(.*?)</div>\s*</div>',
+                    resp.text, re.DOTALL,
+                ):
+                    card = card_match.group(1)
+                    name_m = re.search(r'<(?:h2|h3)[^>]*>(.*?)</(?:h2|h3)>', card, re.DOTALL)
+                    name = _strip_tags(name_m.group(1)) if name_m else ""
+                    card_text = _strip_tags(card)
+                    card_emails = extract_emails(card_text)
+                    card_phones = extract_phones(card_text)
+                    card_fb = _extract_fb_urls(card)
+                    if name and (card_emails or card_phones):
+                        results.append({
+                            "title": name,
+                            "snippet": card_text[:200],
+                            "link": url,
+                            "emails": card_emails[:2],
+                            "phones": card_phones[:2],
+                            "fb_urls": card_fb[:1],
+                            "source": "indiamart",
+                        })
+
+                # Fallback: page-level extraction
+                if not results and (page_emails or page_phones):
+                    results.append({
+                        "title": f"{query} - IndiaMART",
+                        "snippet": page_text[:200],
+                        "link": url,
+                        "emails": page_emails[:5],
+                        "phones": page_phones[:5],
+                        "fb_urls": fb_urls[:3],
+                        "source": "indiamart",
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("IndiaMART direct search error: %s", exc)
+    logger.info("Facebook IndiaMART direct source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 6: Sulekha (Indian services marketplace) ----
+
+def _search_sulekha(query: str, location: str, max_results: int = 15) -> list[dict]:
+    """v3.5.29 Fix 6: Sulekha — Indian services marketplace with contact data."""
+    results: list[dict] = []
+    city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "india"
+    kw_slug = query.strip().lower().replace(" ", "-")
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            urls = [
+                f"https://www.sulekha.com/{kw_slug}/{city}",
+                f"https://www.sulekha.com/{kw_slug}-services/{city}",
+            ]
+            for url in urls:
+                resp = session.get(
+                    url,
+                    headers={"Referer": "https://www.sulekha.com/"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                page_text = _strip_tags(resp.text[:200_000])
+                page_emails = extract_emails(page_text)
+                page_phones = extract_phones(page_text)
+                fb_urls = _extract_fb_urls(resp.text[:200_000])
+                if page_emails or page_phones:
+                    results.append({
+                        "title": f"{query} - Sulekha {city.title()}",
+                        "snippet": page_text[:200],
+                        "link": url,
+                        "emails": page_emails[:5],
+                        "phones": page_phones[:5],
+                        "fb_urls": fb_urls[:3],
+                        "source": "sulekha",
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("Sulekha search error: %s", exc)
+    logger.info("Facebook Sulekha source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 7: Real Estate Portals (99acres, MagicBricks, Housing.com) ----
+
+def _search_realestate_portals(query: str, location: str, max_results: int = 25) -> list[dict]:
+    """v3.5.29 Fix 6: Real estate portals list agents with phones and FB links."""
+    results: list[dict] = []
+    city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "india"
+    portals = [
+        ("99acres", f"https://www.99acres.com/real-estate-agents-in-{city}-ffid"),
+        ("magicbricks", f"https://www.magicbricks.com/real-estate-agents-in-{city}"),
+        ("housing", f"https://housing.com/agents/{city}"),
+    ]
+    try:
+        with AdSession(timeout=15.0, min_delay=3.0) as session:
+            for portal_name, url in portals:
+                referer = f"https://www.{portal_name}.com/" if portal_name != "housing" else "https://housing.com/"
+                resp = session.get(
+                    url,
+                    headers={"Referer": referer},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                page_text = _strip_tags(resp.text[:200_000])
+                page_emails = extract_emails(page_text)
+                page_phones = extract_phones(page_text)
+                fb_urls = _extract_fb_urls(resp.text[:200_000])
+                if page_emails or page_phones:
+                    results.append({
+                        "title": f"{query} agents - {portal_name.title()}",
+                        "snippet": page_text[:200],
+                        "link": url,
+                        "emails": page_emails[:10],
+                        "phones": page_phones[:10],
+                        "fb_urls": fb_urls[:5],
+                        "source": portal_name,
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("Real estate portals search error: %s", exc)
+    logger.info("Facebook RE portals source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 8: Yellow Pages India + directories ----
+
+def _search_yellow_pages_india(query: str, location: str, max_results: int = 20) -> list[dict]:
+    """v3.5.29 Fix 6: Yellow Pages India, AskLaila, VConnect."""
+    results: list[dict] = []
+    city = location.split(",")[0].strip().lower().replace(" ", "-") if location else "india"
+    portals = [
+        f"https://www.yellowpages.co.in/search/{quote_plus(query)}/{city}",
+        f"https://www.asklaila.com/search/{city}/{quote_plus(query)}/",
+    ]
+    try:
+        with AdSession(timeout=15.0, min_delay=2.5) as session:
+            for url in portals:
+                domain = urlparse(url).netloc
+                resp = session.get(
+                    url,
+                    headers={"Referer": f"https://{domain}/"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    continue
+                page_text = _strip_tags(resp.text[:200_000])
+                page_emails = extract_emails(page_text)
+                page_phones = extract_phones(page_text)
+                fb_urls = _extract_fb_urls(resp.text[:200_000])
+                if page_emails or page_phones:
+                    results.append({
+                        "title": f"{query} - {domain}",
+                        "snippet": page_text[:200],
+                        "link": url,
+                        "emails": page_emails[:5],
+                        "phones": page_phones[:5],
+                        "fb_urls": fb_urls[:3],
+                        "source": f"yp_{domain}",
+                    })
+                if len(results) >= max_results:
+                    break
+    except Exception as exc:
+        logger.debug("Yellow Pages India search error: %s", exc)
+    logger.info("Facebook YP India source: %d raw results", len(results))
+    return results
+
+
+# ---- Source 9: Google organic (FIXED — query directories linking to FB) ----
+
+def _search_google_organic_facebook(query: str, location: str, max_results: int = 15) -> list[dict]:
+    """v3.5.29 Fix 3: Query directories that LINK to Facebook pages.
+
+    site:facebook.com returns near-zero on Google since 2022 (FB/Google dispute).
+    Instead, search for business directories that reference FB page URLs.
+    """
+    results: list[dict] = []
+    try:
+        dorks = [
+            f'"{query}" {location} "facebook.com/pages" contact email',
+            f'"{query}" {location} facebook.com email phone contact',
+            f'"{query}" {location} site:justdial.com OR site:sulekha.com OR site:99acres.com',
+        ]
+        for dork in dorks:
+            dork_results = free_search_waterfall(dork, num_results=10, min_results=2)
+            results.extend(dork_results)
+            for r in dork_results:
+                r["source"] = "google_organic"
+            if len(results) >= max_results:
+                break
+    except Exception as exc:
+        logger.debug("Google organic Facebook search error: %s", exc)
+    logger.info("Facebook Google organic source: %d raw results", len(results))
+    return results[:max_results]
+
+
+# ---- Source 10: Contact enrichment (Google Cache / Wayback for FB URLs) ----
+
+def _enrich_fb_urls_with_contacts(
+    fb_urls: list[str], max_fetch: int = 15,
+) -> list[dict]:
+    """Fetch Google Cache or Wayback snapshots of FB URLs to extract contacts.
+
+    For leads that have a FB URL but no email/phone, this function fetches
+    cached versions to extract contact info without touching Facebook directly.
+    """
+    enriched: list[dict] = []
+    try:
+        with AdSession(timeout=12.0, min_delay=2.0) as session:
+            for fb_url in fb_urls[:max_fetch]:
+                fetched_text = ""
+                # Try Google Cache first
+                cache_url = f"https://webcache.googleusercontent.com/search?q=cache:{fb_url}"
+                try:
+                    r = session.get(cache_url, timeout=12)
+                    if r.status_code == 200 and len(r.text) > 500:
+                        fetched_text = r.text
+                except Exception:
+                    pass
+
+                # Try Wayback Machine if cache failed
+                if not fetched_text:
+                    try:
+                        wb_api = f"https://archive.org/wayback/available?url={fb_url}"
+                        r2 = session.get(wb_api, timeout=10)
+                        if r2.status_code == 200:
+                            snap = r2.json().get("archived_snapshots", {}).get("closest", {})
+                            if snap.get("available") and snap.get("url"):
+                                r3 = session.get(snap["url"], timeout=12)
+                                if r3.status_code == 200:
+                                    fetched_text = r3.text
+                    except Exception:
+                        pass
+
+                if fetched_text:
+                    clean = _strip_tags(fetched_text[:200_000])
+                    emails = extract_emails(clean)
+                    phones = extract_phones(clean)
+                    if emails or phones:
+                        name = _parse_name_from_fb_url(fb_url)
+                        enriched.append({
+                            "title": name,
+                            "snippet": clean[:200],
+                            "link": fb_url,
+                            "emails": emails[:3],
+                            "phones": phones[:3],
+                            "source": "cache_enriched",
+                        })
+    except Exception as exc:
+        logger.debug("FB URL enrichment error: %s", exc)
+    logger.info("Facebook enrichment: %d leads from %d FB URLs", len(enriched), min(len(fb_urls), max_fetch))
+    return enriched
+
+
+# ---- Main pipeline ----
+
 def scrape_facebook(
     query: str,
-    max_results: int = 20,
+    max_results: int = 50,
 ) -> list[dict]:
-    """v3.5.28 Bug 2 fix: Multi-source Facebook lead discovery pipeline.
+    """v3.5.29: Complete 10-source Facebook lead discovery pipeline.
 
-    NEVER directly access facebook.com — it aggressively blocks all
-    automated access. Instead, uses a multi-source pipeline:
-      1. Bing site:facebook.com (Bing indexes FB better than others)
-      2. JustDial (India's largest directory, rich contact data)
-      3. IndiaMART (best for B2B Indian leads)
-      4. Google organic (no site: operator, surfaces FB pages naturally)
-      5. Web Archive CDX API (cached Facebook snapshots, free)
-      6. Original site:facebook.com dorking as final fallback
+    NEVER directly access facebook.com — uses cached/indexed data only.
+    Sources (in priority order):
+      1. Bing (fixed two-pass query)
+      2. DDG HTML endpoint (fixed — not JS SPA)
+      3. Web Archive CDX (fixed SURT syntax)
+      4. JustDial direct HTTP (fixed — bypass SearXNG)
+      5. IndiaMART direct HTTP (fixed — bypass SearXNG)
+      6. Sulekha (new)
+      7. Real estate portals: 99acres, MagicBricks, Housing.com (new)
+      8. Yellow Pages India (new)
+      9. Google organic (fixed — query directories, not site:facebook.com)
+     10. Contact enrichment from Google Cache / Wayback (new)
     """
     leads: list[dict] = []
+    all_fb_urls: list[str] = []  # collect FB URLs for enrichment pass
     location = _extract_location_from_keyword(query)
+    if not location:
+        location = "India"  # default for Indian queries
     is_indian_query = any(
         loc in query.lower()
         for loc in ["india", "delhi", "mumbai", "bangalore", "chennai",
-                    "kolkata", "hyderabad", "pune", "jaipur", "lucknow"]
+                    "kolkata", "hyderabad", "pune", "jaipur", "lucknow",
+                    "ahmedabad", "noida", "gurgaon", "goa", "chandigarh"]
     )
+    is_realestate = any(
+        term in query.lower()
+        for term in ["real estate", "property", "realtor", "broker", "agent",
+                     "housing", "apartment", "flat", "villa", "plot"]
+    )
+    seen_uids: set[str] = set()
 
-    def _extract_leads_from_results(results: list[dict]) -> None:
+    def _collect_leads(results: list[dict], source_name: str) -> None:
+        """Extract emails/phones from search results and add to leads list."""
         for r in results:
             text = f"{r.get('title', '')} {r.get('snippet', '')}"
             link = r.get("link", "")
-            name = r.get("title", "").replace(" | Facebook", "").replace(" - Facebook", "").strip()
+            name = r.get("title", "")
+            name = re.sub(r'\s*[|\-]\s*Facebook.*$', '', name, flags=re.IGNORECASE).strip()
 
-            for email in extract_emails(text):
-                leads.append({
-                    "email": email, "phone": "",
-                    "name": name, "platform": "facebook",
-                    "source_url": link,
-                })
-            for phone in extract_phones(text):
-                leads.append({
-                    "email": "", "phone": phone,
-                    "name": name, "platform": "facebook",
-                    "source_url": link,
-                })
+            # Collect pre-extracted contacts from direct-HTTP sources
+            r_emails = r.get("emails", [])
+            r_phones = r.get("phones", [])
+            r_fb = r.get("fb_urls", [])
+
+            # Also extract from title/snippet text
+            r_emails = r_emails or extract_emails(text)
+            r_phones = r_phones or extract_phones(text)
+            r_fb = r_fb or _extract_fb_urls(text + " " + link)
+
+            # Track FB URLs for enrichment pass
+            all_fb_urls.extend(r_fb)
+
+            # If link itself is a Facebook URL, include it
+            if "facebook.com" in link and link not in all_fb_urls:
+                all_fb_urls.append(link)
+
+            for email in r_emails:
+                uid = _fb_lead_uid(name, email, "", r_fb[0] if r_fb else "")
+                if uid not in seen_uids:
+                    seen_uids.add(uid)
+                    leads.append({
+                        "email": email, "phone": "",
+                        "name": name or _parse_name_from_fb_url(r_fb[0]) if r_fb else name,
+                        "platform": "facebook",
+                        "source_url": link,
+                        "source": source_name,
+                    })
+            for phone in r_phones:
+                if _is_gps_coord(phone):
+                    continue
+                uid = _fb_lead_uid(name, "", phone, r_fb[0] if r_fb else "")
+                if uid not in seen_uids:
+                    seen_uids.add(uid)
+                    leads.append({
+                        "email": "", "phone": phone,
+                        "name": name or _parse_name_from_fb_url(r_fb[0]) if r_fb else name,
+                        "platform": "facebook",
+                        "source_url": link,
+                        "source": source_name,
+                    })
+
+            # If we have a FB URL but no contacts, still record as informational lead
+            if not r_emails and not r_phones and r_fb:
+                fb_name = name or _parse_name_from_fb_url(r_fb[0])
+                uid = _fb_lead_uid(fb_name, "", "", r_fb[0])
+                if uid not in seen_uids and fb_name:
+                    seen_uids.add(uid)
+                    leads.append({
+                        "email": "", "phone": "",
+                        "name": fb_name,
+                        "platform": "facebook",
+                        "source_url": r_fb[0],
+                        "source": source_name,
+                    })
 
     try:
-        # Source 1: Bing (best Facebook indexer)
-        bing_results = _search_bing_for_facebook(query, max_results=10)
-        _extract_leads_from_results(bing_results)
-        logger.info("Facebook Bing source: %d raw results", len(bing_results))
+        # Source 1: Bing (fixed two-pass)
+        _collect_leads(_search_bing_for_facebook(query, location), "bing")
 
-        # Source 2: JustDial (for Indian queries)
+        # Source 2: DDG HTML endpoint (fixed)
+        _collect_leads(_search_ddg_html_facebook(query, location), "ddg_html")
+
+        # Source 3: Web Archive CDX (fixed)
+        _collect_leads(_search_web_archive_facebook(query, location), "cdx_wayback")
+
+        # Source 4: JustDial direct (fixed — for Indian queries)
         if is_indian_query:
-            jd_results = _search_justdial(query, max_results=10)
-            _extract_leads_from_results(jd_results)
-            logger.info("Facebook JustDial source: %d raw results", len(jd_results))
+            _collect_leads(_search_justdial_direct(query, location), "justdial")
 
-        # Source 3: IndiaMART (for Indian B2B queries)
+        # Source 5: IndiaMART direct (fixed — for Indian queries)
         if is_indian_query:
-            im_results = _search_indiamart(query, max_results=10)
-            _extract_leads_from_results(im_results)
-            logger.info("Facebook IndiaMART source: %d raw results", len(im_results))
+            _collect_leads(_search_indiamart_direct(query, location), "indiamart")
 
-        # Source 4: Google organic (no site: operator)
-        organic_results = _search_google_organic_facebook(query, max_results=10)
-        _extract_leads_from_results(organic_results)
-        logger.info("Facebook organic source: %d raw results", len(organic_results))
+        # Source 6: Sulekha (new — for Indian queries)
+        if is_indian_query:
+            _collect_leads(_search_sulekha(query, location), "sulekha")
 
-        # Source 5: Web Archive (cached FB pages)
-        archive_results = _search_web_archive_facebook(query, max_results=8)
-        _extract_leads_from_results(archive_results)
-        logger.info("Facebook Web Archive source: %d raw results", len(archive_results))
+        # Source 7: Real estate portals (new — for RE queries)
+        if is_realestate:
+            _collect_leads(_search_realestate_portals(query, location), "re_portals")
 
-        # Source 6: Original site:facebook.com dorking as fallback
-        if len(leads) < max_results:
-            fallback_dorks = [
-                f'site:facebook.com "{query}" "contact us" OR "email" OR "@"',
-                f'site:facebook.com "{query}" "business page" "phone" OR "email"',
-            ]
-            for dork in fallback_dorks:
-                fb_results = free_search_waterfall(dork, num_results=10, min_results=2)
-                _extract_leads_from_results(fb_results)
+        # Source 8: Yellow Pages India (new)
+        if is_indian_query:
+            _collect_leads(_search_yellow_pages_india(query, location), "yp_india")
+
+        # Source 9: Google organic (fixed — query directories)
+        _collect_leads(_search_google_organic_facebook(query, location), "google_organic")
+
+        # Source 10: Enrichment pass — fetch cached FB pages for contacts
+        unique_fb_urls = list(dict.fromkeys(all_fb_urls))  # dedup preserving order
+        no_contact_fb = [
+            url for url in unique_fb_urls
+            if not any(
+                l.get("source_url") == url and (l.get("email") or l.get("phone"))
+                for l in leads
+            )
+        ]
+        if no_contact_fb:
+            enriched = _enrich_fb_urls_with_contacts(no_contact_fb, max_fetch=15)
+            _collect_leads(enriched, "cache_enriched")
 
     except Exception as exc:
         logger.warning("Facebook multi-source scrape failed: %s", exc)
 
-    logger.info("Facebook live scrape (multi-source): %d leads", len(leads))
+    logger.info(
+        "Facebook live scrape (v3.5.29 10-source): %d leads, %d with contacts",
+        len(leads), sum(1 for l in leads if l.get('email') or l.get('phone')),
+    )
     return _dedup_leads(leads)[:max_results]
 
 
