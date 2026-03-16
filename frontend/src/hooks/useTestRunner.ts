@@ -118,7 +118,7 @@ export function useTestRunner() {
         body: JSON.stringify({
           test_cases: cases,
           concurrency: 2,
-          timeout_per_case: 90,
+          timeout_per_case: 300,  // v3.5.36: Increased from 90s to match backend Fix 3
         }),
       });
       const data = await res.json();

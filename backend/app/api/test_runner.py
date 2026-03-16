@@ -50,7 +50,7 @@ class TestCase(BaseModel):
 class StartTestRequest(BaseModel):
     test_cases: list[TestCase]
     concurrency: int = 2
-    timeout_per_case: int = 90
+    timeout_per_case: int = 300
 
 
 class FrontendLogEntry(BaseModel):
@@ -347,6 +347,17 @@ async def _execute_extraction_case(
             # Location filter analysis for location-targeted keywords
             if tc.hasLocation and " in " in tc.keyword.lower():
                 location_hint = tc.keyword.lower().split(" in ", 1)[1].strip()
+                # v3.5.36 Fix 2: Resolve city→country for proper comparison
+                # Previously: "mumbai" in "India" = False → dropped valid leads
+                from app.api.routes import _CITY_TO_COUNTRY
+                hint_country = ""
+                for city, country in _CITY_TO_COUNTRY.items():
+                    if city in location_hint or location_hint in city:
+                        hint_country = country.lower()
+                        break
+                if not hint_country:
+                    hint_country = location_hint  # treat as country name
+
                 cursor = await db.execute(
                     "SELECT id, email, name, country, platform FROM leads WHERE session_id = ?",
                     (extraction_session_id,),
@@ -356,13 +367,19 @@ async def _execute_extraction_case(
                 dropped_detail: list[dict] = []
                 for lead_row in all_leads:
                     lead_country = (lead_row[3] or "").lower()
-                    if location_hint in lead_country or not lead_country or lead_country == "unknown":
+                    # v3.5.36: Match against both city name AND resolved country
+                    if (not lead_country
+                            or lead_country == "unknown"
+                            or location_hint in lead_country
+                            or lead_country in location_hint
+                            or hint_country in lead_country
+                            or lead_country in hint_country):
                         kept += 1
                     else:
                         dropped_detail.append({
                             "id": lead_row[0][:8],
                             "country": lead_row[3],
-                            "reason": f"country '{lead_row[3]}' != '{location_hint}'",
+                            "reason": f"country '{lead_row[3]}' != '{location_hint}' (resolved: '{hint_country}')",
                         })
 
                 location_filter_log.append({

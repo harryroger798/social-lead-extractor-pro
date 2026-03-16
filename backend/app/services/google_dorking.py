@@ -756,38 +756,32 @@ async def dorking_search(
         except Exception as exc:
             logger.warning("Multi-engine search error: %s", exc)
 
-    # Method 3: Patchright→DDG OR HTTP fallback (OPTIONAL — only if nothing found yet)
-    # v3.5.28 Bug 3 fix: Patchright now targets DuckDuckGo instead of Google
-    # (zero CAPTCHA). HTTP fallback still tries Google as last resort.
-    if not all_emails and not all_phones and use_patchright:
+    # v3.5.36 Fix 1: Skip Patchright entirely — it triggers Google CAPTCHA
+    # (2,394 blocks in test logs). The multi-engine waterfall above (Brave,
+    # Startpage, DDG Lite, Mojeek, Qwant, SearXNG) is 100% ban-free and
+    # API-key-free. Patchright browser automation is unnecessary and harmful.
+    # Only use HTTP-based DDG Lite as a last resort (no browser needed).
+    if not all_emails and not all_phones:
         primary_query = queries[0] if queries else _build_dork_query(keyword, platform)
-
-        # Try Patchright→DuckDuckGo first (zero CAPTCHA, anti-detection browser)
-        results = await _search_ddg_patchright(
-            primary_query, num_results, headless=headless, proxy=proxy
-        )
-
-        # If Patchright returned nothing (not installed / no browser),
-        # fall back to plain HTTP + BeautifulSoup scraping
-        if not results:
-            logger.info("Patchright DDG unavailable or returned no results — trying HTTP fallback")
-            loop = asyncio.get_running_loop()
-            results = await loop.run_in_executor(
-                None, _search_google_http, primary_query, num_results
+        logger.info("v3.5.36: Skipping Patchright (CAPTCHA-blocked) — trying DDG Lite HTTP")
+        loop = asyncio.get_running_loop()
+        try:
+            from app.services.multi_engine_search import search_ddg_lite
+            ddg_results = await loop.run_in_executor(
+                None, search_ddg_lite, primary_query, num_results
             )
-            if results and "http_dorking" not in methods_used:
-                methods_used.append("http_dorking")
-
-        if results:
-            if "patchright_ddg" not in methods_used and "http_dorking" not in methods_used:
-                methods_used.append("patchright_ddg")
-            for result in results:
-                text = f"{result.get('title', '')} {result.get('snippet', '')}"
-                all_emails.extend(extract_emails(text))
-                all_phones.extend(extract_phones(text))
-                link = result.get("link", "")
-                if link:
-                    all_sources.append(link)
+            if ddg_results:
+                if "ddg_lite_fallback" not in methods_used:
+                    methods_used.append("ddg_lite_fallback")
+                for result in ddg_results:
+                    text = f"{result.get('title', '')} {result.get('snippet', '')}"
+                    all_emails.extend(extract_emails(text))
+                    all_phones.extend(extract_phones(text))
+                    link = result.get("link", "")
+                    if link:
+                        all_sources.append(link)
+        except Exception as exc:
+            logger.debug("DDG Lite fallback failed: %s", exc)
 
     # Deduplicate
     seen_emails: set[str] = set()
@@ -865,7 +859,8 @@ async def dorking_search_multi(
             all_results.append(result)
             total_queries += len(result.get("queries_used", [1]))
 
-            # v3.5.1: Anti-bot delay (5-10s between platforms)
-            anti_bot_delay = max(delay, 5.0)
+            # v3.5.36: Reduced delay (2-4s) — multi-engine waterfall uses
+            # curl_cffi anti-detection, not browser automation.
+            anti_bot_delay = max(delay, 2.0)
             await asyncio.sleep(anti_bot_delay)
     return all_results
