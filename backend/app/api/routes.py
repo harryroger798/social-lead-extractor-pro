@@ -3230,3 +3230,45 @@ async def log_export() -> Response:
         media_type="application/zip",
         headers={"Content-Disposition": "attachment; filename=snapleads-logs.zip"},
     )
+
+
+# ─── v3.5.31: Auto-Discovery Pipeline ────────────────────────────────────────
+
+@router.post("/auto-discovery")
+async def auto_discovery_search(body: dict) -> dict:
+    """Run the auto-discovery pipeline for any keyword + location.
+
+    v3.5.31: 5-stage pipeline — Source Discovery, Directory Fingerprinting,
+    Adaptive Extraction (JSON-LD > Microdata > Heuristic DOM > Regex),
+    Anti-Bot Handling, and Deduplication.
+
+    Body:
+        keyword: str — search term (e.g. "wedding photographers")
+        location: str — optional location (e.g. "Mumbai")
+        max_leads: int — max leads to return (default 200)
+    """
+    keyword = body.get("keyword", "").strip()
+    location = body.get("location", "").strip()
+    max_leads = min(int(body.get("max_leads", 200)), 500)
+
+    if not keyword:
+        raise HTTPException(status_code=400, detail="keyword is required")
+
+    from app.services.auto_discovery import run_auto_discovery
+
+    loop = asyncio.get_event_loop()
+    leads = await loop.run_in_executor(
+        _LIVE_SCRAPE_POOL,
+        lambda: run_auto_discovery(
+            keyword=keyword,
+            location=location,
+            max_leads=max_leads,
+        ),
+    )
+
+    return {
+        "keyword": keyword,
+        "location": location,
+        "total_leads": len(leads),
+        "leads": leads,
+    }
