@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
 from app.api.routes import router
+from app.api.test_runner import router as test_runner_router
 from app.services.log_service import init_logging
 
 
@@ -33,6 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(test_runner_router)
 
 
 @app.get("/healthz")
