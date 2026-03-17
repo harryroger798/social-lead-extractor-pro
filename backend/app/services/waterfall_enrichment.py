@@ -36,11 +36,17 @@ import re
 import signal
 import socket
 import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Optional
 from urllib.parse import quote_plus
 
 # v3.5.34 P5: Per-lead enrichment timeout (seconds)
 _PER_LEAD_TIMEOUT_SECS = 8
+# v3.5.37: Parallel enrichment constants
+_MAX_ENRICH_LEADS = 20       # was 50 — halved to keep enrichment predictable
+_MAX_PARALLEL_WORKERS = 10   # process 10 leads concurrently
+_ENRICHMENT_BUDGET_SECS = 60 # hard wall for entire enrichment stage
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -61,14 +67,24 @@ def _strip_tags(text: str) -> str:
 
 
 def _is_private_ip(hostname: str) -> bool:
-    """Check if hostname resolves to a private/loopback IP (SSRF protection)."""
+    """Check if hostname resolves to a private/loopback IP (SSRF protection).
+
+    v3.5.37 fix: import allowlist from anti_detection and use explicit network
+    ranges instead of is_reserved (which false-positives on CDN/anycast IPs).
+    """
+    from app.services.anti_detection import _ALLOWED_SEARCH_DOMAINS, _PRIVATE_NETWORKS
+    if hostname.lower() in _ALLOWED_SEARCH_DOMAINS:
+        return False
     try:
         addr_infos = socket.getaddrinfo(hostname, None, proto=socket.IPPROTO_TCP)
         for _family, _, _, _, sockaddr in addr_infos:
             ip_str = sockaddr[0]
             ip = ipaddress.ip_address(ip_str)
-            if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:
+            if ip.is_loopback or str(ip) in ('0.0.0.0', '::'):
                 return True
+            for network in _PRIVATE_NETWORKS:
+                if ip in network:
+                    return True
         return False
     except (socket.gaierror, ValueError, OSError):
         return True
@@ -767,15 +783,18 @@ def _enrich_with_timeout(
 
 def enrich_leads_batch_waterfall(
     leads: list[dict],
-    max_enrich: int = 50,
+    max_enrich: int = _MAX_ENRICH_LEADS,
     skip_website_crawl: bool = False,
     skip_github: bool = False,
     skip_dorking: bool = False,
     progress_callback: Optional[Callable[[int, int], None]] = None,
+    budget_secs: float = _ENRICHMENT_BUDGET_SECS,
 ) -> list[dict]:
     """Enrich a batch of leads using the waterfall engine.
 
     v3.5.34 P5: Added per-lead 8-second timeout and granular progress callback.
+    v3.5.37: Parallel enrichment with 10 workers + 60s stage budget + cap at 20 leads.
+    Down from 400s worst case to ~16-24s (25x improvement).
 
     Prioritizes leads that are most likely to yield results
     (has company_domain or company name).
@@ -787,6 +806,7 @@ def enrich_leads_batch_waterfall(
         skip_github: Skip GitHub enrichment
         skip_dorking: Skip Google dorking
         progress_callback: Optional (current, total) callback for progress updates
+        budget_secs: Maximum total seconds for enrichment stage
 
     Returns:
         List of enriched lead dicts, sorted by confidence score
@@ -812,26 +832,69 @@ def enrich_leads_batch_waterfall(
             lead["confidence_score"] = calculate_lead_confidence(lead)
             already_complete.append(lead)
 
-    # Enrich the top candidates with per-lead timeout
+    # v3.5.37: Parallel enrichment with ThreadPoolExecutor
     enriched_leads = []
     total_to_enrich = min(len(leads_to_enrich), max_enrich)
-    for idx, lead in enumerate(leads_to_enrich[:max_enrich]):
-        # v3.5.34 P5: Granular progress callback
-        if progress_callback:
-            try:
-                progress_callback(idx, total_to_enrich)
-            except Exception:
-                pass
+    stage_deadline = time.monotonic() + budget_secs
+    completed_count = 0
 
-        # v3.5.34 P5: Per-lead timeout prevents hanging
-        enriched = _enrich_with_timeout(
-            lead,
-            timeout_secs=_PER_LEAD_TIMEOUT_SECS,
-            skip_website_crawl=skip_website_crawl,
-            skip_github=skip_github,
-            skip_dorking=skip_dorking,
-        )
-        enriched_leads.append(enriched)
+    if total_to_enrich > 0:
+        with ThreadPoolExecutor(
+            max_workers=_MAX_PARALLEL_WORKERS,
+            thread_name_prefix="enrich",
+        ) as executor:
+            futures = {
+                executor.submit(
+                    _enrich_with_timeout,
+                    lead,
+                    _PER_LEAD_TIMEOUT_SECS,
+                    skip_website_crawl=skip_website_crawl,
+                    skip_github=skip_github,
+                    skip_dorking=skip_dorking,
+                ): lead
+                for lead in leads_to_enrich[:max_enrich]
+            }
+            try:
+                remaining = max(1.0, stage_deadline - time.monotonic())
+                for future in as_completed(futures, timeout=remaining):
+                    if time.monotonic() > stage_deadline:
+                        logger.warning(
+                            "v3.5.37: Enrichment budget exhausted (%.0fs) — "
+                            "processed %d/%d leads",
+                            budget_secs, completed_count, total_to_enrich,
+                        )
+                        for f in futures:
+                            f.cancel()
+                        break
+                    try:
+                        result = future.result(timeout=1)
+                        enriched_leads.append(result)
+                    except Exception:
+                        # Pass-through unenriched lead on error
+                        original_lead = futures[future]
+                        original_lead["confidence_score"] = calculate_lead_confidence(
+                            original_lead
+                        )
+                        enriched_leads.append(original_lead)
+                    completed_count += 1
+                    if progress_callback:
+                        try:
+                            progress_callback(completed_count, total_to_enrich)
+                        except Exception:
+                            pass
+            except TimeoutError:
+                logger.warning(
+                    "v3.5.37: Enrichment stage timed out after %.0fs — "
+                    "processed %d/%d leads",
+                    budget_secs, completed_count, total_to_enrich,
+                )
+                # Collect any leads that were still unenriched
+                for f, lead in futures.items():
+                    if not f.done():
+                        f.cancel()
+                        lead["confidence_score"] = calculate_lead_confidence(lead)
+                        lead["enrichment_timeout"] = True
+                        enriched_leads.append(lead)
 
     # Final progress callback
     if progress_callback and total_to_enrich > 0:
@@ -839,6 +902,12 @@ def enrich_leads_batch_waterfall(
             progress_callback(total_to_enrich, total_to_enrich)
         except Exception:
             pass
+
+    logger.info(
+        "v3.5.37: Enrichment complete — %d enriched, %d already complete, %.1fs elapsed",
+        len(enriched_leads), len(already_complete),
+        budget_secs - max(0.0, stage_deadline - time.monotonic()),
+    )
 
     # Combine and sort by confidence
     all_leads = enriched_leads + already_complete
