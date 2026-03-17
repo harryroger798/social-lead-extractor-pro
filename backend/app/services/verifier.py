@@ -390,7 +390,9 @@ async def verify_email_detailed(email: str) -> dict:
     # v3.5.39: Add DNS confidence signals and catch-all provider info
     dns_conf = await loop.run_in_executor(None, dns_confidence_score, domain)
     mx_provider = _identify_mx_provider(mx_host) if mx_host else "unknown"
-    catch_all_trusted = _is_catch_all_trustworthy(mx_host) if mx_host else False
+    catch_all_trusted = bool(
+        smtp_result["catch_all"] and mx_host and _is_catch_all_trustworthy(mx_host)
+    )
 
     return {
         "valid": valid,
