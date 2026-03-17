@@ -2382,15 +2382,15 @@ async def search_database_hybrid(
             added += 1
         return added
 
-    # v3.5.38: Per-phase timeouts based on observed timings from v3.5.37 tests:
-    #   LinkedIn: ~60s (5 countries × 5 files × S3 round-trips)
-    #   Instagram: 55-86s (high variance due to file sizes; 90s gives buffer)
-    #   Supplementary (GMaps + PAN India + YouTube): ~12s
-    # Total sequential: 115-146s. Old 90s master ALWAYS timed out.
-    _PHASE_TIMEOUT_LINKEDIN = 65.0
-    _PHASE_TIMEOUT_INSTAGRAM = 90.0   # observed up to 86s — 90s avoids data loss
-    _PHASE_TIMEOUT_SUPPLEMENTARY = 25.0
-    _MASTER_SAFETY_TIMEOUT = 200.0  # safety net (sum of phases + slack)
+    # v3.5.39: Raised per-phase timeouts based on v3.5.38 test analysis:
+    #   LinkedIn: 100% timeout at 65s — needs 3x headroom for slow S3 links
+    #   Instagram: queries take 60-80s, need safety buffer above 90s
+    #   Supplementary: Google Maps alone takes 13-20s, PAN India 30s+
+    # v3.5.38 original: LinkedIn=65, Instagram=90, Supplementary=25
+    _PHASE_TIMEOUT_LINKEDIN = 180.0    # was 65s — 100% timeout rate
+    _PHASE_TIMEOUT_INSTAGRAM = 150.0   # was 90s — frequent data loss
+    _PHASE_TIMEOUT_SUPPLEMENTARY = 90.0  # was 25s — GMaps+PAN India need 30-50s
+    _MASTER_SAFETY_TIMEOUT = 450.0  # safety net (sum of phases + slack)
 
     _master_start = _time.monotonic()
 

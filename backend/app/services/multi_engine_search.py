@@ -158,7 +158,11 @@ def _make_client(timeout: float = 15.0) -> AdSession:
 # ===========================================================================
 
 def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
-    """Scrape Brave Search HTML results (no API key needed)."""
+    """Scrape Brave Search HTML results (no API key needed).
+
+    v3.5.39: Added Accept-Encoding: identity to prevent brotli/zstd
+    compressed responses that cause curl error (23) CURLE_WRITE_ERROR.
+    """
     health = _health("brave_free")
     if not health.is_available:
         return []
@@ -167,6 +171,7 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
             resp = client.get(
                 "https://search.brave.com/search",
                 params={"q": query, "source": "web"},
+                headers={"Accept-Encoding": "identity"},  # v3.5.39: prevent brotli CURLE_WRITE_ERROR
                 timeout=15.0,
             )
         if resp.status_code != 200:
@@ -484,12 +489,15 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
         return []
 
 
+# v3.5.39: Replaced dead instances (bus-hit.me, tiekoetter.com, fmac.xyz)
+# with verified-live instances. Dead instances caused DNS failures and
+# JSON parse errors, wasting 12s+ per waterfall cycle.
 _SEARXNG_INSTANCES = [
     "https://searx.be",
-    "https://search.bus-hit.me",
-    "https://searx.tiekoetter.com",
+    "https://search.inetol.net",
+    "https://paulgo.io",
     "https://search.ononoki.org",
-    "https://searx.fmac.xyz",
+    "https://searx.work",
 ]
 
 

@@ -217,7 +217,32 @@ async def _run_single_case(
                 timeout=timeout,
             )
             leads_found = result
-            status = "success"
+            # v3.5.39 Fix 7: Lead-count threshold — flag 0-lead tests as FAIL.
+            # Previously the framework marked 0-lead tests as "success" which
+            # masked real failures (e.g. all DB phases timing out).
+            # Minimum thresholds by platform group:
+            #   B2B: 1 lead (supplementary DB has limited coverage)
+            #   LOCAL/B2C: 1 lead (Google Maps + live scrapers should find some)
+            #   Social: 3 leads (LinkedIn S3 has 86.9M records)
+            _MIN_LEADS = {
+                "B2B": 1,
+                "LOCAL": 1,
+                "B2C": 1,
+                "Social": 3,
+            }
+            min_required = _MIN_LEADS.get(tc.platformGroup, 1)
+            if leads_found < min_required:
+                status = "failed"
+                errors.append(
+                    f"v3.5.39: Only {leads_found} leads found "
+                    f"(minimum {min_required} for {tc.platformGroup})"
+                )
+                case_logger.warning(
+                    "v3.5.39 FAIL: %d leads < threshold %d for %s",
+                    leads_found, min_required, tc.platformGroup,
+                )
+            else:
+                status = "success"
         except asyncio.TimeoutError:
             status = "timeout"
             errors.append(f"Case timed out after {timeout}s")
