@@ -869,8 +869,14 @@ def enrich_leads_batch_waterfall(
                             "processed %d/%d leads",
                             budget_secs, completed_count, total_to_enrich,
                         )
-                        for f in futures:
-                            f.cancel()
+                        # Cancel remaining and materialize fallback records
+                        for f, lead in futures.items():
+                            if not f.done():
+                                f.cancel()
+                            if lead not in [r for r in enriched_leads]:
+                                lead["confidence_score"] = calculate_lead_confidence(lead)
+                                lead["enrichment_timeout"] = True
+                                enriched_leads.append(lead)
                         break
                     try:
                         result = future.result(timeout=1)
