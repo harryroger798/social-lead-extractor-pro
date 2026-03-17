@@ -929,16 +929,27 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 f"Google Dorking: {len(non_reddit_platforms)} platforms...",
                 "", *_count_leads())
 
-            # v3.5.36 Fix 6: Adaptive — reduce pages if S3 returned many leads
+            # v3.5.41 FIX-4: Dorking page reduction threshold fix.
+            # v3.5.36 reduced pages when _s3_lead_count >= 50, but this was
+            # too aggressive — in Group A tests, 4/6 sessions had 50-200 DB
+            # leads but still needed full dorking for location-specific results.
+            # v3.5.41: Only reduce pages if DB returned >= 200 meaningful leads.
+            _DORKING_REDUCTION_THRESHOLD = 200
             _dork_pages = config.pages_per_keyword
-            if hasattr(config, '_s3_lead_count') or '_s3_lead_count' in dir():
-                try:
-                    if _s3_lead_count >= 50:  # type: ignore[possibly-undefined]
-                        _dork_pages = max(1, config.pages_per_keyword // 2)
-                        logger.info("v3.5.36: Reduced dorking pages to %d (S3 returned %d)",
-                                    _dork_pages, _s3_lead_count)  # type: ignore[possibly-undefined]
-                except NameError:
-                    pass
+            try:
+                if _s3_lead_count >= _DORKING_REDUCTION_THRESHOLD:  # type: ignore[possibly-undefined]
+                    _dork_pages = max(1, config.pages_per_keyword // 2)
+                    logger.info(
+                        "v3.5.41: Reduced dorking pages to %d (S3 returned %d >= %d)",
+                        _dork_pages, _s3_lead_count, _DORKING_REDUCTION_THRESHOLD,  # type: ignore[possibly-undefined]
+                    )
+                else:
+                    logger.info(
+                        "v3.5.41: Full dorking pages=%d (S3 returned %d < %d)",
+                        _dork_pages, _s3_lead_count, _DORKING_REDUCTION_THRESHOLD,  # type: ignore[possibly-undefined]
+                    )
+            except NameError:
+                pass
 
             for idx, platform in enumerate(non_reddit_platforms):
                 # v3.5.36 Fix 7: Skip to next if platform returns 0 after 15s
