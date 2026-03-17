@@ -154,24 +154,76 @@ def _infer_lead_country(lead: dict) -> str:
 # Instagram/LinkedIn location fields use inconsistent names (e.g. "Bombay"
 # vs "Mumbai", "Bengaluru" vs "Bangalore"). This map ensures both forms
 # match during location filtering, recovering 150-250 leads per session.
+# v3.5.43: Massively expanded with neighborhoods, metro areas, Hindi names,
+# and state names. In v3.5.42 Group A, only 4-8 out of 500 Instagram leads
+# matched city-level (40-78% dropped). Neighborhoods like "Andheri", "Bandra"
+# are far more common in Instagram bios than "Mumbai".
 _CITY_ALIASES: dict[str, list[str]] = {
-    "mumbai": ["mumbai", "bombay", "navi mumbai", "thane", "mum"],
+    "mumbai": ["mumbai", "bombay", "navi mumbai", "thane", "mum",
+               "kalyan", "mira road", "vasai", "virar", "dombivli",
+               "andheri", "bandra", "dadar", "kurla", "powai",
+               "malad", "borivali", "kandivali", "juhu", "worli",
+               "goregaon", "mulund", "chembur", "vashi", "panvel",
+               "maharashtra", "mh"],
     "delhi": ["delhi", "new delhi", "ncr", "gurgaon", "noida", "faridabad",
-              "gurugram", "ghaziabad"],
-    "bangalore": ["bangalore", "bengaluru", "blr", "bangaluru"],
-    "chennai": ["chennai", "madras", "chn"],
-    "pune": ["pune", "pcmc", "pimpri"],
-    "hyderabad": ["hyderabad", "hyd", "secunderabad", "cyberabad"],
-    "kolkata": ["kolkata", "calcutta", "kol"],
-    "ahmedabad": ["ahmedabad", "amdavad"],
-    "jaipur": ["jaipur", "pink city"],
-    "lucknow": ["lucknow", "lko"],
-    "chandigarh": ["chandigarh", "chd"],
-    "kochi": ["kochi", "cochin", "ernakulam"],
-    "indore": ["indore", "idr"],
-    "nagpur": ["nagpur", "ngp"],
-    "coimbatore": ["coimbatore", "kovai"],
-    "visakhapatnam": ["visakhapatnam", "vizag", "visakha"],
+              "gurugram", "ghaziabad", "greater noida",
+              "dwarka", "rohini", "pitampura", "connaught place",
+              "south delhi", "lajpat nagar", "saket", "vasant kunj",
+              "karol bagh", "rajouri garden", "janakpuri",
+              "national capital region"],
+    "bangalore": ["bangalore", "bengaluru", "blr", "bangaluru",
+                   "whitefield", "electronic city", "koramangala",
+                   "indiranagar", "hsr layout", "jayanagar",
+                   "marathahalli", "bellandur", "sarjapur",
+                   "karnataka", "ka"],
+    "chennai": ["chennai", "madras", "chn",
+                "adyar", "anna nagar", "t nagar", "velachery",
+                "tambaram", "porur", "guindy", "sholinganallur",
+                "tamil nadu", "tn"],
+    "pune": ["pune", "pcmc", "pimpri", "chinchwad",
+             "hinjewadi", "kharadi", "wakad", "baner",
+             "hadapsar", "viman nagar", "koregaon park",
+             "maharashtra"],
+    "hyderabad": ["hyderabad", "hyd", "secunderabad", "cyberabad",
+                   "hitec city", "gachibowli", "madhapur",
+                   "kukatpally", "kondapur", "banjara hills",
+                   "jubilee hills", "ameerpet",
+                   "telangana", "ts"],
+    "kolkata": ["kolkata", "calcutta", "kol",
+                "salt lake", "new town", "howrah", "dum dum",
+                "park street", "ballygunge", "rajarhat",
+                "west bengal", "wb"],
+    "ahmedabad": ["ahmedabad", "amdavad",
+                   "gandhinagar", "sg highway", "bopal",
+                   "prahlad nagar", "satellite", "navrangpura",
+                   "gujarat", "gj"],
+    "jaipur": ["jaipur", "pink city",
+               "malviya nagar", "vaishali nagar", "mansarovar",
+               "rajasthan", "rj"],
+    "lucknow": ["lucknow", "lko",
+                "gomti nagar", "hazratganj", "aliganj",
+                "uttar pradesh", "up"],
+    "chandigarh": ["chandigarh", "chd", "mohali", "panchkula",
+                    "tricity"],
+    "kochi": ["kochi", "cochin", "ernakulam",
+              "vyttila", "edappally", "kakkanad",
+              "kerala", "kl"],
+    "indore": ["indore", "idr",
+               "vijay nagar", "palasia",
+               "madhya pradesh", "mp"],
+    "nagpur": ["nagpur", "ngp",
+               "dharampeth", "sitabuldi",
+               "maharashtra"],
+    "coimbatore": ["coimbatore", "kovai",
+                    "gandhipuram", "peelamedu", "saravanampatti",
+                    "tamil nadu"],
+    "visakhapatnam": ["visakhapatnam", "vizag", "visakha",
+                       "andhra pradesh", "ap"],
+    "surat": ["surat", "adajan", "vesu", "gujarat"],
+    "patna": ["patna", "boring road", "kankarbagh", "bihar"],
+    "bhopal": ["bhopal", "mp nagar", "madhya pradesh"],
+    "thiruvananthapuram": ["thiruvananthapuram", "trivandrum", "kerala"],
+    "guwahati": ["guwahati", "gauhati", "assam"],
 }
 
 
@@ -364,15 +416,16 @@ def filter_leads_by_location(
                 drop_count += 1
 
     # v3.5.42 FIX-4: Raised no_signal caps. Instagram location metadata is
-    # extremely sparse — in v3.5.41 Group A logs, 60-70% of Instagram leads
-    # had no_signal. Raising from 200→300 recovers ~50-100 valid leads/session.
+    # extremely sparse — in v3.5.42 Group A logs, 95% of Instagram leads had
+    # no_signal (only 4-8 out of 500 matched city). Raising to 500 keeps most
+    # unlocated leads since the DB already filters by keyword relevance.
     _MAX_NO_SIGNAL_BY_SOURCE: dict[str, int] = {
-        "instagram": 300,   # v3.5.42: raised from 200→300 (sparse location data)
-        "linkedin": 200,    # v3.5.42: raised from 150→200
+        "instagram": 500,   # v3.5.43: raised from 300→500 (95% have no location)
+        "linkedin": 250,    # v3.5.43: raised from 200→250
         "googlemaps": 50,   # GMaps records are already location-tagged
         "google_maps": 50,  # alias — leads use "google_maps" as platform value
         "pan_india": 150,   # Moderate cap
-        "default": 250,     # v3.5.42: raised from 200→250
+        "default": 350,     # v3.5.43: raised from 250→350
     }
     _max_no_signal = _MAX_NO_SIGNAL_BY_SOURCE.get(
         source_tag, _MAX_NO_SIGNAL_BY_SOURCE["default"]
@@ -2027,7 +2080,11 @@ def _youtube_row_to_lead(row: tuple, keyword: str) -> dict:
 # (India → iDrive E2 us-west-1). Must exceed http_timeout so DuckDB
 # can finish naturally instead of leaving orphaned threads blocked on S3 I/O.
 # v3.5.40: Raised to 210s — must exceed http_timeout (200s) per RC10 fix.
-_DB_QUERY_TIMEOUT_SECS = 210
+# v3.5.43: Reduced to 150s — forces DuckDB to return partial results faster.
+# Combined with adaptive ds_limit (scan fewer files when budget is tight),
+# the query should complete within 150s. Ghost grace (60s) catches stragglers.
+# Total: 150+60=210s, well within phase timeout of 280s.
+_DB_QUERY_TIMEOUT_SECS = 150
 
 # v3.5.21: Master timeout for the entire search_database_hybrid call.
 # Even if individual query timeouts fail to fire (thread pool saturation),
@@ -2043,19 +2100,42 @@ _HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 90
 
 
 # v3.5.42 FIX-3: Restore LinkedIn ds_limit to 5 (was 3 in v3.5.41).
-# v3.5.41 reduced to 3 to prevent timeouts, but this lost ~20% of LinkedIn
-# leads. With PAN India disabled (FIX-1), the budget saved (120s) gives
-# LinkedIn enough headroom at ds_limit=5. Phase timeout stays at 240s.
-_LINKEDIN_DS_LIMIT_OVERRIDE = 5
+# v3.5.43: Now used as MAX ceiling — actual ds_limit is computed adaptively
+# by _compute_linkedin_ds_limit() based on remaining budget time.
+_LINKEDIN_DS_LIMIT_MAX = 5
 
 # v3.5.41 FIX-1: LinkedIn phase timeout raised from 180s to 240s.
-# Provides safety net for slower connections.
-_LINKEDIN_PHASE_TIMEOUT_SECS = 240
+# v3.5.43: Raised to 280s to align with timeout chain:
+#   DB query timeout (150s) + ghost grace (60s) = 210s max query time
+#   Phase timeout (280s) > 210s + 70s processing buffer
+# In v3.5.42, phase=240s fired BEFORE ghost grace (210+60=270s) completed,
+# causing LinkedIn to return 0 leads in ALL 3 sessions where enabled.
+_LINKEDIN_PHASE_TIMEOUT_SECS = 280
 
 # v3.5.41 FIX-1: Ghost query recovery — extra seconds to wait after timeout
 # for queries that are still running ("ghost queries"). In v3.5.40, LinkedIn
 # queries that finished 5-30s after the phase timeout were silently discarded.
 _LINKEDIN_GHOST_CAPTURE_EXTRA_SECS = 60
+
+
+def _compute_linkedin_ds_limit(available_secs: float) -> int:
+    """v3.5.43: Adaptive ds_limit based on remaining budget time.
+
+    Empirical from v3.5.42 Group A logs: each S3 parquet file takes
+    ~40-55s to scan on residential internet (India → iDrive E2 us-west-1).
+    With ds_limit=5 and 300s budget, LinkedIn always timed out.
+
+    Scale ds_limit to fit within available time with 25% safety margin.
+    """
+    seconds_per_file = 50  # conservative estimate from log analysis
+    safe_secs = available_secs * 0.75  # 25% safety margin
+    limit = max(1, int(safe_secs / seconds_per_file))
+    result = min(limit, _LINKEDIN_DS_LIMIT_MAX)
+    logger.info(
+        "v3.5.43: Adaptive LinkedIn ds_limit=%d (available=%.0fs, safe=%.0fs, per_file=%.0fs)",
+        result, available_secs, safe_secs, seconds_per_file,
+    )
+    return result
 
 
 async def search_database_linkedin(
@@ -2094,14 +2174,14 @@ async def search_database_linkedin(
             countries = ["United_States", "United_Kingdom", "India", "Canada", "Australia"]
             logger.info("No country resolved for '%s' — using global search across top 5", location)
 
-        # v3.5.42 FIX-3: Restored ds_limit to 5 (was 3 in v3.5.41).
-        # With PAN India disabled, budget headroom allows deeper LinkedIn scan.
-        linkedin_ds_limit = min(dataset_limit, _LINKEDIN_DS_LIMIT_OVERRIDE)
+        # v3.5.43: Adaptive ds_limit replaces fixed override.
+        # Compute based on phase timeout to ensure query fits within budget.
+        linkedin_ds_limit = _compute_linkedin_ds_limit(_LINKEDIN_PHASE_TIMEOUT_SECS)
         if linkedin_ds_limit < dataset_limit:
             logger.info(
-                "v3.5.42 LinkedIn ds_limit capped: %d→%d "
-                "(LINKEDIN_DS_LIMIT_OVERRIDE=%d)",
-                dataset_limit, linkedin_ds_limit, _LINKEDIN_DS_LIMIT_OVERRIDE,
+                "v3.5.43 LinkedIn ds_limit adaptive: %d→%d "
+                "(phase_timeout=%ds)",
+                dataset_limit, linkedin_ds_limit, _LINKEDIN_PHASE_TIMEOUT_SECS,
             )
 
         # v3.5.13: cap per-country datasets for global search to keep query fast
@@ -2500,6 +2580,96 @@ async def search_database_youtube(
     return leads
 
 
+def _gmaps_country_assertion(leads: list[dict], location: str) -> list[dict]:
+    """v3.5.43 Bug 5: Multi-signal country assertion for Google Maps leads.
+
+    GMaps DB contains global businesses. Without filtering, "dentists delhi"
+    returns dentists from Delhi USA + Delhi India. This filter uses multiple
+    signals to assert country match:
+      - Phone prefix (+91 = India)
+      - Address contains Indian state names or PIN codes
+      - .in TLD in website
+      - Country code in address field
+
+    Keeps leads with ANY positive India signal. Also keeps leads with NO signal
+    (benefit of the doubt — business may lack phone/address).
+    """
+    if not location:
+        return leads
+
+    loc_lower = location.lower().strip()
+
+    # Determine target country from location
+    _india_signals = [
+        "india", "delhi", "mumbai", "bangalore", "bengaluru", "chennai",
+        "kolkata", "pune", "hyderabad", "ahmedabad", "jaipur", "lucknow",
+        "surat", "kochi", "indore", "nagpur", "patna", "bhopal", "guwahati",
+        "coimbatore", "visakhapatnam", "chandigarh", "thiruvananthapuram",
+    ]
+    is_india_target = any(sig in loc_lower for sig in _india_signals)
+
+    if not is_india_target:
+        # For non-India targets, use the general location filter
+        return filter_leads_by_location(leads, location, source_tag="googlemaps")
+
+    # India-specific assertion: multi-signal validation
+    _india_phone_prefixes = ("+91", "091", "0091")
+    _india_state_names = [
+        "maharashtra", "karnataka", "tamil nadu", "telangana", "kerala",
+        "uttar pradesh", "rajasthan", "gujarat", "west bengal", "madhya pradesh",
+        "andhra pradesh", "bihar", "punjab", "haryana", "odisha", "assam",
+        "jharkhand", "chhattisgarh", "uttarakhand", "goa", "himachal pradesh",
+    ]
+
+    filtered: list[dict] = []
+    dropped = 0
+
+    for lead in leads:
+        address = str(lead.get("location", "") or lead.get("address", "")).lower()
+        phone = str(lead.get("phone", "")).strip()
+        website = str(lead.get("website", "")).lower()
+
+        has_signal = False
+        is_india = False
+
+        # Signal 1: Phone prefix
+        if phone:
+            has_signal = True
+            if any(phone.startswith(p) for p in _india_phone_prefixes):
+                is_india = True
+
+        # Signal 2: Indian state name in address
+        if address:
+            has_signal = True
+            if any(state in address for state in _india_state_names):
+                is_india = True
+            # Signal 3: Indian PIN code (6-digit number)
+            if re.search(r'\b\d{6}\b', address):
+                is_india = True
+            # Signal 4: "India" in address
+            if "india" in address:
+                is_india = True
+
+        # Signal 5: .in TLD in website
+        if website:
+            has_signal = True
+            if website.endswith(".in") or ".in/" in website or ".co.in" in website:
+                is_india = True
+
+        # Keep if: India signal found, OR no signal at all (benefit of doubt)
+        if is_india or not has_signal:
+            filtered.append(lead)
+        else:
+            dropped += 1
+
+    if dropped > 0:
+        logger.info(
+            "v3.5.43 GMaps India assertion: kept %d, dropped %d (non-India with signal)",
+            len(filtered), dropped,
+        )
+    return filtered
+
+
 async def search_database_hybrid(
     keywords: list[str],
     platforms: list[str],
@@ -2685,13 +2855,27 @@ async def search_database_hybrid(
             # silently discarded. This fix recovers ~860 leads across 6 test sessions.
 
             # Phase 3a: Google Maps (fast — completes in ~14s)
+            # v3.5.43 Bug 5: Add country assertion post-filter for GMaps.
+            # GMaps DB contains global businesses — without filtering,
+            # "dentists delhi" returns dentists from Delhi, USA + Delhi, India.
             if search_googlemaps:
-                await _run_phase(
-                    search_database_googlemaps(
-                        keyword, max_results_per_keyword,
+                async def _gmaps_with_country_filter(kw=keyword, exp=kw_expanded):
+                    leads = await search_database_googlemaps(
+                        kw, max_results_per_keyword,
                         dataset_limit=ds_limit,
-                        expanded_terms=kw_expanded,
-                    ),
+                        expanded_terms=exp,
+                    )
+                    if location:
+                        pre_count = len(leads)
+                        leads = _gmaps_country_assertion(leads, location)
+                        logger.info(
+                            "v3.5.43 GMaps country filter: %d → %d for location=%r",
+                            pre_count, len(leads), location,
+                        )
+                    return leads
+
+                await _run_phase(
+                    _gmaps_with_country_filter(),
                     phase_name=f"GoogleMaps:{keyword}",
                     phase_timeout=30.0,  # GMaps completes in 13-14s; 30s is generous
                 )

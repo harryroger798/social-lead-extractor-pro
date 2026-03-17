@@ -99,10 +99,21 @@ class _EngineHealth:
     v3.5.39: Added disk persistence with 24h health scoring windows.
     Cooldown state survives app restarts — prevents repeatedly hammering
     blocked engines on every launch.
+
+    v3.5.43: CRITICAL FIX — Separate empty results from hard errors.
+    In v3.5.42, empty results triggered record_failure() which applied
+    hard cooldowns (60s/300s/900s). Niche queries legitimately return 0
+    results from some engines, causing cascade failure: 153/168 waterfall
+    calls tried 0 engines in Group A testing. Now:
+    - record_failure() = hard errors only (network, HTTP 4xx/5xx)
+    - record_empty() = empty results (soft tracking, NO hard cooldown)
+    - Base-2 backoff (not base-5) with 600s cap (not 900s)
+    - try_reset() decays failure count on cooldown expiry
     """
 
     def __init__(self) -> None:
         self.consecutive_failures: int = 0
+        self.consecutive_empty: int = 0  # v3.5.43: separate empty tracking
         self.cooldown_until: float = 0.0
         self.total_successes_24h: int = 0
         self.total_failures_24h: int = 0
@@ -110,27 +121,50 @@ class _EngineHealth:
 
     def record_success(self) -> None:
         self.consecutive_failures = 0
-        self.cooldown_until = 0.0  # v3.5.42: clear cooldown on success
+        self.consecutive_empty = 0  # v3.5.43: clear empty streak on success
+        self.cooldown_until = 0.0
         self._rotate_window()
         self.total_successes_24h += 1
-        _save_health_to_disk()  # v3.5.42: persist after success
+        _save_health_to_disk()
 
     def record_failure(self) -> None:
+        """Hard errors only — network timeout, HTTP 4xx/5xx, exceptions.
+
+        v3.5.43: Base-2 backoff (not base-5), 600s cap (not 900s).
+        No cooldown on first failure — niche queries can fail once legitimately.
+        """
         self.consecutive_failures += 1
+        self.consecutive_empty = 0  # hard error supersedes empty streak
         self._rotate_window()
         self.total_failures_24h += 1
-        # v3.5.42 FIX-9: Exponential backoff cooldown.
-        # 1 failure: 60s, 2 failures: 300s, 3+ failures: 900s (capped).
-        # Previously: 2 failures→300s, 3+→3600s (too aggressive, killed engines
-        # for an entire hour after just 3 failures).
+        # v3.5.43: Base-2 backoff, cap at 600s.
+        # 1 failure: no cooldown (legitimate one-off)
+        # 2 failures: 60s cooldown
+        # 3 failures: 120s cooldown
+        # 4+ failures: min(30*2^n, 600s)
         if self.consecutive_failures >= 3:
-            backoff = min(60 * (5 ** (self.consecutive_failures - 1)), 900)
+            backoff = min(30 * (2 ** (self.consecutive_failures - 1)), 600)
             self.cooldown_until = time.time() + backoff
         elif self.consecutive_failures >= 2:
-            self.cooldown_until = time.time() + 300
-        elif self.consecutive_failures == 1:
             self.cooldown_until = time.time() + 60
-        _save_health_to_disk()  # v3.5.42: persist after each failure
+        # 1 failure: NO cooldown (v3.5.43 fix — v3.5.42 set 60s here)
+        _save_health_to_disk()
+
+    def record_empty(self) -> None:
+        """Empty results — soft tracking, NO hard cooldown.
+
+        v3.5.43: Niche queries (e.g. 'dentists delhi site:linkedin.com')
+        legitimately return 0 results from some engines. This must NOT
+        trigger hard cooldown or the cascade failure from v3.5.42 recurs.
+        """
+        self.consecutive_empty += 1
+        self._rotate_window()
+        # Do NOT touch cooldown_until or consecutive_failures
+        # Do NOT call _save_health_to_disk() — empty streaks are transient
+        logger.debug(
+            "v3.5.43: Engine empty streak: %d consecutive",
+            self.consecutive_empty,
+        )
 
     def _rotate_window(self) -> None:
         """v3.5.39: Reset 24h counters if window has expired."""
@@ -150,13 +184,17 @@ class _EngineHealth:
     def try_reset(self) -> bool:
         """Attempt to reset cooldown if expired. Returns True if available.
 
-        V7-fix: Do NOT reset consecutive_failures here — let record_success()
-        do that after a confirmed success. This prevents a repeatedly-failing
-        engine from escaping its cooldown on every waterfall call.
+        v3.5.43 FIX: Decay consecutive_failures by 1 on cooldown expiry.
+        Previously (v3.5.42) this never reset failures, so an engine with
+        consecutive_failures=4 would immediately re-enter 600s cooldown
+        on the next failure even after cooldown expired.
         """
         if self.consecutive_failures >= 2:
             if time.time() > self.cooldown_until:
-                return True   # allow one probe; reset only on confirmed success
+                # v3.5.43: Decay by 1 — gives engine a chance to prove itself
+                self.consecutive_failures = max(0, self.consecutive_failures - 1)
+                _save_health_to_disk()
+                return True
             return False
         return True
 
@@ -171,6 +209,7 @@ class _EngineHealth:
         """v3.5.39: Serialize for disk persistence."""
         return {
             "consecutive_failures": self.consecutive_failures,
+            "consecutive_empty": self.consecutive_empty,
             "cooldown_until": self.cooldown_until,
             "total_successes_24h": self.total_successes_24h,
             "total_failures_24h": self.total_failures_24h,
@@ -182,6 +221,7 @@ class _EngineHealth:
         """v3.5.39: Deserialize from disk persistence."""
         h = cls()
         h.consecutive_failures = data.get("consecutive_failures", 0)
+        h.consecutive_empty = data.get("consecutive_empty", 0)
         h.cooldown_until = data.get("cooldown_until", 0.0)
         h.total_successes_24h = data.get("total_successes_24h", 0)
         h.total_failures_24h = data.get("total_failures_24h", 0)
@@ -216,6 +256,33 @@ def _save_health_to_disk() -> None:
 
 # Load persisted state on module import
 _load_health_from_disk()
+
+
+def reset_engine_soft_state() -> None:
+    """v3.5.43: Reset soft engine state at session start.
+
+    Clears empty streaks (transient, per-session) but preserves hard
+    failure counts (persistent, cross-session). Called from routes.py
+    at the start of each extraction session.
+    """
+    for name, h in _engine_health.items():
+        h.consecutive_empty = 0
+    _save_health_to_disk()
+    logger.info("v3.5.43: Reset engine soft state for %d engines", len(_engine_health))
+
+
+def reset_engine_hard_failures() -> None:
+    """v3.5.43: Nuclear reset — clear ALL engine state.
+
+    Only used in zero-result fallback chain (Bug 4) when all engines
+    are dead and we have 0 leads. This is the last resort.
+    """
+    for name, h in _engine_health.items():
+        h.consecutive_failures = 0
+        h.consecutive_empty = 0
+        h.cooldown_until = 0.0
+    _save_health_to_disk()
+    logger.warning("v3.5.43: NUCLEAR RESET — cleared all engine health state")
 
 
 def _health(name: str) -> _EngineHealth:
@@ -988,19 +1055,22 @@ def free_search_waterfall(
                 if len(all_results) >= num_results:
                     break
             else:
-                # Empty results count as a soft failure
-                health.record_failure()
-                logger.debug("v3.5.42: %s returned 0 results — recording failure", engine_name)
+                # v3.5.43 FIX: Empty results use record_empty() NOT record_failure().
+                # Niche queries legitimately return 0 from some engines.
+                # In v3.5.42, this triggered hard cooldowns causing cascade
+                # failure: 153/168 waterfall calls tried 0 engines.
+                health.record_empty()
+                logger.debug("v3.5.43: %s returned 0 results (empty, not failure)", engine_name)
         except Exception as exc:
             health.record_failure()
             logger.warning(
-                "v3.5.42: %s failed (%s) — cooldown %.0fs",
+                "v3.5.43: %s failed (%s) — cooldown %.0fs",
                 engine_name, exc,
                 max(0, health.cooldown_until - time.time()),
             )
 
     logger.info(
-        "v3.5.42 waterfall: %d results from %s (tried %d engines)",
+        "v3.5.43 waterfall: %d results from %s (tried %d engines)",
         len(all_results), "+".join(engines_used) or "none", engines_tried,
     )
     return all_results[:num_results]

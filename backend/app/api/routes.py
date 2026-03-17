@@ -48,6 +48,10 @@ from app.services.proxy_manager import proxy_manager, test_proxy, parse_proxy_li
 from app.services.firecrawl_service import enrich_leads_with_firecrawl, check_firecrawl_credits
 from app.services.export_service import export_leads_bytes
 from app.services.database_search import search_database_hybrid, deduplicate_leads
+from app.services.multi_engine_search import (
+    reset_engine_soft_state,
+    reset_engine_hard_failures,
+)
 # v3.1.0 Enhancement imports
 from app.services.yellowpages_scraper import scrape_yellowpages, scrape_yelp, scrape_directories
 from app.services.fxtwitter_api import extract_twitter_profiles, enrich_twitter_leads_with_fxtwitter
@@ -628,13 +632,26 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     location_hint = ""
     # v3.5.41 FIX-6: Reset circuit breaker cache at session start
     reset_domain_failure_cache()
+    # v3.5.43: Reset engine soft state (empty streaks) at session start.
+    # Preserves hard failure counts across sessions but clears transient state.
+    reset_engine_soft_state()
     # v3.5.42 FIX-6: Scale budget by platform count
     _platform_count = len(config.platforms) if config.platforms else 2
     _session_budget = _get_session_budget(_platform_count)
     budget = _PipelineBudget(total_secs=_session_budget)
     logger.info(
-        "v3.5.42: Pipeline budget=%.0fs for %d platforms",
+        "v3.5.43: Pipeline budget=%.0fs for %d platforms",
         _session_budget, _platform_count,
+    )
+    # v3.5.43 Bug 7: LinkedIn budget cap — 60% of single-platform budget (max 180s).
+    # In v3.5.42, LinkedIn consumed the ENTIRE 300s budget for single-platform
+    # sessions (LinkedIn-only), leaving 0s for dorking and enrichment.
+    # Cap LinkedIn to 60% of budget, guaranteeing 40% for other stages.
+    _is_single_platform = _platform_count == 1
+    _linkedin_budget_cap = min(_session_budget * 0.60, 180.0) if _is_single_platform else _session_budget * 0.50
+    logger.info(
+        "v3.5.43: LinkedIn budget cap=%.0fs (single_platform=%s, total=%.0fs)",
+        _linkedin_budget_cap, _is_single_platform, _session_budget,
     )
 
     try:
@@ -808,14 +825,30 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     if pk.expanded_terms:
                         expanded_terms_map[pk.keyword] = pk.expanded_terms
 
-                db_leads = await search_database_hybrid(
-                    keywords=cleaned_keywords,
-                    platforms=config.platforms,
-                    location=location_hint,
-                    max_results_per_keyword=db_max_results,
-                    expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
-                    tier=tier_label,
+                # v3.5.43 Bug 7: Pass LinkedIn budget cap to search_database_hybrid
+                # via a monkey-patched timeout. The hybrid search uses
+                # _LINKEDIN_PHASE_TIMEOUT_SECS which we cap here.
+                import app.services.database_search as _db_search_mod
+                _orig_linkedin_timeout = _db_search_mod._LINKEDIN_PHASE_TIMEOUT_SECS
+                _db_search_mod._LINKEDIN_PHASE_TIMEOUT_SECS = min(
+                    _orig_linkedin_timeout, _linkedin_budget_cap,
                 )
+                logger.info(
+                    "v3.5.43: LinkedIn phase timeout capped: %.0fs → %.0fs",
+                    _orig_linkedin_timeout, _db_search_mod._LINKEDIN_PHASE_TIMEOUT_SECS,
+                )
+                try:
+                    db_leads = await search_database_hybrid(
+                        keywords=cleaned_keywords,
+                        platforms=config.platforms,
+                        location=location_hint,
+                        max_results_per_keyword=db_max_results,
+                        expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
+                        tier=tier_label,
+                    )
+                finally:
+                    # Restore original timeout for next session
+                    _db_search_mod._LINKEDIN_PHASE_TIMEOUT_SECS = _orig_linkedin_timeout
                 all_leads.extend(db_leads)
                 await _update_progress(
                     session_id, 10,
@@ -1228,20 +1261,22 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             try:
                 import asyncio as _aio_enrich
                 loop_enrich = _aio_enrich.get_running_loop()
-                # v3.5.42 FIX-8: Scale enrichment cap to 15% of total leads (max 100).
-                # v3.5.41 used a fixed cap of 20, which under-enriched large sessions
-                # (300+ leads) and over-enriched small ones (< 50 leads).
+                # v3.5.43 Bug 6: Enrichment cap decoupled from missing_contact.
+                # v3.5.42 only counted leads missing BOTH email AND phone.
+                # In Group A, most leads had EITHER email OR phone but not both.
+                # Result: _leads_missing_email was very low (5-10), starving enrichment.
+                # v3.5.43: Count leads missing ANY field (email OR phone).
                 _total_leads = len(all_leads)
-                _leads_missing_email = sum(
+                _leads_missing_any = sum(
                     1 for l in all_leads
-                    if not l.get("email") and not l.get("phone")
+                    if not l.get("email") or not l.get("phone")
                 )
                 _enrich_cap = min(int(_total_leads * 0.15), 100)
-                _enrich_cap = min(_enrich_cap, _leads_missing_email) if _leads_missing_email > 0 else 0
-                _enrich_cap = max(_enrich_cap, 10)  # minimum 10 to always attempt some enrichment
+                _enrich_cap = min(_enrich_cap, _leads_missing_any) if _leads_missing_any > 0 else 0
+                _enrich_cap = max(_enrich_cap, 15)  # v3.5.43: raised floor from 10→15
                 logger.info(
-                    "v3.5.42: Enrichment cap=%d (total=%d, missing_contact=%d, 15%%=%d)",
-                    _enrich_cap, _total_leads, _leads_missing_email,
+                    "v3.5.43: Enrichment cap=%d (total=%d, missing_any=%d, 15%%=%d)",
+                    _enrich_cap, _total_leads, _leads_missing_any,
                     int(_total_leads * 0.15),
                 )
                 enriched_leads = await loop_enrich.run_in_executor(
@@ -1287,11 +1322,87 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             await _update_progress(session_id, _calc_progress(),
                 f"Firecrawl done — {_count_leads()[0]} leads total", "", *_count_leads())
 
+        # ── v3.5.43 Bug 4: Zero-result fallback chain ──────────────────────
+        # If all stages returned 0 leads, activate fallback recovery:
+        # 1. Force-enable supplementary DBs (Google Maps, YouTube)
+        # 2. Nuclear reset engine health (clear all cooldowns)
+        # 3. Retry dorking with fresh engines
+        # This addresses the 2/6 zero-lead sessions in v3.5.42 Group A.
+        if not all_leads and not budget.is_exhausted(reserve_secs=60.0):
+            logger.warning(
+                "v3.5.43 FALLBACK: 0 leads after all stages — activating recovery chain "
+                "(budget remaining=%.0fs)",
+                budget.remaining,
+            )
+            await _update_progress(
+                session_id, 85,
+                "Zero leads detected — activating fallback recovery...",
+                "fallback", *_count_leads(),
+            )
+
+            # Step 1: Force-enable supplementary DBs
+            try:
+                _fallback_platforms = ["google_maps", "youtube"]
+                _fallback_tier = tier_label if 'tier_label' in dir() else "free"
+                _fallback_expanded = expanded_terms_map if 'expanded_terms_map' in dir() else None
+                _fb_leads = await search_database_hybrid(
+                    keywords=cleaned_keywords,
+                    platforms=_fallback_platforms,
+                    location=location_hint,
+                    max_results_per_keyword=200,
+                    expanded_terms_map=_fallback_expanded,
+                    tier=_fallback_tier,
+                )
+                all_leads.extend(_fb_leads)
+                logger.info("v3.5.43 fallback step 1: supplementary DB returned %d leads", len(_fb_leads))
+            except Exception as e:
+                logger.warning("v3.5.43 fallback step 1 failed: %s", e)
+
+            # Step 2: Nuclear reset engine health + retry dorking
+            if not all_leads and config.use_google_dorking:
+                try:
+                    reset_engine_hard_failures()
+                    logger.info("v3.5.43 fallback step 2: nuclear engine reset + retry dorking")
+                    _fb_dork_timeout = budget.stage_timeout("fallback_dorking", 90.0)
+                    results = await dorking_search_multi(
+                        config.keywords, non_reddit_platforms[:2],  # Limit to 2 platforms
+                        pages=1,
+                        delay=config.delay_between_requests,
+                        serper_api_key=serper_api_key if 'serper_api_key' in dir() else "",
+                        use_patchright=False,
+                        headless=True,
+                        location=location_hint,
+                    )
+                    for result in results:
+                        for email in result.get("emails", []):
+                            all_leads.append({
+                                "email": email, "phone": "", "name": "",
+                                "platform": result["platform"],
+                                "source_url": result["sources"][0] if result.get("sources") else "",
+                                "keyword": result["keyword"],
+                            })
+                        for phone in result.get("phones", []):
+                            all_leads.append({
+                                "email": "", "phone": phone, "name": "",
+                                "platform": result["platform"],
+                                "source_url": result["sources"][0] if result.get("sources") else "",
+                                "keyword": result["keyword"],
+                            })
+                    logger.info("v3.5.43 fallback step 2: dorking retry returned %d leads", len(all_leads))
+                except Exception as e:
+                    logger.warning("v3.5.43 fallback step 2 failed: %s", e)
+
+            await _update_progress(
+                session_id, 90,
+                f"Fallback recovery: {len(all_leads)} leads recovered",
+                "fallback", *_count_leads(),
+            )
+
         # Log platform-level summary so 0-result failures are visible
         if not all_leads:
             logger.warning(
                 "Session %s: 0 leads found across all stages (DB search, live scraping, "
-                "dorking, B2B, enrichment). Keywords=%s, Platforms=%s",
+                "dorking, B2B, enrichment, fallback). Keywords=%s, Platforms=%s",
                 session_id, config.keywords, config.platforms,
             )
         await _update_progress(session_id, 96, "Saving leads to database...", "", *_count_leads())
