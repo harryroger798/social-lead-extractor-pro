@@ -833,8 +833,14 @@ def enrich_leads_batch_waterfall(
             already_complete.append(lead)
 
     # v3.5.37: Parallel enrichment with ThreadPoolExecutor
+    # Split into selected (will enrich) and deferred (score-only, over cap)
+    selected_leads = leads_to_enrich[:max_enrich]
+    deferred_leads = leads_to_enrich[max_enrich:]
+    for lead in deferred_leads:
+        lead["confidence_score"] = calculate_lead_confidence(lead)
+
     enriched_leads = []
-    total_to_enrich = min(len(leads_to_enrich), max_enrich)
+    total_to_enrich = len(selected_leads)
     stage_deadline = time.monotonic() + budget_secs
     completed_count = 0
 
@@ -852,7 +858,7 @@ def enrich_leads_batch_waterfall(
                     skip_github=skip_github,
                     skip_dorking=skip_dorking,
                 ): lead
-                for lead in leads_to_enrich[:max_enrich]
+                for lead in selected_leads
             }
             try:
                 remaining = max(1.0, stage_deadline - time.monotonic())
@@ -909,8 +915,8 @@ def enrich_leads_batch_waterfall(
         budget_secs - max(0.0, stage_deadline - time.monotonic()),
     )
 
-    # Combine and sort by confidence
-    all_leads = enriched_leads + already_complete
+    # Combine and sort by confidence — include deferred leads so no input is lost
+    all_leads = enriched_leads + deferred_leads + already_complete
     all_leads.sort(key=lambda x: x.get("confidence_score", 0.0), reverse=True)
 
     return all_leads

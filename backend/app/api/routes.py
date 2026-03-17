@@ -1163,8 +1163,16 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 import asyncio as _aio_enrich
                 loop_enrich = _aio_enrich.get_running_loop()
                 enriched_leads = await loop_enrich.run_in_executor(
-                    None, enrich_leads_batch_waterfall,
-                    all_leads, 20, False, False, False, None, _enrich_budget,
+                    None,
+                    lambda: enrich_leads_batch_waterfall(
+                        all_leads,
+                        max_enrich=20,
+                        skip_website_crawl=False,
+                        skip_github=False,
+                        skip_dorking=False,
+                        progress_callback=None,
+                        budget_secs=_enrich_budget,
+                    ),
                 )
                 # Merge and deduplicate across all sources
                 all_leads = await loop_enrich.run_in_executor(
