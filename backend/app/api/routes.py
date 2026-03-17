@@ -669,15 +669,47 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 )
 
         if not _has_social_platforms:
-            # v3.5.8: Skip database search for B2B-only platform selections.
-            # S3 database only has LinkedIn/Instagram — no B2B platform data.
+            # v3.5.39 Fix 6: B2B-only with generic keywords — enable Google Maps
+            # and PAN India DB search as fallback. Previously, generic keywords on
+            # B2B skipped DB search entirely (0 leads). Now we query supplementary
+            # databases (Google Maps PhantomBuster data, PAN India JustDial/IndiaMART)
+            # which contain business leads relevant to B2B queries.
+            _b2b_fallback_platforms = list(config.platforms)
+            if "google_maps" not in _b2b_fallback_platforms:
+                _b2b_fallback_platforms.append("google_maps")
+            if location_hint:
+                _india_indicators = {"india", "mumbai", "delhi", "bangalore", "kolkata",
+                                     "chennai", "hyderabad", "pune", "ahmedabad", "jaipur"}
+                hint = location_hint.lower()
+                if any(re.search(rf"\b{re.escape(ind)}\b", hint) for ind in _india_indicators):
+                    if "pan_india" not in _b2b_fallback_platforms:
+                        _b2b_fallback_platforms.append("pan_india")
             logger.info(
-                "Skipping database search — B2B-only platforms selected: %s",
-                config.platforms,
+                "v3.5.39: B2B-only platforms — enabling supplementary DB fallback: %s",
+                _b2b_fallback_platforms,
             )
+            try:
+                tier_label = _read_electron_license_tier() or "free"
+                db_max_results = {"pro": 500, "starter": 200}.get(tier_label, 100)
+                expanded_terms_map: dict[str, list[str]] = {}
+                for pk in parsed_keywords:
+                    if pk.expanded_terms:
+                        expanded_terms_map[pk.keyword] = pk.expanded_terms
+                db_leads = await search_database_hybrid(
+                    keywords=cleaned_keywords,
+                    platforms=_b2b_fallback_platforms,
+                    location=location_hint,
+                    max_results_per_keyword=db_max_results,
+                    expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
+                    tier=tier_label,
+                )
+                all_leads.extend(db_leads)
+                logger.info("v3.5.39 B2B fallback DB search: %d leads", len(db_leads))
+            except Exception as e:
+                logger.warning("v3.5.39 B2B fallback DB search failed: %s", e)
             await _update_progress(
                 session_id, 10,
-                "Skipped DB search (B2B-only) — proceeding to scrapers...",
+                f"B2B fallback DB: {len(db_leads)} leads — proceeding to scrapers...",
                 "database", *_count_leads(),
             )
         else:

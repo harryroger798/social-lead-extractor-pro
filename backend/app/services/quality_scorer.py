@@ -3,6 +3,10 @@
 Scores leads based on data completeness, source reliability,
 and contact information quality. Used to rank and prioritize leads.
 
+v3.5.39: Enhanced with DNS confidence signals (SPF/DMARC/BIMI),
+catch-all provider trust scoring, SMTP verification boost,
+and deduplication-aware batch scoring.
+
 Score breakdown:
   - Email present:           +25 points
   - Business email:          +10 bonus
@@ -12,13 +16,17 @@ Score breakdown:
   - Location present:        +5 points
   - Platform reliability:    +5-15 points
   - Verified email:          +10 bonus
+  - DNS confidence (v3.5.39): +0-15 bonus (SPF/DMARC/BIMI)
+  - Catch-all trusted (v3.5.39): +5 bonus
+  - SMTP verified (v3.5.39): +5 bonus
+  - LinkedIn profile (v3.5.39): +5 bonus
 """
 
 from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +80,11 @@ class ScoreBreakdown:
     location_score: int
     platform_score: int
     verified_bonus: int
-    details: list[str]
+    dns_bonus: int = 0
+    smtp_bonus: int = 0
+    catch_all_bonus: int = 0
+    linkedin_bonus: int = 0
+    details: list[str] = field(default_factory=list)
 
 
 def score_lead_quality(
@@ -84,8 +96,15 @@ def score_lead_quality(
     location: str = "",
     verified: bool = False,
     extra_fields: dict[str, str] | None = None,
+    dns_confidence: int = 0,
+    smtp_verified: bool = False,
+    catch_all_trustworthy: bool = False,
+    has_linkedin: bool = False,
 ) -> ScoreBreakdown:
     """Score a lead from 0-100 based on data quality and completeness.
+
+    v3.5.39: Enhanced with DNS confidence signals, SMTP verification,
+    catch-all provider trust, and LinkedIn profile presence.
 
     Returns a ScoreBreakdown with total score and per-field breakdown.
     """
@@ -156,9 +175,34 @@ def score_lead_quality(
             email_score += 2
             details.append("Job title: +2")
 
+    # --- v3.5.39: DNS confidence bonus (SPF/DMARC/BIMI) ---
+    dns_bonus = 0
+    if dns_confidence > 0 and email:
+        dns_bonus = min(dns_confidence, 15)
+        details.append(f"DNS confidence: +{dns_bonus}")
+
+    # --- v3.5.39: SMTP verified bonus ---
+    smtp_bonus = 0
+    if smtp_verified and email:
+        smtp_bonus = 5
+        details.append("SMTP verified: +5")
+
+    # --- v3.5.39: Catch-all trusted provider bonus ---
+    catch_all_bonus = 0
+    if catch_all_trustworthy and email:
+        catch_all_bonus = 5
+        details.append("Catch-all trusted provider: +5")
+
+    # --- v3.5.39: LinkedIn profile bonus ---
+    linkedin_bonus = 0
+    if has_linkedin:
+        linkedin_bonus = 5
+        details.append("LinkedIn profile: +5")
+
     total = min(
         email_score + phone_score + name_score + url_score
-        + location_score + platform_score + verified_bonus,
+        + location_score + platform_score + verified_bonus
+        + dns_bonus + smtp_bonus + catch_all_bonus + linkedin_bonus,
         100,
     )
 
@@ -171,6 +215,10 @@ def score_lead_quality(
         location_score=location_score,
         platform_score=platform_score,
         verified_bonus=verified_bonus,
+        dns_bonus=dns_bonus,
+        smtp_bonus=smtp_bonus,
+        catch_all_bonus=catch_all_bonus,
+        linkedin_bonus=linkedin_bonus,
         details=details,
     )
 
@@ -189,8 +237,20 @@ def score_lead_simple(
 
 
 def batch_score_leads(leads: list[dict]) -> list[dict]:
-    """Score a batch of leads and add quality_score field."""
+    """Score a batch of leads and add quality_score field.
+
+    v3.5.39: Enhanced to pass DNS confidence and SMTP verification
+    data through to the scorer when available.
+    """
     for lead in leads:
+        dns_conf = lead.get("dns_confidence", 0)
+        if isinstance(dns_conf, dict):
+            dns_boost = int(dns_conf.get("confidence_boost", 0))
+        elif isinstance(dns_conf, (int, float)):
+            dns_boost = int(dns_conf)
+        else:
+            dns_boost = 0
+
         breakdown = score_lead_quality(
             email=lead.get("email", ""),
             phone=lead.get("phone", ""),
@@ -199,6 +259,46 @@ def batch_score_leads(leads: list[dict]) -> list[dict]:
             source_url=lead.get("source_url", ""),
             location=lead.get("location", ""),
             verified=lead.get("verified", False),
+            dns_confidence=dns_boost,
+            smtp_verified=lead.get("smtp_verified", False),
+            catch_all_trustworthy=lead.get("catch_all_trustworthy", False),
+            has_linkedin=bool(lead.get("linkedin_url", "")),
         )
         lead["quality_score"] = breakdown.total
+        lead["quality_details"] = breakdown.details
     return leads
+
+
+def batch_score_and_dedup(leads: list[dict]) -> tuple[list[dict], int]:
+    """v3.5.39: Score and deduplicate leads in one pass.
+
+    Combines quality scoring with hash-based deduplication.
+    Returns (scored_unique_leads, duplicates_removed_count).
+    """
+    from app.services.duplicate_detector import compute_lead_hash
+
+    seen_hashes: set[str] = set()
+    unique: list[dict] = []
+    dupes = 0
+
+    for lead in leads:
+        email = lead.get("email", "")
+        phone = lead.get("phone", "")
+        name = lead.get("name", "")
+
+        # Skip hash-based dedup for leads with no identifiers
+        if not email and not phone and not name:
+            unique.append(lead)
+            continue
+
+        lead_hash = compute_lead_hash(email, phone, name)
+        if lead_hash in seen_hashes:
+            dupes += 1
+            continue
+        seen_hashes.add(lead_hash)
+        lead["lead_hash"] = lead_hash
+        unique.append(lead)
+
+    scored = batch_score_leads(unique)
+    scored.sort(key=lambda x: x.get("quality_score", 0), reverse=True)
+    return scored, dupes

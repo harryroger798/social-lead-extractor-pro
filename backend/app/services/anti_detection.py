@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import ipaddress
 import logging
+import json
+import math
 import random
 import socket
 import threading
@@ -212,11 +214,23 @@ _DEFAULT_DELAY = 2.0  # seconds between requests to the same domain
 _MAX_QUEUE_DELAY = 10.0  # cap max queued delay to prevent unbounded accumulation
 
 
+def _lognormal_jitter(mu: float = 0.0, sigma: float = 0.5, cap: float = 3.0) -> float:
+    """v3.5.39: Log-normal jitter instead of uniform random.
+
+    Search engines detect uniform-random timing patterns. Log-normal
+    distribution matches real human browsing behavior (mostly short pauses,
+    occasional longer ones). Capped to prevent excessive waits.
+    """
+    return min(random.lognormvariate(mu, sigma), cap)
+
+
 def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
     """Sleep if needed to respect per-domain rate limits (thread-safe).
 
     Uses atomic check-and-set inside the lock to avoid TOCTOU race conditions.
     The sleep happens OUTSIDE the lock so other domains aren't blocked.
+    v3.5.39: Uses log-normal jitter instead of uniform random for more
+    human-like timing distribution (behavioral fingerprint evasion).
     """
     sleep_time = 0.0
     with _domain_lock:
@@ -224,7 +238,7 @@ def _rate_limit(domain: str, min_delay: float = _DEFAULT_DELAY) -> None:
         last = _domain_last_request.get(domain, 0.0)
         elapsed = now - last
         if elapsed < min_delay:
-            jitter = random.uniform(0.1, 0.5)
+            jitter = _lognormal_jitter(mu=0.0, sigma=0.5, cap=2.0)
             sleep_time = min_delay - elapsed + jitter
         # V7-fix: store the expected completion time (now + sleep_time).
         # This correctly serializes concurrent threads: the next caller sees
@@ -250,20 +264,28 @@ _PRIVATE_NETWORKS = [
 # CDN/anycast IPs for these domains can resolve to addresses Python's ipaddress
 # module flags as 'reserved' (IPv6 prefixes, RFC-6598 100.64.0.0/10, etc.),
 # causing false-positive SSRF blocks that kill multi-engine dorking.
+# v3.5.39: Updated allowlist — removed dead SearXNG instances, added Yep.com
 _ALLOWED_SEARCH_DOMAINS = frozenset({
     "html.duckduckgo.com",
     "lite.duckduckgo.com",
     "www.bing.com",
     "cc.bingj.com",              # v3.5.38: Bing CDN/redirect domain
     "search.brave.com",
-    "searx.fmac.xyz",
-    "search.bus-hit.me",
+    "searx.be",                  # v3.5.39: live SearXNG instance
+    "search.inetol.net",         # v3.5.39: live SearXNG instance
+    "paulgo.io",                 # v3.5.39: live SearXNG instance
+    "search.ononoki.org",        # v3.5.39: live SearXNG instance
+    "searx.work",                # v3.5.39: live SearXNG instance
+    "api.yep.com",               # v3.5.39: Yep.com (Ahrefs-backed, scrape-friendly)
+    "yep.com",                   # v3.5.39: Yep.com search
     "nitter.privacydev.net",
     "nitter.unixfox.eu",
     "nitter.1d4.us",
     "api.github.com",
     "hunter.io",
     "api.hunter.io",
+    "rdap.org",                  # v3.5.39: WHOIS/RDAP lookups
+    "rdap.verisign.com",         # v3.5.39: WHOIS/RDAP lookups
 })
 
 
