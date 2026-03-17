@@ -843,6 +843,7 @@ def enrich_leads_batch_waterfall(
     total_to_enrich = len(selected_leads)
     stage_deadline = time.monotonic() + budget_secs
     completed_count = 0
+    handled_futures: set = set()
 
     if total_to_enrich > 0:
         with ThreadPoolExecutor(
@@ -871,16 +872,18 @@ def enrich_leads_batch_waterfall(
                         )
                         # Cancel remaining and materialize fallback records
                         for f, lead in futures.items():
+                            if f in handled_futures:
+                                continue
                             if not f.done():
                                 f.cancel()
-                            if lead not in [r for r in enriched_leads]:
-                                lead["confidence_score"] = calculate_lead_confidence(lead)
-                                lead["enrichment_timeout"] = True
-                                enriched_leads.append(lead)
+                            lead["confidence_score"] = calculate_lead_confidence(lead)
+                            lead["enrichment_timeout"] = True
+                            enriched_leads.append(lead)
                         break
                     try:
                         result = future.result(timeout=1)
                         enriched_leads.append(result)
+                        handled_futures.add(future)
                     except Exception:
                         # Pass-through unenriched lead on error
                         original_lead = futures[future]
@@ -888,6 +891,7 @@ def enrich_leads_batch_waterfall(
                             original_lead
                         )
                         enriched_leads.append(original_lead)
+                        handled_futures.add(future)
                     completed_count += 1
                     if progress_callback:
                         try:
@@ -902,11 +906,13 @@ def enrich_leads_batch_waterfall(
                 )
                 # Collect any leads that were still unenriched
                 for f, lead in futures.items():
+                    if f in handled_futures:
+                        continue
                     if not f.done():
                         f.cancel()
-                        lead["confidence_score"] = calculate_lead_confidence(lead)
-                        lead["enrichment_timeout"] = True
-                        enriched_leads.append(lead)
+                    lead["confidence_score"] = calculate_lead_confidence(lead)
+                    lead["enrichment_timeout"] = True
+                    enriched_leads.append(lead)
 
     # Final progress callback
     if progress_callback and total_to_enrich > 0:
