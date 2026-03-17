@@ -868,8 +868,13 @@ def enrich_leads_batch_waterfall(
     Returns:
         List of enriched lead dicts, sorted by confidence score
     """
-    # Sort leads: prioritize those with company_domain or company name
-    # but missing email
+    # v3.5.43 Bug 6: Prioritize partial-contact leads for enrichment.
+    # v3.5.42 only enriched leads missing BOTH email AND phone with a company.
+    # This missed leads that had email but no phone (or vice versa).
+    # v3.5.43: Enrich leads missing ANY field, with priority ordering:
+    #   1. Has company + missing both fields (highest value)
+    #   2. Has company + missing one field (partial contact)
+    #   3. No company + missing fields (lowest priority)
     leads_to_enrich = []
     already_complete = []
 
@@ -883,11 +888,21 @@ def enrich_leads_batch_waterfall(
             lead["confidence_score"] = calculate_lead_confidence(lead)
             already_complete.append(lead)
         elif has_company:
+            # v3.5.43: Enrich if missing ANY field (not just both)
+            # Priority: missing both > missing one
+            lead["_enrich_priority"] = 0 if (not has_email and not has_phone) else 1
+            leads_to_enrich.append(lead)
+        elif not has_email or not has_phone:
+            # v3.5.43: Also enrich leads without company if missing a field
+            # Lower priority than leads with company info
+            lead["_enrich_priority"] = 2
             leads_to_enrich.append(lead)
         else:
-            # No company info — hard to enrich, just score it
             lead["confidence_score"] = calculate_lead_confidence(lead)
             already_complete.append(lead)
+
+    # v3.5.43: Sort by priority so highest-value leads get enriched first
+    leads_to_enrich.sort(key=lambda x: x.get("_enrich_priority", 99))
 
     # v3.5.37: Parallel enrichment with ThreadPoolExecutor
     # Split into selected (will enrich) and deferred (score-only, over cap)
