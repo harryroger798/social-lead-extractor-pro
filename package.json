@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "3.5.39",
+  "version": "3.5.40",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {

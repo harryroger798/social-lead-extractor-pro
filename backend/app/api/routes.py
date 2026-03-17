@@ -567,7 +567,7 @@ def _read_electron_license_tier() -> Optional[str]:
 class _PipelineBudget:
     """Track elapsed time and enforce per-stage budgets within a total pipeline limit."""
 
-    def __init__(self, total_secs: float = 270.0):  # 300s test timeout - 30s safety
+    def __init__(self, total_secs: float = 420.0):  # v3.5.40: was 270s — increased to 7min to accommodate LinkedIn India (180s) + dorking
         import time as _time
         self._time = _time
         self._start = _time.monotonic()
@@ -902,21 +902,23 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 "", *_count_leads())
             current_step += 1
 
-        # ── v3.5.36 Fix 7: Short-circuit — skip dorking if enough leads ──
-        # Use unique email count (not raw rows) to avoid false triggers from dupes
-        # v3.5.37: Also skip if pipeline budget is exhausted
+        # ── v3.5.40 Fix 3 (RC4/RC5): Quality-aware dorking gate ──
+        # v3.5.36 Fix 7 skipped dorking at >= 50 unique emails — too aggressive.
+        # In Group A tests, this prevented dorking in 4/6 sessions (T2/T3/T5/T6),
+        # even though most leads had no location signal (noise).
+        # v3.5.40: Only skip if budget truly exhausted AND >= 200 leads collected.
         _skip_dorking = False
         _unique_emails = len({ld.get("email", "").lower() for ld in all_leads if ld.get("email")})
-        if budget.is_exhausted():
+        if budget.is_exhausted() and _unique_emails >= 200:
             _skip_dorking = True
             logger.info(
-                "v3.5.37: Skipping dorking — pipeline budget exhausted (%.0fs elapsed, %.0fs remaining)",
-                budget.elapsed, budget.remaining,
+                "v3.5.40: Skipping dorking — budget exhausted (%.0fs elapsed) AND %d emails already collected",
+                budget.elapsed, _unique_emails,
             )
-        elif _unique_emails >= 50:
-            _skip_dorking = True
+        elif budget.is_exhausted():
+            # Budget exhausted but few leads — let dorking try with remaining time
             logger.info(
-                "v3.5.36 Fix 7: Short-circuit dorking — already have %d unique emails",
+                "v3.5.40: Budget exhausted but only %d emails — allowing dorking to run",
                 _unique_emails,
             )
 
