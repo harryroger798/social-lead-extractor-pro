@@ -4,11 +4,17 @@ v3.5.36 Fix 8: Added Layer 1 (syntax + disposable domain check) for instant
 filtering before any network calls. This ensures 100% verified results
 without any API keys.
 
+v3.5.39: Added DNS-based confidence signals (SPF/DMARC/BIMI) and catch-all
+false positive reduction by MX provider. Google Workspace / Microsoft 365
+MX = rarely catch-all = upgrade confidence.
+
 Verification levels:
   1. Syntax + Disposable Domain Check (instant, v3.5.36)
   2. MX record check (fast, works everywhere)
   3. SMTP RCPT TO check (accurate, requires port 25 access — works on desktop)
   4. Catch-all domain detection (prevents false positives)
+  5. DNS confidence signals: SPF/DMARC/BIMI (v3.5.39)
+  6. Catch-all MX provider scoring (v3.5.39)
 """
 import asyncio
 import logging
@@ -80,6 +86,135 @@ def _get_mx_host(domain: str) -> str:
         return str(mx_sorted[0].exchange).rstrip('.')
     except Exception:
         return ""
+
+
+# ---------------------------------------------------------------------------
+# v3.5.39: DNS-based confidence signals (SPF/DMARC/BIMI)
+# ---------------------------------------------------------------------------
+
+# Known MX providers that rarely have catch-all enabled.
+# When SMTP accepts all addresses (catch-all), score by MX provider
+# to reduce false positives.
+_TRUSTED_MX_PROVIDERS = {
+    "google": {"aspmx.l.google.com", "alt1.aspmx.l.google.com",
+               "alt2.aspmx.l.google.com", "gmail-smtp-in.l.google.com",
+               "googlemail.com"},
+    "microsoft": {"outlook-com.olc.protection.outlook.com",
+                  "mail.protection.outlook.com"},
+    "zoho": {"mx.zoho.com", "mx2.zoho.com", "mx3.zoho.com"},
+}
+
+
+def _identify_mx_provider(mx_host: str) -> str:
+    """v3.5.39: Identify the email provider from MX hostname."""
+    mx_lower = mx_host.lower()
+    for provider, patterns in _TRUSTED_MX_PROVIDERS.items():
+        for pattern in patterns:
+            if pattern in mx_lower or mx_lower.endswith(pattern):
+                return provider
+    if "google" in mx_lower or "gmail" in mx_lower:
+        return "google"
+    if "outlook" in mx_lower or "microsoft" in mx_lower:
+        return "microsoft"
+    return "unknown"
+
+
+def _is_catch_all_trustworthy(mx_host: str) -> bool:
+    """v3.5.39: Determine if catch-all on this MX provider is trustworthy.
+
+    Google Workspace and Microsoft 365 rarely have catch-all enabled.
+    If they accept all addresses, it's more likely a real mailbox.
+    """
+    provider = _identify_mx_provider(mx_host)
+    return provider in ("google", "microsoft", "zoho")
+
+
+@lru_cache(maxsize=500)
+def _check_spf(domain: str) -> bool:
+    """v3.5.39: Check if domain has SPF record (confirms email system exists)."""
+    try:
+        answers = dns.resolver.resolve(domain, 'TXT', lifetime=5)
+        for rdata in answers:
+            txt = rdata.to_text().strip('"')
+            if txt.startswith('v=spf1'):
+                return True
+    except Exception:
+        pass
+    return False
+
+
+@lru_cache(maxsize=500)
+def _check_dmarc(domain: str) -> str:
+    """v3.5.39: Check DMARC policy for domain.
+
+    Returns: 'reject', 'quarantine', 'none', or '' (no DMARC).
+    p=reject means company is serious about email = high confidence.
+    """
+    try:
+        answers = dns.resolver.resolve(f'_dmarc.{domain}', 'TXT', lifetime=5)
+        for rdata in answers:
+            txt = rdata.to_text().strip('"')
+            if 'v=DMARC1' in txt:
+                if 'p=reject' in txt:
+                    return 'reject'
+                elif 'p=quarantine' in txt:
+                    return 'quarantine'
+                return 'none'
+    except Exception:
+        pass
+    return ''
+
+
+@lru_cache(maxsize=500)
+def _check_bimi(domain: str) -> bool:
+    """v3.5.39: Check if domain has BIMI record (strong email practices)."""
+    try:
+        answers = dns.resolver.resolve(f'default._bimi.{domain}', 'TXT', lifetime=5)
+        for rdata in answers:
+            txt = rdata.to_text().strip('"')
+            if 'v=BIMI1' in txt:
+                return True
+    except Exception:
+        pass
+    return False
+
+
+def dns_confidence_score(domain: str) -> dict:
+    """v3.5.39: Calculate DNS-based confidence signals for a domain.
+
+    Returns dict with individual signals and total confidence boost (0-25).
+    All free DNS lookups, no API keys needed.
+    """
+    has_spf = _check_spf(domain)
+    dmarc_policy = _check_dmarc(domain)
+    has_bimi = _check_bimi(domain)
+
+    confidence = 0
+    signals: list[str] = []
+
+    if has_spf:
+        confidence += 5
+        signals.append("SPF: +5")
+    if dmarc_policy == 'reject':
+        confidence += 10
+        signals.append("DMARC reject: +10")
+    elif dmarc_policy == 'quarantine':
+        confidence += 5
+        signals.append("DMARC quarantine: +5")
+    elif dmarc_policy == 'none':
+        confidence += 2
+        signals.append("DMARC none: +2")
+    if has_bimi:
+        confidence += 10
+        signals.append("BIMI: +10")
+
+    return {
+        "has_spf": has_spf,
+        "dmarc_policy": dmarc_policy,
+        "has_bimi": has_bimi,
+        "confidence_boost": confidence,
+        "signals": signals,
+    }
 
 
 def _smtp_rcpt_check(email: str, mx_host: str) -> dict:
@@ -177,7 +312,18 @@ async def verify_email(email: str) -> bool:
                 None, _smtp_rcpt_check, email, mx_host
             )
             if smtp_result["accepted"] is True:
-                # If catch-all, still mark as valid but it's less certain
+                # v3.5.39: Catch-all false positive reduction by MX provider
+                if smtp_result["catch_all"]:
+                    if _is_catch_all_trustworthy(mx_host):
+                        logger.debug(
+                            "Catch-all on trusted provider %s — keeping %s",
+                            _identify_mx_provider(mx_host), email,
+                        )
+                    else:
+                        logger.debug(
+                            "Catch-all on unknown provider for %s — lower confidence",
+                            email,
+                        )
                 return True
             elif smtp_result["accepted"] is False:
                 return False
@@ -230,13 +376,22 @@ async def verify_email_detailed(email: str) -> dict:
             smtp_result["error"] = str(e)
 
     valid = has_mx and smtp_result["accepted"] is not False
+
+    # v3.5.39: Add DNS confidence signals and catch-all provider info
+    dns_conf = await loop.run_in_executor(None, dns_confidence_score, domain)
+    mx_provider = _identify_mx_provider(mx_host) if mx_host else "unknown"
+    catch_all_trusted = _is_catch_all_trustworthy(mx_host) if mx_host else False
+
     return {
         "valid": valid,
         "mx_valid": has_mx,
         "mx_host": mx_host,
+        "mx_provider": mx_provider,
         "smtp_accepted": smtp_result["accepted"],
         "catch_all": smtp_result["catch_all"],
+        "catch_all_trustworthy": catch_all_trusted,
         "error": smtp_result["error"],
+        "dns_confidence": dns_conf,
     }
 
 

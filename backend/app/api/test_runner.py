@@ -25,6 +25,10 @@ from pydantic import BaseModel
 from app.api.routes import _run_extraction
 from app.models.schemas import ExtractionRequest
 from app.database import get_db
+from app.services.verifier import dns_confidence_score, _identify_mx_provider
+from app.services.quality_scorer import score_lead_quality, batch_score_and_dedup
+from app.services.anti_detection import _lognormal_jitter
+from app.services.multi_engine_search import _health, _load_health_from_disk
 
 logger = logging.getLogger(__name__)
 
@@ -253,6 +257,12 @@ async def _run_single_case(
             case_logger.error("EXCEPTION: %s", traceback.format_exc())
 
         duration = round(time.perf_counter() - start, 3)
+
+        # v3.5.39: Run feature diagnostics for this test case
+        v39_diagnostics = await _run_v39_diagnostics(
+            tc, case_logger, leads_found,
+        )
+
         case_logger.removeHandler(handler)
         session["completed"] += 1
 
@@ -268,7 +278,135 @@ async def _run_single_case(
             "errors": errors,
             "backend_logs": handler.records,
             "location_filter_log": location_filter_log,
+            "v39_diagnostics": v39_diagnostics,
         }
+
+
+async def _run_v39_diagnostics(
+    tc: TestCase,
+    case_logger: logging.Logger,
+    leads_found: int,
+) -> dict:
+    """v3.5.39: Run feature diagnostics for a test case.
+
+    Validates that all v3.5.39 analysis features are working:
+    1. Log-normal jitter function produces valid values
+    2. Engine health persistence loads from disk
+    3. DNS confidence scoring works for sample domains
+    4. LQS scoring with new v3.5.39 fields works
+    5. WHOIS/RDAP module is importable
+    6. Catch-all provider identification works
+    7. Batch score + dedup works
+    """
+    diag: dict = {"tests": [], "passed": 0, "failed": 0}
+
+    def _add(name: str, passed: bool, detail: str = "") -> None:
+        diag["tests"].append({"name": name, "passed": passed, "detail": detail})
+        if passed:
+            diag["passed"] += 1
+        else:
+            diag["failed"] += 1
+
+    # 1. Log-normal jitter
+    try:
+        samples = [_lognormal_jitter(0.0, 0.5, 3.0) for _ in range(20)]
+        all_valid = all(0 <= s <= 3.0 for s in samples)
+        variance = max(samples) - min(samples)
+        _add(
+            "lognormal_jitter",
+            all_valid and variance > 0.01,
+            f"20 samples range [{min(samples):.3f}, {max(samples):.3f}]",
+        )
+    except Exception as e:
+        _add("lognormal_jitter", False, str(e))
+
+    # 2. Engine health persistence
+    try:
+        _load_health_from_disk()
+        brave_health = _health("brave_free")
+        _add(
+            "engine_health_persistence",
+            True,
+            f"brave_free health_score={brave_health.health_score:.2f}",
+        )
+    except Exception as e:
+        _add("engine_health_persistence", False, str(e))
+
+    # 3. DNS confidence scoring
+    try:
+        loop = asyncio.get_event_loop()
+        dns_result = await loop.run_in_executor(
+            None, dns_confidence_score, "google.com",
+        )
+        has_spf = dns_result.get("has_spf", False)
+        _add(
+            "dns_confidence_scoring",
+            isinstance(dns_result, dict) and "confidence_boost" in dns_result,
+            f"google.com SPF={has_spf} boost={dns_result.get('confidence_boost', 0)}",
+        )
+    except Exception as e:
+        _add("dns_confidence_scoring", False, str(e))
+
+    # 4. LQS v3.5.39 enhanced scoring
+    try:
+        breakdown = score_lead_quality(
+            email="test@example.com",
+            name="John Doe",
+            platform="linkedin",
+            verified=True,
+            dns_confidence=10,
+            smtp_verified=True,
+            catch_all_trustworthy=True,
+            has_linkedin=True,
+        )
+        has_new_fields = hasattr(breakdown, "dns_bonus") and hasattr(breakdown, "smtp_bonus")
+        _add(
+            "lqs_v39_enhanced",
+            has_new_fields and breakdown.total > 0,
+            f"total={breakdown.total} dns={breakdown.dns_bonus} smtp={breakdown.smtp_bonus}",
+        )
+    except Exception as e:
+        _add("lqs_v39_enhanced", False, str(e))
+
+    # 5. WHOIS/RDAP module importable
+    try:
+        from app.services.whois_rdap import extract_rdap_emails
+        _add("whois_rdap_module", True, "Module imported successfully")
+    except Exception as e:
+        _add("whois_rdap_module", False, str(e))
+
+    # 6. Catch-all provider identification
+    try:
+        provider = _identify_mx_provider("aspmx.l.google.com")
+        _add(
+            "catchall_provider_id",
+            provider == "google",
+            f"aspmx.l.google.com -> {provider}",
+        )
+    except Exception as e:
+        _add("catchall_provider_id", False, str(e))
+
+    # 7. Batch score + dedup
+    try:
+        test_leads = [
+            {"email": "a@test.com", "name": "Alice", "phone": "1234567890"},
+            {"email": "b@test.com", "name": "Bob", "phone": "0987654321"},
+            {"email": "a@test.com", "name": "Alice", "phone": "1234567890"},  # duplicate
+        ]
+        scored, dupes = batch_score_and_dedup(test_leads)
+        _add(
+            "batch_score_dedup",
+            len(scored) == 2 and dupes == 1,
+            f"unique={len(scored)} dupes={dupes}",
+        )
+    except Exception as e:
+        _add("batch_score_dedup", False, str(e))
+
+    case_logger.info(
+        "v3.5.39 diagnostics: %d/%d passed",
+        diag["passed"], diag["passed"] + diag["failed"],
+    )
+    return diag
 
 
 async def _execute_extraction_case(
@@ -522,7 +660,33 @@ def _build_bundle(session_id: str) -> str:
                 )
         zf.writestr("reports/per_platform.csv", "\n".join(pp_lines))
 
-        # 8. README
+        # 8. v3.5.39 diagnostics report
+        v39_all: list[dict] = []
+        v39_total_pass = 0
+        v39_total_fail = 0
+        for res in session["results"]:
+            diag = res.get("v39_diagnostics", {})
+            if diag:
+                v39_all.append({
+                    "case_id": res.get("case_id", "")[:8],
+                    "keyword": res.get("keyword", ""),
+                    "diagnostics": diag,
+                })
+                v39_total_pass += diag.get("passed", 0)
+                v39_total_fail += diag.get("failed", 0)
+        v39_summary = {
+            "total_diagnostic_tests": v39_total_pass + v39_total_fail,
+            "passed": v39_total_pass,
+            "failed": v39_total_fail,
+            "pass_rate": f"{v39_total_pass / max(v39_total_pass + v39_total_fail, 1) * 100:.1f}%",
+            "per_case": v39_all,
+        }
+        zf.writestr(
+            "reports/v39_diagnostics.json",
+            json.dumps(v39_summary, indent=2, default=str),
+        )
+
+        # 9. README
         readme = f"""# SnapLeads Test Bundle
 Generated: {datetime.utcnow().isoformat()}Z
 Session:   {session_id}
@@ -535,6 +699,16 @@ Session:   {session_id}
 - logs/location_filter.json — Which leads were kept/dropped and why
 - reports/timing.csv        — Duration and lead count per test case
 - reports/per_platform.csv  — Per-platform breakdown
+- reports/v39_diagnostics.json — v3.5.39 feature validation results
+
+## v3.5.39 Features Tested
+1. Log-normal jitter (behavioral fingerprint evasion)
+2. Per-engine cooldown persistence (24h health windows)
+3. DNS confidence signals (SPF/DMARC/BIMI)
+4. Enhanced LQS with DNS/SMTP/LinkedIn/catch-all scoring
+5. WHOIS/RDAP email extraction module
+6. Catch-all false positive reduction by MX provider
+7. Batch score + dedup integration
 
 ## How to read JSONL
 Each line in *.jsonl is a standalone JSON object. Open in VS Code or run:

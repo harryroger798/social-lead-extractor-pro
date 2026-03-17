@@ -18,10 +18,13 @@ Works in PyInstaller bundle on Windows/macOS/Linux.
 """
 
 import html as _html_mod
+import json
 import logging
+import os
 import random
 import re
 import time
+from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse, parse_qs
 
@@ -83,22 +86,56 @@ def _get_headers() -> dict[str, str]:
 # Engine health tracking
 # ---------------------------------------------------------------------------
 
+# v3.5.39: Per-engine cooldown persistence file path
+# Stored in user data dir so cooldown state survives app restarts
+_HEALTH_PERSIST_PATH = Path(
+    os.environ.get("SNAPLEADS_DATA_DIR", Path.home() / ".snapleads")
+) / "engine_health.json"
+
+
 class _EngineHealth:
-    """Track per-engine success/failure for adaptive ordering."""
+    """Track per-engine success/failure for adaptive ordering.
+
+    v3.5.39: Added disk persistence with 24h health scoring windows.
+    Cooldown state survives app restarts — prevents repeatedly hammering
+    blocked engines on every launch.
+    """
 
     def __init__(self) -> None:
         self.consecutive_failures: int = 0
         self.cooldown_until: float = 0.0
+        self.total_successes_24h: int = 0
+        self.total_failures_24h: int = 0
+        self.window_start: float = time.time()
 
     def record_success(self) -> None:
         self.consecutive_failures = 0
+        self._rotate_window()
+        self.total_successes_24h += 1
 
     def record_failure(self) -> None:
         self.consecutive_failures += 1
+        self._rotate_window()
+        self.total_failures_24h += 1
         if self.consecutive_failures >= 3:
             self.cooldown_until = time.time() + 3600
         elif self.consecutive_failures >= 2:
             self.cooldown_until = time.time() + 300
+
+    def _rotate_window(self) -> None:
+        """v3.5.39: Reset 24h counters if window has expired."""
+        if time.time() - self.window_start > 86400:  # 24 hours
+            self.total_successes_24h = 0
+            self.total_failures_24h = 0
+            self.window_start = time.time()
+
+    @property
+    def health_score(self) -> float:
+        """v3.5.39: 0.0-1.0 health score over 24h window."""
+        total = self.total_successes_24h + self.total_failures_24h
+        if total == 0:
+            return 1.0
+        return self.total_successes_24h / total
 
     def try_reset(self) -> bool:
         """Attempt to reset cooldown if expired. Returns True if available.
@@ -120,8 +157,55 @@ class _EngineHealth:
             return time.time() > self.cooldown_until
         return True
 
+    def to_dict(self) -> dict:
+        """v3.5.39: Serialize for disk persistence."""
+        return {
+            "consecutive_failures": self.consecutive_failures,
+            "cooldown_until": self.cooldown_until,
+            "total_successes_24h": self.total_successes_24h,
+            "total_failures_24h": self.total_failures_24h,
+            "window_start": self.window_start,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "_EngineHealth":
+        """v3.5.39: Deserialize from disk persistence."""
+        h = cls()
+        h.consecutive_failures = data.get("consecutive_failures", 0)
+        h.cooldown_until = data.get("cooldown_until", 0.0)
+        h.total_successes_24h = data.get("total_successes_24h", 0)
+        h.total_failures_24h = data.get("total_failures_24h", 0)
+        h.window_start = data.get("window_start", time.time())
+        return h
+
 
 _engine_health: dict[str, _EngineHealth] = {}
+
+
+def _load_health_from_disk() -> None:
+    """v3.5.39: Load persisted engine health state from disk."""
+    try:
+        if _HEALTH_PERSIST_PATH.exists():
+            data = json.loads(_HEALTH_PERSIST_PATH.read_text())
+            for name, state in data.items():
+                _engine_health[name] = _EngineHealth.from_dict(state)
+            logger.info("Loaded engine health state for %d engines", len(data))
+    except Exception as exc:
+        logger.debug("Could not load engine health: %s", exc)
+
+
+def _save_health_to_disk() -> None:
+    """v3.5.39: Persist engine health state to disk."""
+    try:
+        _HEALTH_PERSIST_PATH.parent.mkdir(parents=True, exist_ok=True)
+        data = {name: h.to_dict() for name, h in _engine_health.items()}
+        _HEALTH_PERSIST_PATH.write_text(json.dumps(data, indent=2))
+    except Exception as exc:
+        logger.debug("Could not save engine health: %s", exc)
+
+
+# Load persisted state on module import
+_load_health_from_disk()
 
 
 def _health(name: str) -> _EngineHealth:
@@ -501,6 +585,117 @@ _SEARXNG_INSTANCES = [
 ]
 
 
+def search_yep(query: str, num_results: int = 10) -> list[dict]:
+    """v3.5.39: Search Yep.com (Ahrefs-backed, very scrape-friendly).
+
+    Yep.com is backed by Ahrefs' own web index (not proxied Google).
+    Very light anti-scraping — ideal for no-proxy desktop apps.
+    Replaces Startpage as #2 in the waterfall (Startpage inherits
+    Google's detection AND adds its own).
+    """
+    health = _health("yep")
+    if not health.is_available:
+        return []
+    try:
+        with _make_client() as client:
+            resp = client.get(
+                "https://api.yep.com/fs/2/search",
+                params={
+                    "client": "web",
+                    "gl": "us",
+                    "no_correct": "false",
+                    "q": query,
+                    "safeSearch": "off",
+                    "type": "web",
+                },
+                headers={"Accept-Encoding": "identity"},
+                timeout=12.0,
+            )
+        if resp.status_code != 200:
+            health.record_failure()
+            _save_health_to_disk()
+            return []
+
+        data = resp.json()
+        results: list[dict] = []
+        for item in data.get("results", []):
+            results.append({
+                "title": item.get("title", ""),
+                "snippet": item.get("snippet", ""),
+                "link": item.get("url", ""),
+            })
+            if len(results) >= num_results:
+                break
+
+        if results:
+            health.record_success()
+            logger.info("Yep.com: %d results", len(results))
+        else:
+            health.record_failure()
+        _save_health_to_disk()
+        return results
+
+    except Exception as exc:
+        health.record_failure()
+        _save_health_to_disk()
+        logger.debug("Yep.com error: %s", exc)
+        return []
+
+
+def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
+    """v3.5.39: Scrape Bing web search (no API key needed).
+
+    Bing is very scrape-friendly compared to Google. Uses the standard
+    web interface with anti-detection headers.
+    """
+    health = _health("bing_free")
+    if not health.is_available:
+        return []
+    try:
+        with _make_client() as client:
+            resp = client.get(
+                "https://www.bing.com/search",
+                params={"q": query, "count": str(min(num_results, 20))},
+                headers={"Accept-Encoding": "identity"},
+                timeout=12.0,
+            )
+        if resp.status_code != 200:
+            health.record_failure()
+            _save_health_to_disk()
+            return []
+
+        html = resp.text
+        results: list[dict] = []
+
+        # Parse Bing search results
+        for m in re.finditer(
+            r'<li class="b_algo"[^>]*>.*?<h2><a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a></h2>'
+            r'.*?<p[^>]*>(.*?)</p>',
+            html, re.DOTALL,
+        ):
+            results.append({
+                "title": _strip_tags(m.group(2)),
+                "snippet": _strip_tags(m.group(3)),
+                "link": m.group(1),
+            })
+            if len(results) >= num_results:
+                break
+
+        if results:
+            health.record_success()
+            logger.info("Bing free: %d results", len(results))
+        else:
+            health.record_failure()
+        _save_health_to_disk()
+        return results
+
+    except Exception as exc:
+        health.record_failure()
+        _save_health_to_disk()
+        logger.debug("Bing free error: %s", exc)
+        return []
+
+
 def search_searxng(query: str, num_results: int = 10) -> list[dict]:
     """Query a random SearXNG public instance (JSON API)."""
     health = _health("searxng")
@@ -714,12 +909,17 @@ def scrape_page_emails(
 # Free search waterfall
 # ===========================================================================
 
+# v3.5.39: Reordered waterfall — Yep.com + Bing free replace Startpage at #2/#3.
+# Startpage demoted to #7 (weakest engine: proxied Google + own detection).
+# Yep.com is Ahrefs-backed with light anti-scraping, Bing is very scrape-friendly.
 _FREE_ENGINES: list[tuple[str, object]] = [
     ("brave_free", search_brave_free),
-    ("startpage", search_startpage),
+    ("yep", search_yep),                # v3.5.39: Ahrefs-backed, scrape-friendly
+    ("bing_free", search_bing_free),     # v3.5.39: Very scrape-friendly
     ("ddg_lite", search_ddg_lite),
     ("mojeek", search_mojeek),
     ("qwant_lite", search_qwant_lite),
+    ("startpage", search_startpage),     # v3.5.39: Demoted — weakest engine
     ("searxng", search_searxng),
 ]
 
