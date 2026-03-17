@@ -2589,57 +2589,232 @@ async def search_database_hybrid(
 ) -> list[dict]:
     """Search the pre-built database across multiple platforms and keywords.
 
-    v3.5.25: NEW — tries Render API first (fast ~2-9s server-side queries),
-    falls back to direct S3 DuckDB queries if the API is unreachable.
+    v3.5.38: RESTRUCTURED — per-phase timeouts instead of one monolithic
+    90s master timeout. Previously, the 90s master timeout wrapped the entire
+    inner function which runs LinkedIn (~60s) + Instagram (~55-86s) +
+    supplementary (~12s) = 115-146s sequentially. The timeout always fired
+    before the inner function could return, and _partial_results was always
+    empty because extend() only ran after the inner function completed.
 
-    v3.5.21: Wrapped with a master timeout to guarantee this function NEVER
-    blocks forever. Even if individual query timeouts fail (thread pool
-    saturation, DuckDB S3 request hanging), this master timeout ensures
-    the extraction progresses past the "Searching 89M+" phase.
+    Now each phase (LinkedIn, Instagram, supplementary) runs with its own
+    timeout. If one phase times out, the results from completed phases are
+    preserved. A 180s master timeout is kept as a safety net.
 
-    Returns whatever leads were collected before the timeout fired.
+    v3.5.37: Skip Render API entirely — it always times out from desktop.
+    v3.5.25: NEW — tries Render API first (removed in v3.5.37).
+    v3.5.21: Original master timeout wrapper (restructured in v3.5.38).
     """
-    # v3.5.37: Skip Render API entirely — it always times out from desktop
-    # (30s wasted on every search). Go direct to S3. The Render API was
-    # designed for server-side use but the desktop app is on residential
-    # internet where the API server itself is unreachable/slow.
-    logger.info("v3.5.37: Skipping Render API — going direct to S3")
+    import time as _time
 
-    # Fallback: direct S3 queries (original approach)
+    logger.info("v3.5.38: Per-phase DB search — skipping Render API, going direct to S3")
+
     _partial_results: list[dict] = []
+    seen_emails: set[str] = set()
+    seen_phones: set[str] = set()
 
-    async def _inner_with_partial():
-        results = await _search_database_hybrid_inner(
-            keywords=keywords,
-            platforms=platforms,
-            location=location,
-            max_results_per_keyword=max_results_per_keyword,
-            expanded_terms_map=expanded_terms_map,
-            tier=tier,
-        )
-        _partial_results.extend(results)
-        return results
+    def _dedup_and_collect(leads: list[dict]) -> int:
+        """Deduplicate leads and append to _partial_results. Returns count added."""
+        added = 0
+        for lead in leads:
+            email = lead.get("email", "")
+            phone = lead.get("phone", "")
+            if email and email in seen_emails:
+                continue
+            if phone and phone in seen_phones:
+                continue
+            if email:
+                seen_emails.add(email)
+            if phone:
+                seen_phones.add(phone)
+            _partial_results.append(lead)
+            added += 1
+        return added
+
+    # v3.5.38: Per-phase timeouts based on observed timings from v3.5.37 tests:
+    #   LinkedIn: ~60s (5 countries × 5 files × S3 round-trips)
+    #   Instagram: 55-86s (high variance due to file sizes)
+    #   Supplementary (GMaps + PAN India + YouTube): ~12s
+    # Total sequential: 115-146s. Old 90s master ALWAYS timed out.
+    _PHASE_TIMEOUT_LINKEDIN = 65.0
+    _PHASE_TIMEOUT_INSTAGRAM = 70.0
+    _PHASE_TIMEOUT_SUPPLEMENTARY = 25.0
+    _MASTER_SAFETY_TIMEOUT = 180.0  # safety net (sum of phases + slack)
+
+    _master_start = _time.monotonic()
+
+    # ── Determine tier-based dataset limits (same logic as inner function) ──
+    _tier_dataset_limits = {
+        "free": 3,
+        "starter": 5,
+        "pro": 5,
+        "unlimited": 8,
+    }
+    ds_limit = _tier_dataset_limits.get(tier, 5)
+
+    # ── Determine which platforms to search ──
+    search_linkedin = any(p in ("linkedin", "all") for p in platforms)
+    search_instagram = any(p in ("instagram", "all") for p in platforms)
+    search_googlemaps = any(
+        p in ("google_maps", "googlemaps", "google maps", "all") for p in platforms
+    )
+    search_pan_india = any(
+        p in ("pan_india", "indiamart", "justdial", "all") for p in platforms
+    )
+    search_youtube = any(p in ("youtube", "all") for p in platforms)
+
+    _has_social = search_linkedin or search_instagram
+    _has_maps_or_india = search_googlemaps or search_pan_india
+
+    if not _has_social and not _has_maps_or_india and not search_youtube:
+        search_linkedin = True
+        search_instagram = True
+
+    # v3.5.33 Fix #6: location-triggered supplementary search
+    if location and not search_googlemaps:
+        search_googlemaps = True
+    if location and not search_pan_india:
+        _india_indicators = {"india", "mumbai", "delhi", "bangalore", "kolkata",
+                             "chennai", "hyderabad", "pune", "ahmedabad", "jaipur",
+                             "lucknow", "noida", "gurgaon", "surat", "kochi"}
+        if any(ind in location.lower() for ind in _india_indicators):
+            search_pan_india = True
+
+    logger.info(
+        "v3.5.38 per-phase search: linkedin=%s, instagram=%s, googlemaps=%s, "
+        "pan_india=%s, youtube=%s, ds_limit=%d, tier=%s",
+        search_linkedin, search_instagram, search_googlemaps,
+        search_pan_india, search_youtube, ds_limit, tier,
+    )
+
+    # ── Phase runner: runs a coroutine with its own timeout ──
+    async def _run_phase(phase_coro, phase_name: str, phase_timeout: float) -> None:
+        """Run a single DB search phase with its own timeout."""
+        # Check master safety timeout
+        elapsed = _time.monotonic() - _master_start
+        if elapsed >= _MASTER_SAFETY_TIMEOUT:
+            logger.warning(
+                "v3.5.38: Skipping %s — master safety timeout reached (%.0fs elapsed)",
+                phase_name, elapsed,
+            )
+            return
+        # Cap phase timeout to remaining master budget
+        remaining_master = _MASTER_SAFETY_TIMEOUT - elapsed
+        effective_timeout = min(phase_timeout, remaining_master)
+        try:
+            results = await asyncio.wait_for(phase_coro, timeout=effective_timeout)
+            added = _dedup_and_collect(results)
+            logger.info(
+                "v3.5.38 [%s] +%d leads (total: %d) in %.1fs",
+                phase_name, added, len(_partial_results),
+                _time.monotonic() - _master_start - (elapsed),
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "v3.5.38 [%s] timed out after %.0fs — %d leads preserved from earlier phases",
+                phase_name, effective_timeout, len(_partial_results),
+            )
+        except Exception as e:
+            logger.error(
+                "v3.5.38 [%s] failed: %s — %d leads preserved, continuing",
+                phase_name, e, len(_partial_results),
+            )
 
     try:
-        return await asyncio.wait_for(
-            _inner_with_partial(),
-            timeout=_HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
-        )
-    except asyncio.TimeoutError:
-        logger.error(
-            "search_database_hybrid MASTER TIMEOUT after %ds — "
-            "returning %d partial results collected before timeout. "
-            "keywords=%s, platforms=%s, tier=%s",
-            _HYBRID_SEARCH_MASTER_TIMEOUT_SECS,
-            len(_partial_results), keywords, platforms, tier,
+        for keyword in keywords:
+            kw_expanded = None
+            if expanded_terms_map:
+                kw_expanded = expanded_terms_map.get(keyword)
+
+            # ── Phase 1: LinkedIn (primary — 86.9M records, ~60s) ──
+            if search_linkedin:
+                await _run_phase(
+                    search_database_linkedin(
+                        keyword, location, max_results_per_keyword,
+                        dataset_limit=ds_limit,
+                        expanded_terms=kw_expanded,
+                    ),
+                    phase_name=f"LinkedIn:{keyword}",
+                    phase_timeout=_PHASE_TIMEOUT_LINKEDIN,
+                )
+
+            # ── Phase 2: Instagram (secondary — 2.45M records, ~55-86s) ──
+            if search_instagram:
+                async def _instagram_with_filter(kw=keyword, exp=kw_expanded):
+                    leads = await search_database_instagram(
+                        kw, max_results_per_keyword,
+                        dataset_limit=ds_limit,
+                        expanded_terms=exp,
+                    )
+                    if location:
+                        leads = filter_leads_by_location(leads, location)
+                    return leads
+
+                await _run_phase(
+                    _instagram_with_filter(),
+                    phase_name=f"Instagram:{keyword}",
+                    phase_timeout=_PHASE_TIMEOUT_INSTAGRAM,
+                )
+
+            # ── Phase 3: Supplementary (GMaps + PAN India + YouTube, ~12s) ──
+            supplementary_tasks = []
+            if search_googlemaps:
+                supplementary_tasks.append(
+                    search_database_googlemaps(
+                        keyword, max_results_per_keyword,
+                        dataset_limit=ds_limit,
+                        expanded_terms=kw_expanded,
+                    )
+                )
+            if search_pan_india:
+                supplementary_tasks.append(
+                    search_database_pan_india(
+                        keyword, max_results_per_keyword,
+                        dataset_limit=ds_limit,
+                        expanded_terms=kw_expanded,
+                    )
+                )
+            if search_youtube:
+                supplementary_tasks.append(
+                    search_database_youtube(
+                        keyword, max_results_per_keyword,
+                        dataset_limit=1,
+                        expanded_terms=kw_expanded,
+                    )
+                )
+
+            if supplementary_tasks:
+                async def _run_supplementary(tasks=supplementary_tasks):
+                    results = await asyncio.gather(*tasks, return_exceptions=True)
+                    all_leads: list[dict] = []
+                    for result in results:
+                        if isinstance(result, Exception):
+                            logger.warning("Supplementary DB search failed: %s", result)
+                            continue
+                        all_leads.extend(result)
+                    return all_leads
+
+                await _run_phase(
+                    _run_supplementary(),
+                    phase_name=f"Supplementary:{keyword}",
+                    phase_timeout=_PHASE_TIMEOUT_SUPPLEMENTARY,
+                )
+
+        total_elapsed = _time.monotonic() - _master_start
+        logger.info(
+            "v3.5.38 DB search complete: %d leads from %d keywords in %.1fs "
+            "(linkedin=%s, instagram=%s, gmaps=%s, pan_india=%s, youtube=%s)",
+            len(_partial_results), len(keywords), total_elapsed,
+            search_linkedin, search_instagram, search_googlemaps,
+            search_pan_india, search_youtube,
         )
         return _partial_results
+
     except Exception as e:
         logger.error(
-            "search_database_hybrid unexpected error: %s — keywords=%s",
-            e, keywords, exc_info=True,
+            "search_database_hybrid unexpected error: %s — returning %d partial results",
+            e, len(_partial_results), exc_info=True,
         )
-        return _partial_results if _partial_results else []
+        return _partial_results
 
 
 def deduplicate_leads(db_leads: list[dict], live_leads: list[dict]) -> list[dict]:

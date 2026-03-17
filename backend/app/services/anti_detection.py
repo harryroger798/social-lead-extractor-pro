@@ -254,6 +254,7 @@ _ALLOWED_SEARCH_DOMAINS = frozenset({
     "html.duckduckgo.com",
     "lite.duckduckgo.com",
     "www.bing.com",
+    "cc.bingj.com",              # v3.5.38: Bing CDN/redirect domain
     "search.brave.com",
     "searx.fmac.xyz",
     "search.bus-hit.me",
