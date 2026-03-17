@@ -50,6 +50,7 @@ export async function waitForBackend(): Promise<void> {
           clearInterval(interval);
           logger.error('api', `Backend returned ${res.status} after ${maxAttempts * 2}s — hard abort`);
           _backendReady = false;
+          _backendReadyPromise = null;  // v3.5.41: Reset so future calls can retry
           reject(new Error(`Backend not healthy after ${maxAttempts * 2}s (status ${res.status})`));
         }
       } catch {
@@ -59,6 +60,7 @@ export async function waitForBackend(): Promise<void> {
           clearInterval(interval);
           logger.error('api', `Backend not reachable after ${maxAttempts * 2}s — hard abort`);
           _backendReady = false;
+          _backendReadyPromise = null;  // v3.5.41: Reset so future calls can retry
           reject(new Error(`Backend not reachable after ${maxAttempts * 2}s`));
         }
       }

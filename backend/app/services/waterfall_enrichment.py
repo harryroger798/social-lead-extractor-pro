@@ -63,29 +63,41 @@ logger = logging.getLogger(__name__)
 # Prevents wasting time on dead/unresponsive domains like asklaila.com.
 # After DOMAIN_FAILURE_THRESHOLD consecutive failures, the domain is skipped
 # for the rest of the session.
+import threading as _threading
+
 _domain_failure_cache: dict[str, int] = {}
+_domain_failure_lock = _threading.Lock()
 _DOMAIN_FAILURE_THRESHOLD = 2
+
+
+def reset_domain_failure_cache() -> None:
+    """Clear the circuit breaker cache. Call at the start of each extraction session."""
+    with _domain_failure_lock:
+        _domain_failure_cache.clear()
 
 
 def _should_skip_domain(domain: str) -> bool:
     """Check if domain has hit the failure threshold (circuit breaker open)."""
-    return _domain_failure_cache.get(domain, 0) >= _DOMAIN_FAILURE_THRESHOLD
+    with _domain_failure_lock:
+        return _domain_failure_cache.get(domain, 0) >= _DOMAIN_FAILURE_THRESHOLD
 
 
 def _record_domain_failure(domain: str) -> None:
     """Record a domain failure. Logs warning when threshold is hit."""
-    _domain_failure_cache[domain] = _domain_failure_cache.get(domain, 0) + 1
-    if _domain_failure_cache[domain] == _DOMAIN_FAILURE_THRESHOLD:
-        logger.warning(
-            "v3.5.41: Domain %s hit failure threshold (%d) "
-            "— skipping for rest of session",
-            domain, _DOMAIN_FAILURE_THRESHOLD,
-        )
+    with _domain_failure_lock:
+        _domain_failure_cache[domain] = _domain_failure_cache.get(domain, 0) + 1
+        if _domain_failure_cache[domain] == _DOMAIN_FAILURE_THRESHOLD:
+            logger.warning(
+                "v3.5.41: Domain %s hit failure threshold (%d) "
+                "— skipping for rest of session",
+                domain, _DOMAIN_FAILURE_THRESHOLD,
+            )
 
 
 def _record_domain_success(domain: str) -> None:
     """Reset domain failure count on success."""
-    _domain_failure_cache.pop(domain, None)
+    with _domain_failure_lock:
+        _domain_failure_cache.pop(domain, None)
 
 
 def _strip_tags(text: str) -> str:

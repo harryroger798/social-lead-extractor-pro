@@ -317,6 +317,7 @@ def filter_leads_by_location(
         "instagram": 200,   # Instagram location metadata is sparse
         "linkedin": 150,    # LinkedIn has moderate location data
         "googlemaps": 50,   # GMaps records are already location-tagged
+        "google_maps": 50,  # alias — leads use "google_maps" as platform value
         "pan_india": 150,   # Unknown — use moderate cap
         "default": 200,     # v3.5.41: raised from 100 to 200
     }
@@ -2467,7 +2468,7 @@ async def search_database_hybrid(
     #   Instagram: queries take 60-80s, need safety buffer above 90s
     #   Supplementary: Google Maps alone takes 13-20s, PAN India 30s+
     # v3.5.38 original: LinkedIn=65, Instagram=90, Supplementary=25
-    _PHASE_TIMEOUT_LINKEDIN = 180.0    # was 65s — 100% timeout rate
+    _PHASE_TIMEOUT_LINKEDIN = _LINKEDIN_PHASE_TIMEOUT_SECS  # v3.5.41: was 180s, now 240s via FIX-1
     _PHASE_TIMEOUT_INSTAGRAM = 150.0   # was 90s — frequent data loss
     _PHASE_TIMEOUT_SUPPLEMENTARY = 90.0  # was 25s — GMaps+PAN India need 30-50s
     _MASTER_SAFETY_TIMEOUT = 450.0  # safety net (sum of phases + slack)
@@ -2578,7 +2579,7 @@ async def search_database_hybrid(
                         expanded_terms=exp,
                     )
                     if location:
-                        leads = filter_leads_by_location(leads, location)
+                        leads = filter_leads_by_location(leads, location, source_tag="instagram")
                     return leads
 
                 await _run_phase(

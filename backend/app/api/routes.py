@@ -70,6 +70,7 @@ from app.services.b2b_scrapers import (
 from app.services.waterfall_enrichment import (
     enrich_leads_batch_waterfall,
     merge_and_deduplicate_leads,
+    reset_domain_failure_cache,
 )
 from app.services.features import (
     find_emails_by_domain,
@@ -607,6 +608,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     parsed_keywords: list = []
     cleaned_keywords: list[str] = []
     location_hint = ""
+    # v3.5.41 FIX-6: Reset circuit breaker cache at session start
+    reset_domain_failure_cache()
     # v3.5.37: Pipeline budget timer
     budget = _PipelineBudget()  # v3.5.40: uses 420s default (was hardcoded 270s)
 
