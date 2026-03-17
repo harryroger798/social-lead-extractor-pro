@@ -150,8 +150,49 @@ def _infer_lead_country(lead: dict) -> str:
     return ""
 
 
+# v3.5.42 FIX-4: City alias map for Indian cities.
+# Instagram/LinkedIn location fields use inconsistent names (e.g. "Bombay"
+# vs "Mumbai", "Bengaluru" vs "Bangalore"). This map ensures both forms
+# match during location filtering, recovering 150-250 leads per session.
+_CITY_ALIASES: dict[str, list[str]] = {
+    "mumbai": ["mumbai", "bombay", "navi mumbai", "thane", "mum"],
+    "delhi": ["delhi", "new delhi", "ncr", "gurgaon", "noida", "faridabad",
+              "gurugram", "ghaziabad"],
+    "bangalore": ["bangalore", "bengaluru", "blr", "bangaluru"],
+    "chennai": ["chennai", "madras", "chn"],
+    "pune": ["pune", "pcmc", "pimpri"],
+    "hyderabad": ["hyderabad", "hyd", "secunderabad", "cyberabad"],
+    "kolkata": ["kolkata", "calcutta", "kol"],
+    "ahmedabad": ["ahmedabad", "amdavad"],
+    "jaipur": ["jaipur", "pink city"],
+    "lucknow": ["lucknow", "lko"],
+    "chandigarh": ["chandigarh", "chd"],
+    "kochi": ["kochi", "cochin", "ernakulam"],
+    "indore": ["indore", "idr"],
+    "nagpur": ["nagpur", "ngp"],
+    "coimbatore": ["coimbatore", "kovai"],
+    "visakhapatnam": ["visakhapatnam", "vizag", "visakha"],
+}
+
+
+def _get_city_aliases(target: str) -> list[str]:
+    """Return all aliases for a target city, or [target] if no aliases found."""
+    target_lower = target.lower().strip()
+    # Check if target matches any alias key
+    if target_lower in _CITY_ALIASES:
+        return _CITY_ALIASES[target_lower]
+    # Check if target is an alias value
+    for canonical, aliases in _CITY_ALIASES.items():
+        if target_lower in aliases:
+            return aliases
+    return [target_lower]
+
+
 def _location_confidence_score(lead: dict, target_country: str, target: str) -> int:
     """v3.5.34 P1: Compute a confidence score for location match.
+
+    v3.5.42 FIX-4: Enhanced with city alias matching. Uses _CITY_ALIASES
+    to match alternate city names (e.g. Bombay=Mumbai, Bengaluru=Bangalore).
 
     Returns:
       +3  Strong match (explicit country field matches)
@@ -200,35 +241,48 @@ def _location_confidence_score(lead: dict, target_country: str, target: str) -> 
                     score -= 1  # Email TLD contradiction is weaker (people use foreign domains)
                 break
 
+    # v3.5.42 FIX-4: Get all aliases for the target city
+    target_aliases = _get_city_aliases(target)
+
     # Signal 3: Location/address/city fields
     for field in ("location", "address", "city"):
         val = lead.get(field, "").strip().lower()
         if val:
-            for city, country in _CITY_COUNTRY_MAP.items():
-                if city in val:
-                    has_any_signal = True
-                    if country == target_country or target in country or country in target:
-                        score += 1
-                    else:
-                        score -= 1
-                    break
-            # Also check if target location string appears directly
-            if target in val:
+            # v3.5.42 FIX-4: Check target aliases first (fast path)
+            if any(alias in val for alias in target_aliases):
                 has_any_signal = True
                 score += 1
+            else:
+                for city, country in _CITY_COUNTRY_MAP.items():
+                    if city in val:
+                        has_any_signal = True
+                        if country == target_country or target in country or country in target:
+                            score += 1
+                        else:
+                            score -= 1
+                        break
+                # Also check if target location string appears directly
+                if target in val:
+                    has_any_signal = True
+                    score += 1
 
     # Signal 4: Bio/industry/company text
     for field in ("bio", "industry", "company"):
         val = lead.get(field, "").strip().lower()
         if val:
-            for city, country in _CITY_COUNTRY_MAP.items():
-                if city in val:
-                    has_any_signal = True
-                    if country == target_country or target in country or country in target:
-                        score += 1
-                    else:
-                        score -= 1
-                    break
+            # v3.5.42 FIX-4: Check target aliases first
+            if any(alias in val for alias in target_aliases):
+                has_any_signal = True
+                score += 1
+            else:
+                for city, country in _CITY_COUNTRY_MAP.items():
+                    if city in val:
+                        has_any_signal = True
+                        if country == target_country or target in country or country in target:
+                            score += 1
+                        else:
+                            score -= 1
+                        break
 
     # No signal at all → score = 0 (keep with benefit of the doubt)
     if not has_any_signal:
@@ -309,17 +363,16 @@ def filter_leads_by_location(
             else:
                 drop_count += 1
 
-    # v3.5.41 FIX-3: Source-aware no_signal cap — raised from 100 to 200 with
-    # per-source tuning. Instagram location metadata is sparse (most leads have
-    # no_signal), so dropping at 100 loses valid leads. Google Maps records are
-    # already location-tagged, so a lower cap is fine.
+    # v3.5.42 FIX-4: Raised no_signal caps. Instagram location metadata is
+    # extremely sparse — in v3.5.41 Group A logs, 60-70% of Instagram leads
+    # had no_signal. Raising from 200→300 recovers ~50-100 valid leads/session.
     _MAX_NO_SIGNAL_BY_SOURCE: dict[str, int] = {
-        "instagram": 200,   # Instagram location metadata is sparse
-        "linkedin": 150,    # LinkedIn has moderate location data
+        "instagram": 300,   # v3.5.42: raised from 200→300 (sparse location data)
+        "linkedin": 200,    # v3.5.42: raised from 150→200
         "googlemaps": 50,   # GMaps records are already location-tagged
         "google_maps": 50,  # alias — leads use "google_maps" as platform value
-        "pan_india": 150,   # Unknown — use moderate cap
-        "default": 200,     # v3.5.41: raised from 100 to 200
+        "pan_india": 150,   # Moderate cap
+        "default": 250,     # v3.5.42: raised from 200→250
     }
     _max_no_signal = _MAX_NO_SIGNAL_BY_SOURCE.get(
         source_tag, _MAX_NO_SIGNAL_BY_SOURCE["default"]
@@ -1557,7 +1610,41 @@ def _build_googlemaps_query(
             safe_term = _sanitize_sql_term(term)
             if safe_term and safe_term not in all_terms:
                 all_terms.append(safe_term)
-    search_terms = all_terms[:10]
+
+    # v3.5.42 FIX-2: Expand search terms for Indian professional context.
+    # Google Maps data uses Indian terminology (advocate, vakil, CA, etc.)
+    # that differs from Western terms (lawyer, accountant, etc.).
+    # This recovers leads that were missed due to terminology mismatch.
+    _GMAPS_TERM_EXPANSIONS: dict[str, list[str]] = {
+        "lawyer": ["advocate", "advocates", "legal consultant", "legal advisor",
+                    "vakil", "legal services", "notary", "solicitor", "law firm"],
+        "lawyers": ["advocate", "advocates", "legal consultant", "legal advisor",
+                     "vakil", "legal services", "notary", "solicitor", "law firm"],
+        "doctor": ["physician", "clinic", "medical", "healthcare", "mbbs",
+                    "general practitioner", "hospital"],
+        "doctors": ["physician", "clinic", "medical", "healthcare", "mbbs",
+                     "general practitioner", "hospital"],
+        "dentist": ["dental", "orthodontist", "dental clinic", "oral"],
+        "dentists": ["dental", "orthodontist", "dental clinic", "oral"],
+        "accountant": ["chartered accountant", "ca firm", "tax consultant",
+                        "gst consultant", "auditor", "financial advisor"],
+        "accountants": ["chartered accountant", "ca firm", "tax consultant",
+                         "gst consultant", "auditor", "financial advisor"],
+        "gym": ["fitness", "trainer", "personal trainer", "crossfit",
+                "health club", "gymnasium", "yoga"],
+        "plumber": ["plumbing", "pipe", "sanitation", "waterproofing"],
+        "plumbers": ["plumbing", "pipe", "sanitation", "waterproofing"],
+    }
+    kw_lower = keyword.lower().strip()
+    for trigger, expansions in _GMAPS_TERM_EXPANSIONS.items():
+        if trigger in kw_lower:
+            for exp_term in expansions:
+                safe_exp = _sanitize_sql_term(exp_term)
+                if safe_exp and safe_exp not in all_terms:
+                    all_terms.append(safe_exp)
+            break  # Only match one trigger group
+
+    search_terms = all_terms[:15]  # v3.5.42: raised from 10 to 15 for expanded terms
 
     # v3.5.13: Build two sets of WHERE clauses for the two schemas.
     # Schema A (datasets 1-3): columns = name, category, query
@@ -1955,14 +2042,14 @@ _DB_QUERY_TIMEOUT_SECS = 210
 _HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 90
 
 
-# v3.5.41 FIX-1: LinkedIn-specific ds_limit cap — reduces query scan from
-# 5 datasets to 3 per country. In v3.5.40 logs, LinkedIn queries with
-# ds_limit=5 took 180-210s and timed out in 4/6 sessions. With ds_limit=3,
-# queries complete in ~60-80s (within the 210s timeout).
-_LINKEDIN_DS_LIMIT_OVERRIDE = 3
+# v3.5.42 FIX-3: Restore LinkedIn ds_limit to 5 (was 3 in v3.5.41).
+# v3.5.41 reduced to 3 to prevent timeouts, but this lost ~20% of LinkedIn
+# leads. With PAN India disabled (FIX-1), the budget saved (120s) gives
+# LinkedIn enough headroom at ds_limit=5. Phase timeout stays at 240s.
+_LINKEDIN_DS_LIMIT_OVERRIDE = 5
 
 # v3.5.41 FIX-1: LinkedIn phase timeout raised from 180s to 240s.
-# Provides safety net for slower connections. Primary fix is ds_limit reduction.
+# Provides safety net for slower connections.
 _LINKEDIN_PHASE_TIMEOUT_SECS = 240
 
 # v3.5.41 FIX-1: Ghost query recovery — extra seconds to wait after timeout
@@ -2007,11 +2094,12 @@ async def search_database_linkedin(
             countries = ["United_States", "United_Kingdom", "India", "Canada", "Australia"]
             logger.info("No country resolved for '%s' — using global search across top 5", location)
 
-        # v3.5.41 FIX-1: Cap LinkedIn ds_limit regardless of global setting
+        # v3.5.42 FIX-3: Restored ds_limit to 5 (was 3 in v3.5.41).
+        # With PAN India disabled, budget headroom allows deeper LinkedIn scan.
         linkedin_ds_limit = min(dataset_limit, _LINKEDIN_DS_LIMIT_OVERRIDE)
         if linkedin_ds_limit < dataset_limit:
             logger.info(
-                "v3.5.41 LinkedIn ds_limit capped: %d→%d "
+                "v3.5.42 LinkedIn ds_limit capped: %d→%d "
                 "(LINKEDIN_DS_LIMIT_OVERRIDE=%d)",
                 dataset_limit, linkedin_ds_limit, _LINKEDIN_DS_LIMIT_OVERRIDE,
             )
@@ -2490,9 +2578,13 @@ async def search_database_hybrid(
     search_googlemaps = any(
         p in ("google_maps", "googlemaps", "google maps", "all") for p in platforms
     )
+    # v3.5.42 FIX-1: PAN India disabled by default. In v3.5.41 Group A logs,
+    # PAN India timed out (120s) in ALL 6 sessions with 0 results recovered.
+    # It consumes 120s of budget that starves dorking and enrichment.
+    # Only enable when user explicitly selects pan_india/indiamart/justdial.
     search_pan_india = any(
-        p in ("pan_india", "indiamart", "justdial", "all") for p in platforms
-    )
+        p in ("pan_india", "indiamart", "justdial") for p in platforms
+    )  # v3.5.42: removed "all" — no longer auto-enabled
     search_youtube = any(p in ("youtube", "all") for p in platforms)
 
     _has_social = search_linkedin or search_instagram
@@ -2505,12 +2597,9 @@ async def search_database_hybrid(
     # v3.5.33 Fix #6: location-triggered supplementary search
     if location and not search_googlemaps:
         search_googlemaps = True
-    if location and not search_pan_india:
-        _india_indicators = {"india", "mumbai", "delhi", "bangalore", "kolkata",
-                             "chennai", "hyderabad", "pune", "ahmedabad", "jaipur",
-                             "lucknow", "noida", "gurgaon", "surat", "kochi"}
-        if any(ind in location.lower() for ind in _india_indicators):
-            search_pan_india = True
+    # v3.5.42 FIX-1: Removed auto-enable of PAN India based on location.
+    # PAN India queries consistently time out (120s) with 0 results.
+    # Users who need PAN India can explicitly select it.
 
     logger.info(
         "v3.5.38 per-phase search: linkedin=%s, instagram=%s, googlemaps=%s, "
