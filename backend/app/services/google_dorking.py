@@ -550,7 +550,7 @@ def _search_google_http(query: str, num_results: int = 10) -> list[dict]:
             "Accept-Encoding": "gzip, deflate",
         }
 
-        response = _httpx.get(url, headers=headers, timeout=15.0, follow_redirects=True)
+        response = _httpx.get(url, headers=headers, timeout=15.0, follow_redirects=True)  # v3.5.40: verify=True (default) — Google has valid certs; RC12 SSL fix moved to page scraping
         if response.status_code != 200:
             logger.warning("HTTP Google dorking got status %d", response.status_code)
             return []

@@ -309,6 +309,25 @@ def filter_leads_by_location(
             else:
                 drop_count += 1
 
+    # v3.5.40 Fix 5 (RC3): Cap no_signal leads to prevent noise domination.
+    # In Group A tests, 97-296 no_signal leads per session had zero location
+    # evidence — only 4-8 out of 300 had confirmed city match. Cap at 100.
+    _MAX_NO_SIGNAL = 100
+    if no_signal_count > _MAX_NO_SIGNAL:
+        capped_filtered: list[dict] = []
+        _ns_added = 0
+        for lead in filtered:
+            if lead.get("_location_score", 0) > 0:
+                capped_filtered.append(lead)
+            elif _ns_added < _MAX_NO_SIGNAL:
+                capped_filtered.append(lead)
+                _ns_added += 1
+        logger.info(
+            "v3.5.40: Capped no_signal leads from %d to %d (MAX_NO_SIGNAL=%d)",
+            no_signal_count, _ns_added, _MAX_NO_SIGNAL,
+        )
+        filtered = capped_filtered
+
     logger.info(
         "Soft location filter: %d → %d leads for target=%r (country=%r) "
         "[matched=%d, no_signal=%d, dropped=%d, source=%s]",
@@ -1312,8 +1331,8 @@ def _get_duckdb_connection():
         # worker indefinitely, eventually saturating the pool and freezing ALL
         # extractions at "Searching 89M+ leads database...".
         try:
-            con.execute("SET http_timeout=90000;")  # 90 seconds in milliseconds — residential/international links need more time
-            logger.debug("DuckDB http_timeout set to 90s")
+            con.execute("SET http_timeout=200000;")  # v3.5.40: 200s — must exceed app-level LinkedIn timeout (180s); was 90s which caused connections to drop before queries could complete (RC10)
+            logger.debug("DuckDB http_timeout set to 200s")
         except Exception as ht_err:
             logger.debug("SET http_timeout failed (older DuckDB?): %s", ht_err)
 
@@ -1907,9 +1926,10 @@ def _youtube_row_to_lead(row: tuple, keyword: str) -> dict:
 # wall-clock time low while preventing premature timeout on large scans.
 # v3.5.21: Reduced from 90s to 45s — prevents UI freeze when S3 is slow.
 # v3.5.24: Raised to 120s — 45s was too aggressive for residential internet
-# (India → iDrive E2 us-west-1). Must exceed http_timeout (90s) so DuckDB
+# (India → iDrive E2 us-west-1). Must exceed http_timeout so DuckDB
 # can finish naturally instead of leaving orphaned threads blocked on S3 I/O.
-_DB_QUERY_TIMEOUT_SECS = 120
+# v3.5.40: Raised to 210s — must exceed http_timeout (200s) per RC10 fix.
+_DB_QUERY_TIMEOUT_SECS = 210
 
 # v3.5.21: Master timeout for the entire search_database_hybrid call.
 # Even if individual query timeouts fail to fire (thread pool saturation),
@@ -2405,7 +2425,7 @@ async def search_database_hybrid(
 
     # ── Determine which platforms to search ──
     search_linkedin = any(p in ("linkedin", "all") for p in platforms)
-    search_instagram = any(p in ("instagram", "all") for p in platforms)
+    search_instagram = any(p in ("instagram", "facebook", "all") for p in platforms)  # v3.5.40: facebook maps to instagram DB (RC8 fix — was silently enabling linkedin+instagram for facebook)
     search_googlemaps = any(
         p in ("google_maps", "googlemaps", "google maps", "all") for p in platforms
     )
@@ -2507,53 +2527,52 @@ async def search_database_hybrid(
                     phase_timeout=_PHASE_TIMEOUT_INSTAGRAM,
                 )
 
-            # ── Phase 3: Supplementary (GMaps + PAN India + YouTube, ~12s) ──
-            supplementary_tasks = []
+            # ── Phase 3: Supplementary — v3.5.40 RESTRUCTURED (RC2 fix) ──
+            # v3.5.40: Split into individual _run_phase() calls so each sub-query
+            # commits results independently. Previously, asyncio.gather() bundled
+            # GMaps+PAN India+YouTube under one 90s timeout. PAN India took >90s,
+            # so gather never completed and GMaps results (finished in 14s) were
+            # silently discarded. This fix recovers ~860 leads across 6 test sessions.
+
+            # Phase 3a: Google Maps (fast — completes in ~14s)
             if search_googlemaps:
-                supplementary_tasks.append(
+                await _run_phase(
                     search_database_googlemaps(
                         keyword, max_results_per_keyword,
                         dataset_limit=ds_limit,
                         expanded_terms=kw_expanded,
-                    )
+                    ),
+                    phase_name=f"GoogleMaps:{keyword}",
+                    phase_timeout=30.0,  # GMaps completes in 13-14s; 30s is generous
                 )
+
+            # Phase 3b: PAN India (slow — ~75s, often times out with no results)
             if search_pan_india:
-                supplementary_tasks.append(
+                await _run_phase(
                     search_database_pan_india(
                         keyword, max_results_per_keyword,
                         dataset_limit=ds_limit,
                         expanded_terms=kw_expanded,
-                    )
+                    ),
+                    phase_name=f"PANIndia:{keyword}",
+                    phase_timeout=60.0,  # 60s cap; if it times out, GMaps results are safe
                 )
+
+            # Phase 3c: YouTube (fast)
             if search_youtube:
-                supplementary_tasks.append(
+                await _run_phase(
                     search_database_youtube(
                         keyword, max_results_per_keyword,
                         dataset_limit=1,
                         expanded_terms=kw_expanded,
-                    )
-                )
-
-            if supplementary_tasks:
-                async def _run_supplementary(tasks=supplementary_tasks):
-                    results = await asyncio.gather(*tasks, return_exceptions=True)
-                    all_leads: list[dict] = []
-                    for result in results:
-                        if isinstance(result, Exception):
-                            logger.warning("Supplementary DB search failed: %s", result)
-                            continue
-                        all_leads.extend(result)
-                    return all_leads
-
-                await _run_phase(
-                    _run_supplementary(),
-                    phase_name=f"Supplementary:{keyword}",
-                    phase_timeout=_PHASE_TIMEOUT_SUPPLEMENTARY,
+                    ),
+                    phase_name=f"YouTube:{keyword}",
+                    phase_timeout=30.0,
                 )
 
         total_elapsed = _time.monotonic() - _master_start
         logger.info(
-            "v3.5.38 DB search complete: %d leads from %d keywords in %.1fs "
+            "v3.5.40 DB search complete: %d leads from %d keywords in %.1fs "
             "(linkedin=%s, instagram=%s, gmaps=%s, pan_india=%s, youtube=%s)",
             len(_partial_results), len(keywords), total_elapsed,
             search_linkedin, search_instagram, search_googlemaps,
