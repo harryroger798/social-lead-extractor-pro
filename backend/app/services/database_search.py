@@ -309,22 +309,33 @@ def filter_leads_by_location(
             else:
                 drop_count += 1
 
-    # v3.5.40 Fix 5 (RC3): Cap no_signal leads to prevent noise domination.
-    # In Group A tests, 97-296 no_signal leads per session had zero location
-    # evidence — only 4-8 out of 300 had confirmed city match. Cap at 100.
-    _MAX_NO_SIGNAL = 100
-    if no_signal_count > _MAX_NO_SIGNAL:
+    # v3.5.41 FIX-3: Source-aware no_signal cap — raised from 100 to 200 with
+    # per-source tuning. Instagram location metadata is sparse (most leads have
+    # no_signal), so dropping at 100 loses valid leads. Google Maps records are
+    # already location-tagged, so a lower cap is fine.
+    _MAX_NO_SIGNAL_BY_SOURCE: dict[str, int] = {
+        "instagram": 200,   # Instagram location metadata is sparse
+        "linkedin": 150,    # LinkedIn has moderate location data
+        "googlemaps": 50,   # GMaps records are already location-tagged
+        "google_maps": 50,  # alias — leads use "google_maps" as platform value
+        "pan_india": 150,   # Unknown — use moderate cap
+        "default": 200,     # v3.5.41: raised from 100 to 200
+    }
+    _max_no_signal = _MAX_NO_SIGNAL_BY_SOURCE.get(
+        source_tag, _MAX_NO_SIGNAL_BY_SOURCE["default"]
+    )
+    if no_signal_count > _max_no_signal:
         capped_filtered: list[dict] = []
         _ns_added = 0
         for lead in filtered:
             if lead.get("_location_score", 0) > 0:
                 capped_filtered.append(lead)
-            elif _ns_added < _MAX_NO_SIGNAL:
+            elif _ns_added < _max_no_signal:
                 capped_filtered.append(lead)
                 _ns_added += 1
         logger.info(
-            "v3.5.40: Capped no_signal leads from %d to %d (MAX_NO_SIGNAL=%d)",
-            no_signal_count, _ns_added, _MAX_NO_SIGNAL,
+            "v3.5.41: Capped no_signal leads from %d to %d (source=%s, cap=%d)",
+            no_signal_count, _ns_added, source_tag or "default", _max_no_signal,
         )
         filtered = capped_filtered
 
@@ -1944,6 +1955,22 @@ _DB_QUERY_TIMEOUT_SECS = 210
 _HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 90
 
 
+# v3.5.41 FIX-1: LinkedIn-specific ds_limit cap — reduces query scan from
+# 5 datasets to 3 per country. In v3.5.40 logs, LinkedIn queries with
+# ds_limit=5 took 180-210s and timed out in 4/6 sessions. With ds_limit=3,
+# queries complete in ~60-80s (within the 210s timeout).
+_LINKEDIN_DS_LIMIT_OVERRIDE = 3
+
+# v3.5.41 FIX-1: LinkedIn phase timeout raised from 180s to 240s.
+# Provides safety net for slower connections. Primary fix is ds_limit reduction.
+_LINKEDIN_PHASE_TIMEOUT_SECS = 240
+
+# v3.5.41 FIX-1: Ghost query recovery — extra seconds to wait after timeout
+# for queries that are still running ("ghost queries"). In v3.5.40, LinkedIn
+# queries that finished 5-30s after the phase timeout were silently discarded.
+_LINKEDIN_GHOST_CAPTURE_EXTRA_SECS = 60
+
+
 async def search_database_linkedin(
     keyword: str,
     location: str = "",
@@ -1957,6 +1984,7 @@ async def search_database_linkedin(
     v3.5.13: Per-country parallel queries — each country runs its own
     DuckDB query in a separate thread so results stream in fast.
     Previously one giant UNION ALL across 125 files timed out at 30s.
+    v3.5.41: LinkedIn ds_limit capped at 3 + ghost query recovery.
 
     Args:
         keyword: Industry/job/company keyword to search for
@@ -1979,16 +2007,25 @@ async def search_database_linkedin(
             countries = ["United_States", "United_Kingdom", "India", "Canada", "Australia"]
             logger.info("No country resolved for '%s' — using global search across top 5", location)
 
+        # v3.5.41 FIX-1: Cap LinkedIn ds_limit regardless of global setting
+        linkedin_ds_limit = min(dataset_limit, _LINKEDIN_DS_LIMIT_OVERRIDE)
+        if linkedin_ds_limit < dataset_limit:
+            logger.info(
+                "v3.5.41 LinkedIn ds_limit capped: %d→%d "
+                "(LINKEDIN_DS_LIMIT_OVERRIDE=%d)",
+                dataset_limit, linkedin_ds_limit, _LINKEDIN_DS_LIMIT_OVERRIDE,
+            )
+
         # v3.5.13: cap per-country datasets for global search to keep query fast
         # Global: scan 5 datasets/country (25 files total) — fits well within timeout
-        # Targeted (single country): use full dataset_limit for deep coverage
-        effective_ds_limit = min(dataset_limit, 5) if is_global else dataset_limit
+        # Targeted (single country): use full linkedin_ds_limit for deep coverage
+        effective_ds_limit = min(linkedin_ds_limit, 5) if is_global else linkedin_ds_limit
 
         logger.info(
             "DB search params: keyword=%r, location=%r, countries=%r, "
-            "ds_limit=%d (effective=%d), expanded_terms=%r",
-            keyword, location, countries, dataset_limit, effective_ds_limit,
-            (expanded_terms or [])[:5],
+            "ds_limit=%d (linkedin_cap=%d, effective=%d), expanded_terms=%r",
+            keyword, location, countries, dataset_limit, linkedin_ds_limit,
+            effective_ds_limit, (expanded_terms or [])[:5],
         )
 
         # v3.5.13: per-country parallel queries — much faster than one giant UNION ALL
@@ -2034,17 +2071,41 @@ async def search_database_linkedin(
                     finally:
                         con.close()
 
+                # v3.5.41 FIX-1: Ghost query recovery with asyncio.shield()
+                # If the query times out, we wait an extra period for "ghost"
+                # results instead of immediately discarding them.
+                task = asyncio.ensure_future(
+                    loop.run_in_executor(_DB_THREAD_POOL, _run)
+                )
                 try:
                     return await asyncio.wait_for(
-                        loop.run_in_executor(_DB_THREAD_POOL, _run),
+                        asyncio.shield(task),
                         timeout=_DB_QUERY_TIMEOUT_SECS,
                     )
                 except asyncio.TimeoutError:
                     logger.warning(
-                        "LinkedIn DB query timed out after %ds for '%s' in %s (%d files)",
+                        "v3.5.41 LinkedIn DB query timed out after %ds for '%s' in %s (%d files) "
+                        "— waiting up to %ds for ghost results",
                         _DB_QUERY_TIMEOUT_SECS, keyword, country, len(paths),
+                        _LINKEDIN_GHOST_CAPTURE_EXTRA_SECS,
                     )
-                    return []
+                    try:
+                        result = await asyncio.wait_for(
+                            task, timeout=_LINKEDIN_GHOST_CAPTURE_EXTRA_SECS,
+                        )
+                        logger.info(
+                            "v3.5.41 LinkedIn ghost recovery: %d rows arrived "
+                            "after timeout for %s",
+                            len(result), country,
+                        )
+                        return result
+                    except asyncio.TimeoutError:
+                        task.cancel()
+                        logger.warning(
+                            "v3.5.41 LinkedIn ghost recovery also timed out "
+                            "for %s — cancelling", country,
+                        )
+                        return []
 
         # Fire all country queries with semaphore-limited concurrency
         country_tasks = [_search_one_country(c) for c in countries]
@@ -2407,7 +2468,7 @@ async def search_database_hybrid(
     #   Instagram: queries take 60-80s, need safety buffer above 90s
     #   Supplementary: Google Maps alone takes 13-20s, PAN India 30s+
     # v3.5.38 original: LinkedIn=65, Instagram=90, Supplementary=25
-    _PHASE_TIMEOUT_LINKEDIN = 180.0    # was 65s — 100% timeout rate
+    _PHASE_TIMEOUT_LINKEDIN = _LINKEDIN_PHASE_TIMEOUT_SECS  # v3.5.41: was 180s, now 240s via FIX-1
     _PHASE_TIMEOUT_INSTAGRAM = 150.0   # was 90s — frequent data loss
     _PHASE_TIMEOUT_SUPPLEMENTARY = 90.0  # was 25s — GMaps+PAN India need 30-50s
     _MASTER_SAFETY_TIMEOUT = 450.0  # safety net (sum of phases + slack)
@@ -2518,7 +2579,7 @@ async def search_database_hybrid(
                         expanded_terms=exp,
                     )
                     if location:
-                        leads = filter_leads_by_location(leads, location)
+                        leads = filter_leads_by_location(leads, location, source_tag="instagram")
                     return leads
 
                 await _run_phase(
@@ -2547,6 +2608,8 @@ async def search_database_hybrid(
                 )
 
             # Phase 3b: PAN India (slow — ~75s, often times out with no results)
+            # v3.5.41 FIX-2: Raised from 60s to 120s. In v3.5.40 logs, PAN India
+            # completed in 75-95s but was killed by the 60s cap, losing all results.
             if search_pan_india:
                 await _run_phase(
                     search_database_pan_india(
@@ -2555,7 +2618,7 @@ async def search_database_hybrid(
                         expanded_terms=kw_expanded,
                     ),
                     phase_name=f"PANIndia:{keyword}",
-                    phase_timeout=60.0,  # 60s cap; if it times out, GMaps results are safe
+                    phase_timeout=120.0,  # v3.5.41: was 60s — PAN India needs 75-95s
                 )
 
             # Phase 3c: YouTube (fast)

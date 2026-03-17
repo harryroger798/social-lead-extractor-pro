@@ -42,7 +42,10 @@ from typing import Callable, Optional
 from urllib.parse import quote_plus
 
 # v3.5.34 P5: Per-lead enrichment timeout (seconds)
-_PER_LEAD_TIMEOUT_SECS = 8
+# v3.5.41 FIX-5: Raised from 8s to 15s. In v3.5.40 logs, 40-60% of leads
+# timed out at 8s because website crawl + dorking takes 10-12s on average.
+# 15s allows most enrichment strategies to complete without blocking the batch.
+_PER_LEAD_TIMEOUT_SECS = 15
 # v3.5.37: Parallel enrichment constants
 _MAX_ENRICH_LEADS = 20       # was 50 — halved to keep enrichment predictable
 _MAX_PARALLEL_WORKERS = 10   # process 10 leads concurrently
@@ -55,6 +58,46 @@ from app.services.extractor import extract_emails, extract_phones
 # NOTE: Passed as parameter to avoid module-level state bleeding across sessions
 
 logger = logging.getLogger(__name__)
+
+# v3.5.41 FIX-6: Per-session domain failure cache (circuit breaker).
+# Prevents wasting time on dead/unresponsive domains like asklaila.com.
+# After DOMAIN_FAILURE_THRESHOLD consecutive failures, the domain is skipped
+# for the rest of the session.
+import threading as _threading
+
+_domain_failure_cache: dict[str, int] = {}
+_domain_failure_lock = _threading.Lock()
+_DOMAIN_FAILURE_THRESHOLD = 2
+
+
+def reset_domain_failure_cache() -> None:
+    """Clear the circuit breaker cache. Call at the start of each extraction session."""
+    with _domain_failure_lock:
+        _domain_failure_cache.clear()
+
+
+def _should_skip_domain(domain: str) -> bool:
+    """Check if domain has hit the failure threshold (circuit breaker open)."""
+    with _domain_failure_lock:
+        return _domain_failure_cache.get(domain, 0) >= _DOMAIN_FAILURE_THRESHOLD
+
+
+def _record_domain_failure(domain: str) -> None:
+    """Record a domain failure. Logs warning when threshold is hit."""
+    with _domain_failure_lock:
+        _domain_failure_cache[domain] = _domain_failure_cache.get(domain, 0) + 1
+        if _domain_failure_cache[domain] == _DOMAIN_FAILURE_THRESHOLD:
+            logger.warning(
+                "v3.5.41: Domain %s hit failure threshold (%d) "
+                "— skipping for rest of session",
+                domain, _DOMAIN_FAILURE_THRESHOLD,
+            )
+
+
+def _record_domain_success(domain: str) -> None:
+    """Reset domain failure count on success."""
+    with _domain_failure_lock:
+        _domain_failure_cache.pop(domain, None)
 
 
 def _strip_tags(text: str) -> str:
@@ -355,6 +398,7 @@ def enrich_via_website_crawl(
     and extracts emails, phones, and social links.
 
     SSRF protection: Blocks private/loopback IPs.
+    v3.5.41 FIX-6: Circuit breaker skips domains with repeated failures.
     """
     result: dict = {
         "emails": [],
@@ -363,6 +407,11 @@ def enrich_via_website_crawl(
     }
 
     if not domain:
+        return result
+
+    # v3.5.41 FIX-6: Circuit breaker — skip domains that have failed repeatedly
+    if _should_skip_domain(domain.lower()):
+        logger.debug("v3.5.41: Skipping %s (circuit breaker open)", domain)
         return result
 
     # SSRF protection
@@ -390,6 +439,7 @@ def enrich_via_website_crawl(
 
     found_emails: set[str] = set()
     found_phones: set[str] = set()
+    _any_success = False
 
     try:
         with AdSession(timeout=10.0, min_delay=2.0) as session:
@@ -403,6 +453,7 @@ def enrich_via_website_crawl(
                         # HTTPS to prevent DNS rebinding and plaintext credential leaks
                         continue
 
+                    _any_success = True
                     page_text = _strip_tags(resp.text[:200_000])
 
                     # Extract emails
@@ -426,6 +477,12 @@ def enrich_via_website_crawl(
 
     except Exception as exc:
         logger.debug("Website crawl error for %s: %s", domain, exc)
+
+    # v3.5.41 FIX-6: Update circuit breaker state
+    if _any_success:
+        _record_domain_success(domain.lower())
+    else:
+        _record_domain_failure(domain.lower())
 
     return result
 

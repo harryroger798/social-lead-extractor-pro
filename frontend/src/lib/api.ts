@@ -15,14 +15,18 @@ export async function waitForBackend(): Promise<void> {
   if (_backendReady) return;
   if (_backendReadyPromise) return _backendReadyPromise;
 
-  _backendReadyPromise = new Promise<void>((resolve) => {
+  _backendReadyPromise = new Promise<void>((resolve, reject) => {
     _backendReadyResolve = () => {
       _backendReady = true;
       _backendReadyResolve = null;
       resolve();
     };
     let attempts = 0;
-    const maxAttempts = 15; // 15 * 2s = 30s
+    // v3.5.41 FIX-7: Raised from 15 attempts (30s) to 30 attempts (60s).
+    // In v3.5.40 logs, backend startup on slower machines took 35-45s,
+    // causing the 30s timeout to fire and frontend to proceed with a
+    // non-ready backend, leading to failed API calls.
+    const maxAttempts = 30; // 30 * 2s = 60s
     const interval = setInterval(async () => {
       if (_backendReady) {
         // Already resolved by IPC signal or markBackendReady()
@@ -39,22 +43,25 @@ export async function waitForBackend(): Promise<void> {
         });
         if (res.ok) {
           clearInterval(interval);
-          logger.info('api', `Backend ready after ${attempts} attempts`);
+          logger.info('api', `Backend ready after ${attempts} attempts (${attempts * 2}s)`);
           _backendReadyResolve?.();
         } else if (attempts >= maxAttempts) {
-          // Non-2xx but reachable — proceed after max attempts
+          // v3.5.41 FIX-7: Hard abort instead of proceeding with broken backend
           clearInterval(interval);
-          logger.error('api', `Backend returned ${res.status} after ${maxAttempts * 2}s — proceeding anyway`);
-          _backendReady = true;
-          resolve();
+          logger.error('api', `Backend returned ${res.status} after ${maxAttempts * 2}s — hard abort`);
+          _backendReady = false;
+          _backendReadyPromise = null;  // v3.5.41: Reset so future calls can retry
+          reject(new Error(`Backend not healthy after ${maxAttempts * 2}s (status ${res.status})`));
         }
       } catch {
         // Backend not reachable yet
         if (attempts >= maxAttempts) {
+          // v3.5.41 FIX-7: Hard abort instead of silently proceeding
           clearInterval(interval);
-          logger.error('api', `Backend not ready after ${maxAttempts * 2}s — proceeding anyway`);
-          _backendReady = true; // Let requests through even if health check fails
-          resolve();
+          logger.error('api', `Backend not reachable after ${maxAttempts * 2}s — hard abort`);
+          _backendReady = false;
+          _backendReadyPromise = null;  // v3.5.41: Reset so future calls can retry
+          reject(new Error(`Backend not reachable after ${maxAttempts * 2}s`));
         }
       }
     }, 2000);
