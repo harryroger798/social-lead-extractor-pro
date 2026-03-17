@@ -246,22 +246,44 @@ _PRIVATE_NETWORKS = [
     ipaddress.ip_network("fe80::/10"),
 ]
 
+# v3.5.37 fix: Allowlisted search engine domains bypass SSRF IP check entirely.
+# CDN/anycast IPs for these domains can resolve to addresses Python's ipaddress
+# module flags as 'reserved' (IPv6 prefixes, RFC-6598 100.64.0.0/10, etc.),
+# causing false-positive SSRF blocks that kill multi-engine dorking.
+_ALLOWED_SEARCH_DOMAINS = frozenset({
+    "html.duckduckgo.com",
+    "lite.duckduckgo.com",
+    "www.bing.com",
+    "search.brave.com",
+    "searx.fmac.xyz",
+    "search.bus-hit.me",
+    "nitter.privacydev.net",
+    "nitter.unixfox.eu",
+    "nitter.1d4.us",
+    "api.github.com",
+    "hunter.io",
+    "api.hunter.io",
+})
+
 
 def _is_private_ip(hostname: str) -> bool:
     """Check if hostname resolves to a private/reserved IP.
 
     R4-B09 fix: reject raw IP literals like 0.0.0.0, [::], etc.
     R4-B08 fix: DNS rebinding protection via strict IP validation.
+    v3.5.37 fix: allowlisted domains bypass check; use explicit network
+    ranges instead of is_reserved (which false-positives on CDN/anycast IPs).
     """
+    # v3.5.37: Allowlisted search engine domains bypass IP check entirely
+    if hostname.lower() in _ALLOWED_SEARCH_DOMAINS:
+        return False
     # Reject hostnames containing ':' (port injection)
     if ':' in hostname and not hostname.startswith('['):
         return True
     # Check if hostname is a raw IP literal
     try:
         ip = ipaddress.ip_address(hostname.strip('[]'))
-        if ip.is_private or ip.is_reserved or ip.is_loopback or ip.is_link_local:
-            return True
-        if str(ip) in ('0.0.0.0', '::'):
+        if ip.is_loopback or str(ip) in ('0.0.0.0', '::'):
             return True
         for network in _PRIVATE_NETWORKS:
             if ip in network:
@@ -269,16 +291,14 @@ def _is_private_ip(hostname: str) -> bool:
         return False
     except ValueError:
         pass  # Not an IP literal, resolve DNS
-    # DNS resolution check
+    # DNS resolution check — only block genuinely private networks
     try:
         infos = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
         for info in infos:
             addr = info[4][0]
             try:
                 ip = ipaddress.ip_address(addr)
-                if ip.is_private or ip.is_reserved or ip.is_loopback or ip.is_link_local:
-                    return True
-                if str(ip) in ('0.0.0.0', '::'):
+                if ip.is_loopback or str(ip) in ('0.0.0.0', '::'):
                     return True
                 for network in _PRIVATE_NETWORKS:
                     if ip in network:

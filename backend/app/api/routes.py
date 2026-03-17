@@ -561,17 +561,54 @@ def _read_electron_license_tier() -> Optional[str]:
     return None
 
 
+# v3.5.37: Pipeline Budget Timer — prevents any stage from starving downstream stages.
+# Each stage gets min(stage_max, remaining_budget - reserve). If budget is exhausted,
+# remaining stages are skipped and pipeline proceeds to save.
+class _PipelineBudget:
+    """Track elapsed time and enforce per-stage budgets within a total pipeline limit."""
+
+    def __init__(self, total_secs: float = 270.0):  # 300s test timeout - 30s safety
+        import time as _time
+        self._time = _time
+        self._start = _time.monotonic()
+        self.total_secs = total_secs
+
+    @property
+    def elapsed(self) -> float:
+        return self._time.monotonic() - self._start
+
+    @property
+    def remaining(self) -> float:
+        return max(0.0, self.total_secs - self.elapsed)
+
+    def is_exhausted(self, reserve_secs: float = 20.0) -> bool:
+        return self.remaining <= reserve_secs
+
+    def stage_timeout(self, stage_name: str, max_secs: float) -> float:
+        """Return the smaller of stage_max or remaining budget minus reserve."""
+        allowed = min(max_secs, self.remaining - 15.0)  # 15s reserve for save+teardown
+        timeout = max(5.0, allowed)  # never less than 5s
+        logger.info(
+            "v3.5.37 budget: stage=%s, max=%.0fs, allowed=%.0fs, elapsed=%.0fs, remaining=%.0fs",
+            stage_name, max_secs, timeout, self.elapsed, self.remaining,
+        )
+        return timeout
+
+
 async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     """Background task to run extraction.
 
     R5-B24 fix: wrapped in try/finally to always update session status.
     R5-B14 fix: parsed_keywords and cleaned_keywords initialized before try.
+    v3.5.37: Added pipeline budget timer to prevent stage starvation.
     """
     all_leads: list[dict] = []
     # R5-B14 fix: initialize before try block to prevent NameError
     parsed_keywords: list = []
     cleaned_keywords: list[str] = []
     location_hint = ""
+    # v3.5.37: Pipeline budget timer
+    budget = _PipelineBudget(total_secs=270.0)
 
     try:
         # Calculate total steps for progress tracking
@@ -790,7 +827,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # v3.5.14: Only run when use_direct_scraping is ON
         # v3.5.36: Parallelized with asyncio.gather() — 3-4x faster
         live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
-        if live_platforms and config.use_direct_scraping:
+        if live_platforms and config.use_direct_scraping and not budget.is_exhausted():
             import asyncio as _aio_live  # noqa: E402
             loop = _aio_live.get_running_loop()
             await _update_progress(session_id, _calc_progress(),
@@ -815,9 +852,10 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     logger.warning("Live scraping %s failed: %s", platform, e)
                 return results
 
-            # v3.5.36: Run all platforms in parallel with 60s per-platform timeout
+            # v3.5.36: Run all platforms in parallel with budget-aware timeout
+            _live_timeout = budget.stage_timeout("live_scraping", 60.0)
             platform_tasks = [
-                _aio_live.wait_for(_scrape_one_platform(p), timeout=60.0)
+                _aio_live.wait_for(_scrape_one_platform(p), timeout=_live_timeout)
                 for p in live_platforms
             ]
             gathered = await _aio_live.gather(*platform_tasks, return_exceptions=True)
@@ -834,9 +872,16 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         # ── v3.5.36 Fix 7: Short-circuit — skip dorking if enough leads ──
         # Use unique email count (not raw rows) to avoid false triggers from dupes
+        # v3.5.37: Also skip if pipeline budget is exhausted
         _skip_dorking = False
         _unique_emails = len({ld.get("email", "").lower() for ld in all_leads if ld.get("email")})
-        if _unique_emails >= 50:
+        if budget.is_exhausted():
+            _skip_dorking = True
+            logger.info(
+                "v3.5.37: Skipping dorking — pipeline budget exhausted (%.0fs elapsed, %.0fs remaining)",
+                budget.elapsed, budget.remaining,
+            )
+        elif _unique_emails >= 50:
             _skip_dorking = True
             logger.info(
                 "v3.5.36 Fix 7: Short-circuit dorking — already have %d unique emails",
@@ -1108,15 +1153,26 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         # ── v3.5.4: Waterfall Enrichment ────────────────────────────────────
         # Auto-fill missing email/phone/LinkedIn via Hunter, GitHub, website crawl
-        if all_leads:
+        # v3.5.37: Budget-aware — skip if exhausted, cap at remaining budget
+        if all_leads and not budget.is_exhausted():
+            _enrich_budget = budget.stage_timeout("enrichment", 60.0)
             await _update_progress(session_id, _calc_progress(),
-                "Waterfall enrichment: filling missing fields...", "enrichment", *_count_leads())
+                f"Waterfall enrichment: filling missing fields (budget {_enrich_budget:.0f}s)...",
+                "enrichment", *_count_leads())
             try:
                 import asyncio as _aio_enrich
                 loop_enrich = _aio_enrich.get_running_loop()
                 enriched_leads = await loop_enrich.run_in_executor(
-                    None, enrich_leads_batch_waterfall,
-                    all_leads, 30, False, False, False,
+                    None,
+                    lambda: enrich_leads_batch_waterfall(
+                        all_leads,
+                        max_enrich=20,
+                        skip_website_crawl=False,
+                        skip_github=False,
+                        skip_dorking=False,
+                        progress_callback=None,
+                        budget_secs=_enrich_budget,
+                    ),
                 )
                 # Merge and deduplicate across all sources
                 all_leads = await loop_enrich.run_in_executor(

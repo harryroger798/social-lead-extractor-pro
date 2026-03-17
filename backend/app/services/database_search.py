@@ -1919,7 +1919,9 @@ _DB_QUERY_TIMEOUT_SECS = 120
 # v3.5.25: Raised to 600s — on residential internet (India → iDrive E2
 # us-west-1), each country query takes ~100s. With semaphore(3) and
 # 5 countries, total wall-clock is ~200s. 600s gives 3× safety margin.
-_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 600
+# v3.5.37: Reduced to 90s — pipeline budget timer enforces overall limit,
+# DB search should not monopolize the 300s test budget.
+_HYBRID_SEARCH_MASTER_TIMEOUT_SECS = 90
 
 
 async def search_database_linkedin(
@@ -2597,49 +2599,11 @@ async def search_database_hybrid(
 
     Returns whatever leads were collected before the timeout fired.
     """
-    # v3.5.25: Try Render API first — much faster than direct S3 from
-    # residential internet. Falls back to direct S3 on any failure.
-    try:
-        api_leads: list[dict] = []
-        for keyword in keywords:
-            kw_expanded = None
-            if expanded_terms_map:
-                kw_expanded = expanded_terms_map.get(keyword)
-            leads = await _search_via_render_api(
-                keyword=keyword,
-                platforms=platforms,
-                location=location,
-                max_results=max_results_per_keyword,
-                tier=tier,
-                expanded_terms=kw_expanded,
-            )
-            api_leads.extend(leads)
-
-        if api_leads:
-            # v3.5.34 P1: Post-filter Render API results with soft location filter.
-            # Pass source_tag='render_api' so the soft filter keeps no-signal leads
-            # (the server already did server-side filtering).
-            if location:
-                pre_count = len(api_leads)
-                api_leads = filter_leads_by_location(
-                    api_leads, location, source_tag="render_api",
-                )
-                logger.info(
-                    "Render API: %d → %d leads after soft location filter (target=%r)",
-                    pre_count, len(api_leads), location,
-                )
-            logger.info(
-                "Render API success: %d total leads for %d keywords",
-                len(api_leads), len(keywords),
-            )
-            return api_leads
-        # API returned 0 leads — fall through to direct S3 as backup
-        logger.warning("Render API returned 0 leads — falling back to direct S3")
-    except Exception as e:
-        logger.warning(
-            "Render API unavailable (%s) — falling back to direct S3 queries",
-            e,
-        )
+    # v3.5.37: Skip Render API entirely — it always times out from desktop
+    # (30s wasted on every search). Go direct to S3. The Render API was
+    # designed for server-side use but the desktop app is on residential
+    # internet where the API server itself is unreachable/slow.
+    logger.info("v3.5.37: Skipping Render API — going direct to S3")
 
     # Fallback: direct S3 queries (original approach)
     _partial_results: list[dict] = []
