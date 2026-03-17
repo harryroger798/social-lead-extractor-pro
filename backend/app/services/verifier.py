@@ -110,11 +110,11 @@ def _identify_mx_provider(mx_host: str) -> str:
     mx_lower = mx_host.lower()
     for provider, patterns in _TRUSTED_MX_PROVIDERS.items():
         for pattern in patterns:
-            if pattern in mx_lower or mx_lower.endswith(pattern):
+            if mx_lower == pattern or mx_lower.endswith('.' + pattern):
                 return provider
-    if "google" in mx_lower or "gmail" in mx_lower:
+    if mx_lower.endswith('.google.com') or mx_lower.endswith('.gmail.com'):
         return "google"
-    if "outlook" in mx_lower or "microsoft" in mx_lower:
+    if mx_lower.endswith('.outlook.com') or mx_lower.endswith('.microsoft.com'):
         return "microsoft"
     return "unknown"
 
@@ -344,7 +344,11 @@ async def verify_email_detailed(email: str) -> dict:
     v3.5.36: Added Layer 1 checks to match verify_email() behavior.
     """
     # v3.5.36 Layer 1: Syntax + Disposable Domain Check (same as verify_email)
-    _default_new_keys = {"mx_provider": None, "catch_all_trustworthy": False, "dns_confidence": 0}
+    _default_new_keys = {
+        "mx_provider": None,
+        "catch_all_trustworthy": False,
+        "dns_confidence": {"has_spf": False, "dmarc_policy": "", "has_bimi": False, "confidence_boost": 0, "signals": []},
+    }
     if not _is_valid_syntax(email):
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
                 "catch_all": False, "error": "Invalid email syntax",
