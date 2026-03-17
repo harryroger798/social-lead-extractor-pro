@@ -110,17 +110,27 @@ class _EngineHealth:
 
     def record_success(self) -> None:
         self.consecutive_failures = 0
+        self.cooldown_until = 0.0  # v3.5.42: clear cooldown on success
         self._rotate_window()
         self.total_successes_24h += 1
+        _save_health_to_disk()  # v3.5.42: persist after success
 
     def record_failure(self) -> None:
         self.consecutive_failures += 1
         self._rotate_window()
         self.total_failures_24h += 1
+        # v3.5.42 FIX-9: Exponential backoff cooldown.
+        # 1 failure: 60s, 2 failures: 300s, 3+ failures: 900s (capped).
+        # Previously: 2 failures→300s, 3+→3600s (too aggressive, killed engines
+        # for an entire hour after just 3 failures).
         if self.consecutive_failures >= 3:
-            self.cooldown_until = time.time() + 3600
+            backoff = min(60 * (5 ** (self.consecutive_failures - 1)), 900)
+            self.cooldown_until = time.time() + backoff
         elif self.consecutive_failures >= 2:
             self.cooldown_until = time.time() + 300
+        elif self.consecutive_failures == 1:
+            self.cooldown_until = time.time() + 60
+        _save_health_to_disk()  # v3.5.42: persist after each failure
 
     def _rotate_window(self) -> None:
         """v3.5.39: Reset 24h counters if window has expired."""
@@ -936,7 +946,16 @@ def free_search_waterfall(
     engines_tried = 0
     engines_used: list[str] = []
 
-    for engine_name, engine_fn in _FREE_ENGINES:
+    # v3.5.42 FIX-9: Sort engines by health score (best first) so healthy
+    # engines are tried before degraded ones. This prevents wasting time on
+    # rate-limited engines when healthier alternatives exist.
+    sorted_engines = sorted(
+        _FREE_ENGINES,
+        key=lambda e: _health(e[0]).health_score,
+        reverse=True,
+    )
+
+    for engine_name, engine_fn in sorted_engines:
         # R3-B07 fix: check both conditions independently
         if engines_tried >= max_engines:
             break
@@ -945,6 +964,12 @@ def free_search_waterfall(
 
         health = _health(engine_name)
         if not health.try_reset():
+            logger.debug(
+                "v3.5.42: Skipping %s (cooldown %.0fs remaining, %d consecutive failures)",
+                engine_name,
+                max(0, health.cooldown_until - time.time()),
+                health.consecutive_failures,
+            )
             continue
 
         try:
@@ -952,6 +977,7 @@ def free_search_waterfall(
             engines_tried += 1
 
             if results:
+                health.record_success()
                 engines_used.append(engine_name)
                 for r in results:
                     url_key = r.get("link", "").rstrip("/").lower()
@@ -961,12 +987,21 @@ def free_search_waterfall(
 
                 if len(all_results) >= num_results:
                     break
+            else:
+                # Empty results count as a soft failure
+                health.record_failure()
+                logger.debug("v3.5.42: %s returned 0 results — recording failure", engine_name)
         except Exception as exc:
-            logger.debug("Waterfall engine %s failed: %s", engine_name, exc)
+            health.record_failure()
+            logger.warning(
+                "v3.5.42: %s failed (%s) — cooldown %.0fs",
+                engine_name, exc,
+                max(0, health.cooldown_until - time.time()),
+            )
 
     logger.info(
-        "Free waterfall: %d results from %s",
-        len(all_results), "+".join(engines_used) or "none",
+        "v3.5.42 waterfall: %d results from %s (tried %d engines)",
+        len(all_results), "+".join(engines_used) or "none", engines_tried,
     )
     return all_results[:num_results]
 

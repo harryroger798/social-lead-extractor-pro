@@ -565,10 +565,28 @@ def _read_electron_license_tier() -> Optional[str]:
 # v3.5.37: Pipeline Budget Timer — prevents any stage from starving downstream stages.
 # Each stage gets min(stage_max, remaining_budget - reserve). If budget is exhausted,
 # remaining stages are skipped and pipeline proceeds to save.
+# v3.5.42 FIX-6: Scale budget by platform count.
+# Single-platform sessions finish faster and don't need 420s.
+# Multi-platform sessions (4+ platforms like LI+IG+FB+GM) need more time.
+_PLATFORM_BUDGET_MAP: dict[int, float] = {
+    1: 300.0,   # Single platform — focused, faster
+    2: 420.0,   # Two platforms (default)
+    3: 540.0,   # Three platforms
+    4: 660.0,   # Four platforms (e.g. LI+IG+FB+GM)
+}
+
+
+def _get_session_budget(platform_count: int) -> float:
+    """Return total pipeline budget in seconds based on platform count."""
+    return _PLATFORM_BUDGET_MAP.get(
+        platform_count, 300.0 + platform_count * 120.0
+    )
+
+
 class _PipelineBudget:
     """Track elapsed time and enforce per-stage budgets within a total pipeline limit."""
 
-    def __init__(self, total_secs: float = 420.0):  # v3.5.40: was 270s — increased to 7min to accommodate LinkedIn India (180s) + dorking
+    def __init__(self, total_secs: float = 420.0):
         import time as _time
         self._time = _time
         self._start = _time.monotonic()
@@ -610,8 +628,14 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     location_hint = ""
     # v3.5.41 FIX-6: Reset circuit breaker cache at session start
     reset_domain_failure_cache()
-    # v3.5.37: Pipeline budget timer
-    budget = _PipelineBudget()  # v3.5.40: uses 420s default (was hardcoded 270s)
+    # v3.5.42 FIX-6: Scale budget by platform count
+    _platform_count = len(config.platforms) if config.platforms else 2
+    _session_budget = _get_session_budget(_platform_count)
+    budget = _PipelineBudget(total_secs=_session_budget)
+    logger.info(
+        "v3.5.42: Pipeline budget=%.0fs for %d platforms",
+        _session_budget, _platform_count,
+    )
 
     try:
         # Calculate total steps for progress tracking
@@ -932,27 +956,21 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 f"Google Dorking: {len(non_reddit_platforms)} platforms...",
                 "", *_count_leads())
 
-            # v3.5.41 FIX-4: Dorking page reduction threshold fix.
-            # v3.5.36 reduced pages when _s3_lead_count >= 50, but this was
-            # too aggressive — in Group A tests, 4/6 sessions had 50-200 DB
-            # leads but still needed full dorking for location-specific results.
-            # v3.5.41: Only reduce pages if DB returned >= 200 meaningful leads.
-            _DORKING_REDUCTION_THRESHOLD = 200
+            # v3.5.42 FIX-5: Budget-based dorking page control.
+            # v3.5.41 reduced pages when DB returned >= 200 leads, but dorking
+            # is a DIFFERENT source — more DB leads ≠ less need for dorking.
+            # Now pages are determined solely by remaining pipeline budget.
             _dork_pages = config.pages_per_keyword
-            try:
-                if _s3_lead_count >= _DORKING_REDUCTION_THRESHOLD:  # type: ignore[possibly-undefined]
-                    _dork_pages = max(1, config.pages_per_keyword // 2)
-                    logger.info(
-                        "v3.5.41: Reduced dorking pages to %d (S3 returned %d >= %d)",
-                        _dork_pages, _s3_lead_count, _DORKING_REDUCTION_THRESHOLD,  # type: ignore[possibly-undefined]
-                    )
-                else:
-                    logger.info(
-                        "v3.5.41: Full dorking pages=%d (S3 returned %d < %d)",
-                        _dork_pages, _s3_lead_count, _DORKING_REDUCTION_THRESHOLD,  # type: ignore[possibly-undefined]
-                    )
-            except NameError:
-                pass
+            _budget_remaining = budget.remaining
+            if _budget_remaining < 60:
+                _dork_pages = 1
+            elif _budget_remaining < 120:
+                _dork_pages = max(1, min(_dork_pages, 2))
+            # else: use full pages (default)
+            logger.info(
+                "v3.5.42: Dorking pages=%d (budget_remaining=%.0fs)",
+                _dork_pages, _budget_remaining,
+            )
 
             for idx, platform in enumerate(non_reddit_platforms):
                 # v3.5.36 Fix 7: Skip to next if platform returns 0 after 15s
@@ -1210,11 +1228,27 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             try:
                 import asyncio as _aio_enrich
                 loop_enrich = _aio_enrich.get_running_loop()
+                # v3.5.42 FIX-8: Scale enrichment cap to 15% of total leads (max 100).
+                # v3.5.41 used a fixed cap of 20, which under-enriched large sessions
+                # (300+ leads) and over-enriched small ones (< 50 leads).
+                _total_leads = len(all_leads)
+                _leads_missing_email = sum(
+                    1 for l in all_leads
+                    if not l.get("email") and not l.get("phone")
+                )
+                _enrich_cap = min(int(_total_leads * 0.15), 100)
+                _enrich_cap = min(_enrich_cap, _leads_missing_email) if _leads_missing_email > 0 else 0
+                _enrich_cap = max(_enrich_cap, 10)  # minimum 10 to always attempt some enrichment
+                logger.info(
+                    "v3.5.42: Enrichment cap=%d (total=%d, missing_contact=%d, 15%%=%d)",
+                    _enrich_cap, _total_leads, _leads_missing_email,
+                    int(_total_leads * 0.15),
+                )
                 enriched_leads = await loop_enrich.run_in_executor(
                     None,
                     lambda: enrich_leads_batch_waterfall(
                         all_leads,
-                        max_enrich=20,
+                        max_enrich=_enrich_cap,
                         skip_website_crawl=False,
                         skip_github=False,
                         skip_dorking=False,
