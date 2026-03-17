@@ -321,9 +321,10 @@ async def verify_email(email: str) -> bool:
                         )
                     else:
                         logger.debug(
-                            "Catch-all on unknown provider for %s — lower confidence",
+                            "Catch-all on unknown provider for %s — treating as unverifiable",
                             email,
                         )
+                        return False
                 return True
             elif smtp_result["accepted"] is False:
                 return False
@@ -343,17 +344,21 @@ async def verify_email_detailed(email: str) -> dict:
     v3.5.36: Added Layer 1 checks to match verify_email() behavior.
     """
     # v3.5.36 Layer 1: Syntax + Disposable Domain Check (same as verify_email)
+    _default_new_keys = {"mx_provider": None, "catch_all_trustworthy": False, "dns_confidence": 0}
     if not _is_valid_syntax(email):
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
-                "catch_all": False, "error": "Invalid email syntax"}
+                "catch_all": False, "error": "Invalid email syntax",
+                **_default_new_keys}
 
     domain = email.split('@')[-1].lower()
     if not domain or '.' not in domain:
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
-                "catch_all": False, "error": "Invalid domain"}
+                "catch_all": False, "error": "Invalid domain",
+                **_default_new_keys}
     if _is_disposable_domain(domain):
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
-                "catch_all": False, "error": f"Disposable domain: {domain}"}
+                "catch_all": False, "error": f"Disposable domain: {domain}",
+                **_default_new_keys}
 
     loop = asyncio.get_event_loop()
 
@@ -361,7 +366,8 @@ async def verify_email_detailed(email: str) -> dict:
     has_mx = await loop.run_in_executor(None, _check_mx_sync, domain)
     if not has_mx:
         return {"valid": False, "mx_valid": False, "smtp_accepted": None,
-                "catch_all": False, "error": "No MX records found"}
+                "catch_all": False, "error": "No MX records found",
+                **_default_new_keys}
 
     # SMTP RCPT TO
     mx_host = await loop.run_in_executor(None, _get_mx_host, domain)
@@ -376,6 +382,10 @@ async def verify_email_detailed(email: str) -> dict:
             smtp_result["error"] = str(e)
 
     valid = has_mx and smtp_result["accepted"] is not False
+
+    # v3.5.39: Catch-all on untrusted MX -> not valid
+    if smtp_result["catch_all"] and mx_host and not _is_catch_all_trustworthy(mx_host):
+        valid = False
 
     # v3.5.39: Add DNS confidence signals and catch-all provider info
     dns_conf = await loop.run_in_executor(None, dns_confidence_score, domain)

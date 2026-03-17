@@ -136,8 +136,8 @@ async def extract_rdap_emails(domain: str, timeout: float = 10.0) -> list[str]:
                 emails = _extract_emails_from_rdap(data)
                 if emails:
                     logger.info(
-                        "RDAP extracted %d emails for %s: %s",
-                        len(emails), domain, emails,
+                        "RDAP extracted %d emails for %s",
+                        len(emails), domain,
                     )
                     return emails
         except Exception as e:
@@ -161,7 +161,10 @@ async def extract_rdap_emails_batch(
 
     async def _lookup(domain: str) -> None:
         async with semaphore:
-            results[domain] = await extract_rdap_emails(domain, timeout=timeout)
+            try:
+                results[domain] = await extract_rdap_emails(domain, timeout=timeout)
+            except Exception:
+                results[domain] = []
 
     tasks = [_lookup(d) for d in domains]
     await asyncio.gather(*tasks, return_exceptions=True)

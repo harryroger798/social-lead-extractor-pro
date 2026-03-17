@@ -243,8 +243,13 @@ def batch_score_leads(leads: list[dict]) -> list[dict]:
     data through to the scorer when available.
     """
     for lead in leads:
-        dns_conf = lead.get("dns_confidence", {})
-        dns_boost = dns_conf.get("confidence_boost", 0) if isinstance(dns_conf, dict) else 0
+        dns_conf = lead.get("dns_confidence", 0)
+        if isinstance(dns_conf, dict):
+            dns_boost = int(dns_conf.get("confidence_boost", 0))
+        elif isinstance(dns_conf, (int, float)):
+            dns_boost = int(dns_conf)
+        else:
+            dns_boost = 0
 
         breakdown = score_lead_quality(
             email=lead.get("email", ""),
@@ -277,11 +282,16 @@ def batch_score_and_dedup(leads: list[dict]) -> tuple[list[dict], int]:
     dupes = 0
 
     for lead in leads:
-        lead_hash = compute_lead_hash(
-            lead.get("email", ""),
-            lead.get("phone", ""),
-            lead.get("name", ""),
-        )
+        email = lead.get("email", "")
+        phone = lead.get("phone", "")
+        name = lead.get("name", "")
+
+        # Skip hash-based dedup for leads with no identifiers
+        if not email and not phone and not name:
+            unique.append(lead)
+            continue
+
+        lead_hash = compute_lead_hash(email, phone, name)
         if lead_hash in seen_hashes:
             dupes += 1
             continue

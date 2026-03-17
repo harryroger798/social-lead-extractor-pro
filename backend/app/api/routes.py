@@ -680,7 +680,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             if location_hint:
                 _india_indicators = {"india", "mumbai", "delhi", "bangalore", "kolkata",
                                      "chennai", "hyderabad", "pune", "ahmedabad", "jaipur"}
-                if any(ind in location_hint.lower() for ind in _india_indicators):
+                hint = location_hint.lower()
+                if any(re.search(rf"\b{re.escape(ind)}\b", hint) for ind in _india_indicators):
                     if "pan_india" not in _b2b_fallback_platforms:
                         _b2b_fallback_platforms.append("pan_india")
             logger.info(
