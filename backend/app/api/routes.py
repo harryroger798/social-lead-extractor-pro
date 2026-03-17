@@ -608,7 +608,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     cleaned_keywords: list[str] = []
     location_hint = ""
     # v3.5.37: Pipeline budget timer
-    budget = _PipelineBudget(total_secs=270.0)
+    budget = _PipelineBudget()  # v3.5.40: uses 420s default (was hardcoded 270s)
 
     try:
         # Calculate total steps for progress tracking

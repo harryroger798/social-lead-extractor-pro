@@ -1926,9 +1926,10 @@ def _youtube_row_to_lead(row: tuple, keyword: str) -> dict:
 # wall-clock time low while preventing premature timeout on large scans.
 # v3.5.21: Reduced from 90s to 45s — prevents UI freeze when S3 is slow.
 # v3.5.24: Raised to 120s — 45s was too aggressive for residential internet
-# (India → iDrive E2 us-west-1). Must exceed http_timeout (90s) so DuckDB
+# (India → iDrive E2 us-west-1). Must exceed http_timeout so DuckDB
 # can finish naturally instead of leaving orphaned threads blocked on S3 I/O.
-_DB_QUERY_TIMEOUT_SECS = 120
+# v3.5.40: Raised to 210s — must exceed http_timeout (200s) per RC10 fix.
+_DB_QUERY_TIMEOUT_SECS = 210
 
 # v3.5.21: Master timeout for the entire search_database_hybrid call.
 # Even if individual query timeouts fail to fire (thread pool saturation),
