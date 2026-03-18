@@ -77,6 +77,19 @@ def _strip_tags(text: str) -> str:
     return re.sub(r"\s+", " ", cleaned).strip()
 
 
+def _query_contains_location(query: str, location: str) -> bool:
+    """Check if location already appears as a standalone token/phrase in query.
+
+    Uses word-boundary regex to avoid false positives with short locations
+    like 'LA', 'IN', 'UK' matching inside other words (e.g. 'PLAIN', 'INDIA').
+    """
+    query_norm = re.sub(r"\s+", " ", query).strip().lower()
+    location_norm = re.sub(r"\s+", " ", location).strip().lower()
+    if not location_norm:
+        return False
+    return re.search(rf"(?<!\w){re.escape(location_norm)}(?!\w)", query_norm) is not None
+
+
 def _dedup_leads(leads: list[dict]) -> list[dict]:
     """Remove duplicate leads using a tiered dedup strategy.
 
@@ -146,7 +159,7 @@ def scrape_indiamart(
     microsite_urls: list[str] = []
     # v3.5.47 Fix 3: Guard against double-location. routes.py now passes
     # keyword-only, but be defensive in case location is already in query.
-    if location and location.lower() not in query.lower():
+    if location and not _query_contains_location(query, location):
         search_term = f"{query} {location}".strip()
     else:
         search_term = query
@@ -675,7 +688,7 @@ def scrape_tradeindia(
     """
     leads: list[dict] = []
     # v3.5.47 Fix 5: Guard against double-location (same as IndiaMART/Google Maps fix).
-    if location and location.lower() not in query.lower():
+    if location and not _query_contains_location(query, location):
         search_term = f"{query} {location}".strip()
     else:
         search_term = query
@@ -822,7 +835,7 @@ def scrape_exportersindia(
     """
     leads: list[dict] = []
     # v3.5.47 Fix 5: Guard against double-location (same pattern as other B2B scrapers).
-    if location and location.lower() not in query.lower():
+    if location and not _query_contains_location(query, location):
         search_term = f"{query} {location}".strip()
     else:
         search_term = query
@@ -1118,7 +1131,7 @@ def scrape_google_maps_local(
     # v3.5.47 Fix 2: Don't append "in {location}" if location is already in query.
     # routes.py now passes keyword-only (no location) to B2B scrapers, so we
     # always append location here. But guard against double-append for safety.
-    if location and location.lower() not in query.lower():
+    if location and not _query_contains_location(query, location):
         search_term = f"{query} in {location}".strip()
     else:
         search_term = query
