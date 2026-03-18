@@ -1328,13 +1328,16 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     platform, *_count_leads())
                 try:
                     for kw_parsed in parsed_keywords:
-                        search_query = kw_parsed.keyword
+                        # v3.5.47 Fix 1: Pass keyword WITHOUT location to B2B scrapers.
+                        # Each scraper already appends location via its own
+                        # `search_term = f"{query} {location}"` logic.
+                        # Previously we built search_query = f"{keyword} {loc}"
+                        # AND passed loc, causing "Delhi Delhi" double-location.
+                        b2b_keyword = kw_parsed.keyword
                         loc = kw_parsed.location or location_hint
-                        if loc:
-                            search_query = f"{kw_parsed.keyword} {loc}"
                         b2b_leads = await loop_b2b.run_in_executor(
                             None, b2b_scrape_platform, platform,
-                            search_query, loc, 50,
+                            b2b_keyword, loc, 50,
                         )
                         all_leads.extend(b2b_leads)
                 except Exception as e:
