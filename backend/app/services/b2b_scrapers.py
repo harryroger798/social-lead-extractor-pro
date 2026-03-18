@@ -144,7 +144,12 @@ def scrape_indiamart(
     """
     leads: list[dict] = []
     microsite_urls: list[str] = []
-    search_term = f"{query} {location}".strip() if location else query
+    # v3.5.47 Fix 3: Guard against double-location. routes.py now passes
+    # keyword-only, but be defensive in case location is already in query.
+    if location and location.lower() not in query.lower():
+        search_term = f"{query} {location}".strip()
+    else:
+        search_term = query
     encoded_query = quote_plus(search_term)
 
     # Method 1: Direct directory search — v3.5.9: dual endpoint strategy
@@ -228,8 +233,13 @@ def scrape_indiamart(
                     if len(leads) >= max_results:
                         break
 
-                    # v3.5.8: stop paginating if page returned 0 new leads
-                    if len(leads) == page_lead_count:
+                    # v3.5.47 Fix 4: Only stop paginating if this is NOT the
+                    # first page (offset 0) of a subsequent URL template.
+                    # Previously, offset-0 of the 2nd URL template always
+                    # stopped immediately because the 1st URL already found
+                    # all leads — causing "no new leads on offset 0" to fire
+                    # and skip the 2nd endpoint entirely.
+                    if len(leads) == page_lead_count and page_offset > 0:
                         logger.debug("IndiaMART: no new leads on offset %d, stopping", page_offset)
                         break
 
@@ -664,7 +674,11 @@ def scrape_tradeindia(
     Anti-bot: Basic rate limiting only, no Akamai/Cloudflare
     """
     leads: list[dict] = []
-    search_term = f"{query} {location}".strip() if location else query
+    # v3.5.47 Fix 5: Guard against double-location (same as IndiaMART/Google Maps fix).
+    if location and location.lower() not in query.lower():
+        search_term = f"{query} {location}".strip()
+    else:
+        search_term = query
     encoded_query = quote_plus(search_term)
 
     # Method 1: Direct search pages
@@ -807,7 +821,11 @@ def scrape_exportersindia(
     Anti-bot: Minimal
     """
     leads: list[dict] = []
-    search_term = f"{query} {location}".strip() if location else query
+    # v3.5.47 Fix 5: Guard against double-location (same pattern as other B2B scrapers).
+    if location and location.lower() not in query.lower():
+        search_term = f"{query} {location}".strip()
+    else:
+        search_term = query
     encoded_query = quote_plus(search_term)
 
     # Method 1: Direct search
@@ -1097,7 +1115,13 @@ def scrape_google_maps_local(
     Ban risk: MEDIUM — use realistic delays
     """
     leads: list[dict] = []
-    search_term = f"{query} in {location}".strip() if location else query
+    # v3.5.47 Fix 2: Don't append "in {location}" if location is already in query.
+    # routes.py now passes keyword-only (no location) to B2B scrapers, so we
+    # always append location here. But guard against double-append for safety.
+    if location and location.lower() not in query.lower():
+        search_term = f"{query} in {location}".strip()
+    else:
+        search_term = query
 
     with AdSession(timeout=15.0, min_delay=6.0) as session:
         for start_offset in range(0, min(max_results, 60), 20):
