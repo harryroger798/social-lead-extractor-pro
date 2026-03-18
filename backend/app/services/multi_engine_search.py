@@ -151,6 +151,25 @@ class _EngineHealth:
         # 1 failure: NO cooldown (v3.5.43 fix — v3.5.42 set 60s here)
         _save_health_to_disk()
 
+    def record_rate_limit(self) -> None:
+        """v3.5.46: Rate-limited (HTTP 429/503) — counts toward health_score
+        but does NOT trigger hard cooldown.
+
+        CodeRabbit caught that record_empty() doesn't affect health_score,
+        so rate-limited engines (like Brave with 100% 429s) could float
+        back above healthy engines in the waterfall sort. This method
+        increments total_failures_24h (lowering health_score for sorting)
+        without touching consecutive_failures or cooldown_until, so we
+        avoid the cascade cooldown bug from v3.5.42.
+        """
+        self.consecutive_empty += 1
+        self._rotate_window()
+        self.total_failures_24h += 1  # Affects health_score sort
+        _save_health_to_disk()
+        logger.debug(
+            "v3.5.46: Engine rate-limited (health_score affected, no cooldown)",
+        )
+
     def record_empty(self) -> None:
         """Empty results — soft tracking, NO hard cooldown.
 
@@ -324,8 +343,8 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
 
     v3.5.39: Added Accept-Encoding: identity to prevent brotli/zstd
     compressed responses that cause curl error (23) CURLE_WRITE_ERROR.
-    v3.5.44 Fix 2: Rate-limit aware — HTTP 429/503 use record_empty()
-    instead of record_failure() to prevent cascade cooldown.
+    v3.5.44 Fix 2: Rate-limit aware — HTTP 429/503 use record_rate_limit()
+    (was record_empty() in v3.5.44, upgraded in v3.5.46 to affect health_score).
     v3.5.45 Fix 1: Rewritten parser — Brave now uses Svelte framework with
     data-type="web" containers and new CSS class names (title, snippet-content).
     Old regex targeted class="snippet-title" / class="snippet-description"
@@ -345,8 +364,8 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
         if resp.status_code != 200:
             # v3.5.44 Fix 2: 429/503 are rate limits, not real errors
             if resp.status_code in (429, 503):
-                health.record_empty()
-                logger.debug("v3.5.44: Brave free: HTTP %d (rate limit, soft track)", resp.status_code)
+                health.record_rate_limit()
+                logger.debug("v3.5.46: Brave free: HTTP %d (rate limit, health_score affected)", resp.status_code)
             else:
                 health.record_failure()
                 logger.debug("Brave free: HTTP %d", resp.status_code)
@@ -454,8 +473,8 @@ def search_startpage(query: str, num_results: int = 10) -> list[dict]:
         if resp.status_code != 200:
             # v3.5.44 Fix 2: Rate-limit aware
             if resp.status_code in (429, 503):
-                health.record_empty()
-                logger.debug("v3.5.44: Startpage: HTTP %d (rate limit, soft track)", resp.status_code)
+                health.record_rate_limit()
+                logger.debug("v3.5.46: Startpage: HTTP %d (rate limit, health_score affected)", resp.status_code)
             else:
                 health.record_failure()
             return []
@@ -535,8 +554,8 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
             return []
         if resp.status_code != 200:
             if resp.status_code in (429, 503):
-                health.record_empty()
-                logger.debug("v3.5.44: DDG Lite: HTTP %d (rate limit, soft track)", resp.status_code)
+                health.record_rate_limit()
+                logger.debug("v3.5.46: DDG Lite: HTTP %d (rate limit, health_score affected)", resp.status_code)
             else:
                 health.record_failure()
             return []
@@ -628,9 +647,9 @@ def search_mojeek(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            # v3.5.44 Fix 2: Rate-limit aware
+            # v3.5.46: Rate-limit aware — record_rate_limit() for health_score
             if resp.status_code in (429, 503):
-                health.record_empty()
+                health.record_rate_limit()
             else:
                 health.record_failure()
             return []
@@ -677,9 +696,9 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            # v3.5.44 Fix 2: Rate-limit aware
+            # v3.5.46: Rate-limit aware — record_rate_limit() for health_score
             if resp.status_code in (429, 503):
-                health.record_empty()
+                health.record_rate_limit()
             else:
                 health.record_failure()
             return []
@@ -769,9 +788,9 @@ def search_yep(query: str, num_results: int = 10) -> list[dict]:
                 timeout=12.0,
             )
         if resp.status_code != 200:
-            # v3.5.44 Fix 2: Rate-limit aware
+            # v3.5.46: Rate-limit aware — record_rate_limit() for health_score
             if resp.status_code in (429, 503):
-                health.record_empty()
+                health.record_rate_limit()
             else:
                 health.record_failure()
             _save_health_to_disk()
@@ -827,8 +846,9 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
                 timeout=12.0,
             )
         if resp.status_code != 200:
+            # v3.5.46: Rate-limit aware — record_rate_limit() for health_score
             if resp.status_code in (429, 503):
-                health.record_empty()
+                health.record_rate_limit()
             else:
                 health.record_failure()
             _save_health_to_disk()
@@ -1190,11 +1210,17 @@ def scrape_page_emails(
 #          Qwant (JS-only SPA, no results), Startpage (cookie wall, no results).
 # Kept: Brave (20 results), DDG Lite (10), Bing (9), SearXNG (15).
 # With only 4 engines, max_engines raised to 4 in free_search_waterfall.
+# v3.5.46 Fix 2: Reordered — Brave moved to LAST position.
+# In Group C testing (v3.5.45), Brave returned HTTP 429 on 100% of requests
+# (0 successful out of 75 waterfall cycles). By deprioritizing Brave,
+# Bing+DDG+SearXNG get tried first and Brave only runs if they fail to
+# meet the result threshold. Health-score sorting (v3.5.42 FIX-9) will
+# further push Brave down after its first 429.
 _FREE_ENGINES: list[tuple[str, object]] = [
-    ("brave_free", search_brave_free),   # v3.5.45: ~20 results/query
-    ("bing_free", search_bing_free),     # v3.5.45: ~9 results/query
-    ("ddg_lite", search_ddg_lite),       # v3.5.45: ~10 results/query
-    ("searxng", search_searxng),         # v3.5.45: ~15 results/query
+    ("bing_free", search_bing_free),     # v3.5.46: promoted — 100% success in Group C
+    ("ddg_lite", search_ddg_lite),       # v3.5.46: promoted — 95%+ success in Group C
+    ("searxng", search_searxng),         # v3.5.46: SSRF allowlist fixed, should work now
+    ("brave_free", search_brave_free),   # v3.5.46: demoted — 100% HTTP 429 in Group C
 ]
 
 

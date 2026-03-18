@@ -265,6 +265,10 @@ _PRIVATE_NETWORKS = [
 # module flags as 'reserved' (IPv6 prefixes, RFC-6598 100.64.0.0/10, etc.),
 # causing false-positive SSRF blocks that kill multi-engine dorking.
 # v3.5.39: Updated allowlist — removed dead SearXNG instances, added Yep.com
+# v3.5.46 Fix 1: Added 3 missing SearXNG instances (searx.oxf.app,
+# search.sapti.me, searx.namejeff.xyz) that were in _SEARXNG_INSTANCES
+# but NOT in the allowlist — causing 42 false-positive SSRF blocks in
+# Group C testing, effectively killing SearXNG as a dorking engine.
 _ALLOWED_SEARCH_DOMAINS = frozenset({
     "html.duckduckgo.com",
     "lite.duckduckgo.com",
@@ -276,6 +280,9 @@ _ALLOWED_SEARCH_DOMAINS = frozenset({
     "paulgo.io",                 # v3.5.39: live SearXNG instance
     "search.ononoki.org",        # v3.5.39: live SearXNG instance
     "searx.work",                # v3.5.39: live SearXNG instance
+    "search.sapti.me",           # v3.5.46: was in _SEARXNG_INSTANCES but missing here
+    "searx.oxf.app",             # v3.5.46: was blocked 42x in Group C (SSRF false positive)
+    "searx.namejeff.xyz",        # v3.5.46: was in _SEARXNG_INSTANCES but missing here
     "api.yep.com",               # v3.5.39: Yep.com (Ahrefs-backed, scrape-friendly)
     "yep.com",                   # v3.5.39: Yep.com search
     "nitter.privacydev.net",

@@ -996,7 +996,15 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # Replaces Selenium/Patchright — 100% ban-free, no browser automation
         # v3.5.14: Only run when use_direct_scraping is ON
         # v3.5.36: Parallelized with asyncio.gather() — 3-4x faster
-        live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
+        # v3.5.46 Fix 3: Filter out B2B platforms from live_scrapers routing.
+        # In Group C T14, B2B platforms (indiamart, tradeindia, justdial,
+        # google_maps_b2b) were sent to live_scrape_platform() which only
+        # handles social media platforms, causing "Unknown platform" warnings.
+        # B2B platforms are correctly handled later by b2b_scrape_platform().
+        live_platforms = [
+            p for p in non_reddit_platforms
+            if p not in ("yellowpages", "yelp") and p not in _B2B_ONLY_PLATFORMS
+        ]
         if live_platforms and config.use_direct_scraping and not budget.is_exhausted():
             import asyncio as _aio_live  # noqa: E402
             loop = _aio_live.get_running_loop()
@@ -1122,13 +1130,21 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         # ── Direct platform scraping (Patchright) — LEGACY ─────────────
         # v3.5.36: Skip if parallel live scraping already ran (same gate)
+        # v3.5.46 Fix 3b: Also filter B2B platforms from legacy direct scraper.
+        # CodeRabbit caught that live_platforms was filtered but this legacy
+        # path still used non_reddit_platforms, letting B2B platforms fall through
+        # to scrape_all_platforms_direct() which doesn't handle them.
         _ran_parallel_live = bool(live_platforms and config.use_direct_scraping)
-        if config.use_direct_scraping and non_reddit_platforms and not _ran_parallel_live:
+        _legacy_direct_platforms = [
+            p for p in non_reddit_platforms
+            if p not in ("yellowpages", "yelp") and p not in _B2B_ONLY_PLATFORMS
+        ]
+        if config.use_direct_scraping and _legacy_direct_platforms and not _ran_parallel_live:
             try:
                 from app.services.platform_scrapers import scrape_all_platforms_direct
-                for idx, platform in enumerate(non_reddit_platforms):
+                for idx, platform in enumerate(_legacy_direct_platforms):
                     await _update_progress(session_id, _calc_progress(),
-                        f"Direct Scraping: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
+                        f"Direct Scraping: {platform} ({idx+1}/{len(_legacy_direct_platforms)})...",
                         platform, *_count_leads())
                     direct_leads = await scrape_all_platforms_direct(
                         config.keywords, [platform],
