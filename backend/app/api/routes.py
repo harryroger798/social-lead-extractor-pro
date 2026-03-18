@@ -1017,9 +1017,20 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 results: list[dict] = []
                 try:
                     for kw_parsed in parsed_keywords:
+                        # v3.5.48 Fix 1: Pass keyword WITHOUT pre-concatenating location.
+                        # Same root cause as v3.5.47 B2B double-location bug:
+                        # parse_keyword("Steel Manufacturers Delhi") returns
+                        # keyword="Steel Manufacturers Delhi" + location="Delhi".
+                        # Previously we built search_query = f"{keyword} {loc}" →
+                        # "Steel Manufacturers Delhi Delhi". Now we only append
+                        # location if it's NOT already present as a word-boundary
+                        # token in the keyword string.
                         search_query = kw_parsed.keyword
                         loc = kw_parsed.location or location_hint
-                        if loc:
+                        if loc and not re.search(
+                            rf"(?<!\w){re.escape(loc.lower())}(?!\w)",
+                            kw_parsed.keyword.lower(),
+                        ):
                             search_query = f"{kw_parsed.keyword} {loc}"
                         live_leads = await loop.run_in_executor(
                             _LIVE_SCRAPE_POOL, live_scrape_platform, platform,
