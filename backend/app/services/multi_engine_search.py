@@ -724,12 +724,12 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
         return []
 
 
-# v3.5.39: Replaced dead instances (bus-hit.me, tiekoetter.com, fmac.xyz)
-# with verified-live instances. Dead instances caused DNS failures and
-# JSON parse errors, wasting 12s+ per waterfall cycle.
-# v3.5.45 Fix 4: Expanded SearXNG instance list — 10 instances (was 5).
-# Added verified-live instances from searx.space directory. More instances
-# means fewer DNS failures and better rotation coverage.
+# v3.5.39: Replaced dead instances (fmac.xyz) with verified-live instances.
+# Dead instances caused DNS failures and JSON parse errors, wasting 12s+
+# per waterfall cycle.
+# v3.5.45 Fix 4: Expanded SearXNG instance list — 8 instances (was 5).
+# Removed bus-hit.me (unreachable) and tiekoetter.com (429 rate-limited).
+# Added verified-live instances from searx.space directory.
 _SEARXNG_INSTANCES = [
     "https://searx.be",
     "https://search.inetol.net",
@@ -737,8 +737,6 @@ _SEARXNG_INSTANCES = [
     "https://search.ononoki.org",
     "https://searx.work",
     "https://search.sapti.me",
-    "https://searx.tiekoetter.com",
-    "https://search.bus-hit.me",
     "https://searx.oxf.app",
     "https://searx.namejeff.xyz",
 ]
@@ -853,11 +851,13 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
                     params = parse_qs(parsed.query)
                     encoded_url = params.get("u", [""])[0]
                     if encoded_url.startswith("a1"):
-                        decoded = base64.urlsafe_b64decode(encoded_url[2:] + "==").decode("utf-8", errors="ignore")
+                        b64_part = encoded_url[2:]
+                        padding = (4 - len(b64_part) % 4) % 4
+                        decoded = base64.urlsafe_b64decode(b64_part + "=" * padding).decode("utf-8", errors="ignore")
                         if decoded.startswith("http"):
                             url = decoded
-                except Exception:
-                    pass  # Keep original URL if decode fails
+                except Exception as exc:
+                    logger.debug("Bing URL decode failed for %s: %s", url[:50], exc)
             results.append({
                 "title": _strip_tags(m.group(2)),
                 "snippet": _strip_tags(m.group(3)),
