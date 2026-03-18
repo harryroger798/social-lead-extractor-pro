@@ -900,7 +900,10 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         "india",
                     }
                     _hint_lower = location_hint.lower()
-                    _is_indian = any(c in _hint_lower for c in _india_city_check)
+                    _is_indian = any(
+                        re.search(rf"\b{re.escape(c)}\b", _hint_lower)
+                        for c in _india_city_check
+                    )
                     if _is_indian:
                         if "pan_india" not in _db_platforms:
                             _db_platforms.append("pan_india")
@@ -1353,7 +1356,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 # significantly more enrichment coverage.
                 _enrich_cap = min(int(_total_leads * 0.25), 150)
                 _enrich_cap = min(_enrich_cap, _leads_missing_any) if _leads_missing_any > 0 else 0
-                _enrich_cap = max(_enrich_cap, 25)  # v3.5.44: raised floor from 15→25
+                if _leads_missing_any > 0:
+                    _enrich_cap = max(_enrich_cap, 25)  # v3.5.44: raised floor from 15→25
                 logger.info(
                     "v3.5.44: Enrichment cap=%d (total=%d, missing_any=%d, 25%%=%d)",
                     _enrich_cap, _total_leads, _leads_missing_any,
