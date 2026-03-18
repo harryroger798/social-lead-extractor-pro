@@ -1017,7 +1017,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 results: list[dict] = []
                 try:
                     for kw_parsed in parsed_keywords:
-                        # v3.5.48 Fix 1: Pass keyword WITHOUT pre-concatenating location.
+                        # v3.5.48 Fix 1: Prevent double-location in live scraping.
                         # Same root cause as v3.5.47 B2B double-location bug:
                         # parse_keyword("Steel Manufacturers Delhi") returns
                         # keyword="Steel Manufacturers Delhi" + location="Delhi".
@@ -1025,16 +1025,29 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         # "Steel Manufacturers Delhi Delhi". Now we only append
                         # location if it's NOT already present as a word-boundary
                         # token in the keyword string.
+                        # ALSO: downstream scrapers internally concatenate
+                        # query + location (e.g. f"{query} {location}"), so we
+                        # must pass empty location when it's already embedded
+                        # in the keyword to prevent double-location at the
+                        # scraper level too.
                         search_query = kw_parsed.keyword
                         loc = kw_parsed.location or location_hint
-                        if loc and not re.search(
-                            rf"(?<!\w){re.escape(loc.lower())}(?!\w)",
-                            kw_parsed.keyword.lower(),
-                        ):
+                        loc_already_present = bool(
+                            loc
+                            and re.search(
+                                rf"(?<!\w){re.escape(loc.lower())}(?!\w)",
+                                kw_parsed.keyword.lower(),
+                            )
+                        )
+                        if loc and not loc_already_present:
                             search_query = f"{kw_parsed.keyword} {loc}"
+                        # Pass empty location to scrapers when keyword already
+                        # contains it — scrapers build their own
+                        # f"{query} {location}" internally.
+                        loc_to_pass = "" if loc_already_present else (loc or "")
                         live_leads = await loop.run_in_executor(
                             _LIVE_SCRAPE_POOL, live_scrape_platform, platform,
-                            search_query, loc, 20,
+                            search_query, loc_to_pass, 20,
                         )
                         results.extend(live_leads)
                 except Exception as e:
