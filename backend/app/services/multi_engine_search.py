@@ -1190,11 +1190,17 @@ def scrape_page_emails(
 #          Qwant (JS-only SPA, no results), Startpage (cookie wall, no results).
 # Kept: Brave (20 results), DDG Lite (10), Bing (9), SearXNG (15).
 # With only 4 engines, max_engines raised to 4 in free_search_waterfall.
+# v3.5.46 Fix 2: Reordered — Brave moved to LAST position.
+# In Group C testing (v3.5.45), Brave returned HTTP 429 on 100% of requests
+# (0 successful out of 75 waterfall cycles). By deprioritizing Brave,
+# Bing+DDG+SearXNG get tried first and Brave only runs if they fail to
+# meet the result threshold. Health-score sorting (v3.5.42 FIX-9) will
+# further push Brave down after its first 429.
 _FREE_ENGINES: list[tuple[str, object]] = [
-    ("brave_free", search_brave_free),   # v3.5.45: ~20 results/query
-    ("bing_free", search_bing_free),     # v3.5.45: ~9 results/query
-    ("ddg_lite", search_ddg_lite),       # v3.5.45: ~10 results/query
-    ("searxng", search_searxng),         # v3.5.45: ~15 results/query
+    ("bing_free", search_bing_free),     # v3.5.46: promoted — 100% success in Group C
+    ("ddg_lite", search_ddg_lite),       # v3.5.46: promoted — 95%+ success in Group C
+    ("searxng", search_searxng),         # v3.5.46: SSRF allowlist fixed, should work now
+    ("brave_free", search_brave_free),   # v3.5.46: demoted — 100% HTTP 429 in Group C
 ]
 
 

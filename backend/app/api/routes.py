@@ -996,7 +996,15 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # Replaces Selenium/Patchright — 100% ban-free, no browser automation
         # v3.5.14: Only run when use_direct_scraping is ON
         # v3.5.36: Parallelized with asyncio.gather() — 3-4x faster
-        live_platforms = [p for p in non_reddit_platforms if p not in ("yellowpages", "yelp")]
+        # v3.5.46 Fix 3: Filter out B2B platforms from live_scrapers routing.
+        # In Group C T14, B2B platforms (indiamart, tradeindia, justdial,
+        # google_maps_b2b) were sent to live_scrape_platform() which only
+        # handles social media platforms, causing "Unknown platform" warnings.
+        # B2B platforms are correctly handled later by b2b_scrape_platform().
+        live_platforms = [
+            p for p in non_reddit_platforms
+            if p not in ("yellowpages", "yelp") and p not in _B2B_ONLY_PLATFORMS
+        ]
         if live_platforms and config.use_direct_scraping and not budget.is_exhausted():
             import asyncio as _aio_live  # noqa: E402
             loop = _aio_live.get_running_loop()
