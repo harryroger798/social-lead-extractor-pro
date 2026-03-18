@@ -756,32 +756,36 @@ async def dorking_search(
         except Exception as exc:
             logger.warning("Multi-engine search error: %s", exc)
 
-    # v3.5.36 Fix 1: Skip Patchright entirely — it triggers Google CAPTCHA
-    # (2,394 blocks in test logs). The multi-engine waterfall above (Brave,
-    # Startpage, DDG Lite, Mojeek, Qwant, SearXNG) is 100% ban-free and
-    # API-key-free. Patchright browser automation is unnecessary and harmful.
-    # Only use HTTP-based DDG Lite as a last resort (no browser needed).
+    # v3.5.44 Fix 3: Enhanced fallback with FULL waterfall (all 8 engines).
+    # v3.5.36 only used DDG Lite as fallback, which yields ZERO results for
+    # site-specific queries (e.g. "dentists delhi site:linkedin.com").
+    # In v3.5.43 Group A, Sessions 4-6 got zero dorking leads because DDG Lite
+    # was the only fallback after Patchright (CAPTCHA-blocked).
+    # Now we use the full free_search_waterfall (Brave/Yep/Bing/DDG/Mojeek/
+    # Qwant/Startpage/SearXNG) as fallback, trying ALL engines.
     if not all_emails and not all_phones:
         primary_query = queries[0] if queries else _build_dork_query(keyword, platform)
-        logger.info("v3.5.36: Skipping Patchright (CAPTCHA-blocked) — trying DDG Lite HTTP")
+        logger.info("v3.5.44: Skipping Patchright — trying full waterfall fallback (8 engines)")
         loop = asyncio.get_running_loop()
         try:
-            from app.services.multi_engine_search import search_ddg_lite
-            ddg_results = await loop.run_in_executor(
-                None, search_ddg_lite, primary_query, num_results
+            from app.services.multi_engine_search import free_search_waterfall
+            # Use full waterfall with max_engines=5 for broader coverage
+            waterfall_results = await loop.run_in_executor(
+                None, free_search_waterfall, primary_query, num_results, 3, 5
             )
-            if ddg_results:
-                if "ddg_lite_fallback" not in methods_used:
-                    methods_used.append("ddg_lite_fallback")
-                for result in ddg_results:
+            if waterfall_results:
+                if "waterfall_fallback" not in methods_used:
+                    methods_used.append("waterfall_fallback")
+                for result in waterfall_results:
                     text = f"{result.get('title', '')} {result.get('snippet', '')}"
                     all_emails.extend(extract_emails(text))
                     all_phones.extend(extract_phones(text))
                     link = result.get("link", "")
                     if link:
                         all_sources.append(link)
+                logger.info("v3.5.44: Waterfall fallback returned %d results", len(waterfall_results))
         except Exception as exc:
-            logger.debug("DDG Lite fallback failed: %s", exc)
+            logger.debug("v3.5.44: Waterfall fallback failed: %s", exc)
 
     # Deduplicate
     seen_emails: set[str] = set()

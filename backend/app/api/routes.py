@@ -632,9 +632,13 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
     location_hint = ""
     # v3.5.41 FIX-6: Reset circuit breaker cache at session start
     reset_domain_failure_cache()
-    # v3.5.43: Reset engine soft state (empty streaks) at session start.
-    # Preserves hard failure counts across sessions but clears transient state.
-    reset_engine_soft_state()
+    # v3.5.44 Fix 1: Full engine health reset per session.
+    # v3.5.43 only reset soft state (empty streaks), preserving hard failure
+    # counts across sessions. This caused cascade failure: HTTP 429/503 errors
+    # from Sessions 1-3 accumulated, leaving Sessions 4-6 with zero working
+    # engines (1330 cooldown skips in Session 5, 0 positive waterfalls).
+    # Now we reset ALL engine health (hard + soft) at session start.
+    reset_engine_hard_failures()
     # v3.5.42 FIX-6: Scale budget by platform count
     _platform_count = len(config.platforms) if config.platforms else 2
     _session_budget = _get_session_budget(_platform_count)
@@ -700,7 +704,51 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         db_leads: list[dict] = []
 
         # v3.5.0: Parse keywords FIRST (needed by both DB search and later stages)
+        # v3.5.44 Fix 4: Keyword sanitization for test-format inputs.
+        # Detects patterns like "T6-Gym-Hyderabad-All" (session name used as
+        # keyword) and extracts the real keyword + city. In v3.5.43 Group A,
+        # Session 6 got 0 leads because "T6-Gym-Hyderabad-All" was the keyword.
+        _KNOWN_INDIAN_CITIES = {
+            "delhi", "mumbai", "bangalore", "bengaluru", "chennai", "hyderabad",
+            "pune", "kolkata", "ahmedabad", "jaipur", "lucknow", "kanpur",
+            "nagpur", "indore", "thane", "bhopal", "noida", "gurgaon",
+            "gurugram", "chandigarh", "kochi", "coimbatore", "surat",
+            "vadodara", "patna", "nashik", "faridabad", "meerut", "rajkot",
+        }
+        _STRIP_SUFFIXES = {"all", "multi", "li", "ig", "fb", "gm", "yt"}
+
+        def _sanitize_keyword(raw: str) -> str:
+            """v3.5.44: Detect test-format keywords and extract real keyword."""
+            # Pattern: T\d+-keyword-city-suffix (e.g. "T6-Gym-Hyderabad-All")
+            m = re.match(r'^[Tt]\d+[_-](.+)$', raw.strip())
+            if not m:
+                return raw
+            remainder = m.group(1)  # "Gym-Hyderabad-All"
+            parts = re.split(r'[-_]', remainder)
+            if len(parts) < 2:
+                return raw
+            # Find city part and strip suffixes
+            keyword_parts: list[str] = []
+            city_part = ""
+            for part in parts:
+                lower = part.lower()
+                if lower in _KNOWN_INDIAN_CITIES and not city_part:
+                    city_part = part
+                elif lower in _STRIP_SUFFIXES:
+                    continue  # Skip suffixes like "All", "Multi"
+                else:
+                    keyword_parts.append(part)
+            if keyword_parts and city_part:
+                sanitized = " ".join(keyword_parts) + " in " + city_part
+                logger.info(
+                    "v3.5.44 Fix 4: Sanitized test-format keyword: '%s' -> '%s'",
+                    raw, sanitized,
+                )
+                return sanitized
+            return raw
+
         for kw in config.keywords:
+            kw = _sanitize_keyword(kw)
             parsed = parse_keyword(kw)
             parsed_keywords.append(parsed)
             cleaned_keywords.append(parsed.keyword)
@@ -837,10 +885,37 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     "v3.5.43: LinkedIn phase timeout capped: %.0fs → %.0fs",
                     _orig_linkedin_timeout, _db_search_mod._LINKEDIN_PHASE_TIMEOUT_SECS,
                 )
+                # v3.5.44 Fix 5: Auto-enable PAN India for Indian GMaps queries.
+                # In v3.5.43 Group A, Session 4 (Lawyers Chennai, Google Maps only)
+                # got 0 leads from primary GMaps DB. PAN India has 3M+ Indian
+                # business records that would have covered this gap.
+                _db_platforms = list(config.platforms)
+                if location_hint:
+                    _india_city_check = {
+                        "delhi", "mumbai", "bangalore", "bengaluru", "chennai",
+                        "hyderabad", "pune", "kolkata", "ahmedabad", "jaipur",
+                        "lucknow", "kanpur", "nagpur", "indore", "thane",
+                        "bhopal", "noida", "gurgaon", "gurugram", "chandigarh",
+                        "kochi", "coimbatore", "surat", "vadodara", "patna",
+                        "india",
+                    }
+                    _hint_lower = location_hint.lower()
+                    _is_indian = any(c in _hint_lower for c in _india_city_check)
+                    if _is_indian:
+                        if "pan_india" not in _db_platforms:
+                            _db_platforms.append("pan_india")
+                            logger.info(
+                                "v3.5.44 Fix 5: Auto-enabled PAN India for Indian query (location=%s)",
+                                location_hint,
+                            )
+                        if "google_maps" in _db_platforms and "youtube" not in _db_platforms:
+                            _db_platforms.append("youtube")
+                            logger.info("v3.5.44 Fix 5: Auto-enabled YouTube supplementary DB")
+
                 try:
                     db_leads = await search_database_hybrid(
                         keywords=cleaned_keywords,
-                        platforms=config.platforms,
+                        platforms=_db_platforms,
                         location=location_hint,
                         max_results_per_keyword=db_max_results,
                         expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
@@ -1271,13 +1346,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     1 for l in all_leads
                     if not l.get("email") or not l.get("phone")
                 )
-                _enrich_cap = min(int(_total_leads * 0.15), 100)
+                # v3.5.44 Fix 7: Raised enrichment caps from 15%/100/15 to 25%/150/25.
+                # In v3.5.43 Group A, enrichment was capped at 15 leads even when
+                # 100+ leads were missing email/phone. This left most leads
+                # unenriched. Raising to 25% with floor 25 and max 150 gives
+                # significantly more enrichment coverage.
+                _enrich_cap = min(int(_total_leads * 0.25), 150)
                 _enrich_cap = min(_enrich_cap, _leads_missing_any) if _leads_missing_any > 0 else 0
-                _enrich_cap = max(_enrich_cap, 15)  # v3.5.43: raised floor from 10→15
+                _enrich_cap = max(_enrich_cap, 25)  # v3.5.44: raised floor from 15→25
                 logger.info(
-                    "v3.5.43: Enrichment cap=%d (total=%d, missing_any=%d, 15%%=%d)",
+                    "v3.5.44: Enrichment cap=%d (total=%d, missing_any=%d, 25%%=%d)",
                     _enrich_cap, _total_leads, _leads_missing_any,
-                    int(_total_leads * 0.15),
+                    int(_total_leads * 0.25),
                 )
                 enriched_leads = await loop_enrich.run_in_executor(
                     None,

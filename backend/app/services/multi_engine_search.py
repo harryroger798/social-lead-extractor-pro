@@ -323,6 +323,8 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
 
     v3.5.39: Added Accept-Encoding: identity to prevent brotli/zstd
     compressed responses that cause curl error (23) CURLE_WRITE_ERROR.
+    v3.5.44 Fix 2: Rate-limit aware — HTTP 429/503 use record_empty()
+    instead of record_failure() to prevent cascade cooldown.
     """
     health = _health("brave_free")
     if not health.is_available:
@@ -336,8 +338,13 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
-            logger.debug("Brave free: HTTP %d", resp.status_code)
+            # v3.5.44 Fix 2: 429/503 are rate limits, not real errors
+            if resp.status_code in (429, 503):
+                health.record_empty()
+                logger.debug("v3.5.44: Brave free: HTTP %d (rate limit, soft track)", resp.status_code)
+            else:
+                health.record_failure()
+                logger.debug("Brave free: HTTP %d", resp.status_code)
             return []
 
         html = resp.text
@@ -394,7 +401,7 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Brave free: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         return results
 
     except Exception as exc:
@@ -416,7 +423,12 @@ def search_startpage(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+                logger.debug("v3.5.44: Startpage: HTTP %d (rate limit, soft track)", resp.status_code)
+            else:
+                health.record_failure()
             return []
 
         html = resp.text
@@ -454,7 +466,7 @@ def search_startpage(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Startpage: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         return results
 
     except Exception as exc:
@@ -482,7 +494,12 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code not in (200, 202):
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+                logger.debug("v3.5.44: DDG Lite: HTTP %d (rate limit, soft track)", resp.status_code)
+            else:
+                health.record_failure()
             return []
 
         html = resp.text
@@ -540,7 +557,7 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("DDG Lite: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         return results
 
     except Exception as exc:
@@ -562,7 +579,11 @@ def search_mojeek(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+            else:
+                health.record_failure()
             return []
 
         html = resp.text
@@ -585,7 +606,7 @@ def search_mojeek(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Mojeek: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         return results
 
     except Exception as exc:
@@ -607,7 +628,11 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
                 timeout=15.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+            else:
+                health.record_failure()
             return []
 
         html = resp.text
@@ -641,7 +666,7 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Qwant Lite: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         return results
 
     except Exception as exc:
@@ -689,7 +714,11 @@ def search_yep(query: str, num_results: int = 10) -> list[dict]:
                 timeout=12.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+            else:
+                health.record_failure()
             _save_health_to_disk()
             return []
 
@@ -708,7 +737,7 @@ def search_yep(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Yep.com: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         _save_health_to_disk()
         return results
 
@@ -737,7 +766,11 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
                 timeout=12.0,
             )
         if resp.status_code != 200:
-            health.record_failure()
+            # v3.5.44 Fix 2: Rate-limit aware
+            if resp.status_code in (429, 503):
+                health.record_empty()
+            else:
+                health.record_failure()
             _save_health_to_disk()
             return []
 
@@ -762,7 +795,7 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
             health.record_success()
             logger.info("Bing free: %d results", len(results))
         else:
-            health.record_failure()
+            health.record_empty()  # v3.5.44: empty results != failure
         _save_health_to_disk()
         return results
 

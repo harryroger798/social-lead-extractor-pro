@@ -254,7 +254,7 @@ def _location_confidence_score(lead: dict, target_country: str, target: str) -> 
       -1  Weak contradiction (city/bio suggests different country)
       -2  Strong contradiction (phone/email TLD suggests different country)
 
-    Decision rule: score >= 0 → KEEP, score < 0 → DROP
+    Decision rule: score > -2 → KEEP, score <= -2 → DROP (v3.5.44 Fix 6)
     """
     score = 0
     has_any_signal = False
@@ -348,15 +348,15 @@ def filter_leads_by_location(
     target_location: str,
     source_tag: str = "",
 ) -> list[dict]:
-    """v3.5.34 P1: Soft confidence-scored location filter.
+    """v3.5.44 Fix 6: Softer confidence-scored location filter.
 
-    Replaces the v3.5.33 binary pass/fail filter with a confidence-scored
-    approach. Each lead gets a score from -2 to +3:
-      score >= 0 → KEEP (match or no signal)
-      score < 0  → DROP (contradicts target location)
+    v3.5.34 used score >= 0 → KEEP, score < 0 → DROP. This was too aggressive:
+    in v3.5.43 Group A, 58-78% of Instagram leads were dropped due to weak
+    contradictions (score = -1) from ambiguous TLD/city signals.
 
-    This recovers leads that were previously dropped due to missing metadata
-    (the root cause of "56 → 0" in Session 1 "Plumbers in USA").
+    v3.5.44 relaxes to: score > -2 → KEEP, score <= -2 → DROP.
+    Only strong contradictions (explicit country mismatch OR phone prefix +
+    email TLD both contradict) cause drops. Weak contradictions are kept.
 
     For Render API results (source_tag='render_api'), leads with no signal
     are always kept since the API already did server-side filtering.
@@ -401,16 +401,23 @@ def filter_leads_by_location(
             filtered.append(lead)
         elif score == 0:
             # No signal — keep with benefit of the doubt
-            # For Render API results, server already filtered, so always keep
             no_signal_count += 1
             lead["country_confidence"] = "assumed"
             filtered.append(lead)
+        elif score == -1:
+            # v3.5.44 Fix 6: Weak contradiction — KEEP instead of drop.
+            # Score -1 means only one weak signal contradicts (e.g. email TLD
+            # .com on an Indian lead, or city field mentions another city).
+            # This recovers 58-78% of leads that v3.5.43 wrongly dropped.
+            no_signal_count += 1
+            lead["country_confidence"] = "weak_mismatch_kept"
+            filtered.append(lead)
         else:
-            # Negative score — contradicts target location
-            if is_render_api and score >= -1:
-                # Weak contradiction from Render API — keep (server already filtered)
+            # Strong contradiction (score <= -2) — DROP
+            if is_render_api and score >= -2:
+                # For Render API, even -2 might be acceptable (server pre-filtered)
                 no_signal_count += 1
-                lead["country_confidence"] = "weak_mismatch"
+                lead["country_confidence"] = "render_override"
                 filtered.append(lead)
             else:
                 drop_count += 1
