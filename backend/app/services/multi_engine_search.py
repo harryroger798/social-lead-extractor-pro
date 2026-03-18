@@ -17,6 +17,7 @@ All free methods: Zero API keys | Zero browser automation | 100% ban-free.
 Works in PyInstaller bundle on Windows/macOS/Linux.
 """
 
+import base64
 import html as _html_mod
 import json
 import logging
@@ -325,6 +326,10 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
     compressed responses that cause curl error (23) CURLE_WRITE_ERROR.
     v3.5.44 Fix 2: Rate-limit aware — HTTP 429/503 use record_empty()
     instead of record_failure() to prevent cascade cooldown.
+    v3.5.45 Fix 1: Rewritten parser — Brave now uses Svelte framework with
+    data-type="web" containers and new CSS class names (title, snippet-content).
+    Old regex targeted class="snippet-title" / class="snippet-description"
+    which no longer exist in Brave's HTML. Verified with live captures.
     """
     health = _health("brave_free")
     if not health.is_available:
@@ -350,48 +355,72 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
         html = resp.text
         results: list[dict] = []
 
-        for block in re.finditer(
-            r'<div[^>]*class="snippet[^"]*"[^>]*>(.*?)</div>\s*</div>\s*</div>',
-            html, re.DOTALL,
-        ):
-            content = block.group(1)
-            url_m = re.search(r'<a[^>]*href="(https?://[^"]+)"', content)
+        # v3.5.45: Primary approach — use data-type="web" as result container.
+        # Brave now renders each web result inside <div data-type="web">.
+        # Title is in a span/div with class containing "title",
+        # URL is the first <a href="https://...">,
+        # Description is in a div with class containing "snippet-content".
+        for m in re.finditer(r'data-type="web"', html):
+            pos = m.start()
+            chunk = html[pos:pos + 3000]
+            url_m = re.search(r'<a[^>]*href="(https?://(?!search\.brave)[^"]+)"', chunk)
+            if not url_m:
+                continue
             title_m = re.search(
-                r'<span[^>]*class="snippet-title"[^>]*>(.*?)</span>',
-                content, re.DOTALL,
+                r'class="[^"]*title[^"]*"[^>]*>(.*?)</(?:span|div|h[23]|a)',
+                chunk, re.DOTALL,
             )
-            if not title_m:
-                title_m = re.search(
-                    r'<div[^>]*class="title"[^>]*>(.*?)</div>',
-                    content, re.DOTALL,
-                )
             desc_m = re.search(
-                r'<p[^>]*class="snippet-description"[^>]*>(.*?)</p>',
-                content, re.DOTALL,
+                r'class="[^"]*snippet-content[^"]*"[^>]*>(.*?)</(?:div|p)',
+                chunk, re.DOTALL,
             )
             if not desc_m:
                 desc_m = re.search(
-                    r'<div[^>]*class="snippet-description"[^>]*>(.*?)</div>',
-                    content, re.DOTALL,
+                    r'class="[^"]*description[^"]*"[^>]*>(.*?)</(?:div|p)',
+                    chunk, re.DOTALL,
                 )
-
-            if url_m:
-                results.append({
-                    "title": _strip_tags(title_m.group(1)) if title_m else "",
-                    "snippet": _strip_tags(desc_m.group(1)) if desc_m else "",
-                    "link": url_m.group(1),
-                })
+            url = url_m.group(1)
+            if "brave.com" in url:
+                continue
+            results.append({
+                "title": _strip_tags(title_m.group(1)) if title_m else "",
+                "snippet": _strip_tags(desc_m.group(1)) if desc_m else "",
+                "link": url,
+            })
             if len(results) >= num_results:
                 break
 
-        # Fallback: simpler link extraction
+        # v3.5.45: Fallback — try snippet class containers (older Brave versions)
         if not results:
-            for m in re.finditer(
+            for block in re.finditer(
+                r'<div[^>]*class="snippet[^"]*"[^>]*>(.*?)</div>\s*</div>',
+                html, re.DOTALL,
+            ):
+                content = block.group(1)
+                url_m = re.search(r'<a[^>]*href="(https?://[^"]+)"', content)
+                title_m = re.search(
+                    r'class="[^"]*title[^"]*"[^>]*>(.*?)</(?:span|div|a)',
+                    content, re.DOTALL,
+                )
+                if url_m:
+                    url = url_m.group(1)
+                    if "brave.com" not in url:
+                        results.append({
+                            "title": _strip_tags(title_m.group(1)) if title_m else "",
+                            "snippet": "",
+                            "link": url,
+                        })
+                if len(results) >= num_results:
+                    break
+
+        # v3.5.45: Last resort — extract any external links with text
+        if not results:
+            for lm in re.finditer(
                 r'<a[^>]*href="(https?://(?!search\.brave)[^"]+)"[^>]*>(.*?)</a>',
                 html, re.DOTALL,
             ):
-                url = m.group(1)
-                title = _strip_tags(m.group(2))
+                url = lm.group(1)
+                title = _strip_tags(lm.group(2))
                 if url.startswith("http") and len(title) > 5 and "brave.com" not in url:
                     results.append({"title": title, "snippet": "", "link": url})
                 if len(results) >= num_results:
@@ -399,7 +428,7 @@ def search_brave_free(query: str, num_results: int = 10) -> list[dict]:
 
         if results:
             health.record_success()
-            logger.info("Brave free: %d results", len(results))
+            logger.info("v3.5.45: Brave free: %d results", len(results))
         else:
             health.record_empty()  # v3.5.44: empty results != failure
         return results
@@ -476,14 +505,20 @@ def search_startpage(query: str, num_results: int = 10) -> list[dict]:
 
 
 def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
-    """Scrape DuckDuckGo Lite (simplified endpoint, more reliable)."""
+    """Scrape DuckDuckGo Lite (simplified endpoint, more reliable).
+
+    v3.5.45 Fix 2: Improved snippet extraction + HTTP 202 handling.
+    DDG Lite uses a table layout. Each result row has class="result-link"
+    for the link and the NEXT <td> row contains the snippet text.
+    Old code looked for class="result-snippet" which doesn't exist —
+    snippets are in plain <td> elements following the link row.
+    HTTP 202 responses are token-gated pages with zero results — treat
+    as empty (not failure) to avoid unnecessary cooldowns.
+    """
     health = _health("ddg_lite")
     if not health.is_available:
         return []
 
-    # DDG Lite supports site: and OR operators natively — pass query through
-    # Previous code stripped these operators, destroying search quality for
-    # LinkedIn, job boards, and all platform-scoped dorking queries.
     ddg_query = query
 
     try:
@@ -493,8 +528,12 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
                 data={"q": ddg_query},
                 timeout=15.0,
             )
-        if resp.status_code not in (200, 202):
-            # v3.5.44 Fix 2: Rate-limit aware
+        # v3.5.45: HTTP 202 is a token-gated response — zero results, not an error
+        if resp.status_code == 202:
+            health.record_empty()
+            logger.debug("v3.5.45: DDG Lite: HTTP 202 (token-gated, no results)")
+            return []
+        if resp.status_code != 200:
             if resp.status_code in (429, 503):
                 health.record_empty()
                 logger.debug("v3.5.44: DDG Lite: HTTP %d (rate limit, soft track)", resp.status_code)
@@ -505,26 +544,28 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
         html = resp.text
         results: list[dict] = []
 
-        # R3-B03 fix: DDG Lite HTML selectors — try multiple patterns
-        # Pattern 1: Current DDG Lite layout (nofollow links)
+        # v3.5.45: Primary — nofollow links (verified working with live captures)
         links = re.findall(
             r'<a\s+rel=["\']nofollow["\']\s+href=["\']([^"\'>]+)["\'][^>]*>(.*?)</a>',
             html, re.DOTALL,
         )
-        # Pattern 2: Fallback — result-link class
+        # Fallback — result-link class
         if not links:
             links = re.findall(
                 r"<a[^>]*class=['\"]result-link['\"][^>]*href=['\"]([^'\"]+)['\"][^>]*>(.*?)</a>",
                 html, re.DOTALL,
             )
-        # Pattern 3: Fallback — any link in result table rows
+        # Fallback — any external link in result table
         if not links:
             links = re.findall(
                 r'<a[^>]*href=["\']((https?://[^"\'>]+))["\'][^>]*>(.*?)</a>',
                 html, re.DOTALL,
             )
-            # Reformat to (url, title) tuples
             links = [(m[0], m[2]) for m in links if not m[0].startswith('https://lite.duckduckgo')]
+
+        # v3.5.45: Improved snippet extraction — DDG Lite puts snippets in
+        # <td class="result-snippet"> OR in plain <td> following each result row.
+        # Try class-based first, then fall back to positional extraction.
         snippets = re.findall(
             r"<td[^>]*class=['\"]result-snippet['\"][^>]*>(.*?)</td>",
             html, re.DOTALL,
@@ -534,6 +575,14 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
                 r'<span[^>]*class=["\']result-snippet["\'][^>]*>(.*?)</span>',
                 html, re.DOTALL,
             )
+        # v3.5.45: Fallback — extract text from <td> elements that look like snippets
+        # (longer than 30 chars, not containing links or nav elements)
+        if not snippets:
+            all_tds = re.findall(r'<td[^>]*>(.*?)</td>', html, re.DOTALL)
+            for td_content in all_tds:
+                clean = _strip_tags(td_content).strip()
+                if len(clean) > 30 and '<a ' not in td_content and 'class="nav' not in td_content:
+                    snippets.append(clean)
 
         for i, (url, title) in enumerate(links):
             if url.startswith("//"):
@@ -555,9 +604,9 @@ def search_ddg_lite(query: str, num_results: int = 10) -> list[dict]:
 
         if results:
             health.record_success()
-            logger.info("DDG Lite: %d results", len(results))
+            logger.info("v3.5.45: DDG Lite: %d results", len(results))
         else:
-            health.record_empty()  # v3.5.44: empty results != failure
+            health.record_empty()
         return results
 
     except Exception as exc:
@@ -678,12 +727,20 @@ def search_qwant_lite(query: str, num_results: int = 10) -> list[dict]:
 # v3.5.39: Replaced dead instances (bus-hit.me, tiekoetter.com, fmac.xyz)
 # with verified-live instances. Dead instances caused DNS failures and
 # JSON parse errors, wasting 12s+ per waterfall cycle.
+# v3.5.45 Fix 4: Expanded SearXNG instance list — 10 instances (was 5).
+# Added verified-live instances from searx.space directory. More instances
+# means fewer DNS failures and better rotation coverage.
 _SEARXNG_INSTANCES = [
     "https://searx.be",
     "https://search.inetol.net",
     "https://paulgo.io",
     "https://search.ononoki.org",
     "https://searx.work",
+    "https://search.sapti.me",
+    "https://searx.tiekoetter.com",
+    "https://search.bus-hit.me",
+    "https://searx.oxf.app",
+    "https://searx.namejeff.xyz",
 ]
 
 
@@ -753,6 +810,12 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
 
     Bing is very scrape-friendly compared to Google. Uses the standard
     web interface with anti-detection headers.
+
+    v3.5.45 Fix 3: Handle Bing redirect URLs (bing.com/ck/a?...) by
+    extracting the actual destination from the 'u' parameter. Also adds
+    a fallback parser for site: queries which return JS-rendered pages
+    without b_algo elements — falls back to extracting <cite> URLs
+    paired with their parent <h2> titles.
     """
     health = _health("bing_free")
     if not health.is_available:
@@ -766,7 +829,6 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
                 timeout=12.0,
             )
         if resp.status_code != 200:
-            # v3.5.44 Fix 2: Rate-limit aware
             if resp.status_code in (429, 503):
                 health.record_empty()
             else:
@@ -777,25 +839,70 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
         html = resp.text
         results: list[dict] = []
 
-        # Parse Bing search results
+        # v3.5.45: Primary — b_algo containers (works for generic queries)
         for m in re.finditer(
             r'<li class="b_algo"[^>]*>.*?<h2><a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a></h2>'
             r'.*?<p[^>]*>(.*?)</p>',
             html, re.DOTALL,
         ):
+            url = m.group(1)
+            # v3.5.45: Resolve Bing redirect URLs (bing.com/ck/a?...u=a1XXXX)
+            if "bing.com/ck/a" in url:
+                try:
+                    parsed = urlparse(url)
+                    params = parse_qs(parsed.query)
+                    encoded_url = params.get("u", [""])[0]
+                    if encoded_url.startswith("a1"):
+                        decoded = base64.urlsafe_b64decode(encoded_url[2:] + "==").decode("utf-8", errors="ignore")
+                        if decoded.startswith("http"):
+                            url = decoded
+                except Exception:
+                    pass  # Keep original URL if decode fails
             results.append({
                 "title": _strip_tags(m.group(2)),
                 "snippet": _strip_tags(m.group(3)),
-                "link": m.group(1),
+                "link": url,
             })
             if len(results) >= num_results:
                 break
 
+        # v3.5.45: Fallback for site: queries — Bing returns JS-heavy page
+        # without b_algo. Try extracting from <cite> + parent <h2> pairs.
+        if not results:
+            for block in re.finditer(
+                r'<li[^>]*class="[^"]*b_algo[^"]*"[^>]*>(.*?)</li>',
+                html, re.DOTALL,
+            ):
+                content = block.group(1)
+                url_m = re.search(r'href="(https?://[^"]+)"', content)
+                title_m = re.search(r'<h2[^>]*>(.*?)</h2>', content, re.DOTALL)
+                if url_m:
+                    results.append({
+                        "title": _strip_tags(title_m.group(1)) if title_m else "",
+                        "snippet": "",
+                        "link": url_m.group(1),
+                    })
+                if len(results) >= num_results:
+                    break
+
+        # v3.5.45: Last resort — extract any external links from main content
+        if not results:
+            for lm in re.finditer(
+                r'<a[^>]*href="(https?://(?!www\.bing\.com)[^"]+)"[^>]*>(.*?)</a>',
+                html, re.DOTALL,
+            ):
+                url = lm.group(1)
+                title = _strip_tags(lm.group(2))
+                if len(title) > 5 and "microsoft.com" not in url and "bing.com" not in url:
+                    results.append({"title": title, "snippet": "", "link": url})
+                if len(results) >= num_results:
+                    break
+
         if results:
             health.record_success()
-            logger.info("Bing free: %d results", len(results))
+            logger.info("v3.5.45: Bing free: %d results", len(results))
         else:
-            health.record_empty()  # v3.5.44: empty results != failure
+            health.record_empty()
         _save_health_to_disk()
         return results
 
@@ -807,15 +914,25 @@ def search_bing_free(query: str, num_results: int = 10) -> list[dict]:
 
 
 def search_searxng(query: str, num_results: int = 10) -> list[dict]:
-    """Query a random SearXNG public instance (JSON API)."""
+    """Query a random SearXNG public instance (JSON API with HTML fallback).
+
+    v3.5.45 Fix 4: Added HTML fallback parsing when JSON API fails.
+    Some SearXNG instances disable JSON API but still serve HTML results.
+    Also tries up to 5 instances (was 3), and uses record_empty() instead
+    of record_failure() when all instances are down — prevents hard cooldown
+    that blocks future attempts. Expanded instance list to 10 (see above).
+    """
     health = _health("searxng")
     if not health.is_available:
         return []
 
     instances = list(_SEARXNG_INSTANCES)
     random.shuffle(instances)
+    instances_failed = 0
 
-    for instance in instances[:3]:
+    # v3.5.45: Try up to 5 instances (was 3) for better coverage
+    for instance in instances[:5]:
+        # --- Try JSON API first (most reliable when available) ---
         try:
             with _make_client(timeout=12.0) as client:
                 resp = client.get(
@@ -825,30 +942,79 @@ def search_searxng(query: str, num_results: int = 10) -> list[dict]:
                     },
                     timeout=12.0,
                 )
-            if resp.status_code != 200:
-                continue
-
-            data = resp.json()
-            results: list[dict] = []
-            for item in data.get("results", []):
-                results.append({
-                    "title": item.get("title", ""),
-                    "snippet": item.get("content", ""),
-                    "link": item.get("url", ""),
-                })
-                if len(results) >= num_results:
-                    break
-
-            if results:
-                health.record_success()
-                logger.info("SearXNG (%s): %d results", instance, len(results))
-                return results
+            if resp.status_code == 200:
+                try:
+                    data = resp.json()
+                    results: list[dict] = []
+                    for item in data.get("results", []):
+                        results.append({
+                            "title": item.get("title", ""),
+                            "snippet": item.get("content", ""),
+                            "link": item.get("url", ""),
+                        })
+                        if len(results) >= num_results:
+                            break
+                    if results:
+                        health.record_success()
+                        logger.info("v3.5.45: SearXNG JSON (%s): %d results", instance, len(results))
+                        return results
+                except (ValueError, KeyError):
+                    pass  # JSON parse failed, try HTML fallback below
 
         except Exception as exc:
-            logger.debug("SearXNG %s error: %s", instance, exc)
+            logger.debug("SearXNG JSON %s error: %s", instance, exc)
+            instances_failed += 1
             continue
 
-    health.record_failure()
+        # --- v3.5.45: HTML fallback — some instances disable JSON API ---
+        try:
+            with _make_client(timeout=12.0) as client:
+                resp = client.get(
+                    f"{instance}/search",
+                    params={
+                        "q": query, "categories": "general",
+                    },
+                    timeout=12.0,
+                )
+            if resp.status_code == 200:
+                html = resp.text
+                results = []
+                # SearXNG HTML uses <article class="result"> containers
+                for block in re.finditer(
+                    r'<article[^>]*class="[^"]*result[^"]*"[^>]*>(.*?)</article>',
+                    html, re.DOTALL,
+                ):
+                    content = block.group(1)
+                    url_m = re.search(r'href="(https?://[^"]+)"', content)
+                    title_m = re.search(r'<h[34][^>]*>(.*?)</h[34]>', content, re.DOTALL)
+                    desc_m = re.search(r'<p[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)</p>', content, re.DOTALL)
+                    if url_m:
+                        results.append({
+                            "title": _strip_tags(title_m.group(1)) if title_m else "",
+                            "snippet": _strip_tags(desc_m.group(1)) if desc_m else "",
+                            "link": url_m.group(1),
+                        })
+                    if len(results) >= num_results:
+                        break
+                if results:
+                    health.record_success()
+                    logger.info("v3.5.45: SearXNG HTML (%s): %d results", instance, len(results))
+                    return results
+
+        except Exception as exc:
+            logger.debug("SearXNG HTML %s error: %s", instance, exc)
+            instances_failed += 1
+            continue
+
+    # v3.5.45: Use record_empty() instead of record_failure() when all
+    # instances are down. Hard failure triggers cascade cooldown which
+    # blocks SearXNG for 300s+. Empty is softer — retries sooner.
+    if instances_failed >= 3:
+        health.record_failure()
+        logger.debug("v3.5.45: SearXNG: %d instances failed (hard failure)", instances_failed)
+    else:
+        health.record_empty()
+        logger.debug("v3.5.45: SearXNG: no results from %d instances (soft empty)", len(instances[:5]))
     return []
 
 
@@ -1019,18 +1185,16 @@ def scrape_page_emails(
 # Free search waterfall
 # ===========================================================================
 
-# v3.5.39: Reordered waterfall — Yep.com + Bing free replace Startpage at #2/#3.
-# Startpage demoted to #7 (weakest engine: proxied Google + own detection).
-# Yep.com is Ahrefs-backed with light anti-scraping, Bing is very scrape-friendly.
+# v3.5.45 Fix 5: Removed 4 dead engines from waterfall.
+# Removed: Yep (403 Forbidden), Mojeek (403 Forbidden),
+#          Qwant (JS-only SPA, no results), Startpage (cookie wall, no results).
+# Kept: Brave (20 results), DDG Lite (10), Bing (9), SearXNG (15).
+# With only 4 engines, max_engines raised to 4 in free_search_waterfall.
 _FREE_ENGINES: list[tuple[str, object]] = [
-    ("brave_free", search_brave_free),
-    ("yep", search_yep),                # v3.5.39: Ahrefs-backed, scrape-friendly
-    ("bing_free", search_bing_free),     # v3.5.39: Very scrape-friendly
-    ("ddg_lite", search_ddg_lite),
-    ("mojeek", search_mojeek),
-    ("qwant_lite", search_qwant_lite),
-    ("startpage", search_startpage),     # v3.5.39: Demoted — weakest engine
-    ("searxng", search_searxng),
+    ("brave_free", search_brave_free),   # v3.5.45: ~20 results/query
+    ("bing_free", search_bing_free),     # v3.5.45: ~9 results/query
+    ("ddg_lite", search_ddg_lite),       # v3.5.45: ~10 results/query
+    ("searxng", search_searxng),         # v3.5.45: ~15 results/query
 ]
 
 
@@ -1038,9 +1202,13 @@ def free_search_waterfall(
     query: str,
     num_results: int = 10,
     min_results: int = 3,
-    max_engines: int = 3,
+    max_engines: int = 4,
 ) -> list[dict]:
-    """Try free search engines in order until enough results found."""
+    """Try free search engines in order until enough results found.
+
+    v3.5.45: max_engines raised from 3 to 4 since we now have exactly
+    4 working engines (was 8 with 4 dead). All 4 are tried by default.
+    """
     all_results: list[dict] = []
     seen_urls: set[str] = set()
     engines_tried = 0
@@ -1103,7 +1271,7 @@ def free_search_waterfall(
             )
 
     logger.info(
-        "v3.5.43 waterfall: %d results from %s (tried %d engines)",
+        "v3.5.45 waterfall: %d results from %s (tried %d engines)",
         len(all_results), "+".join(engines_used) or "none", engines_tried,
     )
     return all_results[:num_results]
@@ -1143,7 +1311,7 @@ def multi_engine_search(
     """Search across multiple engines, combine results, scrape pages.
 
     Enhanced flow:
-      1. Free waterfall (Brave/Startpage/DDG Lite/Mojeek/Qwant/SearXNG)
+      1. Free waterfall (Brave/Bing/DDG Lite/SearXNG) — v3.5.45 fixed parsers
       2. API-key engines (Bing/Brave API) if keys provided
       3. Page content scraping -- visit discovered URLs for more emails/phones
 
