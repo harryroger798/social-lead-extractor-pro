@@ -1,4 +1,4 @@
-"""B2B platform scrapers for SnapLeads v3.5.49.
+"""B2B platform scrapers for SnapLeads v3.5.50.
 
 Dedicated scrapers for high-value B2B lead sources identified by Claude Opus 4.6:
 
