@@ -1675,7 +1675,19 @@ def scrape_generic_email_dorking(
                     if _is_private_ip(hostname):
                         continue
 
-                    resp = session.get(url)
+                    resp = session.get(url, allow_redirects=False)
+                    # Follow redirects manually with SSRF check
+                    redirect_count = 0
+                    while resp.status_code in (301, 302, 303, 307, 308) and redirect_count < 5:
+                        redirect_url = resp.headers.get("Location", "")
+                        if not redirect_url:
+                            break
+                        redir_parsed = urlparse(redirect_url)
+                        redir_host = redir_parsed.hostname or ""
+                        if _is_private_ip(redir_host):
+                            break
+                        resp = session.get(redirect_url, allow_redirects=False)
+                        redirect_count += 1
                     if resp.status_code != 200:
                         continue
 
@@ -1738,7 +1750,11 @@ def _extract_company_from_title(title: str) -> str:
             candidate = parts[0].strip()
             # Skip generic words
             lower = candidate.lower()
-            if lower not in ("contact", "about", "team", "home", "welcome"):
+            if lower not in (
+                "contact", "contact us",
+                "about", "about us",
+                "team", "home", "welcome",
+            ):
                 return candidate[:80]
             # Try second part
             if len(parts) > 1:

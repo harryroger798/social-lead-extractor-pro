@@ -687,7 +687,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # there is zero relevant data in the DB — scanning 50 S3 CSV files
         # (~3.5 GB) wastes 60-120+ seconds and makes the UI appear frozen at 5%.
         _B2B_ONLY_PLATFORMS = {
-            "indiamart", "apollo", "tradeindia", "exportersindia",
+            "generic_email_dork", "indiamart", "apollo", "tradeindia", "exportersindia",
             "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
         }
         _has_social_platforms = any(
