@@ -1132,13 +1132,18 @@ _SKIP_DOMAINS = {
 
 def scrape_page_emails(
     urls: list[str],
-    max_urls: int = 8,
-    delay: float = 2.0,
+    max_urls: int = 15,
+    delay: float = 1.0,
 ) -> dict:
     """Visit URLs with httpx and extract emails/phones from full page content.
 
     Skips social media domains (they block bots). Focuses on company websites,
     blogs, directories, news sites where contact info is publicly available.
+
+    v3.5.50 Fix 1: Raised max_urls 8→15, reduced delay 2.0→1.0s.
+    In v3.5.49 Group E+F, dorking found 10+ relevant URLs per platform
+    but only visited 8, missing ~40% of potential contact pages.
+    The 2s delay was also excessive for non-social-media sites.
     """
     all_emails: list[str] = []
     all_phones: list[str] = []
@@ -1160,7 +1165,7 @@ def scrape_page_emails(
         except Exception:
             continue
 
-    with AdSession(timeout=10.0, rate_limit=True, min_delay=2.0) as client:
+    with AdSession(timeout=10.0, rate_limit=True, min_delay=delay) as client:
         for url in filtered_urls[:max_urls]:
             try:
                 resp = client.get(url, timeout=10.0)
@@ -1385,10 +1390,11 @@ def multi_engine_search(
             engines_used.append("brave_api")
 
     # -- Page content scraping (visit discovered URLs for more emails) --
+    # v3.5.50 Fix 1: Raised max_urls 8→15, reduced delay 2→1s for higher yield.
     if scrape_pages and all_sources:
         try:
             page_results = scrape_page_emails(
-                all_sources, max_urls=8, delay=2.0,
+                all_sources, max_urls=15, delay=1.0,
             )
             if page_results.get("emails"):
                 all_emails.extend(page_results["emails"])

@@ -1094,29 +1094,39 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
 
         # ── Google Dorking for non-Reddit platforms ───────────────────────
         # v3.5.36: Skip Patchright (use_patchright=False), use multi-engine only
+        # v3.5.50 Fix 3: Cap total dorking time to 5 min to prevent budget starvation.
+        # In v3.5.49 Group E+F, dorking took 20-25 min (5 min × 4-5 platforms),
+        # exhausting the pipeline budget and preventing enrichment from running.
+        _dorking_sources: list[str] = []  # v3.5.50 Fix 5: Collect sources for dedicated page scrape
         if config.use_google_dorking and non_reddit_platforms and not _skip_dorking:
+            import time as _time_dork
+            _dorking_start = _time_dork.monotonic()
+            _DORKING_TOTAL_CAP = 300.0  # v3.5.50: 5 min total cap for ALL platforms
             await _update_progress(session_id, _calc_progress(),
-                f"Google Dorking: {len(non_reddit_platforms)} platforms...",
+                f"Google Dorking: {len(non_reddit_platforms)} platforms (5min cap)...",
                 "", *_count_leads())
 
             # v3.5.42 FIX-5: Budget-based dorking page control.
-            # v3.5.41 reduced pages when DB returned >= 200 leads, but dorking
-            # is a DIFFERENT source — more DB leads ≠ less need for dorking.
-            # Now pages are determined solely by remaining pipeline budget.
             _dork_pages = config.pages_per_keyword
             _budget_remaining = budget.remaining
             if _budget_remaining < 60:
                 _dork_pages = 1
             elif _budget_remaining < 120:
                 _dork_pages = max(1, min(_dork_pages, 2))
-            # else: use full pages (default)
             logger.info(
-                "v3.5.42: Dorking pages=%d (budget_remaining=%.0fs)",
-                _dork_pages, _budget_remaining,
+                "v3.5.50: Dorking pages=%d (budget_remaining=%.0fs, total_cap=%.0fs)",
+                _dork_pages, _budget_remaining, _DORKING_TOTAL_CAP,
             )
 
             for idx, platform in enumerate(non_reddit_platforms):
-                # v3.5.36 Fix 7: Skip to next if platform returns 0 after 15s
+                # v3.5.50 Fix 3: Check dorking time cap
+                _dorking_elapsed = _time_dork.monotonic() - _dorking_start
+                if _dorking_elapsed >= _DORKING_TOTAL_CAP:
+                    logger.info(
+                        "v3.5.50: Dorking time cap reached (%.0fs >= %.0fs), skipping remaining %d platforms",
+                        _dorking_elapsed, _DORKING_TOTAL_CAP, len(non_reddit_platforms) - idx,
+                    )
+                    break
                 await _update_progress(session_id, _calc_progress(),
                     f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                     platform, *_count_leads())
@@ -1144,6 +1154,8 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                             "source_url": result["sources"][0] if result.get("sources") else "",
                             "keyword": result["keyword"],
                         })
+                    # v3.5.50 Fix 5: Collect dorking sources for dedicated page scrape pass
+                    _dorking_sources.extend(result.get("sources", []))
                 await _update_progress(session_id, _calc_progress(),
                     f"Google Dorking: {platform} done — {_count_leads()[0]} leads",
                     platform, *_count_leads())
@@ -1151,6 +1163,53 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         elif _skip_dorking and config.use_google_dorking:
             logger.info("v3.5.36: Skipped dorking (short-circuit with %d unique emails)", _unique_emails)
             current_step += 1
+
+        # ── v3.5.50 Fix 5: Dedicated page scrape pass for dorking sources ──
+        # In v3.5.49 Group E+F, dorking found 10-30 relevant URLs per session
+        # but extracted 0 emails from snippets alone. Search engine snippets
+        # rarely contain full email addresses. This dedicated pass visits
+        # the discovered URLs to extract emails/phones from the full page.
+        if _dorking_sources and not budget.is_exhausted(reserve_secs=60.0):
+            _unique_dork_sources = list(dict.fromkeys(_dorking_sources))  # dedup preserving order
+            _pre_scrape_count = len(all_leads)
+            logger.info(
+                "v3.5.50: Starting dedicated page scrape for %d dorking sources",
+                len(_unique_dork_sources),
+            )
+            await _update_progress(session_id, _calc_progress(),
+                f"Scraping {len(_unique_dork_sources)} dorking pages for contacts...",
+                "page_scrape", *_count_leads())
+            try:
+                import asyncio as _aio_pagescrape
+                from app.services.multi_engine_search import scrape_page_emails
+                _ps_loop = _aio_pagescrape.get_running_loop()
+                _page_results = await _ps_loop.run_in_executor(
+                    None, scrape_page_emails, _unique_dork_sources, 20, 1.0,
+                )
+                for email in _page_results.get("emails", []):
+                    all_leads.append({
+                        "email": email, "phone": "", "name": "",
+                        "platform": "dorking_page_scrape",
+                        "source_url": _page_results.get("urls_visited", [""])[0] if _page_results.get("urls_visited") else "",
+                        "keyword": config.keywords[0] if config.keywords else "",
+                    })
+                for phone in _page_results.get("phones", []):
+                    all_leads.append({
+                        "email": "", "phone": phone, "name": "",
+                        "platform": "dorking_page_scrape",
+                        "source_url": _page_results.get("urls_visited", [""])[0] if _page_results.get("urls_visited") else "",
+                        "keyword": config.keywords[0] if config.keywords else "",
+                    })
+                _new_from_scrape = len(all_leads) - _pre_scrape_count
+                logger.info(
+                    "v3.5.50: Dedicated page scrape yielded %d new leads from %d URLs visited",
+                    _new_from_scrape, len(_page_results.get("urls_visited", [])),
+                )
+            except Exception as e:
+                logger.warning("v3.5.50: Dedicated page scrape failed: %s", e)
+            await _update_progress(session_id, _calc_progress(),
+                f"Page scrape done — {_count_leads()[0]} leads",
+                "page_scrape", *_count_leads())
 
         # ── Direct platform scraping (Patchright) — LEGACY ─────────────
         # v3.5.36: Skip if parallel live scraping already ran (same gate)
@@ -1326,6 +1385,13 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         }
 
         b2b_platforms_raw = [p for p in config.platforms if p in _ALL_B2B]
+        # v3.5.50 Fix 4: Auto-inject generic_email_dork when dorking is enabled.
+        # In v3.5.49 Group E+F, generic_email_dork was added but never activated
+        # because users don't manually select it. When use_google_dorking is ON,
+        # automatically add generic_email_dork to B2B platforms for maximum yield.
+        if config.use_google_dorking and "generic_email_dork" not in b2b_platforms_raw:
+            b2b_platforms_raw.append("generic_email_dork")
+            logger.info("v3.5.50: Auto-injected generic_email_dork (dorking enabled)")
         # v3.5.34 P4: Filter by relevance
         loc_lower = location_hint.lower() if location_hint else ""
         is_indian_query = any(re.search(r'\b' + re.escape(city) + r'\b', loc_lower) for city in _INDIAN_LOCATIONS)
@@ -1374,8 +1440,20 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # ── v3.5.4: Waterfall Enrichment ────────────────────────────────────
         # Auto-fill missing email/phone/LinkedIn via Hunter, GitHub, website crawl
         # v3.5.37: Budget-aware — skip if exhausted, cap at remaining budget
-        if all_leads and not budget.is_exhausted():
-            _enrich_budget = budget.stage_timeout("enrichment", 60.0)
+        # v3.5.50 Fix 2: Enrichment ALWAYS runs if leads exist.
+        # In v3.5.49 Group E+F, budget was exhausted after dorking (20+ min),
+        # causing enrichment to be skipped entirely. Enrichment is critical
+        # for filling missing email/phone fields. Now it always runs with
+        # a minimum 45s budget regardless of pipeline budget exhaustion.
+        _enrich_budget_raw = budget.remaining - 15.0  # reserve 15s for save
+        _enrich_budget_min = 45.0  # v3.5.50: minimum enrichment budget
+        if all_leads:
+            # v3.5.50 Fix 2: Use at least 45s for enrichment even if budget exhausted
+            _enrich_budget = max(budget.stage_timeout("enrichment", 60.0), _enrich_budget_min)
+            logger.info(
+                "v3.5.50: Enrichment budget=%.0fs (raw_remaining=%.0fs, min=%.0fs)",
+                _enrich_budget, _enrich_budget_raw, _enrich_budget_min,
+            )
             await _update_progress(session_id, _calc_progress(),
                 f"Waterfall enrichment: filling missing fields (budget {_enrich_budget:.0f}s)...",
                 "enrichment", *_count_leads())
