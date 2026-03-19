@@ -1165,7 +1165,7 @@ def scrape_page_emails(
         except Exception:
             continue
 
-    with AdSession(timeout=10.0, rate_limit=True, min_delay=2.0) as client:
+    with AdSession(timeout=10.0, rate_limit=True, min_delay=delay) as client:
         for url in filtered_urls[:max_urls]:
             try:
                 resp = client.get(url, timeout=10.0)
