@@ -32,7 +32,7 @@ import logging
 import re
 import socket
 from typing import Optional
-from urllib.parse import quote_plus, urlparse
+from urllib.parse import quote_plus, urljoin, urlparse
 
 from app.services.anti_detection import AdSession
 from app.services.extractor import extract_emails, extract_phones
@@ -1675,18 +1675,22 @@ def scrape_generic_email_dorking(
                     if _is_private_ip(hostname):
                         continue
 
-                    resp = session.get(url, allow_redirects=False)
+                    current_url = url
+                    resp = session.get(current_url, allow_redirects=False)
                     # Follow redirects manually with SSRF check
                     redirect_count = 0
                     while resp.status_code in (301, 302, 303, 307, 308) and redirect_count < 5:
                         redirect_url = resp.headers.get("Location", "")
                         if not redirect_url:
                             break
-                        redir_parsed = urlparse(redirect_url)
+                        # Resolve relative redirects (e.g. /contact) against current URL
+                        next_url = urljoin(current_url, redirect_url)
+                        redir_parsed = urlparse(next_url)
                         redir_host = redir_parsed.hostname or ""
                         if _is_private_ip(redir_host):
                             break
-                        resp = session.get(redirect_url, allow_redirects=False)
+                        resp = session.get(next_url, allow_redirects=False)
+                        current_url = next_url
                         redirect_count += 1
                     if resp.status_code != 200:
                         continue
