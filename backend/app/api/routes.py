@@ -1140,6 +1140,10 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # In v3.5.49 Group E+F, dorking took 20-25 min (5 min × 4-5 platforms),
         # exhausting the pipeline budget and preventing enrichment from running.
         _dorking_sources: list[str] = []  # v3.5.50 Fix 5: Collect sources for dedicated page scrape
+        # v3.5.53: Initialize _company_website_urls here (was only set at line ~1532
+        # in B2B section, causing UnboundLocalError when dorking page scrape at
+        # line ~1248 runs before B2B). The B2B section will populate it later.
+        _company_website_urls: list[str] = []
         if config.use_google_dorking and non_reddit_platforms and not _skip_dorking:
             import time as _time_dork
             _dorking_start = _time_dork.monotonic()
