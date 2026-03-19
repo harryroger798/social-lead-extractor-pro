@@ -1092,6 +1092,42 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 _unique_emails,
             )
 
+        # ── v3.5.51 Fix 1: Run generic_email_dork FIRST (dedicated phase) ─
+        # In v3.5.50 Group F, generic_email_dork always returned 0 because it
+        # ran AFTER platform dorking exhausted all search engines. By running
+        # it here with its own 60s budget, engines are fresh and responsive.
+        if _run_generic_email_dork and not _skip_dorking:
+            import time as _time_ged
+            _ged_start = _time_ged.monotonic()
+            _GED_BUDGET = 60.0  # 60s dedicated budget for generic email dorking
+            await _update_progress(session_id, _calc_progress(),
+                "Generic Email Dorking (dedicated phase)...",
+                "generic_email_dork", *_count_leads())
+            try:
+                import asyncio as _aio_ged
+                from app.services.b2b_scrapers import scrape_generic_email_dorking
+                _ged_loop = _aio_ged.get_running_loop()
+                for kw_parsed in parsed_keywords:
+                    _ged_elapsed = _time_ged.monotonic() - _ged_start
+                    if _ged_elapsed >= _GED_BUDGET:
+                        logger.info("v3.5.51: Generic email dork budget exhausted (%.0fs)", _ged_elapsed)
+                        break
+                    _ged_kw = kw_parsed.keyword
+                    _ged_loc = kw_parsed.location or location_hint
+                    _ged_leads = await _ged_loop.run_in_executor(
+                        None, scrape_generic_email_dorking, _ged_kw, _ged_loc, 50,
+                    )
+                    all_leads.extend(_ged_leads)
+                    logger.info(
+                        "v3.5.51: Generic email dork for '%s' yielded %d leads (%.0fs)",
+                        _ged_kw, len(_ged_leads), _time_ged.monotonic() - _ged_start,
+                    )
+            except Exception as e:
+                logger.warning("v3.5.51: Generic email dork failed: %s", e)
+            await _update_progress(session_id, _calc_progress(),
+                f"Generic Email Dorking done — {_count_leads()[0]} leads",
+                "generic_email_dork", *_count_leads())
+
         # ── Google Dorking for non-Reddit platforms ───────────────────────
         # v3.5.36: Skip Patchright (use_patchright=False), use multi-engine only
         # v3.5.50 Fix 3: Cap total dorking time to 5 min to prevent budget starvation.
@@ -1101,9 +1137,14 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         if config.use_google_dorking and non_reddit_platforms and not _skip_dorking:
             import time as _time_dork
             _dorking_start = _time_dork.monotonic()
-            _DORKING_TOTAL_CAP = 300.0  # v3.5.50: 5 min total cap for ALL platforms
+            # v3.5.51 Fix 4: Reduce dorking cap for multi-platform sessions.
+            # In v3.5.50 Group F T21, dorking consumed 300-380s across 5 platforms,
+            # starving enrichment to only 45s minimum floor. For sessions with >3
+            # platforms, cap dorking at 180s to leave more budget for enrichment.
+            _n_platforms = len(non_reddit_platforms)
+            _DORKING_TOTAL_CAP = 180.0 if _n_platforms > 3 else 300.0
             await _update_progress(session_id, _calc_progress(),
-                f"Google Dorking: {len(non_reddit_platforms)} platforms (5min cap)...",
+                f"Google Dorking: {_n_platforms} platforms ({_DORKING_TOTAL_CAP:.0f}s cap)...",
                 "", *_count_leads())
 
             # v3.5.42 FIX-5: Budget-based dorking page control.
@@ -1164,11 +1205,47 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             logger.info("v3.5.36: Skipped dorking (short-circuit with %d unique emails)", _unique_emails)
             current_step += 1
 
-        # ── v3.5.50 Fix 5: Dedicated page scrape pass for dorking sources ──
-        # In v3.5.49 Group E+F, dorking found 10-30 relevant URLs per session
-        # but extracted 0 emails from snippets alone. Search engine snippets
-        # rarely contain full email addresses. This dedicated pass visits
-        # the discovered URLs to extract emails/phones from the full page.
+        # ── v3.5.51 Fix 2: Filter social media URLs + add company websites ─
+        # In v3.5.50 Group F T21, all 55 dorking sources were social media URLs
+        # (linkedin.com, facebook.com) from site:platform.com dork queries.
+        # These are ALL filtered by _SKIP_DOMAINS in scrape_page_emails(),
+        # resulting in 0 URLs visited (0.087s). Pre-filter here + add company
+        # website URLs from DB leads (Fix 3) which are REAL business pages.
+        _social_url_domains = {
+            "linkedin.com", "facebook.com", "instagram.com", "twitter.com",
+            "x.com", "tiktok.com", "pinterest.com", "reddit.com",
+            "youtube.com", "google.com", "bing.com", "duckduckgo.com",
+            "search.brave.com", "searx.be", "searx.tiekoetter.com",
+        }
+        if _dorking_sources:
+            _raw_count = len(_dorking_sources)
+            _filtered_dork_sources: list[str] = []
+            for _ds_url in _dorking_sources:
+                try:
+                    from urllib.parse import urlparse as _url_parse_ds
+                    _ds_parsed = _url_parse_ds(_ds_url)
+                    _ds_domain = (_ds_parsed.netloc or "").lower()
+                    _ds_base = ".".join(_ds_domain.split(".")[-2:]) if _ds_domain else ""
+                    if _ds_base not in _social_url_domains and _ds_domain not in _social_url_domains:
+                        _filtered_dork_sources.append(_ds_url)
+                except Exception:
+                    continue
+            _dropped = _raw_count - len(_filtered_dork_sources)
+            if _dropped > 0:
+                logger.info(
+                    "v3.5.51: Filtered %d social media URLs from %d dorking sources (%d remaining)",
+                    _dropped, _raw_count, len(_filtered_dork_sources),
+                )
+            _dorking_sources = _filtered_dork_sources
+
+        # Add company website URLs from DB leads (Fix 3) to page scrape pool
+        if _company_website_urls:
+            _dorking_sources.extend(_company_website_urls)
+            logger.info(
+                "v3.5.51: Added %d company website URLs to page scrape pool (total: %d)",
+                len(_company_website_urls), len(_dorking_sources),
+            )
+
         if _dorking_sources and not budget.is_exhausted(reserve_secs=60.0):
             _unique_dork_sources = list(dict.fromkeys(_dorking_sources))  # dedup preserving order
             _pre_scrape_count = len(all_leads)
@@ -1385,13 +1462,17 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         }
 
         b2b_platforms_raw = [p for p in config.platforms if p in _ALL_B2B]
-        # v3.5.50 Fix 4: Auto-inject generic_email_dork when dorking is enabled.
-        # In v3.5.49 Group E+F, generic_email_dork was added but never activated
-        # because users don't manually select it. When use_google_dorking is ON,
-        # automatically add generic_email_dork to B2B platforms for maximum yield.
-        if config.use_google_dorking and "generic_email_dork" not in b2b_platforms_raw:
-            b2b_platforms_raw.append("generic_email_dork")
-            logger.info("v3.5.50: Auto-injected generic_email_dork (dorking enabled)")
+        # v3.5.51 Fix 1: Run generic_email_dork FIRST with its own budget.
+        # In v3.5.50 Group F, generic_email_dork always returned 0 because it ran
+        # AFTER platform dorking exhausted all search engines. By running it as
+        # the FIRST B2B scraper (before platform dorking), engines are fresh.
+        # Remove from b2b_platforms list — it will run in its own dedicated phase.
+        _run_generic_email_dork = False
+        if config.use_google_dorking:
+            _run_generic_email_dork = True
+            # Remove from b2b list so it doesn't also run in the B2B loop
+            b2b_platforms_raw = [p for p in b2b_platforms_raw if p != "generic_email_dork"]
+            logger.info("v3.5.51: generic_email_dork will run in dedicated phase (before dorking)")
         # v3.5.34 P4: Filter by relevance
         loc_lower = location_hint.lower() if location_hint else ""
         is_indian_query = any(re.search(r'\b' + re.escape(city) + r'\b', loc_lower) for city in _INDIAN_LOCATIONS)
@@ -1437,6 +1518,41 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     platform, *_count_leads())
             current_step += 1
 
+        # ── v3.5.51 Fix 3: Extract company website URLs from DB leads ─────
+        # DB leads often have profile_url or source_url pointing to company
+        # websites. These are REAL business pages (not social media), so they
+        # will pass the _SKIP_DOMAINS filter in scrape_page_emails().
+        # Add these to the page scrape pool for contact extraction.
+        _company_website_urls: list[str] = []
+        if all_leads:
+            from urllib.parse import urlparse as _url_parse_leads
+            _social_tlds = {
+                "linkedin.com", "facebook.com", "instagram.com", "twitter.com",
+                "x.com", "tiktok.com", "pinterest.com", "reddit.com",
+                "youtube.com", "google.com", "bing.com", "duckduckgo.com",
+            }
+            _seen_lead_domains: set[str] = set()
+            for lead in all_leads:
+                for url_field in ("source_url", "profile_url", "website"):
+                    url = lead.get(url_field, "")
+                    if not url or not url.startswith("http"):
+                        continue
+                    try:
+                        parsed = _url_parse_leads(url)
+                        domain = (parsed.netloc or "").lower()
+                        base = ".".join(domain.split(".")[-2:]) if domain else ""
+                        if not base or base in _social_tlds or base in _seen_lead_domains:
+                            continue
+                        _seen_lead_domains.add(base)
+                        _company_website_urls.append(url)
+                    except Exception:
+                        continue
+            if _company_website_urls:
+                logger.info(
+                    "v3.5.51: Extracted %d company website URLs from DB leads for page scraping",
+                    len(_company_website_urls),
+                )
+
         # ── v3.5.4: Waterfall Enrichment ────────────────────────────────────
         # Auto-fill missing email/phone/LinkedIn via Hunter, GitHub, website crawl
         # v3.5.37: Budget-aware — skip if exhausted, cap at remaining budget
@@ -1448,8 +1564,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         _enrich_budget_raw = budget.remaining - 15.0  # reserve 15s for save
         _enrich_budget_min = 45.0  # v3.5.50: minimum enrichment budget
         if all_leads:
-            # v3.5.50 Fix 2: Use at least 45s for enrichment even if budget exhausted
-            _enrich_budget = max(budget.stage_timeout("enrichment", 60.0), _enrich_budget_min)
+            # v3.5.51 Fix 5: Increased enrichment timeout from 60s to 90s.
+            # In v3.5.50 Group F T22, enrichment had only 60s stage timeout which
+            # processed only 30/137 leads before timing out. With 90s, we can
+            # process 45-50 leads per session (50% more enrichment coverage).
+            _enrich_budget = max(budget.stage_timeout("enrichment", 90.0), _enrich_budget_min)
             logger.info(
                 "v3.5.50: Enrichment budget=%.0fs (raw_remaining=%.0fs, min=%.0fs)",
                 _enrich_budget, _enrich_budget_raw, _enrich_budget_min,
