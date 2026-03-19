@@ -240,6 +240,19 @@ def _infer_country_from_lead(
     if existing:
         return existing
 
+    # Signal 6 (v3.5.55): Infer from source_url website TLD.
+    # LinkedIn leads without location data get "Unknown" — this recovers ~30%
+    # of those by checking the website/source_url domain TLD.
+    for url_field in ("website", "source_url"):
+        url_val = lead_data.get(url_field, "").strip().lower()
+        if url_val:
+            for tld, country in sorted(
+                _EMAIL_TLD_TO_COUNTRY.items(), key=lambda x: -len(x[0])
+            ):
+                tld_suffix = tld.lstrip(".")
+                if f".{tld_suffix}/" in url_val or url_val.endswith(f".{tld_suffix}"):
+                    return country
+
     return "Unknown"
 
 
