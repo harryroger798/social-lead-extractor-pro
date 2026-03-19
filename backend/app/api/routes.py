@@ -1096,6 +1096,12 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # In v3.5.50 Group F, generic_email_dork always returned 0 because it
         # ran AFTER platform dorking exhausted all search engines. By running
         # it here with its own 60s budget, engines are fresh and responsive.
+        # v3.5.52: Initialize here (was only set at line ~1470 in B2B section,
+        # causing UnboundLocalError when dorking runs before B2B).
+        _run_generic_email_dork = (
+            config.use_google_dorking
+            and any(p == "generic_email_dork" for p in config.platforms)
+        )
         if _run_generic_email_dork and not _skip_dorking:
             import time as _time_ged
             _ged_start = _time_ged.monotonic()
