@@ -23,15 +23,15 @@ const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', color: '#FF0000', group: 'social' },
   { id: 'pinterest', name: 'Pinterest', color: '#E60023', group: 'social' },
   { id: 'email', name: 'Email', color: '#6366F1', group: 'social' },
-  // B2B Platforms (v3.5.4)
+  // B2B Platforms (v3.5.57 — replaced Apollo/RocketReach/Crunchbase with proven alternatives)
   { id: 'indiamart', name: 'IndiaMART', color: '#1B6AC5', group: 'b2b' },
-  { id: 'apollo', name: 'Apollo.io', color: '#6C3AED', group: 'b2b' },
+  { id: 'email_finder_b2b', name: 'Email Finder', color: '#6C3AED', group: 'b2b' },
   { id: 'tradeindia', name: 'TradeIndia', color: '#E65100', group: 'b2b' },
   { id: 'exportersindia', name: 'ExportersIndia', color: '#2E7D32', group: 'b2b' },
   { id: 'justdial', name: 'JustDial', color: '#FFB300', group: 'b2b' },
   { id: 'google_maps_b2b', name: 'Google Maps B2B', color: '#34A853', group: 'b2b' },
-  { id: 'rocketreach', name: 'RocketReach', color: '#FF6B35', group: 'b2b' },
-  { id: 'crunchbase', name: 'Crunchbase', color: '#0288D1', group: 'b2b' },
+  { id: 'github_b2b', name: 'GitHub', color: '#24292F', group: 'b2b' },
+  { id: 'business_directories', name: 'Business Dirs', color: '#0288D1', group: 'b2b' },
 ];
 
 type Step = 'config' | 'running' | 'complete';
