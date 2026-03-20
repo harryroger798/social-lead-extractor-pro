@@ -1111,9 +1111,18 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # it here with its own 60s budget, engines are fresh and responsive.
         # v3.5.52: Initialize here (was only set at line ~1470 in B2B section,
         # causing UnboundLocalError when dorking runs before B2B).
+        # v3.5.56 Fix 3: Auto-inject generic_email_dork when Apollo or RocketReach
+        # are selected — those platforms gate data behind auth (401/403), so
+        # generic email dorking is the only free alternative that actually works.
+        _has_auth_gated_b2b = any(
+            p in ("apollo", "rocketreach") for p in config.platforms
+        )
         _run_generic_email_dork = (
             config.use_google_dorking
-            and any(p == "generic_email_dork" for p in config.platforms)
+            and (
+                any(p == "generic_email_dork" for p in config.platforms)
+                or _has_auth_gated_b2b  # v3.5.56: auto-inject for Apollo/RocketReach
+            )
         )
         if _run_generic_email_dork and not _skip_dorking:
             import time as _time_ged
@@ -1587,11 +1596,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         _enrich_budget_raw = budget.remaining - 15.0  # reserve 15s for save
         _enrich_budget_min = 45.0  # v3.5.50: minimum enrichment budget
         if all_leads:
-            # v3.5.51 Fix 5: Increased enrichment timeout from 60s to 90s.
-            # In v3.5.50 Group F T22, enrichment had only 60s stage timeout which
-            # processed only 30/137 leads before timing out. With 90s, we can
-            # process 45-50 leads per session (50% more enrichment coverage).
-            _enrich_budget = max(budget.stage_timeout("enrichment", 90.0), _enrich_budget_min)
+            # v3.5.56 Fix 5: Raised enrichment timeout from 90s to 120s.
+            # With ThreadPoolExecutor(10) and 15s per-lead timeout, 90s budget
+            # processes ~60 leads (90/15*10). Raising to 120s allows ~80 leads,
+            # significantly improving email/phone coverage on large result sets.
+            _enrich_budget = max(budget.stage_timeout("enrichment", 120.0), _enrich_budget_min)
             logger.info(
                 "v3.5.50: Enrichment budget=%.0fs (raw_remaining=%.0fs, min=%.0fs)",
                 _enrich_budget, _enrich_budget_raw, _enrich_budget_min,
@@ -1612,15 +1621,14 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                     1 for l in all_leads
                     if not l.get("email") or not l.get("phone")
                 )
-                # v3.5.44 Fix 7: Raised enrichment caps from 15%/100/15 to 25%/150/25.
-                # In v3.5.43 Group A, enrichment was capped at 15 leads even when
-                # 100+ leads were missing email/phone. This left most leads
-                # unenriched. Raising to 25% with floor 25 and max 150 gives
-                # significantly more enrichment coverage.
-                _enrich_cap = min(int(_total_leads * 0.25), 150)
+                # v3.5.56 Fix 5: Raised enrichment caps from 25%/150/25 to 30%/200/30.
+                # With enrichment budget raised to 120s and ThreadPoolExecutor(10),
+                # we can process ~80 leads. Raising cap to 200 and floor to 30
+                # ensures more leads get enriched per session.
+                _enrich_cap = min(int(_total_leads * 0.30), 200)
                 _enrich_cap = min(_enrich_cap, _leads_missing_any) if _leads_missing_any > 0 else 0
                 if _leads_missing_any > 0:
-                    _enrich_cap = max(_enrich_cap, 25)  # v3.5.44: raised floor from 15→25
+                    _enrich_cap = max(_enrich_cap, 30)  # v3.5.56: raised floor from 25→30
                 logger.info(
                     "v3.5.44: Enrichment cap=%d (total=%d, missing_any=%d, 25%%=%d)",
                     _enrich_cap, _total_leads, _leads_missing_any,
