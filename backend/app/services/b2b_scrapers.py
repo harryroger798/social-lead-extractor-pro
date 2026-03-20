@@ -792,31 +792,83 @@ def scrape_tradeindia(
                 logger.warning("TradeIndia page %d error: %s", page_num, exc)
                 break
 
-    # Method 2: Google dorking for TradeIndia
-    try:
-        dork = f'site:tradeindia.com "{search_term}"'
-        results = free_search_waterfall(dork, num_results=10, min_results=2)
-        for r in results:
-            text = f"{r.get('title', '')} {r.get('snippet', '')}"
-            link = r.get("link", "")
-            title = r.get("title", "")
+    # Method 2: Enhanced Google dorking for TradeIndia (v3.5.56)
+    # TradeIndia migrated to JS SPA — direct scrape returns empty HTML shell.
+    # Use multiple dork patterns targeting Google-indexed company profile pages.
+    _ti_dork_patterns = [
+        f'site:tradeindia.com "{search_term}"',
+        f'site:tradeindia.com/fp inurl:fp "{query}"',
+        f'site:tradeindia.com "{query}" "contact" OR "email" OR "phone"',
+        f'"tradeindia.com" "{query}" email contact',
+    ]
+    for dork in _ti_dork_patterns:
+        if len(leads) >= max_results:
+            break
+        try:
+            results = free_search_waterfall(dork, num_results=10, min_results=2)
+            for r in results:
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                link = r.get("link", "")
+                title = r.get("title", "")
 
-            company_name = title.split(" - ")[0].strip() if " - " in title else ""
-            emails = extract_emails(text)
-            phones = extract_phones(text)
+                company_name = title.split(" - ")[0].strip() if " - " in title else ""
+                emails = extract_emails(text)
+                phones = extract_phones(text)
 
-            if company_name or emails or phones:
-                leads.append({
-                    "name": company_name,
-                    "email": emails[0] if emails else "",
-                    "phone": phones[0] if phones else "",
-                    "platform": "tradeindia",
-                    "source_url": link,
-                    "location": location,
-                    "company": company_name,
-                })
-    except Exception as exc:
-        logger.debug("TradeIndia dorking error: %s", exc)
+                if company_name or emails or phones:
+                    leads.append({
+                        "name": company_name,
+                        "email": emails[0] if emails else "",
+                        "phone": phones[0] if phones else "",
+                        "platform": "tradeindia",
+                        "source_url": link,
+                        "location": location,
+                        "company": company_name,
+                    })
+        except Exception as exc:
+            logger.debug("TradeIndia dorking error for pattern: %s", exc)
+
+    # Method 3: Google Cache scraping for TradeIndia profile pages (v3.5.56)
+    # Google caches TradeIndia company profiles with visible contact data
+    # even though the live site now renders via JavaScript.
+    _ti_cache_urls = [
+        r.get("link", "") for r in (
+            free_search_waterfall(
+                f'cache:tradeindia.com "{query}" {location}'.strip(),
+                num_results=5, min_results=1,
+            ) if len(leads) < max_results else []
+        )
+    ]
+    if _ti_cache_urls:
+        with AdSession(timeout=10.0, min_delay=2.0) as cache_session:
+            for cache_url in _ti_cache_urls[:8]:
+                if len(leads) >= max_results:
+                    break
+                try:
+                    parsed_cu = urlparse(cache_url)
+                    if _is_private_ip(parsed_cu.hostname or ""):
+                        continue
+                    resp = cache_session.get(cache_url)
+                    if resp.status_code != 200:
+                        continue
+                    page_html = _safe_response_text(resp)
+                    if not page_html:
+                        continue
+                    page_text = _strip_tags(page_html[:150_000])
+                    c_emails = extract_emails(page_text)
+                    c_phones = extract_phones(page_text)
+                    title_m = re.search(r"<title>([^<]+)</title>", page_html)
+                    c_name = _extract_company_from_title(title_m.group(1)) if title_m else ""
+                    for em in c_emails:
+                        leads.append({
+                            "name": c_name, "email": em,
+                            "phone": c_phones[0] if c_phones else "",
+                            "platform": "tradeindia",
+                            "source_url": cache_url,
+                            "location": location, "company": c_name,
+                        })
+                except Exception:
+                    pass
 
     logger.info("TradeIndia scrape: %d leads for '%s'", len(leads), search_term)
     return _dedup_leads(leads)[:max_results]
@@ -923,30 +975,81 @@ def scrape_exportersindia(
                 logger.warning("ExportersIndia page %d error: %s", page_num, exc)
                 break
 
-    # Method 2: Google dorking
-    try:
-        dork = f'site:exportersindia.com "{search_term}"'
-        results = free_search_waterfall(dork, num_results=10, min_results=2)
-        for r in results:
-            text = f"{r.get('title', '')} {r.get('snippet', '')}"
-            link = r.get("link", "")
-            title = r.get("title", "")
+    # Method 2: Enhanced Google dorking (v3.5.56)
+    # ExportersIndia search URL returns 404 — use multiple dork patterns.
+    _ei_dork_patterns = [
+        f'site:exportersindia.com "{search_term}"',
+        f'site:exportersindia.com "{query}" "contact" OR "email"',
+        f'"exportersindia.com" "{query}" email phone',
+    ]
+    for dork in _ei_dork_patterns:
+        if len(leads) >= max_results:
+            break
+        try:
+            results = free_search_waterfall(dork, num_results=10, min_results=2)
+            for r in results:
+                text = f"{r.get('title', '')} {r.get('snippet', '')}"
+                link = r.get("link", "")
+                title = r.get("title", "")
 
-            company_name = title.split(" - ")[0].strip() if " - " in title else ""
-            emails = extract_emails(text)
+                company_name = title.split(" - ")[0].strip() if " - " in title else ""
+                emails = extract_emails(text)
+                phones = extract_phones(text)
 
-            if company_name or emails:
-                leads.append({
-                    "name": company_name,
-                    "email": emails[0] if emails else "",
-                    "phone": "",
-                    "platform": "exportersindia",
-                    "source_url": link,
-                    "location": location,
-                    "company": company_name,
-                })
-    except Exception as exc:
-        logger.debug("ExportersIndia dorking error: %s", exc)
+                if company_name or emails:
+                    leads.append({
+                        "name": company_name,
+                        "email": emails[0] if emails else "",
+                        "phone": phones[0] if phones else "",
+                        "platform": "exportersindia",
+                        "source_url": link,
+                        "location": location,
+                        "company": company_name,
+                    })
+        except Exception as exc:
+            logger.debug("ExportersIndia dorking error: %s", exc)
+
+    # Method 3: Directory crawling (v3.5.56)
+    # ExportersIndia still has working category pages at /indian-manufacturers/
+    # and /industry/. Crawl relevant category pages for company listings.
+    if len(leads) < max_results:
+        _ei_dir_paths = [
+            f"/indian-manufacturers/{quote_plus(query.lower().replace(' ', '-'))}/",
+            f"/industry/{quote_plus(query.lower().replace(' ', '-'))}/",
+        ]
+        with AdSession(timeout=10.0, min_delay=3.0) as dir_session:
+            for dir_path in _ei_dir_paths:
+                if len(leads) >= max_results:
+                    break
+                try:
+                    dir_url = f"https://www.exportersindia.com{dir_path}"
+                    resp = dir_session.get(dir_url)
+                    if resp.status_code != 200:
+                        continue
+                    page_html = _safe_response_text(resp)
+                    if not page_html:
+                        continue
+                    # Extract company links from directory page
+                    dir_links = re.findall(
+                        r'<a[^>]*href="(https?://[^"]*exportersindia\.com/[^"]*?)"[^>]*>([^<]+)</a>',
+                        page_html,
+                    )
+                    for link, name in dir_links:
+                        clean_name = _strip_tags(name).strip()
+                        if (
+                            clean_name and len(clean_name) > 3
+                            and not clean_name.startswith("http")
+                            and "exportersindia" not in clean_name.lower()
+                            and len(leads) < max_results
+                        ):
+                            leads.append({
+                                "name": clean_name, "email": "", "phone": "",
+                                "platform": "exportersindia",
+                                "source_url": link,
+                                "location": location, "company": clean_name,
+                            })
+                except Exception:
+                    pass
 
     logger.info("ExportersIndia scrape: %d leads for '%s'", len(leads), search_term)
     return _dedup_leads(leads)[:max_results]
