@@ -700,8 +700,10 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # there is zero relevant data in the DB — scanning 50 S3 CSV files
         # (~3.5 GB) wastes 60-120+ seconds and makes the UI appear frozen at 5%.
         _B2B_ONLY_PLATFORMS = {
-            "generic_email_dork", "indiamart", "apollo", "tradeindia", "exportersindia",
-            "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
+            "generic_email_dork", "indiamart", "tradeindia", "exportersindia",
+            "justdial", "google_maps_b2b",
+            # v3.5.57: Replaced Apollo/RocketReach/Crunchbase
+            "email_finder_b2b", "github_b2b", "business_directories",
         }
         _has_social_platforms = any(
             p not in _B2B_ONLY_PLATFORMS for p in config.platforms
@@ -1111,17 +1113,16 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         # it here with its own 60s budget, engines are fresh and responsive.
         # v3.5.52: Initialize here (was only set at line ~1470 in B2B section,
         # causing UnboundLocalError when dorking runs before B2B).
-        # v3.5.56 Fix 3: Auto-inject generic_email_dork when Apollo or RocketReach
-        # are selected — those platforms gate data behind auth (401/403), so
-        # generic email dorking is the only free alternative that actually works.
-        _has_auth_gated_b2b = any(
-            p in ("apollo", "rocketreach") for p in config.platforms
+        # v3.5.57: Apollo/RocketReach removed — auto-inject for new B2B platforms
+        # that benefit from generic email dorking as a supplement.
+        _has_new_b2b = any(
+            p in ("email_finder_b2b", "github_b2b", "business_directories") for p in config.platforms
         )
         _run_generic_email_dork = (
             config.use_google_dorking
             and (
                 any(p == "generic_email_dork" for p in config.platforms)
-                or _has_auth_gated_b2b  # v3.5.56: auto-inject for Apollo/RocketReach
+                or _has_new_b2b  # v3.5.57: auto-inject for new B2B platforms
             )
         )
         if _run_generic_email_dork and not _skip_dorking:
@@ -1470,19 +1471,19 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             except Exception as e:
                 logger.warning("Bio link following failed: %s", e)
 
-        # ── v3.5.34 P4: B2B Platform Scraping with Relevance Gating ───────
-        # Dedicated scrapers for IndiaMART, Apollo, TradeIndia, ExportersIndia,
-        # JustDial, Google Maps B2B, RocketReach, Crunchbase
-        # v3.5.34 P4: Skip irrelevant platforms based on location context
-        # e.g. Apollo/Crunchbase/RocketReach are useless for "Plumbers Mumbai"
+        # ── v3.5.57: B2B Platform Scraping with Relevance Gating ───────
+        # Dedicated scrapers for IndiaMART, TradeIndia, ExportersIndia,
+        # JustDial, Google Maps B2B, Email Finder, GitHub, Business Directories
+        # v3.5.57: Replaced Apollo/RocketReach/Crunchbase with proven alternatives
         _ALL_B2B = {
-            "generic_email_dork", "indiamart", "apollo", "tradeindia", "exportersindia",
-            "justdial", "google_maps_b2b", "rocketreach", "crunchbase",
+            "generic_email_dork", "indiamart", "tradeindia", "exportersindia",
+            "justdial", "google_maps_b2b",
+            "email_finder_b2b", "github_b2b", "business_directories",
         }
         # v3.5.34 P4: India-specific platforms (only use when location is Indian)
         _INDIA_B2B = {"indiamart", "tradeindia", "exportersindia", "justdial"}
-        # v3.5.34 P4: Western/global platforms (skip for clearly local Indian queries)
-        _WESTERN_B2B = {"apollo", "rocketreach", "crunchbase"}
+        # v3.5.57: Global platforms (work for any location)
+        _GLOBAL_B2B = {"email_finder_b2b", "github_b2b", "business_directories"}
         # v3.5.34 P4: Known Indian location signals
         _INDIAN_LOCATIONS = {
             "india", "mumbai", "delhi", "bangalore", "bengaluru", "kolkata",
@@ -1517,7 +1518,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
             if p in _INDIA_B2B and is_western_query:
                 logger.info("P4: Skipping %s — Western query (%s)", p, loc_lower)
                 continue
-            if p in _WESTERN_B2B and is_indian_query:
+            if p in _GLOBAL_B2B and is_indian_query:
                 logger.info("P4: Skipping %s — Indian query (%s)", p, loc_lower)
                 continue
             b2b_platforms.append(p)
