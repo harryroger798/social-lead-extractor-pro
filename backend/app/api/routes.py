@@ -1482,8 +1482,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
         }
         # v3.5.34 P4: India-specific platforms (only use when location is Indian)
         _INDIA_B2B = {"indiamart", "tradeindia", "exportersindia", "justdial"}
-        # v3.5.57: Global platforms (work for any location)
-        _GLOBAL_B2B = {"email_finder_b2b", "github_b2b", "business_directories"}
+        # v3.5.58: Cleared — all 3 v3.5.57 replacements work for ANY location
+        # (Indian or global). The old Apollo/RocketReach/Crunchbase were truly
+        # Western-only, but Email Finder/GitHub/Business Directories use
+        # dorking + contact scraping which is location-agnostic.
+        _GLOBAL_B2B: set[str] = set()
         # v3.5.34 P4: Known Indian location signals
         _INDIAN_LOCATIONS = {
             "india", "mumbai", "delhi", "bangalore", "bengaluru", "kolkata",
