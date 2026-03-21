@@ -4159,3 +4159,112 @@ async def enhanced_direct_scrape(body: dict) -> dict:
         "total_leads": len(leads),
         "leads": leads,
     }
+
+
+# ─── v3.5.62: Startup Directories ────────────────────────────────────────────
+
+@router.post("/startup-directories/search")
+async def search_startup_directories(
+    background_tasks: BackgroundTasks,
+    query: str = "",
+    sources: str = "npm,pypi,github,hackernews,website_contact",
+    max_results: int = 200,
+) -> dict:
+    """Scan startup directories for leads (npm, PyPI, GitHub, HackerNews).
+
+    100% free, 100% ban-free, zero API keys required.
+    Sources: npm, pypi, github, hackernews, website_contact
+    """
+    session_id = str(uuid.uuid4())
+    source_list = [s.strip() for s in sources.split(",") if s.strip()]
+
+    async with get_db() as db:
+        await db.execute(
+            """INSERT INTO sessions
+            (id, name, status, platforms, keywords, started_at, config)
+            VALUES (?, ?, 'running', ?, ?, ?, ?)""",
+            (session_id, f"Startup Dirs: {query or 'all'}",
+             json.dumps(source_list), json.dumps([query] if query else []),
+             datetime.now().isoformat(),
+             json.dumps({"query": query, "sources": source_list})),
+        )
+        await db.commit()
+
+    background_tasks.add_task(
+        _run_startup_directory_extraction,
+        session_id, query, source_list, max_results,
+    )
+    return {"session_id": session_id, "status": "running"}
+
+
+async def _run_startup_directory_extraction(
+    session_id: str, query: str, sources: list[str], max_results: int,
+) -> None:
+    """Background task for startup directory extraction."""
+    from app.services.startup_directories import scrape_startup_directories
+
+    try:
+        leads = scrape_startup_directories(
+            query=query,
+            max_results=max_results,
+            sources=sources,
+        )
+
+        async with get_db() as db:
+            total = 0
+            emails_found = 0
+            phones_found = 0
+
+            for lead_data in leads:
+                lead_id = str(uuid.uuid4())
+                email = lead_data.get("email", "")
+                phone = lead_data.get("phone", "")
+                quality = 60 if email else (40 if phone else 20)
+
+                try:
+                    await db.execute(
+                        """INSERT OR IGNORE INTO leads
+                        (id, email, phone, name, platform, source_url, keyword, country,
+                         email_type, verified, quality_score, extracted_at, session_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (lead_id, email, phone,
+                         lead_data.get("name", ""),
+                         "startup_directories",
+                         lead_data.get("source_url", ""),
+                         query,
+                         "",
+                         "business" if email else "unknown",
+                         0, quality,
+                         datetime.now().isoformat(), session_id),
+                    )
+                    total += 1
+                    if email:
+                        emails_found += 1
+                    if phone:
+                        phones_found += 1
+                except Exception:
+                    pass
+
+            await db.execute(
+                """UPDATE sessions SET
+                    status='completed', total_leads=?, emails_found=?, phones_found=?,
+                    completed_at=?, progress=100
+                WHERE id=?""",
+                (total, emails_found, phones_found,
+                 datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
+
+        logger.info(
+            "Startup directories session %s: %d leads (%d emails, %d phones)",
+            session_id, total, emails_found, phones_found,
+        )
+
+    except Exception as e:
+        logger.error("Startup directories extraction failed: %s", e)
+        async with get_db() as db:
+            await db.execute(
+                "UPDATE sessions SET status='failed', completed_at=? WHERE id=?",
+                (datetime.now().isoformat(), session_id),
+            )
+            await db.commit()
