@@ -477,17 +477,12 @@ def scrape_job_boards(
     leads: list[dict] = []
     target_boards = set(b.lower() for b in (boards or ["indeed", "glassdoor", "craigslist", "olx", "remoteok"]))
 
-    # Method 1: Indeed — try RSS first (v3.5.60), then dorking fallback
+    # Method 1: Indeed — RSS is dead (403 since 2025), use dorking only
     if "indeed" in target_boards:
         try:
-            indeed_leads = _scrape_indeed_rss(query, location, max_results=15)
-            if indeed_leads:
-                leads.extend(indeed_leads)
-                logger.info("Indeed RSS: %d leads", len(indeed_leads))
-            else:
-                indeed_leads = _scrape_indeed_dorking(query, location, max_results=15)
-                leads.extend(indeed_leads)
-                logger.info("Indeed dorking: %d leads", len(indeed_leads))
+            indeed_leads = _scrape_indeed_dorking(query, location, max_results=15)
+            leads.extend(indeed_leads)
+            logger.info("Indeed dorking: %d leads", len(indeed_leads))
         except Exception as exc:
             logger.debug("Indeed error: %s", exc)
 
@@ -606,17 +601,20 @@ def scrape_job_boards(
                 )
             if resp.status_code == 200:
                 data = resp.json()
+                query_words = set(query.lower().split())
                 if isinstance(data, list):
-                    for job in data[1:max_results + 1]:
+                    for job in data[1:]:
                         if not isinstance(job, dict):
                             continue
                         company = job.get("company", "")
                         url = job.get("url", "")
                         position = job.get("position", "")
                         job_location = job.get("location", "")
+                        tags = " ".join(job.get("tags", []))
 
-                        text = f"{company} {position} {job.get('description', '')}".lower()
-                        if query.lower() in text:
+                        # v3.5.61: Match ANY query word in position/tags/company
+                        text = f"{company} {position} {tags}".lower()
+                        if any(w in text for w in query_words):
                             leads.append({
                                 "name": company,
                                 "email": "",
@@ -626,8 +624,56 @@ def scrape_job_boards(
                                 "location": job_location,
                                 "job_title": position,
                             })
+                        if len(leads) >= max_results:
+                            break
+                logger.info("RemoteOK: %d leads", sum(1 for l in leads if "remoteok" in l.get("source_url", "")))
         except Exception as exc:
             logger.debug("RemoteOK scrape error: %s", exc)
+
+    # Method 7: Arbeitnow JSON API (public, no auth, global jobs)
+    # v3.5.61: New source — 100+ jobs per call, always returns data
+    try:
+        with AdSession(timeout=10.0, min_delay=1.0) as session:
+            resp = session.get(
+                "https://www.arbeitnow.com/api/job-board-api",
+                headers={"Accept": "application/json"},
+            )
+        if resp.status_code == 200:
+            data = resp.json()
+            jobs = data.get("data", [])
+            query_words = set(query.lower().split())
+            loc_lower = location.lower() if location else ""
+            arbeitnow_count = 0
+            for job in jobs:
+                if not isinstance(job, dict):
+                    continue
+                company = job.get("company_name", "")
+                title = job.get("title", "")
+                job_loc = job.get("location", "")
+                job_url = job.get("url", "")
+                tags = " ".join(job.get("tags", []))
+
+                text = f"{company} {title} {tags}".lower()
+                # Match query words in title/company/tags
+                if any(w in text for w in query_words):
+                    # If location specified, prefer matching jobs
+                    if loc_lower and loc_lower not in job_loc.lower() and loc_lower not in text:
+                        continue
+                    leads.append({
+                        "name": company,
+                        "email": "",
+                        "phone": "",
+                        "platform": "job_boards",
+                        "source_url": job_url or "https://www.arbeitnow.com",
+                        "location": job_loc,
+                        "job_title": title,
+                    })
+                    arbeitnow_count += 1
+                if len(leads) >= max_results:
+                    break
+            logger.info("Arbeitnow: %d leads", arbeitnow_count)
+    except Exception as exc:
+        logger.debug("Arbeitnow scrape error: %s", exc)
 
     logger.info("Job boards total: %d leads", len(leads))
     return leads[:max_results]
