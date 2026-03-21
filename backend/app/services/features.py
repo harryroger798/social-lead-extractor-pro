@@ -282,6 +282,76 @@ def scrape_directories(
 # 3. JOB BOARDS — Indeed + RemoteOK
 # ===========================================================================
 
+def _scrape_indeed_rss(
+    query: str,
+    location: str = "",
+    max_results: int = 15,
+) -> list[dict]:
+    """v3.5.60: Try Indeed RSS feed first (free, no auth, no dorking needed).
+
+    Indeed RSS returns XML with job title, company, location, link.
+    Falls back to dorking if RSS returns nothing.
+    """
+    leads: list[dict] = []
+
+    india_locations = {"india", "delhi", "mumbai", "bangalore", "chennai",
+                       "hyderabad", "pune", "kolkata", "ahmedabad", "jaipur",
+                       "noida", "gurugram", "gurgaon"}
+    is_india = location.lower() in india_locations
+    domain = "in.indeed.com" if is_india else "www.indeed.com"
+
+    rss_url = (
+        f"https://{domain}/rss?q={quote_plus(query)}"
+        f"&l={quote_plus(location)}&limit={min(max_results, 25)}"
+    )
+
+    try:
+        with AdSession(timeout=12.0, min_delay=1.0) as session:
+            resp = session.get(
+                rss_url,
+                headers={"Accept": "application/rss+xml, application/xml, text/xml"},
+            )
+            if resp.status_code == 200 and "<item>" in resp.text:
+                import xml.etree.ElementTree as ET
+                try:
+                    root = ET.fromstring(resp.text)
+                    for item in root.iter("item"):
+                        title_el = item.find("title")
+                        link_el = item.find("link")
+                        source_el = item.find("source")
+
+                        title = title_el.text.strip() if title_el is not None and title_el.text else ""
+                        link = link_el.text.strip() if link_el is not None and link_el.text else ""
+                        company = source_el.text.strip() if source_el is not None and source_el.text else ""
+
+                        if not company and " - " in title:
+                            parts = title.split(" - ")
+                            if len(parts) >= 2:
+                                company = parts[-2].strip() if len(parts) >= 3 else parts[-1].strip()
+
+                        if title or company:
+                            leads.append({
+                                "name": company or title,
+                                "email": "",
+                                "phone": "",
+                                "platform": "job_boards",
+                                "source_url": link,
+                                "location": location,
+                                "job_title": title,
+                            })
+                        if len(leads) >= max_results:
+                            break
+                    if leads:
+                        logger.info("Indeed RSS: %d leads for '%s'", len(leads), query)
+                        return leads[:max_results]
+                except ET.ParseError:
+                    logger.debug("Indeed RSS: XML parse error, falling back to dorking")
+    except Exception as exc:
+        logger.debug("Indeed RSS error: %s — falling back to dorking", exc)
+
+    return leads[:max_results]
+
+
 def _scrape_indeed_dorking(
     query: str,
     location: str = "",
@@ -407,14 +477,19 @@ def scrape_job_boards(
     leads: list[dict] = []
     target_boards = set(b.lower() for b in (boards or ["indeed", "glassdoor", "craigslist", "olx", "remoteok"]))
 
-    # Method 1: Indeed dorking (R2-B01 fix: RSS deprecated, use dorking)
+    # Method 1: Indeed — try RSS first (v3.5.60), then dorking fallback
     if "indeed" in target_boards:
         try:
-            indeed_leads = _scrape_indeed_dorking(query, location, max_results=15)
-            leads.extend(indeed_leads)
-            logger.info("Indeed dorking: %d leads", len(indeed_leads))
+            indeed_leads = _scrape_indeed_rss(query, location, max_results=15)
+            if indeed_leads:
+                leads.extend(indeed_leads)
+                logger.info("Indeed RSS: %d leads", len(indeed_leads))
+            else:
+                indeed_leads = _scrape_indeed_dorking(query, location, max_results=15)
+                leads.extend(indeed_leads)
+                logger.info("Indeed dorking: %d leads", len(indeed_leads))
         except Exception as exc:
-            logger.debug("Indeed dorking error: %s", exc)
+            logger.debug("Indeed error: %s", exc)
 
     # Method 2: Glassdoor dorking (R2-B03 fix: remove email guard)
     if "glassdoor" in target_boards:
