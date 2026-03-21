@@ -242,6 +242,7 @@ async def scrape_yellowpages(
         ]
         # V-R3 fix: dedup across dork queries to prevent duplicate leads
         seen_urls: set[str] = set()
+        yp_page_urls: list[str] = []
         for dork in dork_queries:
             results = free_search_waterfall(dork, num_results=15, min_results=2)
             for r in results:
@@ -262,6 +263,73 @@ async def scrape_yellowpages(
                     "source_url": link,
                     "keyword": query, "category": "business_directory",
                 })
+                # v3.5.60: collect YP URLs for page-visit enrichment
+                if link and "yellowpages.com" in link:
+                    yp_page_urls.append(link)
+
+        # v3.5.60: Visit discovered YP listing pages to extract phone/email
+        # from the actual business page (snippets rarely contain contact info)
+        if yp_page_urls:
+            loop = asyncio.get_running_loop()
+
+            def _enrich_yp_pages() -> list[tuple[str, str, str]]:
+                """Visit YP pages and extract phone/email from HTML."""
+                enriched: list[tuple[str, str, str]] = []
+                try:
+                    with AdSession(timeout=10.0, min_delay=1.5) as session:
+                        for page_url in yp_page_urls[:10]:
+                            try:
+                                resp = session.get(
+                                    page_url,
+                                    headers={
+                                        "Referer": "https://www.google.com/",
+                                        "Accept-Language": "en-US,en;q=0.9",
+                                    },
+                                )
+                                if resp.status_code != 200:
+                                    continue
+                                page_html = resp.text[:150_000]
+                                page_emails = extract_emails(page_html)
+                                page_phones = extract_phones(page_html)
+                                enriched.append((
+                                    page_url,
+                                    page_emails[0] if page_emails else "",
+                                    page_phones[0] if page_phones else "",
+                                ))
+                            except Exception:
+                                continue
+                except Exception as exc:
+                    logger.debug("YP page enrichment session error: %s", exc)
+                return enriched
+
+            try:
+                enriched_data = await loop.run_in_executor(
+                    _YP_EXECUTOR, _enrich_yp_pages,
+                )
+                # Merge enriched data back into leads
+                url_to_enrichment = {
+                    url: (email, phone)
+                    for url, email, phone in enriched_data
+                }
+                for lead in leads:
+                    src = lead.get("source_url", "")
+                    if src in url_to_enrichment:
+                        enr_email, enr_phone = url_to_enrichment[src]
+                        if enr_email and not lead.get("email"):
+                            lead["email"] = enr_email
+                        if enr_phone and not lead.get("phone"):
+                            lead["phone"] = enr_phone
+                enriched_count = sum(
+                    1 for _, e, p in enriched_data if e or p
+                )
+                logger.info(
+                    "YP page enrichment: visited %d pages, "
+                    "enriched %d with contact info",
+                    len(enriched_data), enriched_count,
+                )
+            except Exception as exc:
+                logger.debug("YP page enrichment failed: %s", exc)
+
     except Exception as e:
         logger.warning("YellowPages dorking fallback failed: %s", e)
 
