@@ -171,7 +171,7 @@ async def scrape_yellowpages_direct(
                 logger.warning("YP direct: capped at 90 results (3 pages)")
 
             # R6-B7 fix: add Referer, Accept-Language, cookie persistence
-            with AdSession(timeout=15.0, min_delay=2.0, max_delay=5.0) as ad_session:
+            with AdSession(timeout=15.0, min_delay=2.0) as ad_session:
                 for page_num in range(1, pages_to_fetch + 1):
                     url = (
                         f"https://www.yellowpages.com/search?"
