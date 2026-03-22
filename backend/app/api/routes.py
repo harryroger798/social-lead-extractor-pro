@@ -1192,6 +1192,14 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 _dork_pages, _budget_remaining, _DORKING_TOTAL_CAP,
             )
 
+            # v3.5.63 Fix 1: Granular progress during dorking (47%→85%).
+            # Previously progress jumped from 47% to 95% during dorking, making
+            # the UI appear frozen for minutes/hours (especially with 19 platforms).
+            # Now each platform completion increments progress smoothly.
+            _DORK_PROGRESS_START = _calc_progress()  # ~47% after DB+Reddit
+            _DORK_PROGRESS_END = 85  # Leave 85-95% for direct scraping/enrichment
+            _dork_progress_range = max(_DORK_PROGRESS_END - _DORK_PROGRESS_START, 1)
+
             for idx, platform in enumerate(non_reddit_platforms):
                 # v3.5.50 Fix 3: Check dorking time cap
                 _dorking_elapsed = _time_dork.monotonic() - _dorking_start
@@ -1201,7 +1209,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         _dorking_elapsed, _DORKING_TOTAL_CAP, len(non_reddit_platforms) - idx,
                     )
                     break
-                await _update_progress(session_id, _calc_progress(),
+                # v3.5.63: Smooth per-platform progress within dorking phase
+                _dork_pct = _DORK_PROGRESS_START + int(
+                    (idx / max(_n_platforms, 1)) * _dork_progress_range
+                )
+                await _update_progress(session_id, _dork_pct,
                     f"Google Dorking: {platform} ({idx+1}/{len(non_reddit_platforms)})...",
                     platform, *_count_leads())
                 results = await dorking_search_multi(
@@ -1230,7 +1242,11 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         })
                     # v3.5.50 Fix 5: Collect dorking sources for dedicated page scrape pass
                     _dorking_sources.extend(result.get("sources", []))
-                await _update_progress(session_id, _calc_progress(),
+                # v3.5.63: Update progress after each platform completes
+                _dork_done_pct = _DORK_PROGRESS_START + int(
+                    ((idx + 1) / max(_n_platforms, 1)) * _dork_progress_range
+                )
+                await _update_progress(session_id, _dork_done_pct,
                     f"Google Dorking: {platform} done — {_count_leads()[0]} leads",
                     platform, *_count_leads())
             current_step += 1
@@ -1784,6 +1800,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 )
             save_start = time.monotonic()
             _SAVE_PHASE_TIMEOUT = 120  # seconds — hard cap on entire save loop
+            _BATCH_SIZE = 100  # v3.5.63 Fix 3: commit every 100 leads
 
             for save_idx, lead_data in enumerate(all_leads):
                 # v3.5.22: hard timeout for entire save phase
@@ -1799,9 +1816,28 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                 phone = lead_data.get("phone", "")
                 name = lead_data.get("name", "")
 
-                # v3.5.10: use existing db connection for progress updates
-                if total_to_save > 0 and save_idx % max(1, total_to_save // 10) == 0:
-                    save_pct = 96 + int((save_idx / total_to_save) * 3)  # 96-99%
+                # v3.5.63 Fix 3: Commit in batches of 100 so leads survive crashes.
+                # Previously all leads were in one transaction — crash = lose everything.
+                if save_idx > 0 and save_idx % _BATCH_SIZE == 0:
+                    await db.commit()
+                    save_pct = 96 + int((save_idx / max(total_to_save, 1)) * 3)  # 96-99%
+                    _lc = _count_leads()
+                    await db.execute(
+                        """UPDATE sessions SET progress=?, status_message=?,
+                           current_platform=?, total_leads=?, emails_found=?,
+                           phones_found=? WHERE id=?""",
+                        (save_pct,
+                         f"Saving leads: batch {save_idx // _BATCH_SIZE}/{max(1, total_to_save // _BATCH_SIZE)}...",
+                         "", _lc[0], _lc[1], _lc[2], session_id),
+                    )
+                    logger.info(
+                        "Session %s: v3.5.63 batch commit %d/%d leads saved",
+                        session_id, save_idx, total_to_save,
+                    )
+
+                # v3.5.10: use existing db connection for progress updates (non-batch)
+                elif total_to_save > 0 and save_idx % max(1, total_to_save // 10) == 0:
+                    save_pct = 96 + int((save_idx / max(total_to_save, 1)) * 3)  # 96-99%
                     _lc = _count_leads()
                     await db.execute(
                         """UPDATE sessions SET progress=?, status_message=?,

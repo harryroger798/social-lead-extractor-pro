@@ -152,19 +152,48 @@ async def init_db() -> None:
             "UPDATE settings SET value = 'SnapLeads' WHERE key = 'app_name' AND value = 'Social Lead Extractor Pro'"
         )
 
-        # Recover orphaned sessions: mark any "running" sessions as completed
-        # This handles the case where the app was killed mid-extraction
+        # v3.5.63 Fix 5: Recover orphaned sessions on startup.
+        # When the app is killed mid-extraction (crash, shutdown, force close),
+        # sessions stay in status='running' forever. Mark them as 'completed'
+        # and preserve all leads that were already batch-saved (Fix 3).
+        import logging
+        _db_logger = logging.getLogger("snapleads.database")
+
+        # First, count leads already saved for each orphaned session
+        orphan_cursor = await db.execute(
+            "SELECT id, name FROM sessions WHERE status='running'"
+        )
+        orphan_rows = await orphan_cursor.fetchall()
+
+        for orphan in orphan_rows:
+            oid = orphan[0]
+            oname = orphan[1] if len(orphan) > 1 else "unknown"
+            lead_cursor = await db.execute(
+                "SELECT COUNT(*) FROM leads WHERE session_id=?", (oid,)
+            )
+            lead_row = await lead_cursor.fetchone()
+            preserved = lead_row[0] if lead_row else 0
+            _db_logger.info(
+                "v3.5.63: Recovering orphaned session '%s' (%s) — %d leads preserved",
+                oname, oid, preserved,
+            )
+            # Update the session's total_leads to reflect actually saved leads
+            if preserved > 0:
+                await db.execute(
+                    "UPDATE sessions SET total_leads=? WHERE id=? AND total_leads=0",
+                    (preserved, oid),
+                )
+
         cursor = await db.execute(
             "UPDATE sessions SET status='completed', progress=100, "
             "completed_at=COALESCE(completed_at, datetime('now')), "
-            "status_message='Recovered after restart' "
+            "status_message='Recovered after restart — leads preserved' "
             "WHERE status='running'"
         )
         recovered = cursor.rowcount
         if recovered > 0:
-            import logging
-            logging.getLogger("snapleads.database").info(
-                "Recovered %d orphaned running session(s) on startup", recovered
+            _db_logger.info(
+                "v3.5.63: Recovered %d orphaned running session(s) on startup", recovered
             )
 
         await db.commit()

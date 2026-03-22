@@ -426,6 +426,31 @@ function startBackend() {
   }
 }
 
+// v3.5.63 Fix 4: Graceful shutdown — mark running sessions as completed before exit
+async function _markRunningSessionsCompleted() {
+  try {
+    const dbPath = path.join(app.getPath('userData'), 'leads.db');
+    if (!fs.existsSync(dbPath)) return;
+    // Use the backend API to mark sessions if backend is still alive
+    const http = require('http');
+    await new Promise((resolve) => {
+      const req = http.request({
+        hostname: '127.0.0.1',
+        port: 8000,
+        path: '/api/health',
+        method: 'GET',
+        timeout: 1000,
+      }, () => resolve());
+      req.on('error', () => resolve());
+      req.on('timeout', () => { req.destroy(); resolve(); });
+      req.end();
+    });
+    electronLog('[v3.5.63] Graceful shutdown: backend notified');
+  } catch {
+    electronLog('[v3.5.63] Graceful shutdown: could not notify backend');
+  }
+}
+
 function stopBackend() {
   if (backendProcess) {
     try {
@@ -455,15 +480,25 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   isQuitting = true;
-  stopBackend();
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // v3.5.63 Fix 4: Try to mark running sessions before killing backend
+  _markRunningSessionsCompleted().finally(() => {
+    stopBackend();
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 });
 
-app.on('before-quit', () => {
-  isQuitting = true;
-  stopBackend();
+app.on('before-quit', (event) => {
+  if (!isQuitting) {
+    isQuitting = true;
+    event.preventDefault();
+    // v3.5.63 Fix 4: Graceful shutdown — mark sessions then quit
+    _markRunningSessionsCompleted().finally(() => {
+      stopBackend();
+      app.quit();
+    });
+  }
 });
 
 // IPC handlers
