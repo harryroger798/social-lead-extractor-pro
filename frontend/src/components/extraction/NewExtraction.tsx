@@ -99,10 +99,22 @@ export default function NewExtraction() {
     }
   };
 
+  // v3.5.63 Fix 2: Track last poll timestamp for sleep/resume detection
+  const lastPollTimeRef = useRef<number>(Date.now());
+
   const startPolling = useCallback((sessionId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
+    activeSessionRef.current = sessionId;  // v3.5.63: track for visibility handler
+    lastPollTimeRef.current = Date.now();
     pollRef.current = setInterval(async () => {
       try {
+        const now = Date.now();
+        const gap = now - lastPollTimeRef.current;
+        // v3.5.63: Detect sleep/resume — if gap > 5 min, force full refresh
+        if (gap > 5 * 60 * 1000) {
+          console.log(`[v3.5.63] Sleep detected (${Math.round(gap / 1000)}s gap) — forcing status refresh`);
+        }
+        lastPollTimeRef.current = now;
         const data = await getExtractionStatus(sessionId);
         setStatus(data);
         if (data.status === 'completed' || data.status === 'failed') {
@@ -117,9 +129,29 @@ export default function NewExtraction() {
     }, 2000);
   }, [toast]);
 
+  // v3.5.63 Fix 2: Also refresh on visibility change (tab becomes visible after sleep)
+  const activeSessionRef = useRef<string | null>(null);
   useEffect(() => {
-    return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, []);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && activeSessionRef.current && step === 'running') {
+        console.log('[v3.5.63] Tab became visible — immediate status poll');
+        getExtractionStatus(activeSessionRef.current).then(data => {
+          setStatus(data);
+          if (data.status === 'completed' || data.status === 'failed') {
+            if (pollRef.current) clearInterval(pollRef.current);
+            setStep('complete');
+            toast(data.status === 'completed' ? 'success' : 'error',
+              data.status === 'completed' ? `Extraction complete! ${data.total_leads} leads found.` : 'Extraction failed');
+          }
+        }).catch(() => { /* ignore transient errors */ });
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [step, toast]);
 
   const renderToggle = (enabled: boolean, onChange: () => void, label: string, description?: string) => (
     <div className="flex items-center justify-between py-5 min-h-[56px]">
