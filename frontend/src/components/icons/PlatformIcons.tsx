@@ -1,171 +1,73 @@
-import type { SVGProps } from 'react';
+// Platform logo PNG imports
+import linkedinLogo from '@/assets/platform-logos/linkedin.png';
+import googleMapsLogo from '@/assets/platform-logos/google_maps.png';
+import redditLogo from '@/assets/platform-logos/reddit.png';
+import telegramLogo from '@/assets/platform-logos/telegram.png';
+import instagramLogo from '@/assets/platform-logos/instagram.png';
+import facebookLogo from '@/assets/platform-logos/facebook.png';
+import twitterLogo from '@/assets/platform-logos/twitter.png';
+import whatsappLogo from '@/assets/platform-logos/whatsapp.png';
+import tiktokLogo from '@/assets/platform-logos/tiktok.png';
+import youtubeLogo from '@/assets/platform-logos/youtube.png';
+import pinterestLogo from '@/assets/platform-logos/pinterest.png';
+import emailLogo from '@/assets/platform-logos/email.png';
+import indiamartLogo from '@/assets/platform-logos/indiamart.png';
+import emailFinderLogo from '@/assets/platform-logos/email_finder_b2b.png';
+import tradeindiaLogo from '@/assets/platform-logos/tradeindia.png';
+import exportersindiaLogo from '@/assets/platform-logos/exportersindia.png';
+import justdialLogo from '@/assets/platform-logos/justdial.png';
+import googleMapsBbbLogo from '@/assets/platform-logos/google_maps_b2b.png';
+import githubLogo from '@/assets/platform-logos/github_b2b.png';
+import businessDirsLogo from '@/assets/platform-logos/business_directories.png';
 
-type IconProps = SVGProps<SVGSVGElement>;
-
-export function LinkedInIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
+interface PlatformIconProps {
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export function FacebookIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  );
+function createPlatformIcon(src: string, alt: string) {
+  return function PlatformIcon({ className, style }: PlatformIconProps) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          ...style,
+        }}
+        draggable={false}
+      />
+    );
+  };
 }
 
-export function InstagramIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 100 12.324 6.162 6.162 0 100-12.324zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405a1.441 1.441 0 11-2.88 0 1.441 1.441 0 012.88 0z" />
-    </svg>
-  );
-}
-
-export function TwitterIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-export function YouTubeIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  );
-}
-
-export function RedditIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.462.342.342 0 00-.461 0c-.545.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.206-.095z" />
-    </svg>
-  );
-}
-
-export function TikTokIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  );
-}
-
-export function PinterestIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z" />
-    </svg>
-  );
-}
-
-export function TumblrIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.168z" />
-    </svg>
-  );
-}
-
-export function WhatsAppIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-    </svg>
-  );
-}
-
-export function TelegramIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-    </svg>
-  );
-}
-
-export function GoogleMapsIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.044-2.525-1.049-1.842-2.554-3.378-3.737-5.113-1.29-1.893-2.264-4.14-2.04-6.494.137-1.447.637-2.863 1.483-4.065C8.02 2.49 10.674 1.007 13.467.873c2.056-.1 4.15.524 5.744 1.769.085.066.168.134.251.204l-.014.012-.106.09-.062.053.003.004-.005.01 1.245 1.018-.001-.001.005.01c.092-.076.174-.166.276-.233.135-.09.267-.183.399-.275l-1.674-1.735z" />
-      <path d="M19.527 4.799l-1.674-1.735c-.132.092-.264.185-.399.275-.102.067-.184.157-.276.233l-.005-.01.001.001-1.245-1.018.005-.01-.003-.004.062-.053.106-.09.014-.012a8.96 8.96 0 00-.251-.204C14.11.698 11.57.146 9.166.627 6.27 1.211 3.776 3.322 2.641 6.02c-.955 2.273-.985 4.903-.037 7.185.465 1.118 1.128 2.17 1.919 3.05.763.85 1.564 1.672 2.33 2.524.802.892 1.556 1.83 2.247 2.823.464.665.879 1.364 1.208 2.109.121.274.234.551.342.831.108.279.203.567.312.85.109.281.224.556.367.816a.966.966 0 00.39.415c.17.09.356.117.542.117h.007c.391-.003.518-.373.627-.687.116-.335.219-.675.34-1.008.12-.334.242-.667.383-.992.425-.977 1.05-1.869 1.669-2.727 1.354-1.874 2.997-3.567 4.098-5.614 1.342-2.495 1.617-5.565.405-8.173zM12 14.4a3.6 3.6 0 110-7.2 3.6 3.6 0 010 7.2z" />
-    </svg>
-  );
-}
-
-export function EmailIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-    </svg>
-  );
-}
-
-// B2B Platform Icons (v3.5.4)
-export function IndiaMARTIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-    </svg>
-  );
-}
-
-export function EmailFinderIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-    </svg>
-  );
-}
-
-export function TradeIndiaIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-    </svg>
-  );
-}
-
-export function ExportersIndiaIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.36.2-.74.3-1.13.3-.37 0-.74-.1-1.08-.3l-7.9-4.44A.991.991 0 012 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.36-.2.74-.3 1.13-.3.37 0 .74.1 1.08.3l7.9 4.44c.32.17.46.5.46.88v9zM12 4.15L5 8l7 3.85L19 8l-7-3.85z" />
-    </svg>
-  );
-}
-
-export function JustDialIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-    </svg>
-  );
-}
-
-export function GitHubB2BIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-    </svg>
-  );
-}
-
-export function BusinessDirectoriesIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-    </svg>
-  );
-}
+export const LinkedInIcon = createPlatformIcon(linkedinLogo, 'LinkedIn');
+export const GoogleMapsIcon = createPlatformIcon(googleMapsLogo, 'Google Maps');
+export const RedditIcon = createPlatformIcon(redditLogo, 'Reddit');
+export const TelegramIcon = createPlatformIcon(telegramLogo, 'Telegram');
+export const InstagramIcon = createPlatformIcon(instagramLogo, 'Instagram');
+export const FacebookIcon = createPlatformIcon(facebookLogo, 'Facebook');
+export const TwitterIcon = createPlatformIcon(twitterLogo, 'Twitter/X');
+export const WhatsAppIcon = createPlatformIcon(whatsappLogo, 'WhatsApp');
+export const TikTokIcon = createPlatformIcon(tiktokLogo, 'TikTok');
+export const YouTubeIcon = createPlatformIcon(youtubeLogo, 'YouTube');
+export const PinterestIcon = createPlatformIcon(pinterestLogo, 'Pinterest');
+export const EmailIcon = createPlatformIcon(emailLogo, 'Email');
+export const TumblrIcon = createPlatformIcon(emailLogo, 'Tumblr');
+export const IndiaMARTIcon = createPlatformIcon(indiamartLogo, 'IndiaMART');
+export const EmailFinderIcon = createPlatformIcon(emailFinderLogo, 'Email Finder');
+export const TradeIndiaIcon = createPlatformIcon(tradeindiaLogo, 'TradeIndia');
+export const ExportersIndiaIcon = createPlatformIcon(exportersindiaLogo, 'ExportersIndia');
+export const JustDialIcon = createPlatformIcon(justdialLogo, 'JustDial');
+export const GoogleMapsBBBIcon = createPlatformIcon(googleMapsBbbLogo, 'Google Maps B2B');
+export const GitHubB2BIcon = createPlatformIcon(githubLogo, 'GitHub');
+export const BusinessDirectoriesIcon = createPlatformIcon(businessDirsLogo, 'Business Directories');
 
 // Map platform IDs to their icon components
-export const PLATFORM_ICONS: Record<string, React.FC<IconProps>> = {
+export const PLATFORM_ICONS: Record<string, React.FC<PlatformIconProps>> = {
   linkedin: LinkedInIcon,
   facebook: FacebookIcon,
   instagram: InstagramIcon,
@@ -185,7 +87,7 @@ export const PLATFORM_ICONS: Record<string, React.FC<IconProps>> = {
   tradeindia: TradeIndiaIcon,
   exportersindia: ExportersIndiaIcon,
   justdial: JustDialIcon,
-  google_maps_b2b: GoogleMapsIcon,
+  google_maps_b2b: GoogleMapsBBBIcon,
   github_b2b: GitHubB2BIcon,
   business_directories: BusinessDirectoriesIcon,
 };
