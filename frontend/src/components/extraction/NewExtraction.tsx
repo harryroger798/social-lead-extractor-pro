@@ -11,27 +11,27 @@ import type { ExtractionStatusResponse } from '@/lib/api';
 import { PLATFORM_ICONS } from '@/components/icons/PlatformIcons';
 
 const PLATFORMS = [
-  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2', group: 'social' },
-  { id: 'google_maps', name: 'Google Maps', color: '#4285F4', group: 'social' },
-  { id: 'reddit', name: 'Reddit', color: '#FF4500', group: 'social' },
-  { id: 'telegram', name: 'Telegram', color: '#26A5E4', group: 'social' },
-  { id: 'instagram', name: 'Instagram', color: '#E4405F', group: 'social' },
-  { id: 'facebook', name: 'Facebook', color: '#1877F2', group: 'social' },
-  { id: 'twitter', name: 'Twitter/X', color: '#1DA1F2', group: 'social' },
-  { id: 'whatsapp', name: 'WhatsApp', color: '#25D366', group: 'social' },
-  { id: 'tiktok', name: 'TikTok', color: '#000000', group: 'social' },
-  { id: 'youtube', name: 'YouTube', color: '#FF0000', group: 'social' },
-  { id: 'pinterest', name: 'Pinterest', color: '#E60023', group: 'social' },
-  { id: 'email', name: 'Email', color: '#6366F1', group: 'social' },
+  { id: 'linkedin', name: 'LinkedIn', group: 'social', tooltip: 'Search 86.9M+ professional profiles. Returns: name, email, title, company, location, LinkedIn URL.' },
+  { id: 'google_maps', name: 'Google Maps', group: 'social', tooltip: 'Search 102K+ local businesses. Returns: business name, phone, address, website, rating, reviews.' },
+  { id: 'reddit', name: 'Reddit', group: 'social', tooltip: 'Find community members discussing your niche. Returns: username, profile URL, post history.' },
+  { id: 'telegram', name: 'Telegram', group: 'social', tooltip: 'Extract contacts from Telegram groups and channels. Returns: name, username, phone (if public).' },
+  { id: 'instagram', name: 'Instagram', group: 'social', tooltip: 'Search 2.45M+ business profiles. Returns: name, email, phone, bio, follower count, website.' },
+  { id: 'facebook', name: 'Facebook', group: 'social', tooltip: 'Find business pages and profiles. Returns: name, email, phone, website, location from multiple sources.' },
+  { id: 'twitter', name: 'Twitter/X', group: 'social', tooltip: 'Extract profiles via bio links and syndication API. Returns: name, bio, website, location, follower count.' },
+  { id: 'whatsapp', name: 'WhatsApp', group: 'social', tooltip: 'Find WhatsApp business contacts. Returns: phone number, business name, status.' },
+  { id: 'tiktok', name: 'TikTok', group: 'social', tooltip: 'Discover TikTok creator profiles. Returns: name, bio, website link, follower count.' },
+  { id: 'youtube', name: 'YouTube', group: 'social', tooltip: 'Search 1,085+ channels across 53 categories. Returns: channel name, subscriber count, description, website.' },
+  { id: 'pinterest', name: 'Pinterest', group: 'social', tooltip: 'Find Pinterest business accounts. Returns: name, bio, website, pin count.' },
+  { id: 'email', name: 'Email', group: 'social', tooltip: 'Crawl any website to find emails. Scans /contact, /about, /team pages + mailto: links + Schema.org data.' },
   // B2B Platforms (v3.5.57 — replaced Apollo/RocketReach/Crunchbase with proven alternatives)
-  { id: 'indiamart', name: 'IndiaMART', color: '#1B6AC5', group: 'b2b' },
-  { id: 'email_finder_b2b', name: 'Email Finder', color: '#6C3AED', group: 'b2b' },
-  { id: 'tradeindia', name: 'TradeIndia', color: '#E65100', group: 'b2b' },
-  { id: 'exportersindia', name: 'ExportersIndia', color: '#2E7D32', group: 'b2b' },
-  { id: 'justdial', name: 'JustDial', color: '#FFB300', group: 'b2b' },
-  { id: 'google_maps_b2b', name: 'Google Maps B2B', color: '#34A853', group: 'b2b' },
-  { id: 'github_b2b', name: 'GitHub', color: '#24292F', group: 'b2b' },
-  { id: 'business_directories', name: 'Business Dirs', color: '#0288D1', group: 'b2b' },
+  { id: 'indiamart', name: 'IndiaMART', group: 'b2b', tooltip: 'Indian B2B supplier directory. Returns: company name, phone, email, city, product category. 8-40 leads/query.' },
+  { id: 'email_finder_b2b', name: 'Email Finder', group: 'b2b', tooltip: 'Generates email patterns (first.last@domain.com) from name + company, then verifies via MX/SMTP. Also scrapes company /contact pages.' },
+  { id: 'tradeindia', name: 'TradeIndia', group: 'b2b', tooltip: 'Indian exporter/manufacturer directory. Returns: company name, phone, email, products, city via dorking.' },
+  { id: 'exportersindia', name: 'ExportersIndia', group: 'b2b', tooltip: 'Indian exporter directory. Returns: company name, phone, email, export products via dorking + directory crawl.' },
+  { id: 'justdial', name: 'JustDial', group: 'b2b', tooltip: 'Indian business directory with 40 leads/query. Returns: business name, phone, address, rating, category.' },
+  { id: 'google_maps_b2b', name: 'Google Maps B2B', group: 'b2b', tooltip: 'B2B-focused Google Maps search. Returns: business name, phone, address, website, rating. Best for local services.' },
+  { id: 'github_b2b', name: 'GitHub', group: 'b2b', tooltip: 'Developer lead finder. Searches GitHub profiles + commit emails. Returns: name, email, repos, bio, company.' },
+  { id: 'business_directories', name: 'Business Dirs', group: 'b2b', tooltip: 'Scrapes YellowPages, Yelp, and other directories. Returns: business name, phone, address, website. Best for US/UK.' },
 ];
 
 type Step = 'config' | 'running' | 'complete';
@@ -362,16 +362,17 @@ export default function NewExtraction() {
             const isSelected = selectedPlatforms.includes(p.id);
             return (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
+              title={p.tooltip}
               className={cn(
-                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px]',
+                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px] group',
                   isSelected
                     ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
                     : 'border-[#3f3f46] bg-bg-card hover:border-[#52525b] hover:bg-bg-tertiary/30'
               )}
             >
               {isSelected && <CheckCircle className="absolute top-2 right-2 w-3.5 h-3.5 text-accent" />}
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: p.color, color: '#FFFFFF' }}>
-                {Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden bg-transparent">
+                {Icon ? <Icon className="w-9 h-9" /> : <Globe className="w-5 h-5 text-text-muted" />}
               </div>
               <span className={cn('text-[11px] font-semibold uppercase tracking-wide text-center leading-tight', isSelected ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
             </button>
@@ -380,23 +381,24 @@ export default function NewExtraction() {
         </div>
 
         {/* B2B Platforms */}
-        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pb-3 pt-6">B2B Platforms <span className="text-accent font-normal normal-case">(New in v3.5.4)</span></p>
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pb-3 pt-6">B2B Platforms <span className="text-accent font-normal normal-case">(New in v3.5.57)</span></p>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
           {PLATFORMS.filter(p => p.group === 'b2b').map(p => {
             const Icon = PLATFORM_ICONS[p.id];
             const isSelected = selectedPlatforms.includes(p.id);
             return (
             <button key={p.id} onClick={() => togglePlatform(p.id)}
+              title={p.tooltip}
               className={cn(
-                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px]',
+                  'relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 min-h-[100px] group',
                   isSelected
                     ? 'border-accent/40 bg-accent/[0.06] ring-1 ring-accent/20 shadow-sm shadow-accent/10'
                     : 'border-[#3f3f46] bg-bg-card hover:border-[#52525b] hover:bg-bg-tertiary/30'
               )}
             >
               {isSelected && <CheckCircle className="absolute top-2 right-2 w-3.5 h-3.5 text-accent" />}
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: p.color, color: '#FFFFFF' }}>
-                {Icon ? <Icon className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden bg-transparent">
+                {Icon ? <Icon className="w-9 h-9" /> : <Globe className="w-5 h-5 text-text-muted" />}
               </div>
               <span className={cn('text-[11px] font-semibold uppercase tracking-wide text-center leading-tight', isSelected ? 'text-text-primary' : 'text-text-secondary')}>{p.name}</span>
             </button>
