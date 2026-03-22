@@ -1,0 +1,34 @@
+name: Weekly Leads Sync
+
+on:
+  schedule:
+    # Every Sunday at 2:00 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install boto3 requests
+
+      - name: Run weekly incremental sync
+        env:
+          S3_ENDPOINT: ${{ secrets.IDRIVE_S3_ENDPOINT }}
+          S3_BUCKET: ${{ secrets.IDRIVE_S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.IDRIVE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.IDRIVE_S3_SECRET_KEY }}
+          S3_REGION: us-west-1
+        run: python weekly_incremental_sync.py
