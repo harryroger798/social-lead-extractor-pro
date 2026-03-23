@@ -715,8 +715,8 @@ export function checkCitations(params: {
   if (params.phone) q.set('phone', params.phone);
   if (params.max_sources) q.set('max_sources', String(params.max_sources));
   return request<{
-    found: { source: string; url: string }[];
-    not_found: string[];
+    found: { name: string; domain: string; importance: string; url: string; error?: string }[];
+    not_found: { name: string; domain: string; importance: string; url: string; error?: string }[];
     score: number;
     grade: string;
     recommendations: string[];

@@ -8,25 +8,36 @@ export default function CitationChecker() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
-    found: { source: string; url: string }[];
-    not_found: string[];
+    found: { name: string; domain: string; importance: string; url: string; error?: string }[];
+    not_found: { name: string; domain: string; importance: string; url: string; error?: string }[];
     score: number;
     grade: string;
     recommendations: string[];
   } | null>(null);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleCheck = async () => {
     if (!businessName.trim()) return;
     setLoading(true);
+    setError(null);
     try {
       const data = await checkCitations({
         business_name: businessName.trim(),
         location: location.trim(),
         phone: phone.trim(),
       });
-      setResult(data);
+      // Defensive: ensure arrays exist even if backend returns unexpected shape
+      setResult({
+        found: Array.isArray(data.found) ? data.found : [],
+        not_found: Array.isArray(data.not_found) ? data.not_found : [],
+        score: data.score ?? 0,
+        grade: data.grade ?? 'N/A',
+        recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+      });
     } catch (err) {
       console.error('Citation check failed:', err);
+      setError(err instanceof Error ? err.message : 'Citation check failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -106,7 +117,15 @@ export default function CitationChecker() {
         {/* Results */}
         <div className="bg-bg-card rounded-xl border border-border p-7 space-y-5">
           <h3 className="text-sm font-semibold text-text-primary">Citation Report</h3>
-          {result ? (
+          {error ? (
+            <div className="text-center py-12">
+              <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-red-500/10 flex items-center justify-center">
+                <CheckSquare className="w-5 h-5 text-red-400" />
+              </div>
+              <p className="text-sm text-red-400 font-medium">Citation check failed</p>
+              <p className="text-xs text-text-muted mt-1">{error}</p>
+            </div>
+          ) : result ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-lg bg-bg-input border border-border">
                 <div className="text-center">
@@ -133,7 +152,7 @@ export default function CitationChecker() {
                   <div className="space-y-1 max-h-40 overflow-y-auto">
                     {result.found.map((f, i) => (
                       <div key={i} className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-500/5 text-xs">
-                        <span className="text-text-primary">{f.source}</span>
+                        <span className="text-text-primary">{f.name}</span>
                         {f.url && (
                           <a href={f.url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
                             <ExternalLink className="w-3 h-3" />
@@ -151,7 +170,7 @@ export default function CitationChecker() {
                   <div className="flex flex-wrap gap-1.5">
                     {result.not_found.map((nf, i) => (
                       <span key={i} className="px-2 py-1 rounded-md bg-red-500/5 text-xs text-red-400 border border-red-500/10">
-                        {nf}
+                        {nf.name}
                       </span>
                     ))}
                   </div>
