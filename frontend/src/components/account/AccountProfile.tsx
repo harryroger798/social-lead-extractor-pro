@@ -233,7 +233,7 @@ export default function AccountProfile() {
               <div className="space-y-1">
                 <p className="text-xs text-text-muted font-medium uppercase tracking-wider">Expires</p>
                 <p className="text-sm text-text-secondary">
-                  {license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'Never (Lifetime)'}
+                  {license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'N/A'}
                 </p>
               </div>
             </div>

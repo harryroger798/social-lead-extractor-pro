@@ -28,7 +28,7 @@ export default function ProGate({ children, featureName }: ProGateProps) {
           <h2 className="text-xl font-bold text-text-primary">Pro Feature</h2>
           <p className="text-sm text-text-secondary leading-relaxed">
             <span className="font-semibold text-text-primary">{featureName}</span> is available exclusively in the Pro plan.
-            Upgrade to unlock all 12 platforms and advanced features.
+            Upgrade to unlock all 20 platforms and advanced features.
           </p>
         </div>
 
@@ -40,7 +40,7 @@ export default function ProGate({ children, featureName }: ProGateProps) {
           <ul className="space-y-2 text-xs text-text-secondary">
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-              All 12 social platforms + Google Maps
+              All 20 platforms including B2B directories
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
