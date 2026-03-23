@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
 export type LicenseTier = 'starter' | 'pro';
-export type LicenseCycle = 'monthly' | 'yearly' | 'lifetime';
+export type LicenseCycle = 'monthly' | 'yearly';
 export type UserRole = 'admin' | 'reseller' | 'user';
 
 export interface LicenseData {
@@ -74,7 +74,7 @@ function getElectronAPI(): ElectronAPI | null {
 }
 
 function isLicenseExpired(license: LicenseData): boolean {
-  if (!license.expires_at) return false; // lifetime
+  if (!license.expires_at) return false;
   const expiryDate = new Date(license.expires_at);
   return expiryDate < new Date();
 }
@@ -139,10 +139,10 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
     const mockLicense: LicenseData = {
       key,
       tier: key.includes('-PRO-') ? 'pro' : 'starter',
-      cycle: key.includes('-L-') ? 'lifetime' : key.includes('-Y-') ? 'yearly' : 'monthly',
+      cycle: key.includes('-Y-') ? 'yearly' : 'monthly',
       role: deriveRole(key),
       activated_at: new Date().toISOString(),
-      expires_at: key.includes('-L-') ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       device_id: 'dev-browser',
       token: 'dev-token',
     };
