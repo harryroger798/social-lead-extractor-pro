@@ -179,6 +179,13 @@ export default function NewExtraction() {
 
           <div className="flex-1 min-h-0 overflow-y-auto px-10 py-8">
         <div className="flex flex-col gap-6">
+          {!status && step === 'running' && (
+            <div className="card p-6 flex flex-col items-center justify-center gap-4 py-16">
+              <Loader2 className="w-8 h-8 text-accent animate-spin" />
+              <p className="text-sm text-text-secondary">Starting extraction... connecting to backend</p>
+            </div>
+          )}
+
           {status && (
           <>
             {/* Progress */}
