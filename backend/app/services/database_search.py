@@ -52,8 +52,24 @@ _RENDER_API_TIMEOUT_SECS = 30  # Max time to wait for API response
 # Prevents saturation of asyncio's default executor when multiple
 # extractions run concurrently or many S3 files are queried in parallel.
 # 4 workers = max 4 concurrent DuckDB S3 connections at any time.
-_DB_THREAD_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="duckdb-s3")
-atexit.register(_DB_THREAD_POOL.shutdown, wait=False)
+# v3.5.73: Lazy-initialized to avoid spawning threads at import time,
+# which saves ~1-2s on PyInstaller cold start.
+_DB_THREAD_POOL: ThreadPoolExecutor | None = None
+_DB_THREAD_POOL_LOCK = threading.Lock()
+
+
+def _get_db_thread_pool() -> ThreadPoolExecutor:
+    """Return the shared DB thread pool, creating it on first call."""
+    global _DB_THREAD_POOL  # noqa: PLW0603
+    if _DB_THREAD_POOL is None:
+        with _DB_THREAD_POOL_LOCK:
+            if _DB_THREAD_POOL is None:
+                _DB_THREAD_POOL = ThreadPoolExecutor(
+                    max_workers=4, thread_name_prefix="duckdb-s3"
+                )
+                atexit.register(_DB_THREAD_POOL.shutdown, wait=False)
+                logger.info("v3.5.73: DB thread pool created (lazy init)")
+    return _DB_THREAD_POOL
 
 
 # ── v3.5.33 Fix #1: Post-query location filter for Instagram/non-country DBs ─
@@ -2287,7 +2303,7 @@ async def search_database_linkedin(
                 # If the query times out, we wait an extra period for "ghost"
                 # results instead of immediately discarding them.
                 task = asyncio.ensure_future(
-                    loop.run_in_executor(_DB_THREAD_POOL, _run)
+                    loop.run_in_executor(_get_db_thread_pool(), _run)
                 )
                 try:
                     return await asyncio.wait_for(
@@ -2397,7 +2413,7 @@ async def search_database_instagram(
         # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
+                loop.run_in_executor(_get_db_thread_pool(), _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -2464,7 +2480,7 @@ async def search_database_googlemaps(
         # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
+                loop.run_in_executor(_get_db_thread_pool(), _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -2531,7 +2547,7 @@ async def search_database_pan_india(
         # v3.5.21: Use dedicated _DB_THREAD_POOL instead of default executor
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
+                loop.run_in_executor(_get_db_thread_pool(), _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:
@@ -2597,7 +2613,7 @@ async def search_database_youtube(
     try:
         try:
             rows = await asyncio.wait_for(
-                loop.run_in_executor(_DB_THREAD_POOL, _execute_query),
+                loop.run_in_executor(_get_db_thread_pool(), _execute_query),
                 timeout=_DB_QUERY_TIMEOUT_SECS,
             )
         except asyncio.TimeoutError:

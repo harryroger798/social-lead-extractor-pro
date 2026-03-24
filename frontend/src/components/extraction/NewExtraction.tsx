@@ -73,14 +73,32 @@ export default function NewExtraction() {
     );
   };
 
+  // v3.5.73: Queued extraction state — show immediate feedback while POST completes
+  const [queued, setQueued] = useState(false);
+  const queuedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [queuedSeconds, setQueuedSeconds] = useState(0);
+
   const handleStart = async () => {
     if (!name.trim()) { toast('warning', 'Please enter a session name'); return; }
     if (!keywords.trim()) { toast('warning', 'Please enter at least one keyword'); return; }
     if (selectedPlatforms.length === 0) { toast('warning', 'Please select at least one platform'); return; }
 
+    // v3.5.73 Option C: Immediately show running UI with "queued" state
+    // so the user sees instant feedback instead of waiting for the POST to complete
+    setStarting(true);
+    setError(null);
+    setQueued(true);
+    setQueuedSeconds(0);
+    setStep('running');
+
+    // Start queued elapsed timer
+    if (queuedTimerRef.current) clearInterval(queuedTimerRef.current);
+    const queuedStart = Date.now();
+    queuedTimerRef.current = setInterval(() => {
+      setQueuedSeconds(Math.floor((Date.now() - queuedStart) / 1000));
+    }, 1000);
+
     try {
-      setStarting(true);
-      setError(null);
       const result = await startExtraction({
         name: name.trim(),
         keywords: keywords.split('\n').map(k => k.trim()).filter(Boolean),
@@ -98,10 +116,16 @@ export default function NewExtraction() {
         use_firecrawl_enrichment: useFirecrawl,
         browser_headless: headless,
       });
-      setStep('running');
+      // POST succeeded — clear queued state, start real polling
+      if (queuedTimerRef.current) clearInterval(queuedTimerRef.current);
+      setQueued(false);
       toast('success', 'Extraction started');
       startPolling(result.session_id);
     } catch (err) {
+      // POST failed — revert to config screen
+      if (queuedTimerRef.current) clearInterval(queuedTimerRef.current);
+      setQueued(false);
+      setStep('config');
       setError(err instanceof Error ? err.message : 'Failed to start extraction');
       toast('error', 'Failed to start extraction');
     } finally {
@@ -186,6 +210,7 @@ export default function NewExtraction() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (pollRef.current) clearInterval(pollRef.current);
       if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
+      if (queuedTimerRef.current) clearInterval(queuedTimerRef.current);
     };
   }, [step, toast]);
 
@@ -218,7 +243,27 @@ export default function NewExtraction() {
           {!status && step === 'running' && (
             <div className="card p-6 flex flex-col items-center justify-center gap-4 py-16">
               <Loader2 className="w-8 h-8 text-accent animate-spin" />
-              <p className="text-sm text-text-secondary">Starting extraction... connecting to backend</p>
+              <p className="text-sm text-text-secondary">
+                {queued
+                  ? 'Queued — waiting for backend to be ready...'
+                  : 'Starting extraction... connecting to backend'}
+              </p>
+              {/* v3.5.73: Show elapsed time so user knows it's not frozen */}
+              {(queued ? queuedSeconds : elapsedSeconds) > 0 && (
+                <p className="text-xs text-text-muted tabular-nums">
+                  {(() => {
+                    const secs = queued ? queuedSeconds : elapsedSeconds;
+                    return secs >= 60
+                      ? `${Math.floor(secs / 60)}m ${secs % 60}s elapsed`
+                      : `${secs}s elapsed`;
+                  })()}
+                </p>
+              )}
+              {queued && queuedSeconds >= 10 && (
+                <p className="text-xs text-text-muted/60 max-w-xs text-center">
+                  Backend is loading modules for the first time. This is normal on cold start.
+                </p>
+              )}
             </div>
           )}
 
