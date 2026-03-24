@@ -3,6 +3,7 @@ import {
   Play, Loader2, AlertCircle,
   Search, Globe, Settings, CheckCircle,
   Mail, Phone, Users, Info, ChevronDown, ChevronRight,
+  WifiOff, RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { startExtraction, getExtractionStatus } from '@/lib/api';
@@ -57,6 +58,15 @@ export default function NewExtraction() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { toast } = useToast();
 
+  // v3.5.72 Fix 2: Track consecutive polling errors
+  const consecutiveErrorsRef = useRef(0);
+  const [pollWarning, setPollWarning] = useState<string | null>(null);
+
+  // v3.5.72 Fix 3: Track elapsed time since extraction started
+  const extractionStartRef = useRef<number>(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const togglePlatform = (id: string) => {
     setSelectedPlatforms(prev =>
       prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
@@ -106,6 +116,19 @@ export default function NewExtraction() {
     if (pollRef.current) clearInterval(pollRef.current);
     activeSessionRef.current = sessionId;  // v3.5.63: track for visibility handler
     lastPollTimeRef.current = Date.now();
+    consecutiveErrorsRef.current = 0;
+    setPollWarning(null);
+
+    // v3.5.72 Fix 3: Start elapsed time counter
+    extractionStartRef.current = Date.now();
+    setElapsedSeconds(0);
+    if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
+    elapsedTimerRef.current = setInterval(() => {
+      if (extractionStartRef.current > 0) {
+        setElapsedSeconds(Math.floor((Date.now() - extractionStartRef.current) / 1000));
+      }
+    }, 1000);
+
     pollRef.current = setInterval(async () => {
       try {
         const now = Date.now();
@@ -116,15 +139,27 @@ export default function NewExtraction() {
         }
         lastPollTimeRef.current = now;
         const data = await getExtractionStatus(sessionId);
+        // v3.5.72 Fix 2: Reset error counter on success
+        consecutiveErrorsRef.current = 0;
+        setPollWarning(null);
         setStatus(data);
         if (data.status === 'completed' || data.status === 'failed') {
           if (pollRef.current) clearInterval(pollRef.current);
+          if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
           setStep('complete');
           toast(data.status === 'completed' ? 'success' : 'error',
             data.status === 'completed' ? `Extraction complete! ${data.total_leads} leads found.` : 'Extraction failed');
         }
       } catch {
-        // keep polling on transient errors
+        // v3.5.72 Fix 2: Track consecutive errors and show warning/error
+        consecutiveErrorsRef.current += 1;
+        const errCount = consecutiveErrorsRef.current;
+        if (errCount >= 30) {
+          setPollWarning('Connection lost — backend may have crashed. Click retry to reconnect.');
+          if (pollRef.current) clearInterval(pollRef.current);
+        } else if (errCount >= 5) {
+          setPollWarning(`Connection unstable — ${errCount} consecutive failures. Retrying...`);
+        }
       }
     }, 2000);
   }, [toast]);
@@ -150,6 +185,7 @@ export default function NewExtraction() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (pollRef.current) clearInterval(pollRef.current);
+      if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
     };
   }, [step, toast]);
 
@@ -216,15 +252,46 @@ export default function NewExtraction() {
                   style={{ width: `${status.progress}%` }}
                 />
               </div>
-              {/* Live status message */}
-              {status.status_message && (
+              {/* v3.5.72 Fix 3: Elapsed time + live status message */}
+              {(status.status_message || (step === 'running' && elapsedSeconds > 0)) && (
                 <div className="flex items-center gap-3 pt-4 mt-4 border-t border-border">
                   {status.current_platform && (
                     <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-accent/15 text-accent uppercase tracking-wide">
                       {status.current_platform}
                     </span>
                   )}
-                  <p className="text-sm text-text-secondary flex-1">{status.status_message}</p>
+                  <p className="text-sm text-text-secondary flex-1">
+                    {status.status_message || 'Processing...'}
+                  </p>
+                  {step === 'running' && elapsedSeconds > 0 && (
+                    <span className="text-xs text-text-muted tabular-nums whitespace-nowrap">
+                      {elapsedSeconds >= 60
+                        ? `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`
+                        : `${elapsedSeconds}s`
+                      } elapsed
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* v3.5.72 Fix 2: Connection warning / retry */}
+              {pollWarning && (
+                <div className="flex items-center gap-3 pt-3 mt-3 border-t border-yellow-500/20">
+                  <WifiOff className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                  <p className="text-xs text-yellow-400 flex-1">{pollWarning}</p>
+                  {consecutiveErrorsRef.current >= 30 && activeSessionRef.current && (
+                    <button
+                      onClick={() => {
+                        setPollWarning(null);
+                        consecutiveErrorsRef.current = 0;
+                        if (activeSessionRef.current) startPolling(activeSessionRef.current);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 rounded-lg hover:bg-yellow-400/20 transition-colors"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Retry
+                    </button>
+                  )}
                 </div>
               )}
             </div>

@@ -32,6 +32,7 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 
@@ -2720,6 +2721,7 @@ async def search_database_hybrid(
     max_results_per_keyword: int = 50,
     expanded_terms_map: dict[str, list[str]] | None = None,
     tier: str = "free",
+    progress_callback: "Callable[[str, int], Any] | None" = None,
 ) -> list[dict]:
     """Search the pre-built database across multiple platforms and keywords.
 
@@ -2822,8 +2824,16 @@ async def search_database_hybrid(
     )
 
     # ── Phase runner: runs a coroutine with its own timeout ──
+    # v3.5.72: Track completed phases for progress callback
+    _completed_phases = 0
+    _total_phases = sum([
+        search_linkedin, search_instagram, search_googlemaps,
+        search_pan_india, search_youtube,
+    ]) * len(keywords)
+
     async def _run_phase(phase_coro, phase_name: str, phase_timeout: float) -> None:
         """Run a single DB search phase with its own timeout."""
+        nonlocal _completed_phases
         # Check master safety timeout
         elapsed = _time.monotonic() - _master_start
         if elapsed >= _MASTER_SAFETY_TIMEOUT:
@@ -2831,6 +2841,7 @@ async def search_database_hybrid(
                 "v3.5.38: Skipping %s — master safety timeout reached (%.0fs elapsed)",
                 phase_name, elapsed,
             )
+            _completed_phases += 1
             return
         # Cap phase timeout to remaining master budget
         remaining_master = _MASTER_SAFETY_TIMEOUT - elapsed
@@ -2853,6 +2864,24 @@ async def search_database_hybrid(
                 "v3.5.38 [%s] failed: %s — %d leads preserved, continuing",
                 phase_name, e, len(_partial_results),
             )
+        finally:
+            _completed_phases += 1
+            # v3.5.72: Notify caller of per-phase progress so frontend can
+            # update the UI during the long DB search instead of freezing.
+            if progress_callback and _total_phases > 0:
+                try:
+                    _elapsed_secs = int(_time.monotonic() - _master_start)
+                    _phase_short = phase_name.split(":")[0]  # "LinkedIn", "Instagram", etc.
+                    _msg = (
+                        f"Database: {_phase_short} done — "
+                        f"{len(_partial_results)} leads ({_elapsed_secs}s elapsed)"
+                    )
+                    result = progress_callback(_msg, len(_partial_results))
+                    # Support async callbacks
+                    if asyncio.iscoroutine(result):
+                        await result
+                except Exception as cb_err:
+                    logger.debug("v3.5.72 progress_callback error: %s", cb_err)
 
     try:
         for keyword in keywords:
