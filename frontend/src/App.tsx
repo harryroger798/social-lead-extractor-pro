@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { LicenseProvider, useLicense } from '@/contexts/LicenseContext';
 import LicenseActivation from '@/components/license/LicenseActivation';
@@ -43,21 +43,44 @@ function AppContent() {
   const { isActivated, isExpired, isLoading } = useLicense();
   // v3.5.34: Backend startup splash state
   const [backendStarting, setBackendStarting] = useState(!isBackendReady());
+  // v3.5.73: Elapsed time counter for splash screen
+  const [splashElapsed, setSplashElapsed] = useState(0);
+  const splashTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!isBackendReady()) {
-      waitForBackend().then(() => setBackendStarting(false));
+      const start = Date.now();
+      splashTimerRef.current = setInterval(() => {
+        setSplashElapsed(Math.floor((Date.now() - start) / 1000));
+      }, 1000);
+      waitForBackend().then(() => {
+        if (splashTimerRef.current) clearInterval(splashTimerRef.current);
+        setBackendStarting(false);
+      });
     }
+    return () => { if (splashTimerRef.current) clearInterval(splashTimerRef.current); };
   }, []);
 
   // v3.5.34: Show "Starting backend..." splash instead of broken UI
+  // v3.5.73: Enhanced with elapsed time so user knows it's not frozen
   if (backendStarting) {
     return (
       <div className="h-screen w-full bg-bg-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-10 h-10 text-accent animate-spin" />
           <p className="text-sm text-text-muted">Starting backend...</p>
-          <p className="text-xs text-text-muted/60">This may take a few seconds on first launch</p>
+          {splashElapsed > 0 && (
+            <p className="text-xs text-text-muted tabular-nums">
+              {splashElapsed >= 60
+                ? `${Math.floor(splashElapsed / 60)}m ${splashElapsed % 60}s elapsed`
+                : `${splashElapsed}s elapsed`}
+            </p>
+          )}
+          <p className="text-xs text-text-muted/60">
+            {splashElapsed >= 30
+              ? 'Loading modules for the first time — almost ready...'
+              : 'This may take a few seconds on first launch'}
+          </p>
         </div>
       </div>
     );
