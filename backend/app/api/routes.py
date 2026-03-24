@@ -930,6 +930,16 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                             _db_platforms.append("youtube")
                             logger.info("v3.5.44 Fix 5: Auto-enabled YouTube supplementary DB")
 
+                # v3.5.72: Progress callback so frontend sees per-phase
+                # updates instead of frozen 5% during the long DB search.
+                async def _db_progress_cb(msg: str, lead_count: int) -> None:
+                    # Map DB search phases to 5-10% progress range
+                    pct = min(5 + int((lead_count / max(db_max_results, 1)) * 5), 9)
+                    await _update_progress(
+                        session_id, pct, msg, "database",
+                        lead_count, 0, 0,
+                    )
+
                 try:
                     db_leads = await search_database_hybrid(
                         keywords=cleaned_keywords,
@@ -938,6 +948,7 @@ async def _run_extraction(session_id: str, config: ExtractionRequest) -> None:
                         max_results_per_keyword=db_max_results,
                         expanded_terms_map=expanded_terms_map if expanded_terms_map else None,
                         tier=tier_label,
+                        progress_callback=_db_progress_cb,
                     )
                 finally:
                     # Restore original timeout for next session
