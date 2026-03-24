@@ -167,15 +167,30 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 async function requestBlob(path: string, options?: RequestInit): Promise<Blob> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  });
-  if (!res.ok) throw new Error(`Export error: ${res.status}`);
-  return res.blob();
+  // v3.5.74: Add AbortController with 5-minute timeout for large exports
+  // (75K+ rows can take 10-30s to serialize). Previously bare fetch() had no
+  // timeout, causing premature "Export failed" toasts in Electron.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+    if (!res.ok) throw new Error(`Export error: ${res.status}`);
+    return await res.blob();
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error('Export timed out — try exporting fewer leads or a different format');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // ─── Dashboard ──────────────────────────────────────────────────────────────
