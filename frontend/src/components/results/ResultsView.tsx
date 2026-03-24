@@ -34,6 +34,7 @@ export default function ResultsView({ initialSessionId, onClearSessionFilter }: 
   const [cleanResult, setCleanResult] = useState<CleanResultsResponse | null>(null);
   const [sessionId, setSessionId] = useState<string | undefined>(initialSessionId);
   const [sessions, setSessions] = useState<SessionItem[]>([]);
+  const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
   const { isPro } = useLicense();
 
@@ -113,10 +114,15 @@ export default function ResultsView({ initialSessionId, onClearSessionFilter }: 
     }
   };
 
+  // v3.5.74: Added exporting state to prevent double-click, session_id scoping,
+  // and better error messages. Previously bare catch showed generic "Export failed"
+  // even when the backend was still generating the file.
   const handleExport = async (format: string) => {
+    if (exporting) return;
+    setExporting(true);
     try {
       const selectedIds = selected.size > 0 ? Array.from(selected) : undefined;
-      const blob = await exportResults({ format, leads_ids: selectedIds });
+      const blob = await exportResults({ format, leads_ids: selectedIds, session_id: sessionId });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -124,7 +130,12 @@ export default function ResultsView({ initialSessionId, onClearSessionFilter }: 
       a.click();
       URL.revokeObjectURL(url);
       toast('success', `Exported ${selectedIds ? selectedIds.length : total} leads as ${format.toUpperCase()}`);
-    } catch { toast('error', 'Export failed'); }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast('error', `Export failed: ${msg}`);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const toggleSelect = (id: string) => {
@@ -235,9 +246,14 @@ export default function ResultsView({ initialSessionId, onClearSessionFilter }: 
               <Download className="w-4 h-4 text-text-muted ml-2 flex-shrink-0" />
               <span className="text-[11px] text-text-muted font-medium mr-1">Export:</span>
               {['csv', 'xlsx', 'json'].map(fmt => (
-                <button key={fmt} onClick={() => handleExport(fmt)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-800/40 border border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b] transition-all"
+                <button key={fmt} onClick={() => handleExport(fmt)} disabled={exporting}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${
+                    exporting
+                      ? 'bg-zinc-800/20 border-[#3f3f46] text-text-muted cursor-not-allowed'
+                      : 'bg-zinc-800/40 border-[#3f3f46] text-text-secondary hover:text-text-primary hover:border-[#52525b]'
+                  }`}
                 >
+                  {exporting ? <Loader2 className="w-3 h-3 animate-spin inline mr-1" /> : null}
                   {fmt.toUpperCase()}
                 </button>
               ))}

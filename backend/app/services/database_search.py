@@ -2906,13 +2906,23 @@ async def search_database_hybrid(
                 kw_expanded = expanded_terms_map.get(keyword)
 
             # ── Phase 1: LinkedIn (primary — 86.9M records, ~60s) ──
+            # v3.5.74: Wrap with filter_leads_by_location() post-filter.
+            # Previously LinkedIn returned all leads from the resolved country
+            # without checking city/state specificity. Now matches Instagram's
+            # pattern (line 2922-2930) for consistent location filtering.
             if search_linkedin:
-                await _run_phase(
-                    search_database_linkedin(
-                        keyword, location, max_results_per_keyword,
+                async def _linkedin_with_filter(kw=keyword, loc=location, exp=kw_expanded):
+                    leads = await search_database_linkedin(
+                        kw, loc, max_results_per_keyword,
                         dataset_limit=ds_limit,
-                        expanded_terms=kw_expanded,
-                    ),
+                        expanded_terms=exp,
+                    )
+                    if loc:
+                        leads = filter_leads_by_location(leads, loc, source_tag="linkedin")
+                    return leads
+
+                await _run_phase(
+                    _linkedin_with_filter(),
                     phase_name=f"LinkedIn:{keyword}",
                     phase_timeout=_PHASE_TIMEOUT_LINKEDIN,
                 )
@@ -2971,25 +2981,39 @@ async def search_database_hybrid(
             # Phase 3b: PAN India (slow — ~75s, often times out with no results)
             # v3.5.41 FIX-2: Raised from 60s to 120s. In v3.5.40 logs, PAN India
             # completed in 75-95s but was killed by the 60s cap, losing all results.
+            # v3.5.74: Added location post-filter for consistency with Instagram/GMaps.
             if search_pan_india:
-                await _run_phase(
-                    search_database_pan_india(
-                        keyword, max_results_per_keyword,
+                async def _pan_india_with_filter(kw=keyword, loc=location, exp=kw_expanded):
+                    leads = await search_database_pan_india(
+                        kw, max_results_per_keyword,
                         dataset_limit=ds_limit,
-                        expanded_terms=kw_expanded,
-                    ),
+                        expanded_terms=exp,
+                    )
+                    if loc:
+                        leads = filter_leads_by_location(leads, loc, source_tag="pan_india")
+                    return leads
+
+                await _run_phase(
+                    _pan_india_with_filter(),
                     phase_name=f"PANIndia:{keyword}",
                     phase_timeout=120.0,  # v3.5.41: was 60s — PAN India needs 75-95s
                 )
 
             # Phase 3c: YouTube (fast)
+            # v3.5.74: Added location post-filter for consistency with Instagram/GMaps.
             if search_youtube:
-                await _run_phase(
-                    search_database_youtube(
-                        keyword, max_results_per_keyword,
+                async def _youtube_with_filter(kw=keyword, loc=location, exp=kw_expanded):
+                    leads = await search_database_youtube(
+                        kw, max_results_per_keyword,
                         dataset_limit=1,
-                        expanded_terms=kw_expanded,
-                    ),
+                        expanded_terms=exp,
+                    )
+                    if loc:
+                        leads = filter_leads_by_location(leads, loc, source_tag="youtube")
+                    return leads
+
+                await _run_phase(
+                    _youtube_with_filter(),
                     phase_name=f"YouTube:{keyword}",
                     phase_timeout=30.0,
                 )
