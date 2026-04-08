@@ -489,6 +489,28 @@ def filter_leads_by_location(
     return filtered
 
 
+# v3.5.75: Stop words — overly generic business type words that cause
+# irrelevant matches when split from multi-word keywords. For example,
+# "aluminum profile dealers" splits into ["aluminum", "profile", "dealers"].
+# "dealers" alone matches car dealers, bike dealers, etc. — completely irrelevant.
+# The FULL phrase "aluminum profile dealers" is still searched (slot 0),
+# only the individual word splitting skips these generic terms.
+_STOP_WORDS: set[str] = {
+    "dealer", "dealers", "shop", "shops", "store", "stores",
+    "service", "services", "provider", "providers",
+    "supplier", "suppliers", "company", "companies",
+    "business", "agency", "agencies",
+    "consultant", "consultants", "professional", "professionals",
+    "expert", "experts", "specialist", "specialists",
+    "vendor", "vendors", "manufacturer", "manufacturers",
+    "distributor", "distributors", "wholesaler", "wholesalers",
+    "retailer", "retailers", "trader", "traders",
+    "firm", "firms", "enterprise", "enterprises",
+    "centre", "center", "hub", "mart", "outlet", "outlets",
+    "works", "industries", "corporation",
+}
+
+
 def _sanitize_sql_term(term: str) -> str:
     """Sanitize a search term for safe SQL LIKE interpolation.
 
@@ -1538,10 +1560,11 @@ def _build_linkedin_query(
     if kw_safe:
         all_terms.append(kw_safe)
 
-    # Add individual words from the keyword (e.g. "bike owners" → "bike", "owners")
+    # v3.5.75: Add individual words from the keyword, but skip stop words.
+    # "aluminum profile dealers" → ["aluminum", "profile"] ("dealers" skipped)
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in all_terms:
+        if len(word) > 2 and word not in all_terms and word not in _STOP_WORDS:
             all_terms.append(word)
 
     # Add expanded synonyms from keyword_parser (e.g. "motorcycle", "cycling")
@@ -1556,9 +1579,10 @@ def _build_linkedin_query(
     prioritized: list[str] = []
     if kw_safe:
         prioritized.append(kw_safe)
+    # v3.5.75: skip stop words in prioritization too
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in prioritized:
+        if len(word) > 2 and word not in prioritized and word not in _STOP_WORDS:
             prioritized.append(word)
     # Fill remaining slots with expanded synonyms
     for term in all_terms:
@@ -1627,9 +1651,10 @@ def _build_instagram_query(
     if kw_safe:
         all_terms.append(kw_safe)
 
+    # v3.5.75: skip stop words when splitting individual words
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in all_terms:
+        if len(word) > 2 and word not in all_terms and word not in _STOP_WORDS:
             all_terms.append(word)
 
     if expanded_terms:
@@ -1689,9 +1714,10 @@ def _build_googlemaps_query(
     kw_safe = _sanitize_sql_term(keyword)
     if kw_safe:
         all_terms.append(kw_safe)
+    # v3.5.75: skip stop words when splitting individual words
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in all_terms:
+        if len(word) > 2 and word not in all_terms and word not in _STOP_WORDS:
             all_terms.append(word)
     if expanded_terms:
         for term in expanded_terms:
@@ -1811,9 +1837,10 @@ def _build_pan_india_query(
     kw_safe = _sanitize_sql_term(keyword)
     if kw_safe:
         all_terms.append(kw_safe)
+    # v3.5.75: skip stop words when splitting individual words
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in all_terms:
+        if len(word) > 2 and word not in all_terms and word not in _STOP_WORDS:
             all_terms.append(word)
     if expanded_terms:
         for term in expanded_terms:
@@ -1867,9 +1894,10 @@ def _build_youtube_query(
     kw_safe = _sanitize_sql_term(keyword)
     if kw_safe:
         all_terms.append(kw_safe)
+    # v3.5.75: skip stop words when splitting individual words
     for word in kw_safe.split():
         word = word.strip()
-        if len(word) > 2 and word not in all_terms:
+        if len(word) > 2 and word not in all_terms and word not in _STOP_WORDS:
             all_terms.append(word)
     if expanded_terms:
         for term in expanded_terms:
