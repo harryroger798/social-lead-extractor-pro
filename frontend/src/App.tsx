@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { LicenseProvider, useLicense } from '@/contexts/LicenseContext';
 import LicenseActivation from '@/components/license/LicenseActivation';
@@ -33,7 +33,7 @@ import JobBoardScraper from '@/components/enhancements/JobBoardScraper';
 import AccountProfile from '@/components/account/AccountProfile';
 import TeamDashboard from '@/components/team/TeamDashboard';
 import UsageStats from '@/components/usage/UsageStats';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import type { Section } from '@/types';
 
 function AppContent() {
@@ -43,44 +43,94 @@ function AppContent() {
   const { isActivated, isExpired, isLoading } = useLicense();
   // v3.5.34: Backend startup splash state
   const [backendStarting, setBackendStarting] = useState(!isBackendReady());
+  // v3.5.76: Track startup failure so we can show retry UI instead of infinite spinner
+  const [backendFailed, setBackendFailed] = useState(false);
+  const [backendError, setBackendError] = useState<string | null>(null);
   // v3.5.73: Elapsed time counter for splash screen
   const [splashElapsed, setSplashElapsed] = useState(0);
   const splashTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    if (!isBackendReady()) {
-      const start = Date.now();
-      splashTimerRef.current = setInterval(() => {
-        setSplashElapsed(Math.floor((Date.now() - start) / 1000));
-      }, 1000);
-      waitForBackend().then(() => {
+  // v3.5.76: Extract startup logic into a function so it can be retried
+  const attemptBackendConnect = useCallback(() => {
+    setBackendFailed(false);
+    setBackendError(null);
+    const start = Date.now();
+    if (splashTimerRef.current) clearInterval(splashTimerRef.current);
+    setSplashElapsed(0);
+    splashTimerRef.current = setInterval(() => {
+      setSplashElapsed(Math.floor((Date.now() - start) / 1000));
+    }, 1000);
+    waitForBackend()
+      .then(() => {
         if (splashTimerRef.current) clearInterval(splashTimerRef.current);
         setBackendStarting(false);
+      })
+      .catch((err: Error) => {
+        // v3.5.76: Show actionable error instead of infinite spinner
+        if (splashTimerRef.current) clearInterval(splashTimerRef.current);
+        setBackendFailed(true);
+        setBackendError(err.message || 'Backend failed to start');
       });
+  }, []);
+
+  useEffect(() => {
+    if (!isBackendReady()) {
+      attemptBackendConnect();
     }
     return () => { if (splashTimerRef.current) clearInterval(splashTimerRef.current); };
-  }, []);
+  }, [attemptBackendConnect]);
 
   // v3.5.34: Show "Starting backend..." splash instead of broken UI
   // v3.5.73: Enhanced with elapsed time so user knows it's not frozen
+  // v3.5.76: Shows error with retry button when backend fails to start
   if (backendStarting) {
     return (
       <div className="h-screen w-full bg-bg-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-accent animate-spin" />
-          <p className="text-sm text-text-muted">Starting backend...</p>
-          {splashElapsed > 0 && (
-            <p className="text-xs text-text-muted tabular-nums">
-              {splashElapsed >= 60
-                ? `${Math.floor(splashElapsed / 60)}m ${splashElapsed % 60}s elapsed`
-                : `${splashElapsed}s elapsed`}
-            </p>
+          {backendFailed ? (
+            <>
+              <AlertTriangle className="w-10 h-10 text-yellow-500" />
+              <p className="text-sm text-text-primary font-medium">Backend failed to start</p>
+              <p className="text-xs text-text-muted text-center max-w-sm">
+                {backendError || 'Could not connect to the backend engine.'}
+              </p>
+              <p className="text-xs text-text-muted/60 text-center max-w-sm">
+                This can happen if antivirus is blocking SnapLeads, another app is using port 8000, or the first launch is still unpacking files.
+              </p>
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => attemptBackendConnect()}
+                  className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Retry Connection
+                </button>
+                <button
+                  onClick={() => setBackendStarting(false)}
+                  className="px-4 py-2 border border-border-primary text-text-muted rounded-lg text-sm hover:bg-bg-secondary transition-colors"
+                >
+                  Continue Anyway
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Loader2 className="w-10 h-10 text-accent animate-spin" />
+              <p className="text-sm text-text-muted">Starting backend...</p>
+              {splashElapsed > 0 && (
+                <p className="text-xs text-text-muted tabular-nums">
+                  {splashElapsed >= 60
+                    ? `${Math.floor(splashElapsed / 60)}m ${splashElapsed % 60}s elapsed`
+                    : `${splashElapsed}s elapsed`}
+                </p>
+              )}
+              <p className="text-xs text-text-muted/60">
+                {splashElapsed >= 30
+                  ? 'Loading modules for the first time — almost ready...'
+                  : 'This may take a few seconds on first launch'}
+              </p>
+            </>
           )}
-          <p className="text-xs text-text-muted/60">
-            {splashElapsed >= 30
-              ? 'Loading modules for the first time — almost ready...'
-              : 'This may take a few seconds on first launch'}
-          </p>
         </div>
       </div>
     );
