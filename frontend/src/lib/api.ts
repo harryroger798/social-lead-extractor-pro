@@ -23,10 +23,10 @@ export async function waitForBackend(): Promise<void> {
     };
     let attempts = 0;
     // v3.5.41 FIX-7: Raised from 15 attempts (30s) to 30 attempts (60s).
-    // In v3.5.40 logs, backend startup on slower machines took 35-45s,
-    // causing the 30s timeout to fire and frontend to proceed with a
-    // non-ready backend, leading to failed API calls.
-    const maxAttempts = 30; // 30 * 2s = 60s
+    // v3.5.76: Raised from 30 attempts (60s) to 60 attempts (120s).
+    // On first launch, PyInstaller unpacking on HDD/slow machines can take >60s.
+    // 120s covers virtually all cold-start scenarios.
+    const maxAttempts = 60; // 60 * 2s = 120s
     const interval = setInterval(async () => {
       if (_backendReady) {
         // Already resolved by IPC signal or markBackendReady()
