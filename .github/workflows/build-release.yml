@@ -18,12 +18,18 @@ jobs:
             platform: win
             binary_name: snapleads-backend.exe
             electron_cmd: dist:win
-            artifact_pattern: "release/SnapLeads*.exe"
+            artifact_pattern: |
+              release/SnapLeads*.exe
+              release/*.blockmap
+              release/latest.yml
           - os: macos-latest
             platform: mac
             binary_name: snapleads-backend
             electron_cmd: dist:mac
-            artifact_pattern: "release/SnapLeads-*.zip"
+            artifact_pattern: |
+              release/SnapLeads-*.zip
+              release/*.blockmap
+              release/latest-mac.yml
 
     runs-on: ${{ matrix.os }}
     
