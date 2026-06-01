@@ -466,10 +466,69 @@ function stopBackend() {
   }
 }
 
+// ─── Auto-update (electron-updater, generic feed on Backblaze B2) ──────────
+// The installer + latest.yml are published to the public B2 bucket configured
+// under build.publish in package.json. On launch (production only) we check
+// once, download in the background, and prompt the user to restart when ready.
+// Wrapped defensively so a missing/failed updater can never crash the app.
+function setupAutoUpdater() {
+  if (isDev) return;
+  let autoUpdater;
+  try {
+    ({ autoUpdater } = require('electron-updater'));
+  } catch (err) {
+    electronLog('warn', 'electron-updater unavailable: ' + (err && err.message));
+    return;
+  }
+
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.logger = {
+    info: (m) => electronLog('info', '[updater] ' + m),
+    warn: (m) => electronLog('warn', '[updater] ' + m),
+    error: (m) => electronLog('error', '[updater] ' + m),
+    debug: () => {},
+  };
+
+  autoUpdater.on('error', (err) => {
+    electronLog('error', '[updater] ' + (err == null ? 'unknown' : (err.stack || err.message || String(err))));
+  });
+  autoUpdater.on('update-available', (info) => {
+    electronLog('info', '[updater] update available: ' + (info && info.version));
+  });
+  autoUpdater.on('update-not-available', () => {
+    electronLog('info', '[updater] no update available');
+  });
+  autoUpdater.on('update-downloaded', (info) => {
+    const version = (info && info.version) || '';
+    electronLog('info', '[updater] update downloaded: ' + version);
+    if (!mainWindow) return;
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      buttons: ['Restart now', 'Later'],
+      defaultId: 0,
+      cancelId: 1,
+      title: 'Update ready',
+      message: 'A new version of SnapLeads' + (version ? ' (' + version + ')' : '') + ' has been downloaded.',
+      detail: 'Restart the app to finish installing. It will also install automatically next time you quit.',
+    }).then(({ response }) => {
+      if (response === 0) {
+        isQuitting = true;
+        autoUpdater.quitAndInstall();
+      }
+    }).catch((e) => electronLog('error', '[updater] prompt failed: ' + (e && e.message)));
+  });
+
+  autoUpdater.checkForUpdates().catch((err) => {
+    electronLog('error', '[updater] checkForUpdates failed: ' + (err && err.message));
+  });
+}
+
 app.whenReady().then(() => {
   // Create window immediately, start backend in background
   createWindow();
   startBackend();
+  setupAutoUpdater();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

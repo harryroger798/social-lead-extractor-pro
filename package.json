@@ -1,6 +1,6 @@
 {
   "name": "snapleads",
-  "version": "3.5.76",
+  "version": "3.5.77",
   "description": "SnapLeads - Extract emails and phone numbers from 9 social media platforms",
   "main": "electron/main.js",
   "scripts": {
@@ -23,6 +23,13 @@
     "directories": {
       "output": "release"
     },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://f005.backblazeb2.com/file/snapleads-downloads/",
+        "channel": "latest"
+      }
+    ],
     "files": [
       "electron/**/*",
       "frontend/dist/**/*",
@@ -80,6 +87,9 @@
       "icon": "electron/assets/icon.png",
       "category": "Office"
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^33.0.0",
