@@ -235,3 +235,35 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Publish the installers AND the electron-updater feed (latest.yml,
+      # *.blockmap) to the public Backblaze B2 bucket. This is what makes
+      # in-app auto-update work: the app reads <B2>/latest.yml on launch.
+      # Also refreshes stable "latest" aliases so the website download links
+      # always serve the newest build with no manual step.
+      - name: Publish to Backblaze B2 (installers + auto-update feed)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
+          B2_S3_ENDPOINT: ${{ secrets.B2_S3_ENDPOINT }}
+          B2_BUCKET: ${{ secrets.B2_BUCKET }}
+          AWS_DEFAULT_REGION: us-east-005
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${B2_BUCKET:-}" ]; then
+            echo "B2 credentials not configured; skipping B2 publish."
+            exit 0
+          fi
+          # Versioned installers + update metadata (latest.yml / latest-mac.yml / *.blockmap)
+          aws s3 cp artifacts/installer-win/ "s3://${B2_BUCKET}/" --recursive --endpoint-url "$B2_S3_ENDPOINT"
+          aws s3 cp artifacts/installer-mac/ "s3://${B2_BUCKET}/" --recursive --endpoint-url "$B2_S3_ENDPOINT"
+          # Stable aliases for the website download buttons
+          win_exe="$(find artifacts/installer-win -name '*.exe' | head -1)"
+          mac_zip="$(find artifacts/installer-mac -name '*.zip' | head -1)"
+          if [ -n "$win_exe" ]; then
+            aws s3 cp "$win_exe" "s3://${B2_BUCKET}/SnapLeads-Setup-latest.exe" --endpoint-url "$B2_S3_ENDPOINT"
+          fi
+          if [ -n "$mac_zip" ]; then
+            aws s3 cp "$mac_zip" "s3://${B2_BUCKET}/SnapLeads-latest-arm64-mac.zip" --endpoint-url "$B2_S3_ENDPOINT"
+          fi
+          echo "B2 publish complete."
